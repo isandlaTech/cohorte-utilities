@@ -22,12 +22,14 @@ public class CXTimer implements IXDescriber {
 	public static final String DESCR_MS = "ms]";
 	public static final String DESCR_NS = "[Not started]";
 	public static final String DESCR_SEP = "[";
+
 	public static final String FMT_HEAP_SIZE = "%,3.0f";
-	public static final String FMT_MICRO_SEC = "%6.3f";
-	public static final String FMT_MILI_SEC = "%06d";
+	public final static String FMT_MICRO_SEC = "%6.3f";
+	public final static String FMT_MILI_SEC = "%06d";
+
+	private static final double MILLION = 1000000;
 
 	public static final boolean START = true;
-
 	private static final boolean STARTED = true;
 
 	/**
@@ -41,21 +43,20 @@ public class CXTimer implements IXDescriber {
 
 	/**
 	 * @param aNanoSec
-	 * @return
+	 * @return eg. 179,344 milliseconds
 	 */
 	public static String nanoSecToMicroSecStr(final long aNanoSec) {
-
-		Double wDbl = new Double((double) aNanoSec / (double) 1000000000);
+		Double wDbl = new Double(aNanoSec / MILLION);
 		return String.format(FMT_MICRO_SEC, wDbl);
 	}
 
 	/**
 	 * @param aNanoSec
-	 * @return
+	 * @return eg. 000175 milliseconds
 	 */
 	public static String nanoSecToMilliSecStr(final long aNanoSec) {
 
-		Double wDbl = new Double((double) aNanoSec / (double) 1000000000);
+		Double wDbl = new Double(aNanoSec / MILLION);
 		return String.format(FMT_MILI_SEC, wDbl.longValue());
 	}
 
@@ -163,7 +164,8 @@ public class CXTimer implements IXDescriber {
 	 * @param aStart
 	 *            starts the timer if true
 	 */
-	public CXTimer(final String aName, final long aTimeRefNano, final boolean aStart) {
+	public CXTimer(final String aName, final long aTimeRefNano,
+			final boolean aStart) {
 
 		pName = aName;
 		reset(aTimeRefNano);
@@ -190,7 +192,8 @@ public class CXTimer implements IXDescriber {
 						.append(pName == null ? "" : pName).append(DESCR_SEP)
 						.append(getDurationStrMilliSec()).append(DESCR_MS);
 				if (isStopped()) {
-					aBuffer.append(DESCR_SEP).append(getStopAtMsStr()).append(DESCR_MS);
+					aBuffer.append(DESCR_SEP).append(getStopAtMsStr())
+							.append(DESCR_MS);
 				}
 				return aBuffer;
 			}
@@ -227,8 +230,8 @@ public class CXTimer implements IXDescriber {
 	}
 
 	/**
-	 * @return a formated string ("%06d") containing the duration in
-	 *         milliseconds
+	 * @return a formated string ("%6.3f") containing the duration in in
+	 *         milliseconds with microesconds (eg. "175,044" milliseconds)
 	 */
 	public String getDurationStrMicroSec() {
 
@@ -236,12 +239,12 @@ public class CXTimer implements IXDescriber {
 	}
 
 	/**
-	 * @return a formated string ("%6.3f") containing the duration in in
-	 *         milliseconds with microesconds
+	 * @return a formated string ("%06d") containing the duration in
+	 *         milliseconds (eg. "000256" milliseconds)
 	 */
 	public String getDurationStrMilliSec() {
 
-		return nanoSecToMicroSecStr(getDurationNs());
+		return nanoSecToMilliSecStr(getDurationNs());
 	}
 
 	/**
@@ -250,8 +253,8 @@ public class CXTimer implements IXDescriber {
 	 */
 	public String getHeapDelta() {
 
-		return heapSizeToStr((pHeapStop == 0 ? Runtime.getRuntime().freeMemory() : pHeapStop)
-				- pHeapStart);
+		return heapSizeToStr((pHeapStop == 0 ? Runtime.getRuntime()
+				.freeMemory() : pHeapStop) - pHeapStart);
 	}
 
 	/**
@@ -267,7 +270,8 @@ public class CXTimer implements IXDescriber {
 	 */
 	public String getHeapStop() {
 
-		return heapSizeToStr(pHeapStop == 0 ? Runtime.getRuntime().freeMemory() : pHeapStop);
+		return heapSizeToStr(pHeapStop == 0 ? Runtime.getRuntime().freeMemory()
+				: pHeapStop);
 	}
 
 	/**
@@ -447,7 +451,8 @@ public class CXTimer implements IXDescriber {
 	@Override
 	public String toDescription() {
 
-		return addDescriptionInBuffer(new StringBuilder(calcDescriptionLength())).toString();
+		return addDescriptionInBuffer(
+				new StringBuilder(calcDescriptionLength())).toString();
 
 	}
 }
