@@ -13,6 +13,7 @@ import org.psem2m.utilities.CXStringUtils;
 public class CActivityLoggerBasicConsole implements IActivityLogger {
 
 	private final static CActivityLoggerBasicConsole sCActivityLoggerBasicConsole = new CActivityLoggerBasicConsole();
+
 	/**
 	 * @return
 	 */
@@ -20,22 +21,21 @@ public class CActivityLoggerBasicConsole implements IActivityLogger {
 		return sCActivityLoggerBasicConsole;
 	}
 
-	
 	private final IActivityFormater pActivityFormater;
-	
+
 	private final CLogLineTextBuilder pLogLineTextBuilder;
-	
+
 	/**
 	 * 
 	 */
-	protected CActivityLoggerBasicConsole(){
+	protected CActivityLoggerBasicConsole() {
 		super();
-		
-		pActivityFormater = CActivityFormaterBasic.getInstance(IActivityFormater.SHORT_LINE);
+
+		pActivityFormater = CActivityFormaterBasic
+				.getInstance(IActivityFormater.SHORT_LINE);
 		pActivityFormater.acceptMultiline(IActivityFormater.MULTILINES_TEXT);
 		pLogLineTextBuilder = CLogLineTextBuilder.getInstance();
 	}
-	
 
 	/*
 	 * (non-Javadoc)
@@ -64,7 +64,8 @@ public class CActivityLoggerBasicConsole implements IActivityLogger {
 	 */
 	@Override
 	public void close() {
-		logWarn(this,"close","An instance of CActivityLoggerBasicConsole is not closable.");
+		logWarn(this, "close",
+				"An instance of CActivityLoggerBasicConsole is not closable.");
 	}
 
 	/*
@@ -79,7 +80,7 @@ public class CActivityLoggerBasicConsole implements IActivityLogger {
 
 	@Override
 	public boolean isLogDebugOn() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -104,12 +105,14 @@ public class CActivityLoggerBasicConsole implements IActivityLogger {
 	public boolean isLogWarningOn() {
 		return true;
 	}
+
 	/**
 	 * @return
 	 */
 	protected boolean isOpened() {
 		return true;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -121,22 +124,22 @@ public class CActivityLoggerBasicConsole implements IActivityLogger {
 	public void log(final Level aLevel, final Object aWho,
 			final CharSequence aWhat, final Object... aInfos) {
 
+		String wLogText = pLogLineTextBuilder.buildLogLine(aInfos);
 
-			String wLogText = pLogLineTextBuilder.buildLogLine(aInfos);
-			
-			//System.out.println("wLogText="+((wLogText!=null)?wLogText:"null"));
-			
-			
-			String wLogWho = pLogLineTextBuilder.buildWhoObjectId(aWho);
-			//System.out.println("wLogWho="+((wLogWho!=null)?wLogWho:"null"));
-			
-			String wLogWhat = (aWhat != null) ? aWhat.toString() : CXJavaRunContext
-					.getPreCallingMethod();
-			//System.out.println("wLogWhat="+((wLogWhat!=null)?wLogWhat:"null"));
-			
-			String wLine = pActivityFormater.format(System.currentTimeMillis(), aLevel, wLogWho, wLogWhat, wLogText,!IActivityFormater.WITH_END_LINE);
-			
-			System.out.println((wLine!=null)?wLine:"wLine=null");		
+		// System.out.println("wLogText="+((wLogText!=null)?wLogText:"null"));
+
+		String wLogWho = pLogLineTextBuilder.buildWhoObjectId(aWho);
+		// System.out.println("wLogWho="+((wLogWho!=null)?wLogWho:"null"));
+
+		String wLogWhat = (aWhat != null) ? aWhat.toString() : CXJavaRunContext
+				.getPreCallingMethod();
+		// System.out.println("wLogWhat="+((wLogWhat!=null)?wLogWhat:"null"));
+
+		String wLine = pActivityFormater.format(System.currentTimeMillis(),
+				aLevel, wLogWho, wLogWhat, wLogText,
+				!IActivityFormater.WITH_END_LINE);
+
+		System.out.println((wLine != null) ? wLine : "wLine=null");
 	}
 
 	/*
@@ -148,7 +151,7 @@ public class CActivityLoggerBasicConsole implements IActivityLogger {
 	 */
 	@Override
 	public void log(final LogRecord record) {
-	
+
 	}
 
 	/*
@@ -216,7 +219,8 @@ public class CActivityLoggerBasicConsole implements IActivityLogger {
 
 	@Override
 	public String toDescription() {
-		return addDescriptionInBuffer(new StringBuilder(calcDescriptionLength())).toString();
+		return addDescriptionInBuffer(
+				new StringBuilder(calcDescriptionLength())).toString();
 	}
 
 }

@@ -57,7 +57,6 @@ public class CTestMeasurment {
 		testCXTimeMeters2();
 
 		pLogger.logInfo(this, "doTest", "END");
-
 	}
 
 	/**
@@ -163,6 +162,9 @@ public class CTestMeasurment {
 
 	}
 
+	/**
+	 * @throws JSONException
+	 */
 	void testCXTimeMeters2() throws JSONException {
 		String wTimeMeters2Name = "TimeMeterName2";
 
@@ -212,7 +214,6 @@ public class CTestMeasurment {
 		pLogger.logInfo(this, "testCXTimer",
 				"CXTimer DurationStrMilliSec : [%s]",
 				wTimer.getDurationStrMilliSec());
-
 	}
 
 	/**
@@ -232,6 +233,5 @@ public class CTestMeasurment {
 		pLogger.logInfo(this, "testCXTimerFormat",
 				"[%5d] milliseconds : ToMilliSec : [%s]", aDuration,
 				CXTimer.nanoSecToMilliSecStr(wNanoDelta));
-
 	}
 }

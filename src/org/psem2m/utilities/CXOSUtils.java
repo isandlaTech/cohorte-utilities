@@ -12,6 +12,7 @@ package org.psem2m.utilities;
 
 import java.io.File;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
@@ -95,6 +96,7 @@ public final class CXOSUtils {
 	private final static String OSKEY_WINNT = "NT";
 	private final static String OSKEY_WINVISTA = "Vista";
 	private final static String OSKEY_WINXP = "XP";
+	private final static String SYS_DEFAULT_CHARSET = "defaultCharset";
 	private final static String SYS_PROPERTY_FILEENCODING = "file.encoding";
 
 	private final static String SYS_PROPERTY_OSNAME = "os.name";
@@ -124,15 +126,16 @@ public final class CXOSUtils {
 	 *            by '§'
 	 * @return
 	 */
-	private static StringBuilder addEnvPropertiesInfoDescrInSB(final StringBuilder aSB,
-			final String aId, final int wMaxIdLen, String aValue, final boolean aValueMultiLineLine) {
+	private static StringBuilder addEnvPropertiesInfoDescrInSB(
+			final StringBuilder aSB, final String aId, final int wMaxIdLen,
+			String aValue, final boolean aValueMultiLineLine) {
 
 		if (!aValueMultiLineLine && aValue.contains(CXStringUtils.LINE_SEP)) {
 			aValue = aValue.replace('\n', '§');
 		}
 
-		return CXJvmUtils.addDescrAlignInSB(aSB, aId, wMaxIdLen, aValue, 120 - wMaxIdLen,
-				CXJvmUtils.SEP_NUL);
+		return CXJvmUtils.addDescrAlignInSB(aSB, aId, wMaxIdLen, aValue,
+				120 - wMaxIdLen, CXJvmUtils.SEP_NUL);
 	}
 
 	/**
@@ -160,6 +163,14 @@ public final class CXOSUtils {
 	}
 
 	/**
+	 * @return
+	 */
+	public static Map<String, String> getEnv() {
+
+		return new ProcessBuilder().environment();
+	}
+
+	/**
 	 * Dump the environment variables
 	 * 
 	 * @return the environment variables as a name-value pairs table
@@ -181,7 +192,8 @@ public final class CXOSUtils {
 	 *         the separator
 	 * @throws java.io.IOException
 	 */
-	public static String getEnvContext(final char aSeparator, final boolean aValueMultiLineLine) {
+	public static String getEnvContext(final char aSeparator,
+			final boolean aValueMultiLineLine) {
 
 		StringBuilder wSB = new StringBuilder();
 
@@ -191,7 +203,7 @@ public final class CXOSUtils {
 		}
 
 		try {
-			Properties wEnv = getEnvironment();
+			Map<String, String> wEnv = getEnv();
 
 			int wMaxKeyLen = -1;
 			int wLen;
@@ -202,17 +214,18 @@ public final class CXOSUtils {
 				}
 			}
 
-			CXSortListProperties wSortedEnv = new CXSortListProperties(wEnv, CXSortList.ASCENDING,
-					CXSortList.SORTBYKEY);
+			CXSortedMapString wSortedEnv = new CXSortedMapString(wEnv,
+					CXSortList.ASCENDING, CXSortList.SORTBYKEY);
 
-			Set<Entry<Object, Object>> wProps = wSortedEnv.getTreeSet();
+			Set<Entry<String, String>> wProps = wSortedEnv.getTreeSet();
 
 			int wI = 0;
-			for (Entry<Object, Object> wProp : wProps) {
+			for (Entry<String, String> wProp : wProps) {
 				if (wI > 0) {
 					wSB.append(aSeparator);
 				}
-				addEnvPropertiesInfoDescrInSB(wSB, String.valueOf(wProp.getKey()), wMaxKeyLen,
+				addEnvPropertiesInfoDescrInSB(wSB,
+						String.valueOf(wProp.getKey()), wMaxKeyLen,
 						String.valueOf(wProp.getValue()), aValueMultiLineLine);
 				wI++;
 			}
@@ -227,34 +240,42 @@ public final class CXOSUtils {
 	 * @return
 	 * @throws java.io.IOException
 	 */
+	@Deprecated
 	public static Properties getEnvironment() throws java.io.IOException {
-
-		return isOsWindowsFamily() ? getEnvWindows() : getEnvUnix();
+		Properties wProp = new Properties();
+		wProp.putAll(getEnv());
+		return wProp;
 	}
 
 	/**
 	 * @return
 	 * @throws java.io.IOException
 	 */
+	@Deprecated
 	public static Properties getEnvUnix() throws java.io.IOException {
-
-		Properties env = new Properties();
-		env.load(Runtime.getRuntime().exec("env").getInputStream());
-		return env;
+		Properties wProp = new Properties();
+		wProp.putAll(getEnv());
+		return wProp;
 	}
 
 	/**
 	 * @return ans
 	 * @throws java.io.IOException
+	 * @deprecated
 	 */
+	@Deprecated
 	public static Properties getEnvWindows() throws java.io.IOException {
+		Properties wProp = new Properties();
+		wProp.putAll(getEnv());
+		return wProp;
+	}
 
-		Properties env = new Properties();
-		// doesn't suport 95,98, millenium...
-		if (isOsWindowsFamily()) {
-			env.load(Runtime.getRuntime().exec("cmd.exe /c set").getInputStream());
-		}
-		return env;
+	/**
+	 * @return the default charset of the jvm
+	 */
+	public static String getOsDefaultCharset() {
+
+		return System.getProperty(SYS_DEFAULT_CHARSET);
 	}
 
 	/**
@@ -459,9 +480,10 @@ public final class CXOSUtils {
 	 */
 	public static boolean isOsWindowsFamily(final String aOsName) {
 
-		return isOsWindowsXP(aOsName) || isOsWindowsSeven(aOsName) || isOsWindowsEight(aOsName)
-				|| isOsWindowsVista(aOsName) || isOsWindows2003(aOsName)
-				|| isOsWindows2008(aOsName) || isOsWindows2000(aOsName) || isOsWindowsNT(aOsName);
+		return isOsWindowsXP(aOsName) || isOsWindowsSeven(aOsName)
+				|| isOsWindowsEight(aOsName) || isOsWindowsVista(aOsName)
+				|| isOsWindows2003(aOsName) || isOsWindows2008(aOsName)
+				|| isOsWindows2000(aOsName) || isOsWindowsNT(aOsName);
 	}
 
 	/**
