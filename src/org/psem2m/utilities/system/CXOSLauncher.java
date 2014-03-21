@@ -197,7 +197,7 @@ public class CXOSLauncher {
 				}
 
 			} while (System.currentTimeMillis() - wStart < aTimeOut);
-
+			aProcess.destroy();
 			return EXCommandState.CMD_RUN_TIMEOUT;
 		}
 	}

@@ -40,7 +40,7 @@ public class CTestOSCommand {
 	 * Commande
 	 * 
 	 * <pre>
-	 * echo "myPassword" | sudo -S -k -p "" apacheds status default
+	 * /bin/bash -c "echo "myPassword" | sudo -S -k -p "" apacheds status default"
 	 * </pre>
 	 * 
 	 * <pre>
@@ -64,14 +64,31 @@ public class CTestOSCommand {
 	}
 
 	/**
+	 * @param aPath
+	 * @param aFilter
+	 * @return
+	 */
+	private String[] buildCommandLsLa(final String aPath, final String aFilter) {
+
+		ArrayList<String> wCmdLineArgs = new ArrayList<String>();
+
+		wCmdLineArgs.add("/bin/bash");
+		wCmdLineArgs.add("-c");
+		wCmdLineArgs.add(String.format("ls -la \"%s\" | grep \"%s\"", aPath,
+				aFilter));
+
+		return wCmdLineArgs.toArray(new String[wCmdLineArgs.size()]);
+	}
+
+	/**
 	 * Commande
 	 * 
 	 * <pre>
-	 * netstat -an | grep 10389
+	 * /bin/bash -c 'netstat -an | grep 10389'
 	 * </pre>
 	 * 
 	 * <pre>
-	 * ApacheDS - default is running (6833).
+	 * tcp46      0      0  *.10389                *.*                    LISTEN
 	 * </pre>
 	 * 
 	 * @return
@@ -101,41 +118,34 @@ public class CTestOSCommand {
 	private void doTest() {
 		pLogger.logInfo(this, "doTest", "BEGIN");
 
-		/**
-		 * <pre>
-		 * pb-d-128-141-252-154:default ogattaz$ echo "$JAVA_HOME"
-		 * /System/Library/Frameworks/JavaVM.framework/Home
-		 * </pre>
-		 */
-		pLogger.logInfo(this, "doTest", "Exec:\n%s",
-				execOsCommand("echo", "abcdefghijklmnopqrstuvwxyz"));
+		testCharacters();
 
-		/**
-		 * <pre>
-		 * pb-d-128-141-252-154:default ogattaz$ echo "Olivier38" | sudo -S -k -p "invoker=%u runas=%U =>" apacheds status default
-		 * invoker=ogattaz runas=root =>ApacheDS - default is running (6833).
-		 * </pre>
-		 */
-		pLogger.logInfo(this, "doTest", "Exec:\n%s",
-				execOsCommand(buildApacheDsCommand("status")));
+		testLsLa();
 
-		pLogger.logInfo(this, "doTest", "Exec:\n%s",
-				execOsCommand(buildCommandNetstat(10389)));
+		testApacheDsStatus();
+
+		testNetstat();
+
+		testTimeOut();
 
 		pLogger.logInfo(this, "doTest", "END");
 	}
 
 	/**
-	 * @param aVerb
+	 * @param aTimeOut
+	 * @param aCmdLineArgs
 	 * @return
 	 */
-	private String execOsCommand(final String... aCmdLineArgs) {
+	private String execOsCommand(final long aTimeOut,
+			final String... aCmdLineArgs) {
 
 		CXOSCommand wCommand = new CXOSCommand(pLogger, aCmdLineArgs);
-
-		wCommand.run(5000);
-
+		wCommand.run(aTimeOut);
 		return wCommand.getRepport();
+	}
+
+	private String execOsCommand(final String... aCmdLineArgs) {
+		return execOsCommand(5000, aCmdLineArgs);
 	}
 
 	/**
@@ -150,6 +160,85 @@ public class CTestOSCommand {
 	 */
 	private String getSudoPass() {
 		return "Olivier38";
+	}
+
+	/**
+	 * <pre>
+	 * macbookpro112:~ ogattaz$ /bin/bash -c 'echo "Olivier38" | sudo -S -k -p "" apacheds status default'
+	 * ApacheDS - default is running (6833).
+	 * </pre>
+	 */
+	private void testApacheDsStatus() {
+		pLogger.logInfo(this, "doTest", "Exec:\n%s",
+				execOsCommand(buildApacheDsCommand("status")));
+	}
+
+	/**
+	 * <pre>
+	 * macbookpro112:~ ogattaz$ echo "abcdefghijklmnopqrstuvwxyz éèêë äâà üûù öôò €£$  @&§*% +-/\\|(){}[]"
+	 * abcdefghijklmnopqrstuvwxyz éèêë äâà üûù öôò €£$  @&§*% +-/\|(){}[]
+	 * </pre>
+	 */
+	private void testCharacters() {
+
+		pLogger.logInfo(
+				this,
+				"doTest",
+				"Exec:\n%s",
+				execOsCommand("echo",
+						"abcdefghijklmnopqrstuvwxyz éèêë äâà üûù öôò €£$  @&§*% +-/\\|(){}[]"));
+	}
+
+	/**
+	 * 
+	 * <pre>
+	 * macbookpro112:~ ogattaz$ /bin/bash -c 'ls -la / | grep "admin" '
+	 * ----------     1 root     admin             0 12 sep  2013 .file
+	 * drwxrwxr-x+  141 root     admin          4794 21 mar 00:48 Applications
+	 * drwxr-xr-x     7 root     admin           238 23 nov 16:22 Users
+	 * drwxrwxrwt@    3 root     admin           102 21 mar 15:52 Volumes
+	 * drwxrwxr-t@    2 root     admin            68 12 sep  2013 cores
+	 * -rw-r--r--+    1 ogattaz  admin             0 25 avr  2011 fr
+	 * drwxr-xr-x+    7 ogattaz  admin           238  5 mar 23:51 opt
+	 * macbookpro112:~ ogattaz$
+	 * </pre>
+	 */
+	private void testLsLa() {
+		pLogger.logInfo(this, "doTest", "Exec:\n%s",
+				execOsCommand(buildCommandLsLa("/", "admin")));
+	}
+
+	/**
+	 * <pre>
+	 * macbookpro112:~ ogattaz$ /bin/bash -c 'netstat -an | grep 10389'
+	 * tcp46      0      0  *.10389                *.*                    LISTEN  	 *
+	 * </pre>
+	 */
+	private void testNetstat() {
+		pLogger.logInfo(this, "doTest", "Exec:\n%s",
+				execOsCommand(buildCommandNetstat(10389)));
+	}
+
+	/**
+	 * timeout à 10 secondes
+	 * 
+	 * <pre>
+	 * macbookpro112:~ ogattaz$ find / -name "signature" -print
+	 * find: /.DocumentRevisions-V100: Permission denied
+	 * find: /.DocumentRevisions-V100 (depuis l’ancien Mac): Permission denied
+	 * find: /.fseventsd: Permission denied
+	 * find: /.Spotlight-V100: Permission denied
+	 * find: /.Trashes: Permission denied
+	 * find: /dev/fd/3: Not a directory
+	 * ...
+	 * </pre>
+	 */
+	private void testTimeOut() {
+		pLogger.logInfo(
+				this,
+				"doTest",
+				"Exec:\n%s",
+				execOsCommand(7000, "find", "/", "-name", "signature", "-print"));
 	}
 
 }

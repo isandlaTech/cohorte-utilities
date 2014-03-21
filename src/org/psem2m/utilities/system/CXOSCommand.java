@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.psem2m.utilities.CXDateTime;
-import org.psem2m.utilities.CXException;
 import org.psem2m.utilities.CXOSUtils;
 import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.CXTimer;
@@ -21,7 +20,6 @@ import org.psem2m.utilities.logging.IActivityLoggerBase;
  */
 public class CXOSCommand implements IXOSCommand {
 
-	private final Exception pBuffReadingException = null;
 	private final String[] pCmdLineArgs;
 
 	private EXCommandState pCommandState;
@@ -96,13 +94,6 @@ public class CXOSCommand implements IXOSCommand {
 			aSB.append('\n');
 		}
 		return aSB;
-	}
-
-	/**
-	 * @return
-	 */
-	private String buffReadingErrToString() {
-		return CXException.eMiniInString(pBuffReadingException);
 	}
 
 	/**
@@ -212,11 +203,6 @@ public class CXOSCommand implements IXOSCommand {
 						.append('\n');
 			}
 
-			// gestion des erreurs d'encoding pendant des lectures de buffer
-			if (hasBuffReadingErr()) {
-				wResult.append("--> ERR READING BUFFERS\n");
-				appenTextLinesInSB(wResult, buffReadingErrToString());
-			}
 			if (hasRunStdOutput()) {
 				wResult.append("--> BUFFER OUTPUT\n");
 				appenTextLinesInSB(wResult, getRunStdOutput());
@@ -282,13 +268,6 @@ public class CXOSCommand implements IXOSCommand {
 		} else {
 			return new String();
 		}
-	}
-
-	/**
-	 * @return
-	 */
-	private boolean hasBuffReadingErr() {
-		return (pBuffReadingException != null);
 	}
 
 	/**
