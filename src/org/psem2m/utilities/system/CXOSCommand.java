@@ -32,6 +32,7 @@ public class CXOSCommand implements IXOSCommand {
 
 	private final EXCommandState pRunExitStateOk;
 
+	private long pRunTimeLaunch = 0;
 	private long pRunTimeOut = 0;
 	private long pRunTimeStart = 0;
 	private long pRunTimeStop = 0;
@@ -167,7 +168,7 @@ public class CXOSCommand implements IXOSCommand {
 				.append(CXOSUtils.getOsFileEncoding()).append(')').append('\n');
 		wResult.append("Launched      : ");
 		if (isLaunched()) {
-			wResult.append(CXDateTime.getIso8601TimeStamp(pRunTimeStart))
+			wResult.append(CXDateTime.getIso8601TimeStamp(pRunTimeLaunch))
 					.append('\n');
 		} else {
 			wResult.append("Not launched.\n");
@@ -381,6 +382,7 @@ public class CXOSCommand implements IXOSCommand {
 	 * @return
 	 */
 	protected boolean runDoBefore(final long aTimeOut) {
+		pRunTimeLaunch = System.currentTimeMillis();
 		pRunTimeStart = System.nanoTime();
 		pRunTimeStop = 0;
 		pRunTimeOut = aTimeOut;
