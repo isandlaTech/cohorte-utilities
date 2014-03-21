@@ -78,12 +78,35 @@ public class CTestMeasurment {
 
 	}
 
+	/**
+	 * Création d'un timeMeters avec deux "sub-timers" et ajout de deux
+	 * informations
+	 * 
+	 * Dumps:
+	 * 
+	 * <pre>
+	 * TEXT: Id=[TimeMeterName1] Main=[428,394] Timer1B=[250,967] Timer1C=[176,069] Info00=[ResultOfSomethingB:0.9509717801967676] Info01=[ResultOfSomethingC:0.40979726814154205]
+	 * 
+	 * CVS : Id	TimeMeterName1	Main	428,394	Timer1B	250,967	Timer1C	176,069	Info00	ResultOfSomethingB:0.9509717801967676	Info01	ResultOfSomethingC:0.40979726814154205
+	 * 
+	 * JSON: {"Main":"428.394","Info00":"ResultOfSomethingB:0.9509717801967676","Id":"TimeMeterName1","Timer1B":"250.967","Info01":"ResultOfSomethingC:0.40979726814154205","Timer1C":"176.069"}
+	 * 
+	 * XML : <TimeMeterName1><Main>428,394</Main><Timer1B>250,967</Timer1B><Timer1C>176,069</Timer1C><Info00>ResultOfSomethingB:0.9509717801967676</Info00><Info01>ResultOfSomethingC:0.40979726814154205</Info01></TimeMeterName1>
+	 * </pre>
+	 * 
+	 * @throws JSONException
+	 */
 	void testCXTimeMeters1() throws JSONException {
+
+		// ============ creation du CXTimeMeters (timer implicite "main"
+		// démarré)
 
 		String wTimeMeters1Name = "TimeMeterName1";
 		pLogger.logInfo(this, "testCXTimeMeters1", "create TimeMeters=[%s]",
 				wTimeMeters1Name);
 		CXTimeMeters wTimeMeters1 = new CXTimeMeters(wTimeMeters1Name);
+
+		// ============ ajout d'un premier sub-timer (eg. Timer1B)
 
 		String wTimeMeters1Timer1BName = "Timer1B";
 		pLogger.logInfo(this, "testCXTimeMeters1",
@@ -100,7 +123,11 @@ public class CTestMeasurment {
 				wTimeMeters1Timer1BName);
 		wTimeMeters1Timer1B.stop();
 
+		// ============ Ajout d'une première information
+
 		wTimeMeters1.addInfos("ResultOfSomethingB:%s", wResultB);
+
+		// ============ ajout d'un deuxième sub-timer (eg. Timer1C)
 
 		String wTimeMeters1Timer1CName = "Timer1C";
 		pLogger.logInfo(this, "testCXTimeMeters1",
@@ -117,7 +144,12 @@ public class CTestMeasurment {
 				wTimeMeters1Timer1CName);
 		wTimeMeters1Timer1C.stop();
 
+		// ============ Ajout d'une deuxième information
+
 		wTimeMeters1.addInfos("ResultOfSomethingC:%s", wResultC);
+
+		// ============ récupération des infos du CXTimeMeters (arrêt implicite
+		// de tous timers)
 
 		pLogger.logInfo(this, "testCXTimeMeters1", "TEXT: %s",
 				wTimeMeters1.toString());
