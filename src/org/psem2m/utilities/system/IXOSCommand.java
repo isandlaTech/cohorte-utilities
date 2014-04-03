@@ -9,6 +9,16 @@ public interface IXOSCommand {
 	/**
 	 * @return
 	 */
+	String[] getCmdLineArgs();
+
+	/**
+	 * @return
+	 */
+	String getCommandLine();
+
+	/**
+	 * @return
+	 */
 	StringBuilder getOutBuffer();
 
 	/**

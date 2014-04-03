@@ -61,7 +61,7 @@ public class CXOSCommand implements IXOSCommand {
 				.getInstance();
 		pCmdLineArgs = aCmdLineArgs;
 		pRunExitStateOk = aExitStateOk;
-		pLogger.logDebug(this, "<init>", " CommandLine=[%s]", getCommandLine());
+		pLogger.logDebug(this, "<init>", "CommandLine=[%s]", getCommandLine());
 
 	}
 
@@ -104,13 +104,22 @@ public class CXOSCommand implements IXOSCommand {
 		return CXOSUtils.getOsFileEncoding();
 	}
 
-	/**
-	 * @return
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.system.IXOSCommand#getCmdLineArgs()
 	 */
+	@Override
 	public String[] getCmdLineArgs() {
 		return pCmdLineArgs;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.system.IXOSCommand#getCommandLine()
+	 */
+	@Override
 	public String getCommandLine() {
 		return CXStringUtils.stringTableToString(getCmdLineArgs(), " ");
 	}

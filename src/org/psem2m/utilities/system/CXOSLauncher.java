@@ -52,6 +52,9 @@ public class CXOSLauncher {
 			return pNbLine;
 		}
 
+		/**
+		 * @return
+		 */
 		int getReadSize() {
 			return pReadSize;
 		}
@@ -99,7 +102,8 @@ public class CXOSLauncher {
 		pLogger = (aLogger != null) ? aLogger : CActivityLoggerNull
 				.getInstance();
 		pOsCommand = aOsCommand;
-		pLogger.logDebug(this, "<init>", "OsCommand=[%s]", pOsCommand);
+		pLogger.logDebug(this, "<init>", "CommandLine=[%s]",
+				pOsCommand.getCommandLine());
 	}
 
 	/**
