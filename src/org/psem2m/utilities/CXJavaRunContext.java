@@ -16,12 +16,53 @@ package org.psem2m.utilities;
  */
 public class CXJavaRunContext {
 
+	/** the "before index" of the calling method */
+	public static final int METHOD_CALLING = 2;
+	/** the "before index" of the current method */
+	public static final int METHOD_CURRENT = 1;
+
+	public static final boolean PREVENT_IPOJO = true;
+
 	/**
 	 * @param aSTEs
-	 * @param aMethodName
-	 * @return
+	 *            the StackTraceElement array
+	 * @param aStartIdx
+	 *            the start index of the search operation
+	 * @return the name of the first method which have a name which not starts
+	 *         by a double underscore charater
 	 */
-	private static int findMethodIdx(final StackTraceElement[] aSTEs, final String aMethodName) {
+	private static String findFirstNonIPojoMethod(
+			final StackTraceElement[] aSTEs, final int aStartIdx) {
+
+		if (aSTEs == null) {
+			return null;
+		}
+
+		int wMax = aSTEs.length;
+
+		if (aStartIdx < 0 || aStartIdx > wMax - 1) {
+			return null;
+		}
+
+		String wMethodName;
+		for (int wI = aStartIdx; wI > -1; wI--) {
+			wMethodName = aSTEs[wI].getMethodName();
+			if (!wMethodName.startsWith("__")) {
+				return wMethodName;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param aSTEs
+	 *            the StackTraceElement array
+	 * @param aMethodName
+	 *            the name of the method to find
+	 * @return the idx of the found method name or -1 if not found
+	 */
+	private static int findMethodIdx(final StackTraceElement[] aSTEs,
+			final String aMethodName) {
 		int wMax = (aSTEs != null) ? aSTEs.length : 0;
 
 		for (int wI = 0; wI < wMax; wI++) {
@@ -41,8 +82,8 @@ public class CXJavaRunContext {
 	 */
 
 	public static String getCallingMethod() {
-		// CALLING_METHOD => 2 previous "getCallingMethod"
-		return getMethod("getCallingMethod", 2);
+		// METHOD_CALLING => 2 previous "getCallingMethod"
+		return getMethod("getCallingMethod", METHOD_CALLING);
 	}
 
 	/**
@@ -54,17 +95,32 @@ public class CXJavaRunContext {
 	 */
 	public static String getCurrentMethod() {
 
-		// CURRENT_METHOD => 1 previous "getCurrentMethod"
-		return getMethod("getCurrentMethod", 1);
+		// METHOD_CURRENT => 1 previous "getCurrentMethod"
+		return getMethod("getCurrentMethod", METHOD_CURRENT);
 
 	}
 
 	/**
-	 * @param aToolMethodName
+	 * @param aFromMethodName
 	 * @param aBefore
 	 * @return
 	 */
-	public static String getMethod(final String aToolMethodName, final int aBefore) {
+	public static String getMethod(final String aFromMethodName,
+			final int aBefore) {
+		return getMethod(aFromMethodName, aBefore, false);
+	}
+
+	/**
+	 * @param aFromMethodName
+	 *            the name of the methode finding from
+	 * @param aBefore
+	 * @param aPreventIPojo
+	 *            neglects the responses starting with a double underscore
+	 *            charater
+	 * @return
+	 */
+	public static String getMethod(final String aFromMethodName,
+			final int aBefore, final boolean aPreventIPojo) {
 
 		StackTraceElement[] wSTEs = getStackTrace();
 		int wMax = (wSTEs != null) ? wSTEs.length : 0;
@@ -72,12 +128,17 @@ public class CXJavaRunContext {
 		if (wMax < 1) {
 			return null;
 		}
-		int wIdx = findMethodIdx(wSTEs, aToolMethodName);
+		int wIdx = findMethodIdx(wSTEs, aFromMethodName);
 		if (wIdx < 0) {
 			return null;
 		}
 		int wIdxCallingMethod = wIdx + aBefore;
-		return (wIdxCallingMethod < wMax) ? wSTEs[wIdxCallingMethod].getMethodName() : null;
+		if (aPreventIPojo) {
+			return findFirstNonIPojoMethod(wSTEs, wIdxCallingMethod);
+		} else {
+			return (wIdxCallingMethod < wMax) ? wSTEs[wIdxCallingMethod]
+					.getMethodName() : null;
+		}
 
 	}
 
