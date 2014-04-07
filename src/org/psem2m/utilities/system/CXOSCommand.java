@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.psem2m.utilities.CXDateTime;
 import org.psem2m.utilities.CXOSUtils;
 import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.CXTimer;
@@ -18,24 +17,15 @@ import org.psem2m.utilities.logging.IActivityLoggerBase;
  * Permet d'executer une commande et d'obtenir le resultat de l'execution
  * 
  */
-public class CXOSCommand implements IXOSCommand {
-
-	private final String[] pCmdLineArgs;
+public class CXOSCommand extends CXOSRunner implements IXOSCommand {
 
 	private EXCommandState pCommandState;
-
-	private final IActivityLoggerBase pLogger;
-	private StringBuilder pRunBuffErr = new StringBuilder();
-	private StringBuilder pRunBuffOutput = new StringBuilder();
 
 	private Exception pRunException = null;
 
 	private final EXCommandState pRunExitStateOk;
 
-	private long pRunTimeLaunch = 0;
 	private long pRunTimeOut = 0;
-	private long pRunTimeStart = 0;
-	private long pRunTimeStop = 0;
 
 	/**
 	 * aExitValueOk : Valeur renvoyee par la commande si OK (0 par defaut)
@@ -52,16 +42,15 @@ public class CXOSCommand implements IXOSCommand {
 	 * @param aLogger
 	 * @param aExitValueOk
 	 *            Valeur renvoyee par la commande si OK (0 par defaut)
-	 * @param aCmdLineArgs
+	 * @param aCommandLine
 	 */
 	public CXOSCommand(final IActivityLoggerBase aLogger,
-			final EXCommandState aExitStateOk, final String... aCmdLineArgs) {
-		super();
-		pLogger = (aLogger != null) ? aLogger : CActivityLoggerNull
-				.getInstance();
-		pCmdLineArgs = aCmdLineArgs;
+			final EXCommandState aExitStateOk, final String... aCommandLine) {
+		super(aLogger, aCommandLine);
+
 		pRunExitStateOk = aExitStateOk;
-		pLogger.logDebug(this, "<init>", "CommandLine=[%s]", getCommandLine());
+		pLogger.logDebug(this, "<init>", "CommandLine nbParts=[%s]",
+				aCommandLine.length);
 
 	}
 
@@ -107,23 +96,9 @@ public class CXOSCommand implements IXOSCommand {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.psem2m.utilities.system.IXOSCommand#getCmdLineArgs()
+	 * @see org.psem2m.utilities.system.IXOSCommand#getCommandState()
 	 */
 	@Override
-	public String[] getCmdLineArgs() {
-		return pCmdLineArgs;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.psem2m.utilities.system.IXOSCommand#getCommandLine()
-	 */
-	@Override
-	public String getCommandLine() {
-		return CXStringUtils.stringTableToString(getCmdLineArgs(), " ");
-	}
-
 	public EXCommandState getCommandState() {
 		return pCommandState;
 	}
@@ -148,26 +123,9 @@ public class CXOSCommand implements IXOSCommand {
 		return wSB.toString();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.psem2m.utilities.system.IXOSCommand#getOutBuffer()
+	/**
+	 * @return
 	 */
-	@Override
-	public StringBuilder getOutBuffer() {
-		return pRunBuffOutput;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.psem2m.utilities.system.IXOSCommand#getOutErrBuffer()
-	 */
-	@Override
-	public StringBuilder getOutErrBuffer() {
-		return pRunBuffErr;
-	}
-
 	public String getRepport() {
 		StringBuilder wResult = new StringBuilder(2048);
 		wResult.append("CommandLine   : ").append(getCommandLine())
@@ -177,8 +135,7 @@ public class CXOSCommand implements IXOSCommand {
 				.append(CXOSUtils.getOsFileEncoding()).append(')').append('\n');
 		wResult.append("Launched      : ");
 		if (isLaunched()) {
-			wResult.append(CXDateTime.getIso8601TimeStamp(pRunTimeLaunch))
-					.append('\n');
+			wResult.append(getLaunchTimeStamp()).append('\n');
 		} else {
 			wResult.append("Not launched.\n");
 		}
@@ -228,17 +185,6 @@ public class CXOSCommand implements IXOSCommand {
 	/**
 	 * @return
 	 */
-	public long getRunElapsedTime() {
-		if (pRunTimeStop != 0 && pRunTimeStart != 0) {
-			return pRunTimeStop - pRunTimeStart;
-		} else {
-			return 0;
-		}
-	}
-
-	/**
-	 * @return
-	 */
 	public Exception getRunException() {
 		return pRunException;
 	}
@@ -263,7 +209,7 @@ public class CXOSCommand implements IXOSCommand {
 	 */
 	public String getRunStdOutput() {
 		if (isLaunched() && hasRunStdOutput()) {
-			return CXStringUtils.strFullTrim(pRunBuffOutput.toString());
+			return CXStringUtils.strFullTrim(getStdOutBuffer().toString());
 		} else {
 			return new String();
 		}
@@ -274,24 +220,10 @@ public class CXOSCommand implements IXOSCommand {
 	 */
 	public String getRunStdOutputErr() {
 		if (isLaunched() && hasRunStdOutputErr()) {
-			return CXStringUtils.strFullTrim(pRunBuffErr.toString());
+			return CXStringUtils.strFullTrim(getStdErrBuffer().toString());
 		} else {
 			return new String();
 		}
-	}
-
-	/**
-	 * @return
-	 */
-	public boolean hasRunStdOutput() {
-		return pRunBuffOutput != null && pRunBuffOutput.length() > 0;
-	}
-
-	/**
-	 * @return
-	 */
-	public boolean hasRunStdOutputErr() {
-		return pRunBuffErr != null && pRunBuffErr.length() > 0;
 	}
 
 	/**
@@ -331,37 +263,45 @@ public class CXOSCommand implements IXOSCommand {
 		return pCommandState == EXCommandState.CMD_RUN_TIMEOUT;
 	}
 
-	/**
+	/*
+	 * (non-Javadoc)
 	 * 
+	 * @see org.psem2m.utilities.system.IXOSCommand#run()
 	 */
-	public void razRunStdOutputErr() {
-		pRunBuffErr = null;
-	}
-
-	/**
-	 * @return true if all is OK
-	 */
+	@Override
 	public boolean run() {
 		return run(0);
 	}
 
-	/**
-	 * @param aTimeOut
-	 *            no timeout if <= 0
-	 * @return true if all is OK
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.system.IXOSCommand#run(long)
 	 */
+	@Override
 	public boolean run(final long aTimeOut) {
 
 		return run(aTimeOut, CXFileDir.getUserDir(), null);
 	}
 
-	/**
-	 * @param aTimeOut
-	 *            no timeout if <= 0
-	 * @param aUserDir
-	 * @param aEnv
-	 * @return true if all is OK
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.system.IXOSCommand#run(long)
 	 */
+	@Override
+	public boolean run(final long aTimeOut, final File aUserDir) {
+
+		return run(aTimeOut, aUserDir, null);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.system.IXOSCommand#run(long, java.io.File,
+	 * java.util.Map)
+	 */
+	@Override
 	public boolean run(final long aTimeOut, final File aUserDir,
 			final Map<String, String> aEnv) {
 
@@ -395,8 +335,8 @@ public class CXOSCommand implements IXOSCommand {
 		pRunTimeStart = System.nanoTime();
 		pRunTimeStop = 0;
 		pRunTimeOut = aTimeOut;
-		pRunBuffOutput = new StringBuilder();
-		pRunBuffErr = new StringBuilder();
+		razRunStdOutput();
+		razRunStdOutputErr();
 		pCommandState = EXCommandState.CMD_RUN_NO;
 		pRunException = null;
 		return true;

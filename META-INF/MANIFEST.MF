@@ -14,3 +14,6 @@ Export-Package: javax.script,
  org.psem2m.utilities.scripting;version="1.0.0",
  org.psem2m.utilities.system;version="1.0.0"
 Import-Package: javax.script
+Bundle-ClassPath: lib/jna-4.1.0.jar,
+ lib/jna-platform-4.1.0.jar,
+ .

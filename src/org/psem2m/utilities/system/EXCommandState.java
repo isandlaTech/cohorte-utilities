@@ -43,4 +43,31 @@ public enum EXCommandState {
 		return pVal;
 	}
 
+	/**
+	 * @return
+	 */
+	public boolean isException() {
+		return (this == CMD_RUN_EXCEPTION);
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isRunOK() {
+		return (this == CMD_RUN_OK);
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isStopped() {
+		return (this == CMD_RUN_STOPED);
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isTimeout() {
+		return (this == CMD_RUN_TIMEOUT);
+	}
 }

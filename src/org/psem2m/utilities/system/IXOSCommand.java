@@ -1,29 +1,50 @@
 package org.psem2m.utilities.system;
 
+import java.io.File;
+import java.util.Map;
+
 /**
  * @author ogattaz
  * 
  */
-public interface IXOSCommand {
+public interface IXOSCommand extends IXOSRunner {
 
 	/**
 	 * @return
 	 */
-	String[] getCmdLineArgs();
+	EXCommandState getCommandState();
 
 	/**
-	 * @return
+	 * @return true if all is OK
 	 */
-	String getCommandLine();
+	boolean run();
 
 	/**
-	 * @return
+	 * @param aTimeOut
+	 *            no timeout if <= 0
+	 * @return true if all is OK
 	 */
-	StringBuilder getOutBuffer();
+	boolean run(final long aTimeOut);
 
 	/**
-	 * @return
+	 * @param aTimeOut
+	 *            no timeout if <= 0
+	 * @param aUserDir
+	 *            the "user dir" of the command
+	 * @return true if all is OK
 	 */
-	StringBuilder getOutErrBuffer();
+	boolean run(final long aTimeOut, final File aUserDir);
+
+	/**
+	 * @param aTimeOut
+	 *            no timeout if <= 0
+	 * @param aUserDir
+	 *            the "user dir" of the command
+	 * @param aEnv
+	 *            a set of variables added in the context of the command
+	 * @return true if all is OK
+	 */
+	boolean run(final long aTimeOut, final File aUserDir,
+			final Map<String, String> aEnv);
 
 }
