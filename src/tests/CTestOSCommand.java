@@ -17,13 +17,19 @@ public class CTestOSCommand {
 	 */
 	public static void main(final String[] args) {
 
+		int wExitCode = 0;
+		CTestOSCommand wTest = null;
 		try {
-			CTestOSCommand wTest = new CTestOSCommand();
+			wTest = new CTestOSCommand();
 			wTest.doTest();
-			wTest.destroy();
 		} catch (Exception e) {
 			e.printStackTrace();
+			wExitCode = 1;
+		} finally {
+
+			wTest.destroy();
 		}
+		System.exit(wExitCode);
 	}
 
 	private final IActivityLogger pLogger = CActivityLoggerBasicConsole

@@ -5,12 +5,29 @@ Bundle-SymbolicName: org.psem2m.isolates.utilities
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: isandlaTech.com
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Export-Package: javax.script,
+Export-Package: com.sun.jna,
+ com.sun.jna.platform,
+ com.sun.jna.platform.dnd,
+ com.sun.jna.platform.mac,
+ com.sun.jna.platform.unix,
+ com.sun.jna.platform.win32,
+ com.sun.jna.platform.win32.COM,
+ com.sun.jna.platform.win32.COM.tlb,
+ com.sun.jna.platform.win32.COM.tlb.imp,
+ com.sun.jna.platform.wince,
+ com.sun.jna.ptr,
+ com.sun.jna.win32,
+ javax.script,
  org.psem2m.utilities;version="1.0.0",
  org.psem2m.utilities.files;version="1.0.0",
  org.psem2m.utilities.json;version="1.0.0",
  org.psem2m.utilities.logging;version="1.0.0",
+ org.psem2m.utilities.measurement,
  org.psem2m.utilities.rsrc;version="1.0.0",
  org.psem2m.utilities.scripting;version="1.0.0",
- org.psem2m.utilities.system;version="1.0.0"
+ org.psem2m.utilities.system;version="1.0.0",
+ org.psem2m.utilities.system.win32
 Import-Package: javax.script
+Bundle-ClassPath: lib/jna-4.1.0.jar,
+ lib/jna-platform-4.1.0.jar,
+ .

@@ -20,29 +20,31 @@ public class CXOSLauncher {
 	 * @author ogattaz
 	 * 
 	 */
-	class CBufferReader implements Runnable {
+	class COutputBufferConsumer implements Runnable {
 
 		private final InputStream pInputStream;
+		private final boolean pIsStdErr;
 		private int pNbLine = 0;
+		private final IXOSRunner pOSRunner;
 		private int pReadSize = 0;
-		private final StringBuilder pStringBuilder;
 
 		/**
 		 * @param pInputStream
 		 */
-		CBufferReader(final InputStream aInputStream,
-				final StringBuilder aStringBuilder) {
+		COutputBufferConsumer(final InputStream aInputStream,
+				final IXOSRunner aOSRunner, final boolean aIsStdErr) {
 			super();
-			this.pInputStream = aInputStream;
-			pStringBuilder = aStringBuilder;
+			pInputStream = aInputStream;
+			pOSRunner = aOSRunner;
+			pIsStdErr = aIsStdErr;
 		}
 
 		/**
 		 * @param is
 		 * @return
 		 */
-		private BufferedReader getBufferedReader(final InputStream is) {
-			return new BufferedReader(new InputStreamReader(is));
+		BufferedReader getBufferedReader() {
+			return new BufferedReader(new InputStreamReader(pInputStream));
 		}
 
 		/**
@@ -67,94 +69,39 @@ public class CXOSLauncher {
 		@Override
 		public void run() {
 
-			pLogger.logDebug(this, "run", "Begin");
-			BufferedReader br = getBufferedReader(pInputStream);
+			pLogger.logDebug(this, "run", "%s consumer thread begin",
+					(pIsStdErr) ? "StdErr" : "StdOut");
+			BufferedReader br = getBufferedReader();
 			String wLine = "";
 			try {
 				while ((wLine = br.readLine()) != null) {
-					if (pNbLine > 0) {
-						pStringBuilder.append('\n');
+					int wBuffSize;
+					if (pIsStdErr) {
+						wBuffSize = pOSRunner.consumeStdOutputErrLine(wLine);
+					} else {
+						wBuffSize = pOSRunner.consumeStdOutputLine(wLine);
 					}
-					pStringBuilder.append(wLine);
-					pReadSize = pStringBuilder.length();
+					pReadSize += wLine.length();
 					pNbLine++;
-					pLogger.logDebug(this, "run", "Size=[%5d] line(%3d)=[%s] ",
-							pReadSize, pNbLine, wLine);
+					pLogger.logDebug(this, "run",
+							"line(%3d) lineSize=[%5d] buffSize=[%5d] ",
+							pNbLine, pReadSize, wBuffSize);
 
 				}
 			} catch (IOException e) {
 				pLogger.logSevere(this, "run", "ERROR:%s", e);
 			}
-			pLogger.logDebug(this, "run", "End");
+			pLogger.logDebug(this, "run", "%s consumer thread end",
+					(pIsStdErr) ? "StdErr" : "StdOut");
 		}
-	}
-
-	private final IActivityLoggerBase pLogger;
-
-	private final IXOSCommand pOsCommand;
-
-	/**
-	 * 
-	 */
-	public CXOSLauncher(final IActivityLoggerBase aLogger,
-			final IXOSCommand aOsCommand) {
-		super();
-		pLogger = (aLogger != null) ? aLogger : CActivityLoggerNull
-				.getInstance();
-		pOsCommand = aOsCommand;
-		pLogger.logDebug(this, "<init>", "CommandLine=[%s]",
-				pOsCommand.getCommandLine());
-	}
-
-	/**
-	 * 
-	 * http://labs.excilys.com/2012/06/26/runtime-exec-pour-les-nuls-et-
-	 * processbuilder/
-	 * 
-	 * @param aCmdLine
-	 * @param aCallBack
-	 * @param aTimeOut
-	 * @return the exit value of the process. By convention, 0 indicates normal
-	 *         termination.
-	 * @throws Exception
-	 */
-	public EXCommandState launch(final long aTimeOut, final File wUserDir,
-			final Map<String, String> aEnv, final String... aCmdLineArgs)
-			throws Exception {
-
-		ProcessBuilder wProcessBuilder = new ProcessBuilder(aCmdLineArgs);
-
-		wProcessBuilder.directory(wUserDir);
-
-		if (aEnv != null && !aEnv.isEmpty()) {
-			Map<String, String> wEnv = wProcessBuilder.environment();
-			if (wEnv != null) {
-				wEnv.putAll(aEnv);
-			}
-		}
-
-		// Starts a new process using the attributes of this process builder.
-		Process wProcess = wProcessBuilder.start();
-
-		// Gets the input stream of the subprocess. The stream obtains data
-		// piped from the standard output stream of the process represented by
-		// this Process object.
-		CBufferReader fluxSortie = new CBufferReader(wProcess.getInputStream(),
-				pOsCommand.getOutBuffer());
-		new Thread(fluxSortie).start();
-
-		CBufferReader fluxErreur = new CBufferReader(wProcess.getErrorStream(),
-				pOsCommand.getOutErrBuffer());
-		new Thread(fluxErreur).start();
-
-		return waitFor(wProcess, aTimeOut);
 	}
 
 	/**
 	 * @param aDuration
+	 *            in milliseconds
 	 * @return false if interupted, true if the sleeping is complete
 	 */
-	private boolean sleep(final long aDuration) {
+	static boolean sleep(final long aDuration) {
 		try {
 			Thread.sleep(aDuration);
 			return true;
@@ -166,9 +113,11 @@ public class CXOSLauncher {
 	/**
 	 * @param aProcess
 	 * @param aTimeOut
-	 * @return
+	 * @return aCommandState (if interrupted => CMD_RUN_STOPED) (if exit 0 =>
+	 *         CMD_RUN_OK) (if exit > 0 => CMD_RUN_KO) (if timeout =>
+	 *         CMD_RUN_TIMEOUT)
 	 */
-	private EXCommandState waitFor(final Process aProcess, final long aTimeOut) {
+	static EXCommandState waitForProcessEnd(final Process aProcess, final long aTimeOut) {
 
 		if (aTimeOut <= 0) {
 			try {
@@ -179,8 +128,6 @@ public class CXOSLauncher {
 				// calling thread will be blocked until the subprocess exits.
 				return EXCommandState.exitValToState(aProcess.waitFor());
 			} catch (InterruptedException e) {
-				pLogger.logSevere(this, "waitFor", "InterruptedException");
-				// sleep 50 milliseconds, si interrupted => STOPPED
 				return EXCommandState.CMD_RUN_STOPED;
 			}
 		} else {
@@ -201,8 +148,99 @@ public class CXOSLauncher {
 				}
 
 			} while (System.currentTimeMillis() - wStart < aTimeOut);
+
+			// uniquement si timeout !
 			aProcess.destroy();
 			return EXCommandState.CMD_RUN_TIMEOUT;
 		}
+	}
+
+	private final IActivityLoggerBase pLogger;
+
+	private final IXOSRunner pOsRunnner;
+
+	/**
+	 * @param aLogger
+	 * @param aOsCommand
+	 */
+	public CXOSLauncher(final IActivityLoggerBase aLogger,
+			final IXOSRunner aOsCommand) {
+		super();
+		pLogger = (aLogger != null) ? aLogger : CActivityLoggerNull
+				.getInstance();
+		pOsRunnner = aOsCommand;
+		pLogger.logDebug(this, "<init>", "CommandLine=[%s]",
+				pOsRunnner.getCommandLine());
+	}
+
+	/**
+	 * http://labs.excilys.com/2012/06/26/runtime-exec-pour-les-nuls-et-
+	 * processbuilder/
+	 * 
+	 * @param aTimeOut
+	 * @param aUserDir
+	 * @param aEnv
+	 * @param aCommandLine
+	 * @return the exit State of the process.
+	 * @throws Exception
+	 */
+	public EXCommandState launch(final long aTimeOut, final File aUserDir,
+			final Map<String, String> aEnv, final String... aCommandLine)
+			throws Exception {
+
+		Process wProcess = start(aUserDir, aEnv, aCommandLine);
+
+		return waitForProcessEnd(wProcess, aTimeOut);
+	}
+
+	/**
+	 * Gets the input stream of the subprocess. The stream obtains data piped
+	 * from the standard output stream of the process represented by this
+	 * Process object.
+	 * 
+	 * @param aStartedProcess
+	 */
+	private void setBufferConsumers(final Process aStartedProcess) {
+
+		String wThreadId = String.valueOf(pOsRunnner.hashCode());
+		wThreadId = wThreadId.substring(wThreadId.length() - 4);
+
+		COutputBufferConsumer fluxSortie = new COutputBufferConsumer(
+				aStartedProcess.getInputStream(), pOsRunnner, false);
+		String wThreadNameOut = String.format("%s_stdout", wThreadId);
+		new Thread(fluxSortie, wThreadNameOut).start();
+
+		COutputBufferConsumer fluxErreur = new COutputBufferConsumer(
+				aStartedProcess.getErrorStream(), pOsRunnner, true);
+		String wThreadNameErr = String.format("%s_stderr", wThreadId);
+		new Thread(fluxErreur, wThreadNameErr).start();
+	}
+
+	/**
+	 * @param aUserDir
+	 * @param aEnv
+	 * @param aCommandLine
+	 * @return the started process
+	 * @throws Exception
+	 */
+	public Process start(final File aUserDir, final Map<String, String> aEnv,
+			final String... aCommandLine) throws Exception {
+		ProcessBuilder wProcessBuilder = new ProcessBuilder(aCommandLine);
+
+		wProcessBuilder.directory(aUserDir);
+
+		if (aEnv != null && !aEnv.isEmpty()) {
+			Map<String, String> wEnv = wProcessBuilder.environment();
+			if (wEnv != null) {
+				wEnv.putAll(aEnv);
+			}
+		}
+
+		// Starts a new process using the attributes of this process builder.
+		Process wProcess = wProcessBuilder.start();
+
+		setBufferConsumers(wProcess);
+
+		return wProcess;
 	}
 }
