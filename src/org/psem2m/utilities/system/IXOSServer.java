@@ -30,8 +30,7 @@ public interface IXOSServer extends IXOSRunner {
 	 * @return
 	 * @throws Exception
 	 */
-	boolean start(final File aUserDir, final Map<String, String> aEnv)
-			throws Exception;
+	boolean start(final File aUserDir, final Map<String, String> aEnv);
 
 	/**
 	 * @param aTimeOut
@@ -48,8 +47,17 @@ public interface IXOSServer extends IXOSRunner {
 	 * @return
 	 * @throws Exception
 	 */
-	boolean startAndWaitInStdOut(final File aUserDir, final Map<String, String> aEnv,
-			final long aStartTimeOut, final String aStrInStdOut)
-			throws Exception;
+	boolean startAndWaitInStdOut(final File aUserDir,
+			final Map<String, String> aEnv, final long aStartTimeOut,
+			final String aStrInStdOut);
+
+	/**
+	 * @param aTimeOut
+	 *            no timeout if <= 0
+	 * @param aStopCommand
+	 *            the command to stop the server
+	 * @return
+	 */
+	boolean stop(final long aTimeOut, final String... aStopCommand);
 
 }

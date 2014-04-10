@@ -5,6 +5,5 @@ package org.psem2m.utilities.system;
  * 
  */
 public enum EXServerState {
-	INSTANCIATED, STARTED, STOPPED;
-
+	EXCEPTION, INSTANCIATED, STARTED, STARTING, STOPPED, STOPPING, TIMEOUT;
 }

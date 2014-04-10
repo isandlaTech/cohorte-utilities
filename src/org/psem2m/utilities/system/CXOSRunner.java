@@ -1,6 +1,9 @@
 package org.psem2m.utilities.system;
 
+import java.util.StringTokenizer;
+
 import org.psem2m.utilities.CXDateTime;
+import org.psem2m.utilities.CXOSUtils;
 import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.logging.CActivityLoggerNull;
 import org.psem2m.utilities.logging.IActivityLoggerBase;
@@ -18,7 +21,10 @@ public abstract class CXOSRunner implements IXOSRunner {
 	private final StringBuilder pRunBuffStdErr = new StringBuilder();
 	private final StringBuilder pRunBuffStdOut = new StringBuilder();
 
+	private Exception pRunException = null;
+
 	protected long pRunTimeLaunch = 0;
+	private long pRunTimeOut = 0;
 	protected long pRunTimeStart = 0;
 	protected long pRunTimeStop = 0;
 
@@ -31,6 +37,21 @@ public abstract class CXOSRunner implements IXOSRunner {
 		pLogger = (aLogger != null) ? aLogger : CActivityLoggerNull
 				.getInstance();
 		pCmdLineArgs = aCmdLineArgs;
+	}
+
+	/**
+	 * @param aSB
+	 * @param aText
+	 * @return
+	 */
+	protected StringBuilder appenTextLinesInSB(final StringBuilder aSB,
+			final String aText) {
+		StringTokenizer wST = new StringTokenizer(aText, "\n");
+		while (wST.hasMoreTokens()) {
+			aSB.append(wST.nextToken());
+			aSB.append('\n');
+		}
+		return aSB;
 	}
 
 	/*
@@ -72,6 +93,16 @@ public abstract class CXOSRunner implements IXOSRunner {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see org.psem2m.utilities.system.IXOSRunner#getBuffEncoding()
+	 */
+	@Override
+	public String getBuffEncoding() {
+		return CXOSUtils.getOsFileEncoding();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.psem2m.utilities.system.IXOSCommand#getCmdLineArgs()
 	 */
 	@Override
@@ -102,11 +133,57 @@ public abstract class CXOSRunner implements IXOSRunner {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.psem2m.utilities.system.IXOSCommand#getOutBuffer()
+	 * @see org.psem2m.utilities.system.IXOSRunner#getRunElapsedTime()
 	 */
 	@Override
-	public StringBuilder getStdOutBuffer() {
-		return pRunBuffStdOut;
+	public long getRunElapsedTime() {
+		if (pRunTimeStop != 0 && pRunTimeStart != 0) {
+			return pRunTimeStop - pRunTimeStart;
+		} else {
+			return 0;
+		}
+	}
+
+	/**
+	 * @return
+	 */
+	public Exception getRunException() {
+		return pRunException;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.system.IXOSRunner#getRunStdErr()
+	 */
+	@Override
+	public String getRunStdErr() {
+		if (isLaunched() && hasRunStdOutputErr()) {
+			return CXStringUtils.strFullTrim(getStdErrBuffer().toString());
+		} else {
+			return new String();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.system.IXOSRunner#getRunStdOut()
+	 */
+	@Override
+	public String getRunStdOut() {
+		if (isLaunched() && hasRunStdOutput()) {
+			return CXStringUtils.strFullTrim(getStdOutBuffer().toString());
+		} else {
+			return new String();
+		}
+	}
+
+	/**
+	 * @return
+	 */
+	public long getRunTimeOut() {
+		return pRunTimeOut;
 	}
 
 	/*
@@ -122,15 +199,16 @@ public abstract class CXOSRunner implements IXOSRunner {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.psem2m.utilities.system.IXOSRunner#getRunElapsedTime()
+	 * @see org.psem2m.utilities.system.IXOSCommand#getOutBuffer()
 	 */
 	@Override
-	public long getRunElapsedTime() {
-		if (pRunTimeStop != 0 && pRunTimeStart != 0) {
-			return pRunTimeStop - pRunTimeStart;
-		} else {
-			return 0;
-		}
+	public StringBuilder getStdOutBuffer() {
+		return pRunBuffStdOut;
+	}
+
+	@Override
+	public boolean hasRunException() {
+		return getRunException() != null;
 	}
 
 	/*
@@ -156,6 +234,24 @@ public abstract class CXOSRunner implements IXOSRunner {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see org.psem2m.utilities.system.IXOSRunner#hasRunTimeOut()
+	 */
+	@Override
+	public boolean hasRunTimeOut() {
+		return pRunTimeOut > 0;
+	}
+
+	/**
+	 * @return
+	 */
+	@Deprecated
+	public boolean isRunException() {
+		return hasRunException();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.psem2m.utilities.system.IXOSRunner#razRunStdOutput()
 	 */
 	@Override
@@ -172,4 +268,42 @@ public abstract class CXOSRunner implements IXOSRunner {
 	public void razRunStdOutputErr() {
 		pRunBuffStdErr.delete(0, pRunBuffStdErr.length());
 	}
+
+	/**
+	 * @return
+	 */
+	protected boolean runDoAfter() {
+		pRunTimeStop = System.nanoTime();
+		return isRunOk();
+	}
+
+	/**
+	 * @param aTimeOut
+	 * @return
+	 */
+	protected boolean runDoBefore(final long aTimeOut) {
+		pRunTimeLaunch = System.currentTimeMillis();
+		pRunTimeStart = System.nanoTime();
+		pRunTimeStop = 0;
+		setRunTimeOut(aTimeOut);
+		razRunStdOutput();
+		razRunStdOutputErr();
+		setRunException(null);
+		return true;
+	}
+
+	/**
+	 * @param aExep
+	 */
+	protected void setRunException(final Exception aExep) {
+		pRunException = aExep;
+	}
+
+	/**
+	 * @return
+	 */
+	protected void setRunTimeOut(final long aRunTimeOut) {
+		pRunTimeOut = aRunTimeOut;
+	}
+
 }

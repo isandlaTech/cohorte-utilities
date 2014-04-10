@@ -38,10 +38,10 @@ public class CTestOSServer {
 		System.exit(wExitCode);
 	}
 
+	CXOSServer pCXOSServer = null;
+
 	private final IActivityLogger pLogger = CActivityLoggerBasicConsole
 			.getInstance();
-
-	CXOSServer wCXOSServer = null;
 
 	/**
 	 * 
@@ -123,9 +123,16 @@ public class CTestOSServer {
 	 * @throws Exception
 	 */
 	private void doCommandClose() throws Exception {
-		int wPid = wCXOSServer.getPid();
+		int wPid = pCXOSServer.getPid();
 		pLogger.logInfo(this, "doTest", "Pid=[%s]", wPid);
-		wCXOSServer.stop(10000, buildKillCommand(wPid, "SIGTERM"));
+
+		boolean wStopped = pCXOSServer.stop(10000,
+				buildKillCommand(wPid, "SIGTERM"));
+
+		pLogger.logInfo(this, "doCommandClose", "Started=[%b]", wStopped);
+
+		pLogger.logInfo(this, "doCommandClose", "ServerReport:\n%s",
+				pCXOSServer.getRepport());
 	}
 
 	/**
@@ -135,10 +142,15 @@ public class CTestOSServer {
 	private void doTest() throws Exception {
 		pLogger.logInfo(this, "doTest", "BEGIN");
 
-		wCXOSServer = new CXOSServer(pLogger, buildExitdbCommand());
+		pCXOSServer = new CXOSServer(pLogger, buildExitdbCommand());
 
-		wCXOSServer.startAndWaitInStdOut(buildUserDirFile(), buildExistdbEnv(),
-				15000, "Server has started on ports");
+		boolean wStarted = pCXOSServer.startAndWaitInStdOut(buildUserDirFile(),
+				buildExistdbEnv(), 15000, "Server has started on ports");
+
+		pLogger.logInfo(this, "doTest", "Started=[%b]", wStarted);
+
+		pLogger.logInfo(this, "doTest", "ServerReport:\n%s",
+				pCXOSServer.getRepport());
 
 		waitForUserCommand();
 

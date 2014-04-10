@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Map;
 
+import org.psem2m.utilities.CXOSUtils;
+import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.CXTimer;
 import org.psem2m.utilities.logging.IActivityLoggerBase;
 import org.psem2m.utilities.system.win32.Kernel32;
@@ -25,7 +27,9 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 	public static final byte[] CTRLC = { (byte) 0x03 };
 	Process pProcess = null;
 
-	private final EXServerState pServerState;
+	private final Exception pRunException = null;
+
+	private EXServerState pServerState;
 
 	/**
 	 * @param aLogger
@@ -98,6 +102,69 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see org.psem2m.utilities.system.IXOSRunner#getRepport()
+	 */
+	@Override
+	public String getRepport() {
+		StringBuilder wResult = new StringBuilder(2048);
+		wResult.append("CommandLine   : ").append(getCommandLine())
+				.append('\n');
+		wResult.append("OutputEncoding: ").append(getBuffEncoding())
+				.append(" (").append(CXOSUtils.getOsName()).append(',')
+				.append(CXOSUtils.getOsFileEncoding()).append(')').append('\n');
+		wResult.append("Launched      : ");
+		if (isLaunched()) {
+			wResult.append(getLaunchTimeStamp()).append('\n');
+		} else {
+			wResult.append("Not launched.\n");
+		}
+		if (isLaunched()) {
+			wResult.append("--> LaunchResult=")
+					.append(CXStringUtils.boolToOkKo(isRunOk())).append('\n');
+			wResult.append("--> ElapsedTime =")
+					.append(CXTimer.nanoSecToMicroSecStr(getRunElapsedTime()))
+					.append('\n');
+			wResult.append("--> Timeout     =")
+					.append((hasRunTimeOut()) ? getRunTimeOut() : "undefined")
+					.append('\n');
+			wResult.append("--> isRunOk     =").append(isRunOk()).append('\n');
+			/*
+			 * wResult.append("--> isExitOk    =").append(isExitOk()).append('\n'
+			 * ); wResult.append("--> ExitValue   =").append(getRunExitString())
+			 * .append('\n');
+			 */
+			if (hasRunException()) {
+				wResult.append("--> RunException=").append(hasRunException())
+						.append('\n');
+				wResult.append("--> Name        =")
+						.append(getRunException().getClass().getName())
+						.append('\n');
+				wResult.append("--> Message     =")
+						.append(getRunException().getMessage()).append('\n');
+				wResult.append(
+						CXStringUtils.getExceptionStack(getRunException()))
+						.append('\n');
+			}
+			if (isRunTimeOutDetected()) {
+				wResult.append("--> RunTimeOut  =")
+						.append(isRunTimeOutDetected()).append('\n');
+			}
+
+			if (hasRunStdOutput()) {
+				wResult.append("--> BUFFER OUTPUT\n");
+				appenTextLinesInSB(wResult, getRunStdOut());
+			}
+			if (hasRunStdOutputErr()) {
+				wResult.append("--> BUFFER ERROR\n");
+				appenTextLinesInSB(wResult, getRunStdErr());
+			}
+		}
+		return wResult.toString();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.psem2m.utilities.system.IXOSServer#getServerState()
 	 */
 	@Override
@@ -105,11 +172,43 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 		return pServerState;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.system.IXOSRunner#isLaunched()
+	 */
+	@Override
+	public boolean isLaunched() {
+		return pRunTimeStart != 0;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.system.IXOSRunner#isRunOk()
+	 */
+	@Override
+	public boolean isRunOk() {
+		return isLaunched() && pProcess != null && !hasRunException();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.system.IXOSRunner#isRunTimeOut()
+	 */
+	@Override
+	public boolean isRunTimeOutDetected() {
+		return pServerState == EXServerState.TIMEOUT;
+	}
+
 	/**
 	 * @return
 	 */
+	@Override
 	protected boolean runDoAfter() {
-		pRunTimeStop = System.nanoTime();
+		super.runDoAfter();
+		pServerState = EXServerState.STOPPED;
 		return true;
 	}
 
@@ -117,14 +216,26 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 	 * @param aTimeOut
 	 * @return
 	 */
-	protected boolean runDoBefore() {
-		pRunTimeLaunch = System.currentTimeMillis();
-		pRunTimeStart = System.nanoTime();
-		pRunTimeStop = 0;
-		razRunStdOutput();
-		razRunStdOutputErr();
-		pProcess = null;
+	@Override
+	protected boolean runDoBefore(final long aTimeOut) {
+		super.runDoBefore(aTimeOut);
+		pServerState = EXServerState.STARTING;
 		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.psem2m.utilities.system.CXOSRunner#setRunException(java.lang.Exception
+	 * )
+	 */
+	@Override
+	protected void setRunException(final Exception aException) {
+		super.setRunException(aException);
+		if (aException != null) {
+			pServerState = EXServerState.EXCEPTION;
+		}
 	}
 
 	/*
@@ -134,11 +245,9 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 	 * java.util.Map)
 	 */
 	@Override
-	public boolean start(final File aUserDir, final Map<String, String> aEnv)
-			throws Exception {
+	public boolean start(final File aUserDir, final Map<String, String> aEnv) {
 
 		return startAndWaitInStdOut(aUserDir, aEnv, -1, null);
-
 	}
 
 	/*
@@ -150,30 +259,38 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 	@Override
 	public boolean startAndWaitInStdOut(final File aUserDir,
 			final Map<String, String> aEnv, final long aStartTimeout,
-			final String aStrInStdOut) throws Exception {
+			final String aStrInStdOut) {
 		pLogger.logDebug(this, "startAndWaitInStdOut", "UserDir=[%s]",
 				aUserDir.getAbsolutePath());
 
 		boolean wStarted = false;
 		long wStartNanoTime = System.nanoTime();
 
-		runDoBefore();
+		try {
+			runDoBefore(aStartTimeout);
 
-		CXOSLauncher wCXOSLauncher = new CXOSLauncher(pLogger, this);
+			CXOSLauncher wCXOSLauncher = new CXOSLauncher(pLogger, this);
 
-		pProcess = wCXOSLauncher.start(aUserDir, aEnv, getCmdLineArgs());
+			pProcess = wCXOSLauncher.start(aUserDir, aEnv, getCmdLineArgs());
 
-		wStarted = (pProcess != null);
+			wStarted = (pProcess != null);
 
-		if (wStarted && aStrInStdOut != null) {
-			wStarted = waitStrInStdOut(aStartTimeout, aStrInStdOut);
+			if (wStarted && aStrInStdOut != null) {
+				wStarted = waitStrInStdOut(aStartTimeout, aStrInStdOut);
+			}
+
+			pServerState = EXServerState.STARTED;
+
+		} catch (Exception e) {
+
+			setRunException(e);
 		}
 
 		pLogger.logDebug(this, "startAndWaitInStdOut",
-				"Started=[%b] Duration=[%s]", wStarted, CXTimer
+				"Started=[%b] hasRunException=[%b] Starting duration=[%s]",
+				wStarted, hasRunException(), CXTimer
 						.nanoSecToMicroSecStr(System.nanoTime()
 								- wStartNanoTime));
-
 		return wStarted;
 	}
 
@@ -183,26 +300,35 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public boolean stop(final long aTimeOut, final String... aStopCommand)
-			throws IOException, InterruptedException {
+	@Override
+	public boolean stop(final long aTimeOut, final String... aStopCommand) {
 		pLogger.logDebug(this, "stop", "StopCommand=[%s]", aStopCommand);
 
 		boolean wStopped = false;
 		long wStartNanoTime = System.nanoTime();
+		try {
+			pServerState = EXServerState.STOPPING;
 
-		CXOSCommand wOsCommand = execOsCommand(5000, aStopCommand);
+			CXOSCommand wOsCommand = execOsCommand(5000, aStopCommand);
 
-		if (wOsCommand.isRunOk()) {
-			EXCommandState wCommandState = waitForProcessEnd(pProcess, aTimeOut);
-			wStopped = wCommandState.isRunOK();
+			if (wOsCommand.isRunOk()) {
+				EXCommandState wCommandState = waitForProcessEnd(pProcess,
+						aTimeOut);
+				wStopped = wCommandState.isRunOK();
+			}
+
+			runDoAfter();
+
+		} catch (Exception e) {
+
+			setRunException(e);
 		}
 
-		pLogger.logDebug(
-				this,
-				"stop",
-				"Stopped=[%b] Duration=[%s]",
-				wStopped,
-				CXTimer.nanoSecToMicroSecStr(System.nanoTime() - wStartNanoTime));
+		pLogger.logDebug(this, "stop",
+				"Stopped=[%b] hasRunException=[%b] Stopping duration=[%s]",
+				wStopped, hasRunException(), CXTimer
+						.nanoSecToMicroSecStr(System.nanoTime()
+								- wStartNanoTime));
 
 		return wStopped;
 	}

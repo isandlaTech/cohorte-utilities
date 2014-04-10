@@ -19,6 +19,11 @@ public interface IXOSRunner {
 	/**
 	 * @return
 	 */
+	String getBuffEncoding();
+
+	/**
+	 * @return
+	 */
 	String[] getCmdLineArgs();
 
 	/**
@@ -34,7 +39,22 @@ public interface IXOSRunner {
 	/**
 	 * @return
 	 */
-	StringBuilder getStdOutBuffer();
+	String getRepport();
+
+	/**
+	 * @return
+	 */
+	long getRunElapsedTime();
+
+	/**
+	 * @return
+	 */
+	String getRunStdErr();
+
+	/**
+	 * @return
+	 */
+	String getRunStdOut();
 
 	/**
 	 * @return
@@ -44,7 +64,12 @@ public interface IXOSRunner {
 	/**
 	 * @return
 	 */
-	long getRunElapsedTime();
+	StringBuilder getStdOutBuffer();
+
+	/**
+	 * @return
+	 */
+	boolean hasRunException();
 
 	/**
 	 * @return
@@ -55,6 +80,26 @@ public interface IXOSRunner {
 	 * @return
 	 */
 	boolean hasRunStdOutputErr();
+
+	/**
+	 * @return
+	 */
+	boolean hasRunTimeOut();
+
+	/**
+	 * @return
+	 */
+	boolean isLaunched();
+
+	/**
+	 * @return
+	 */
+	boolean isRunTimeOutDetected();
+
+	/**
+	 * @return
+	 */
+	boolean isRunOk();
 
 	/**
 	 * 
