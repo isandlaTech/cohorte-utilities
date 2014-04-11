@@ -1,6 +1,9 @@
 package org.psem2m.utilities.system;
 
+import static org.psem2m.utilities.system.CXOSLauncher.secureLog;
+
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 
 import org.psem2m.utilities.CXDateTime;
 import org.psem2m.utilities.CXOSUtils;
@@ -63,7 +66,8 @@ public abstract class CXOSRunner implements IXOSRunner {
 	 */
 	@Override
 	public int consumeStdOutputErrLine(final String aLine) {
-		pLogger.logDebug(this, "consumeStdOutputErrLine", "StdErr=[%s]", aLine);
+		// log with secured method
+		secureLogDebug("consumeStdOutputErrLine", "StdErr=[%s]", aLine);
 
 		if (pRunBuffStdErr.length() > 0) {
 			pRunBuffStdErr.append('\n');
@@ -72,16 +76,10 @@ public abstract class CXOSRunner implements IXOSRunner {
 		return pRunBuffStdErr.length();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.psem2m.utilities.system.IXOSRunner#consumeStdOutputLine(java.lang
-	 * .String)
-	 */
 	@Override
 	public int consumeStdOutputLine(final String aLine) {
-		pLogger.logDebug(this, "consumeStdOutputLine", "StdOut=[%s]", aLine);
+		// log with secured method
+		secureLogDebug("consumeStdOutputLine", "StdOut=[%s]", aLine);
 
 		if (pRunBuffStdOut.length() > 0) {
 			pRunBuffStdOut.append('\n');
@@ -93,7 +91,9 @@ public abstract class CXOSRunner implements IXOSRunner {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.psem2m.utilities.system.IXOSRunner#getBuffEncoding()
+	 * @see
+	 * org.psem2m.utilities.system.IXOSRunner#consumeStdOutputLine(java.lang
+	 * .String)
 	 */
 	@Override
 	public String getBuffEncoding() {
@@ -103,7 +103,7 @@ public abstract class CXOSRunner implements IXOSRunner {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.psem2m.utilities.system.IXOSCommand#getCmdLineArgs()
+	 * @see org.psem2m.utilities.system.IXOSRunner#getBuffEncoding()
 	 */
 	@Override
 	public String[] getCmdLineArgs() {
@@ -113,7 +113,7 @@ public abstract class CXOSRunner implements IXOSRunner {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.psem2m.utilities.system.IXOSCommand#getCommandLine()
+	 * @see org.psem2m.utilities.system.IXOSCommand#getCmdLineArgs()
 	 */
 	@Override
 	public String getCommandLine() {
@@ -123,7 +123,7 @@ public abstract class CXOSRunner implements IXOSRunner {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.psem2m.utilities.system.IXOSRunner#getLaunchTimeStamp()
+	 * @see org.psem2m.utilities.system.IXOSCommand#getCommandLine()
 	 */
 	@Override
 	public String getLaunchTimeStamp() {
@@ -133,7 +133,7 @@ public abstract class CXOSRunner implements IXOSRunner {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.psem2m.utilities.system.IXOSRunner#getRunElapsedTime()
+	 * @see org.psem2m.utilities.system.IXOSRunner#getLaunchTimeStamp()
 	 */
 	@Override
 	public long getRunElapsedTime() {
@@ -144,6 +144,11 @@ public abstract class CXOSRunner implements IXOSRunner {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.system.IXOSRunner#getRunElapsedTime()
+	 */
 	/**
 	 * @return
 	 */
@@ -151,11 +156,6 @@ public abstract class CXOSRunner implements IXOSRunner {
 		return pRunException;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.psem2m.utilities.system.IXOSRunner#getRunStdErr()
-	 */
 	@Override
 	public String getRunStdErr() {
 		if (isLaunched() && hasRunStdOutputErr()) {
@@ -168,7 +168,7 @@ public abstract class CXOSRunner implements IXOSRunner {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.psem2m.utilities.system.IXOSRunner#getRunStdOut()
+	 * @see org.psem2m.utilities.system.IXOSRunner#getRunStdErr()
 	 */
 	@Override
 	public String getRunStdOut() {
@@ -179,6 +179,11 @@ public abstract class CXOSRunner implements IXOSRunner {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.system.IXOSRunner#getRunStdOut()
+	 */
 	/**
 	 * @return
 	 */
@@ -186,11 +191,6 @@ public abstract class CXOSRunner implements IXOSRunner {
 		return pRunTimeOut;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.psem2m.utilities.system.IXOSCommand#getOutErrBuffer()
-	 */
 	@Override
 	public StringBuilder getStdErrBuffer() {
 		return pRunBuffStdErr;
@@ -199,23 +199,23 @@ public abstract class CXOSRunner implements IXOSRunner {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.psem2m.utilities.system.IXOSCommand#getOutBuffer()
+	 * @see org.psem2m.utilities.system.IXOSCommand#getOutErrBuffer()
 	 */
 	@Override
 	public StringBuilder getStdOutBuffer() {
 		return pRunBuffStdOut;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.system.IXOSCommand#getOutBuffer()
+	 */
 	@Override
 	public boolean hasRunException() {
 		return getRunException() != null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.psem2m.utilities.system.IXOSRunner#hasRunStdOutput()
-	 */
 	@Override
 	public boolean hasRunStdOutput() {
 		return pRunBuffStdOut != null && pRunBuffStdOut.length() > 0;
@@ -224,7 +224,7 @@ public abstract class CXOSRunner implements IXOSRunner {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.psem2m.utilities.system.IXOSRunner#hasRunStdOutputErr()
+	 * @see org.psem2m.utilities.system.IXOSRunner#hasRunStdOutput()
 	 */
 	@Override
 	public boolean hasRunStdOutputErr() {
@@ -234,19 +234,32 @@ public abstract class CXOSRunner implements IXOSRunner {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.psem2m.utilities.system.IXOSRunner#hasRunTimeOut()
+	 * @see org.psem2m.utilities.system.IXOSRunner#hasRunStdOutputErr()
 	 */
 	@Override
 	public boolean hasRunTimeOut() {
 		return pRunTimeOut > 0;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.system.IXOSRunner#hasRunTimeOut()
+	 */
 	/**
 	 * @return
 	 */
 	@Deprecated
 	public boolean isRunException() {
 		return hasRunException();
+	}
+
+	/**
+	 * @param aWhat
+	 * @param aInfos
+	 */
+	private void secureLogDebug(final CharSequence aWhat, final Object... aInfos) {
+		secureLog(pLogger, Level.FINE, this, aWhat, aInfos);
 	}
 
 	/*

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.psem2m.utilities.logging.CActivityLoggerNull;
 import org.psem2m.utilities.logging.IActivityLoggerBase;
@@ -26,6 +27,7 @@ public class CXOSLauncher {
 		private final boolean pIsStdErr;
 		private int pNbLine = 0;
 		private final IXOSRunner pOSRunner;
+
 		private int pReadSize = 0;
 
 		/**
@@ -61,6 +63,22 @@ public class CXOSLauncher {
 			return pReadSize;
 		}
 
+		/**
+		 * @param aWhat
+		 * @param aInfos
+		 */
+		private void secureLogDebug(final CharSequence aWhat, final Object... aInfos) {
+			secureLog(pLogger, Level.FINE, this, aWhat, aInfos);
+		}
+
+		/**
+		 * @param aWhat
+		 * @param aInfos
+		 */
+		private void secureLogSevere(final CharSequence aWhat, final Object... aInfos) {
+			secureLog(pLogger, Level.SEVERE, this, aWhat, aInfos);
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -69,8 +87,8 @@ public class CXOSLauncher {
 		@Override
 		public void run() {
 
-			pLogger.logDebug(this, "run", "%s consumer thread begin",
-					(pIsStdErr) ? "StdErr" : "StdOut");
+			secureLogDebug("run", "%s consumer thread begin", (pIsStdErr) ? "StdErr"
+					: "StdOut");
 			BufferedReader br = getBufferedReader();
 			String wLine = "";
 			try {
@@ -83,16 +101,31 @@ public class CXOSLauncher {
 					}
 					pReadSize += wLine.length();
 					pNbLine++;
-					pLogger.logDebug(this, "run",
-							"line(%3d) lineSize=[%5d] buffSize=[%5d] ",
+					secureLogDebug("run", "line(%3d) lineSize=[%5d] buffSize=[%5d] ",
 							pNbLine, pReadSize, wBuffSize);
-
 				}
 			} catch (IOException e) {
-				pLogger.logSevere(this, "run", "ERROR:%s", e);
+				secureLogSevere("run", "ERROR:%s", e);
 			}
-			pLogger.logDebug(this, "run", "%s consumer thread end",
-					(pIsStdErr) ? "StdErr" : "StdOut");
+			secureLogDebug("run", "%s consumer thread end", (pIsStdErr) ? "StdErr"
+					: "StdOut");
+		}
+	}
+
+	/**
+	 * @param aLevel
+	 * @param aWho
+	 * @param aWhat
+	 * @param aInfos
+	 */
+	static void secureLog(final IActivityLoggerBase aLogger, final Level aLevel,
+			final Object aWho, final CharSequence aWhat, final Object... aInfos) {
+		try {
+			aLogger.log(aLevel, aWho, aWhat, aInfos);
+		} catch (RuntimeException e) {
+			System.err.println(String.format(
+					"pLogger unavailable [%s][%s][%s]", aLevel.getName(), aWho,
+					aWhat));
 		}
 	}
 
@@ -117,7 +150,8 @@ public class CXOSLauncher {
 	 *         CMD_RUN_OK) (if exit > 0 => CMD_RUN_KO) (if timeout =>
 	 *         CMD_RUN_TIMEOUT)
 	 */
-	static EXCommandState waitForProcessEnd(final Process aProcess, final long aTimeOut) {
+	static EXCommandState waitForProcessEnd(final Process aProcess,
+			final long aTimeOut) {
 
 		if (aTimeOut <= 0) {
 			try {
