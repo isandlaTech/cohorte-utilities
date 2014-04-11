@@ -27,8 +27,6 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 	public static final byte[] CTRLC = { (byte) 0x03 };
 	Process pProcess = null;
 
-	private final Exception pRunException = null;
-
 	private EXServerState pServerState;
 
 	/**
