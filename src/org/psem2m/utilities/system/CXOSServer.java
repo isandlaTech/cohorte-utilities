@@ -25,6 +25,7 @@ import com.sun.jna.Pointer;
 public class CXOSServer extends CXOSRunner implements IXOSServer {
 
 	public static final byte[] CTRLC = { (byte) 0x03 };
+	
 	Process pProcess = null;
 
 	private EXServerState pServerState;
