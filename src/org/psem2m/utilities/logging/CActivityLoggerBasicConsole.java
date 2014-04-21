@@ -207,16 +207,28 @@ public class CActivityLoggerBasicConsole implements IActivityLogger {
 		log(Level.WARNING, aWho, aWhat, aInfos);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.psem2m.utilities.logging.IActivityLogger#setLevel(java.util.logging
+	 * .Level)
+	 */
 	@Override
-	public CLogLineBuffer popLogLineBuffer() {
-		return new CLogLineBuffer();
+	public void setLevel(Level aLevel) {
+		setLevel(aLevel.getName());
 	}
 
-	@Override
-	public void pushLogLineBuffer(final CLogLineBuffer aLoggerLineBuffer) {
-
+	/**
+	 * @param aLevel
+	 */
+	public void setLevel(String aLevel) {
+		//...
 	}
-
+	
+	/* (non-Javadoc)
+	 * @see org.psem2m.utilities.IXDescriber#toDescription()
+	 */
 	@Override
 	public String toDescription() {
 		return addDescriptionInBuffer(

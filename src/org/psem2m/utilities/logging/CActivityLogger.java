@@ -14,8 +14,7 @@ import org.psem2m.utilities.CXStringUtils;
  * @author isandlatech (www.isandlatech.com) - ogattaz
  * 
  */
-public class CActivityLogger extends CActivityObject implements
-		IActivityLogger {
+public class CActivityLogger extends CActivityObject implements IActivityLogger {
 
 	private final static String FORMAT_CLOSELOG = "Close logger [%s]";
 
@@ -60,7 +59,7 @@ public class CActivityLogger extends CActivityObject implements
 
 	private final String pFilePathPattern;
 
-	private final String pLevel;
+	private String pLevel;
 
 	private Logger pLogger;
 
@@ -413,19 +412,6 @@ public class CActivityLogger extends CActivityObject implements
 		pLogger.setUseParentHandlers(false);
 	}
 
-	@Override
-	public CLogLineBuffer popLogLineBuffer() {
-		// ce serait plus econome si on utilisait un cache pour ne pas
-		// instancier un CLogLineBuffer a
-		// chaque fois
-		return new CLogLineBuffer();
-	}
-
-	@Override
-	public void pushLogLineBuffer(final CLogLineBuffer aLoggerLineBuffer) {
-		// si cache : remettre l'instance de CLogLineBuffer dans le cache
-	}
-
 	/**
 	 * @param aLogger
 	 * @return
@@ -468,5 +454,27 @@ public class CActivityLogger extends CActivityObject implements
 			}
 		}
 		return wMax;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.psem2m.utilities.logging.IActivityLogger#setLevel(java.util.logging
+	 * .Level)
+	 */
+	@Override
+	public void setLevel(Level aLevel) {
+		setLevel(aLevel.getName());
+	}
+
+	/**
+	 * @param aLevel
+	 */
+	public void setLevel(String aLevel) {
+		pLevel = aLevel;
+		if (pLogger != null) {
+			pLogger.setLevel(CActivityUtils.levelToLevel(pLevel));
+		}
 	}
 }

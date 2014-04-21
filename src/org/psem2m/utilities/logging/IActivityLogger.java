@@ -1,5 +1,7 @@
 package org.psem2m.utilities.logging;
 
+import java.util.logging.Level;
+
 import org.psem2m.utilities.IXDescriber;
 
 /**
@@ -12,19 +14,24 @@ public interface IActivityLogger extends IActivityLoggerBase, IXDescriber {
 	   * 
 	   */
 	public void close();
-
+	
 	/**
 	 * @return
 	 */
 	public IActivityRequester getRequester();
 
 	/**
-	 * @return
+	 * @param aLevel
 	 */
-	public CLogLineBuffer popLogLineBuffer();
+	public void setLevel(Level aLevel);
 
-	/**
-	 * @param aLoggerLineBuffer
-	 */
-	public void pushLogLineBuffer(CLogLineBuffer aLoggerLineBuffer);
+//	/**
+//	 * @return
+//	 */
+//	public CLogLineBuffer popLogLineBuffer();
+//
+//	/**
+//	 * @param aLoggerLineBuffer
+//	 */
+//	public void pushLogLineBuffer(CLogLineBuffer aLoggerLineBuffer);
 }

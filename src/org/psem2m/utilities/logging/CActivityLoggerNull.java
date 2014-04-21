@@ -158,19 +158,18 @@ public class CActivityLoggerNull implements IActivityLogger {
 			final Object... aInfos) {
 	}
 
-	@Override
-	public CLogLineBuffer popLogLineBuffer() {
-		return new CLogLineBuffer();
-	}
 
 	@Override
-	public void pushLogLineBuffer(final CLogLineBuffer aLoggerLineBuffer) {
-
+	public void setLevel(Level aLevel) {
+		
 	}
 
+	/* (non-Javadoc)
+	 * @see org.psem2m.utilities.IXDescriber#toDescription()
+	 */
 	@Override
 	public String toDescription() {
-		return null;
+		return toString();
 	}
 
 }
