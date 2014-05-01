@@ -28,14 +28,14 @@ public class CTestLogging {
 		}
 	}
 
-	private final IActivityLogger pLogger = CActivityLoggerBasicConsole
-			.getInstance();
+	private final IActivityLogger pLogger;
 
 	/**
 	 * 
 	 */
 	private CTestLogging() {
 		super();
+		pLogger = CActivityLoggerBasicConsole.getInstance();
 	}
 
 	/**
@@ -51,20 +51,57 @@ public class CTestLogging {
 	 */
 	private void doTest() {
 
-		Throwable wThrowable = new Exception("Message de l'exception");
+		pLogger.logInfo(this, "doTest", CXOSUtils.getEnvContext());
+		pLogger.logInfo(this, "doTest", CXJvmUtils.getJavaContext());
 
-		IActivityLogger wLogger = CActivityLoggerBasicConsole.getInstance();
+		pLogger.logInfo(this, "doTest", "Ligne log info");
+		pLogger.logDebug(this, "doTest", "Ligne log debug");
+		pLogger.logWarn(this, "doTest", "Ligne log warning");
+		pLogger.logSevere(this, "doTest", "Ligne log erreur: %s",
+				new Exception("Message de l'exception"));
+		pLogger.logInfo(this, "doTest", "Ligne log info");
 
-		wLogger.logInfo(this, "doTest", "Ligne log info");
-		wLogger.logDebug(this, "doTest", "Ligne log debug");
-		wLogger.logWarn(this, "doTest", "Ligne log warning");
-		wLogger.logSevere(this, "doTest", "Message d'erreur", wThrowable);
-		wLogger.logInfo(this, "doTest", "Ligne log info");
+		try {
+			doTestLevel2();
+		} catch (Exception e) {
+			pLogger.logSevere(this, "doTest", "Ligne log erreur: %s", e);
+		}
+	}
 
-		wLogger.logInfo(this, "doTest", CXOSUtils.getEnvContext());
+	private void doTestLevel2() throws Exception {
+		pLogger.logInfo(this, "doTestLevel2", "Ligne log info");
+		try {
+			doTestLevel3();
+		} catch (Exception e) {
+			pLogger.logSevere(this, "doTestLevel2", "ERROR: %s", e);
+			throw new Exception("Message Exception Level2", e);
+		} finally {
+			pLogger.logInfo(this, "doTestLevel2", "finally");
+		}
+	}
 
-		wLogger.logInfo(this, "doTest", CXJvmUtils.getJavaContext());
+	private void doTestLevel3() throws Exception {
+		pLogger.logInfo(this, "doTestLevel3", "Ligne log info");
+		try {
+			doTestLevel4();
+		} catch (Exception e) {
+			pLogger.logSevere(this, "doTestLevel3", "ERROR: %s", e);
+			throw new IllegalArgumentException("Message Exception Level3", e);
+		} finally {
+			pLogger.logInfo(this, "doTestLevel3", "finally");
+		}
+	}
 
-		wLogger.close();
+	private void doTestLevel4() throws Exception {
+		pLogger.logInfo(this, "doTestLevel4", "Ligne log info");
+		try {
+			throw new NullPointerException("Message Exception Level4");
+		} catch (Exception e) {
+			pLogger.logSevere(this, "doTest", "ERROR: %s", e);
+			throw e;
+		} finally {
+			pLogger.logInfo(this, "doTestLevel4", "finally");
+		}
+
 	}
 }
