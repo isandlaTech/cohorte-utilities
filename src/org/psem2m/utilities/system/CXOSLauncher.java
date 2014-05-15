@@ -63,22 +63,6 @@ public class CXOSLauncher {
 			return pReadSize;
 		}
 
-		/**
-		 * @param aWhat
-		 * @param aInfos
-		 */
-		private void secureLogDebug(final CharSequence aWhat, final Object... aInfos) {
-			secureLog(pLogger, Level.FINE, this, aWhat, aInfos);
-		}
-
-		/**
-		 * @param aWhat
-		 * @param aInfos
-		 */
-		private void secureLogSevere(final CharSequence aWhat, final Object... aInfos) {
-			secureLog(pLogger, Level.SEVERE, this, aWhat, aInfos);
-		}
-
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -87,8 +71,8 @@ public class CXOSLauncher {
 		@Override
 		public void run() {
 
-			secureLogDebug("run", "%s consumer thread begin", (pIsStdErr) ? "StdErr"
-					: "StdOut");
+			secureLogDebug("run", "%s consumer thread begin",
+					(pIsStdErr) ? "StdErr" : "StdOut");
 			BufferedReader br = getBufferedReader();
 			String wLine = "";
 			try {
@@ -101,14 +85,33 @@ public class CXOSLauncher {
 					}
 					pReadSize += wLine.length();
 					pNbLine++;
-					secureLogDebug("run", "line(%3d) lineSize=[%5d] buffSize=[%5d] ",
+					secureLogDebug("run",
+							"line(%3d) lineSize=[%5d] buffSize=[%5d] ",
 							pNbLine, pReadSize, wBuffSize);
 				}
 			} catch (IOException e) {
 				secureLogSevere("run", "ERROR:%s", e);
 			}
-			secureLogDebug("run", "%s consumer thread end", (pIsStdErr) ? "StdErr"
-					: "StdOut");
+			secureLogDebug("run", "%s consumer thread end",
+					(pIsStdErr) ? "StdErr" : "StdOut");
+		}
+
+		/**
+		 * @param aWhat
+		 * @param aInfos
+		 */
+		private void secureLogDebug(final CharSequence aWhat,
+				final Object... aInfos) {
+			secureLog(pLogger, Level.FINE, this, aWhat, aInfos);
+		}
+
+		/**
+		 * @param aWhat
+		 * @param aInfos
+		 */
+		private void secureLogSevere(final CharSequence aWhat,
+				final Object... aInfos) {
+			secureLog(pLogger, Level.SEVERE, this, aWhat, aInfos);
 		}
 	}
 
@@ -118,8 +121,9 @@ public class CXOSLauncher {
 	 * @param aWhat
 	 * @param aInfos
 	 */
-	static void secureLog(final IActivityLoggerBase aLogger, final Level aLevel,
-			final Object aWho, final CharSequence aWhat, final Object... aInfos) {
+	static void secureLog(final IActivityLoggerBase aLogger,
+			final Level aLevel, final Object aWho, final CharSequence aWhat,
+			final Object... aInfos) {
 		try {
 			aLogger.log(aLevel, aWho, aWhat, aInfos);
 		} catch (RuntimeException e) {
@@ -235,7 +239,12 @@ public class CXOSLauncher {
 	 * @param aStartedProcess
 	 */
 	private void setBufferConsumers(final Process aStartedProcess) {
+		// nothing to do if the passed process is null
+		if (aStartedProcess == null) {
+			return;
+		}
 
+		// makes an id with the 4 last digit of the hasCode ot he OsRunner
 		String wThreadId = String.valueOf(pOsRunnner.hashCode());
 		wThreadId = wThreadId.substring(wThreadId.length() - 4);
 

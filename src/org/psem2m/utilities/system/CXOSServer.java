@@ -4,17 +4,12 @@ import static org.psem2m.utilities.system.CXOSLauncher.waitForProcessEnd;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Map;
 
 import org.psem2m.utilities.CXOSUtils;
 import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.CXTimer;
 import org.psem2m.utilities.logging.IActivityLoggerBase;
-import org.psem2m.utilities.system.win32.Kernel32;
-import org.psem2m.utilities.system.win32.W32API;
-
-import com.sun.jna.Pointer;
 
 /**
  * @see http://www.golesny.de/p/code/javagetpid
@@ -25,10 +20,10 @@ import com.sun.jna.Pointer;
 public class CXOSServer extends CXOSRunner implements IXOSServer {
 
 	public static final byte[] CTRLC = { (byte) 0x03 };
-	
-	Process pProcess = null;
 
 	private EXServerState pServerState;
+
+	private CXProcess pXProcess = null;
 
 	/**
 	 * @param aLogger
@@ -65,37 +60,7 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 	 */
 	@Override
 	public int getPid() {
-		int wPid = -1;
-		// on Unix
-		if (pProcess.getClass().getName().equals("java.lang.UNIXProcess")) {
-			/* get the PID on unix/linux systems */
-			try {
-				Field f = pProcess.getClass().getDeclaredField("pid");
-				f.setAccessible(true);
-				// décalage de 20 , sur Mac Os X ?
-				wPid = f.getInt(pProcess) + 20;
-			} catch (Throwable e) {
-			}
-		}
-		// on Windows
-		// Download the jna.jar on Suns JNA Site
-		else if (pProcess.getClass().getName().equals("java.lang.Win32Process")
-				|| pProcess.getClass().getName()
-						.equals("java.lang.ProcessImpl")) {
-			/* determine the pid on windows plattforms */
-			try {
-				Field f = pProcess.getClass().getDeclaredField("handle");
-				f.setAccessible(true);
-				long handl = f.getLong(pProcess);
-
-				Kernel32 kernel = Kernel32.INSTANCE;
-				W32API.HANDLE handle = new W32API.HANDLE();
-				handle.setPointer(Pointer.createConstant(handl));
-				wPid = kernel.GetProcessId(handle);
-			} catch (Throwable e) {
-			}
-		}
-		return wPid;
+		return hasProcess() ? pXProcess.getPid() : -1;
 	}
 
 	/*
@@ -171,6 +136,13 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 		return pServerState;
 	}
 
+	/**
+	 * @return
+	 */
+	private boolean hasProcess() {
+		return (pXProcess != null);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -188,7 +160,7 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 	 */
 	@Override
 	public boolean isRunOk() {
-		return isLaunched() && pProcess != null && !hasRunException();
+		return isLaunched() && pXProcess != null && !hasRunException();
 	}
 
 	/*
@@ -220,6 +192,20 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 		super.runDoBefore(aTimeOut);
 		pServerState = EXServerState.STARTING;
 		return true;
+	}
+
+	/**
+	 * @param aProcess
+	 */
+	private void setProcess(final CXProcess aProcess) {
+		pXProcess = aProcess;
+	}
+
+	/**
+	 * @param aProcess
+	 */
+	private void setProcess(final Process aProcess) {
+		setProcess(CXProcess.newCXProcess(aProcess));
 	}
 
 	/*
@@ -270,15 +256,32 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 
 			CXOSLauncher wCXOSLauncher = new CXOSLauncher(pLogger, this);
 
-			pProcess = wCXOSLauncher.start(aUserDir, aEnv, getCmdLineArgs());
+			Process wProcess = wCXOSLauncher.start(aUserDir, aEnv,
+					getCmdLineArgs());
 
-			wStarted = (pProcess != null);
+			wStarted = (wProcess != null);
 
-			if (wStarted && aStrInStdOut != null) {
-				wStarted = waitStrInStdOut(aStartTimeout, aStrInStdOut);
+			if (!wStarted) {
+				throw new Exception(
+						"Unable to start the server, the start method of the ProcessBuilder return null");
 			}
 
+			// wait for the passed aStrInStdOut in the stdout of the new
+			// process
+			if (aStrInStdOut != null) {
+				wStarted = waitStrInStdOut(aStartTimeout, aStrInStdOut);
+				if (!wStarted) {
+					throw new Exception(
+							String.format(
+									"Unable to start the server, the string [%s] is not in the stdout of the process. timeout=[%s]",
+									aStrInStdOut, aStartTimeout));
+				}
+			}
+
+			// set the server state
 			pServerState = EXServerState.STARTED;
+			// set the XProcess
+			setProcess(wProcess);
 
 		} catch (Exception e) {
 
@@ -311,8 +314,8 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 			CXOSCommand wOsCommand = execOsCommand(5000, aStopCommand);
 
 			if (wOsCommand.isRunOk()) {
-				EXCommandState wCommandState = waitForProcessEnd(pProcess,
-						aTimeOut);
+				EXCommandState wCommandState = waitForProcessEnd(
+						pXProcess.getProcess(), aTimeOut);
 				wStopped = wCommandState.isRunOK();
 			}
 
@@ -338,6 +341,7 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 	 * @return
 	 */
 	public boolean waitStrInStdOut(final long aTimeOut, final String aString) {
+
 		long wStartNanoTime = System.nanoTime();
 
 		boolean wContinue = true;
@@ -363,9 +367,9 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 		}
 
 		pLogger.logInfo(this, "waitForStrInStdOut",
-				"StrFound=[%b], Duration=[%s]", wFound, CXTimer
-						.nanoSecToMicroSecStr(System.nanoTime()
-								- wStartNanoTime));
+				"StrFound=[%b], Duration=[%s]  strToFind=[%s] timeout=[%s]",
+				wFound, CXTimer.nanoSecToMicroSecStr(System.nanoTime()
+						- wStartNanoTime), aString, aTimeOut);
 		return wFound;
 	}
 }

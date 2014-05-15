@@ -85,6 +85,11 @@ public class CTestOSServer {
 		return wCmdLineArgs.toArray(new String[wCmdLineArgs.size()]);
 	}
 
+	/**
+	 * @param aPid
+	 * @param aSignal
+	 * @return
+	 */
 	private String[] buildKillCommand(final int aPid, final String aSignal) {
 
 		ArrayList<String> wCmdLineArgs = new ArrayList<String>();
