@@ -27,10 +27,10 @@ public class Activator implements BundleActivator {
 	 * )
 	 */
 	@Override
-	public void start(final BundleContext bundleContext) throws Exception {
-		sBundleContext = bundleContext;
-		Bundle wBundle = bundleContext.getBundle();
-		System.out.printf("%50s | Bundle=[%50s][%s] starting\n",
+	public void start(final BundleContext context) throws Exception {
+		sBundleContext = context;
+		Bundle wBundle = context.getBundle();
+		System.out.printf("%50s | Bundle=[%50s][%s] started\n",
 				"Activator.start()", wBundle.getSymbolicName(),
 				wBundle.getVersion());
 	}
@@ -42,11 +42,9 @@ public class Activator implements BundleActivator {
 	 * org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	@Override
-	public void stop(final BundleContext bundleContext) throws Exception {
-		Bundle wBundle = bundleContext.getBundle();
-		System.out.printf("%50s | Bundle=[%50s][%s] stoping\n",
-				"Activator.stop()", wBundle.getSymbolicName(),
-				wBundle.getVersion());
+	public void stop(final BundleContext context) throws Exception {
+		System.out.printf("%50s | Bundle=[%50s] stopped\n", "Activator.stop()",
+				context.getBundle().getSymbolicName());
 
 		sBundleContext = null;
 	}
