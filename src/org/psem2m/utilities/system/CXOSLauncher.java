@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.psem2m.utilities.logging.CActivityLoggerNull;
@@ -275,7 +277,31 @@ public class CXOSLauncher {
 		if (aEnv != null && !aEnv.isEmpty()) {
 			Map<String, String> wEnv = wProcessBuilder.environment();
 			if (wEnv != null) {
-				wEnv.putAll(aEnv);
+				Set<Entry<String, String>> wCurrentEnvvariables = wEnv
+						.entrySet();
+				int wIdx = 0;
+				for (Entry<String, String> wEnvvariable : wCurrentEnvvariables) {
+
+					pLogger.logDebug(this, "start",
+							"Current env variable (%3d)=[%s][%s]", wIdx,
+							wEnvvariable.getKey(), wEnvvariable.getValue());
+					wIdx++;
+				}
+
+				Set<Entry<String, String>> wNewEnvvariables = aEnv.entrySet();
+				wIdx = 0;
+				for (Entry<String, String> wEnvvariable : wNewEnvvariables) {
+
+					String wOldValue = wEnv.put(wEnvvariable.getKey(),
+							wEnvvariable.getValue());
+					pLogger.logDebug(this, "start",
+							"New env variable (%3d)=[%s][%s] oldvalue=[%s]",
+							wIdx, wEnvvariable.getKey(),
+							wEnvvariable.getValue(), wOldValue);
+					wIdx++;
+
+				}
+
 			}
 		}
 
