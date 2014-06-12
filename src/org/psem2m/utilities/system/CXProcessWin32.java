@@ -1,7 +1,6 @@
 package org.psem2m.utilities.system;
 
 import org.cohorte.utilities.Activator;
-import org.osgi.framework.ServiceReference;
 import org.psem2m.utilities.CXException;
 
 /**
@@ -33,11 +32,8 @@ public class CXProcessWin32 extends CXProcess {
 			 * retreive the "IXProcessWin32Service" to get the PID on Win32
 			 * systems
 			 */
-			ServiceReference<IXProcessWin32Service> wSR = Activator
-					.getContext().getServiceReference(
-							IXProcessWin32Service.class);
-			IXProcessWin32Service wProcessWin32Service = Activator.getContext()
-					.getService(wSR);
+			IXProcessWin32Service wProcessWin32Service = Activator
+					.getService(IXProcessWin32Service.class);
 
 			wPid = wProcessWin32Service.getProcessPid(getProcess());
 

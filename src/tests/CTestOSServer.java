@@ -131,8 +131,17 @@ public class CTestOSServer {
 		int wPid = pCXOSServer.getPid();
 		pLogger.logInfo(this, "doTest", "Pid=[%s]", wPid);
 
-		boolean wStopped = pCXOSServer.stop(10000,
-				buildKillCommand(wPid, "SIGTERM"));
+		boolean wStopped = false;
+
+		// man kill on MacOsX
+		// The following pids have special meanings:
+		// -1 If superuser, broadcast the signal to all processes; otherwise
+		// broadcast to all processes belonging to the user.
+
+		if (wPid != -1) {
+			wStopped = pCXOSServer.stop(10000,
+					buildKillCommand(wPid, "SIGTERM"));
+		}
 
 		pLogger.logInfo(this, "doCommandClose", "Started=[%b]", wStopped);
 

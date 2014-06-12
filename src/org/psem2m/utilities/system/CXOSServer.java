@@ -298,7 +298,7 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 
 	/**
 	 * @param aTimeOut
-	 * @return
+	 * @return true if stopped
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
