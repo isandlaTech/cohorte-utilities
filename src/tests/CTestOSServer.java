@@ -4,19 +4,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
-import org.psem2m.utilities.logging.CActivityLoggerBasicConsole;
-import org.psem2m.utilities.logging.IActivityLogger;
 import org.psem2m.utilities.system.CXOSServer;
 
 /**
  * @author ogattaz
  * 
  */
-public class CTestOSServer {
+public class CTestOSServer extends CAbstractTest{
 
-	private final static String CMD_CLOSE = "close";
 
 	/**
 	 * @param args
@@ -40,18 +36,55 @@ public class CTestOSServer {
 
 	CXOSServer pCXOSServer = null;
 
-	private final IActivityLogger pLogger = CActivityLoggerBasicConsole
-			.getInstance();
+
 
 	/**
 	 * 
 	 */
 	private CTestOSServer() {
 		super();
-		pLogger.logInfo(this, "<init>", "initialized");
 	}
 
 	/**
+	 * 
+	 * JAVA_HOME is a system environment variable which represent JDK
+	 * installation directory. When you install JDK in your machine (windows,
+	 * Linux or unix) it creates a home directory and puts all its binary (bin),
+	 * library(lib) and other tools. In order to compile java program "javac"
+	 * tool should be in your PATH and in order to get that in PATH we use
+	 * JAVA_HOME environment variable. Many tools like ANT and web servers like
+	 * tomcat use JAVA_HOME to find java binaries. In this article we will see
+	 * how to set JAVA_HOME environment variable in different operating system
+	 * including Windows (windows 7, vista, xp) and Linux (Unix).
+	 * 
+	 * @see http 
+	 *      ://javarevisited.blogspot.ch/2012/02/how-to-set-javahome-environment
+	 *      -in.html
+	 * 
+	 *      <pre>
+	 * pb-d-128-141-252-110:bin ogattaz$ pwd
+	 * /Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/bin
+	 * 
+	 * pb-d-128-141-252-110:bin ogattaz$ ./java -version
+	 * java version "1.7.0_45"
+	 * Java(TM) SE Runtime Environment (build 1.7.0_45-b18)
+	 * Java HotSpot(TM) 64-Bit Server VM (build 24.45-b08, mixed mode)
+	 * 
+	 * pb-d-128-141-252-110:jre ogattaz$ ll
+	 * total 624
+	 * drwxrwxr-x+ 10 root  wheel     340  8 oct  2013 .
+	 * drwxrwxr-x+ 15 root  wheel     510  8 oct  2013 ..
+	 * -rw-rw-r--+  1 root  wheel    3339  8 oct  2013 COPYRIGHT
+	 * -rw-rw-r--+  1 root  wheel      40  8 oct  2013 LICENSE
+	 * -rw-rw-r--+  1 root  wheel      46  8 oct  2013 README
+	 * -rw-rw-r--+  1 root  wheel  123324  8 oct  2013 THIRDPARTYLICENSEREADME-JAVAFX.txt
+	 * -rw-rw-r--+  1 root  wheel  173559  8 oct  2013 THIRDPARTYLICENSEREADME.txt
+	 * -rw-rw-r--+  1 root  wheel     955  8 oct  2013 Welcome.html
+	 * drwxrwxr-x+ 12 root  wheel     408  8 oct  2013 bin
+	 * drwxrwxr-x+ 97 root  wheel    3298  8 oct  2013 lib
+	 * </pre>
+	 * 
+	 * 
 	 * @return
 	 */
 	private Map<String, String> buildExistdbEnv() {
@@ -62,6 +95,15 @@ public class CTestOSServer {
 	}
 
 	/**
+	 * 
+	 * The sudo prompt is sent in stdErr ! => the value "" for the prompt //
+	 * argument -p "" remove it
+	 * 
+	 * The command is "bin/startup.sh;" according the user dir is
+	 * "/Applications/eXist-db.app/Contents/Resources/eXist-db" (on mac os // x)
+	 * 
+	 * Print user directory in stdIn of the sudo command
+	 * 
 	 * @return
 	 */
 	private String[] buildExitdbCommand() {
@@ -73,10 +115,11 @@ public class CTestOSServer {
 
 		StringBuilder wBashCommands = new StringBuilder();
 
-		// show user directory
+		// print user directory in stdIn of the sudo command
 		wBashCommands.append("echo pwd=[$PWD];");
 
-		// the sudo prompt is sent in stdErr ! => remove the prompt !
+		// the sudo prompt is sent in stdErr ! => the value "" for the prompt
+		// argument -p "" remove it
 		wBashCommands.append(String.format(
 				"echo \"%s\" | sudo -S -k -p \"\" bin/startup.sh;",
 				getSudoPass()));
@@ -112,6 +155,10 @@ public class CTestOSServer {
 		return wCmdLineArgs.toArray(new String[wCmdLineArgs.size()]);
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	private File buildUserDirFile() {
 		return new File(
 				"/Applications/eXist-db.app/Contents/Resources/eXist-db");
@@ -120,7 +167,8 @@ public class CTestOSServer {
 	/**
 	 * 
 	 */
-	private void destroy() {
+	@Override
+	protected void destroy() {
 		pLogger.logInfo(this, "destroy", "close the logger");
 	}
 
@@ -153,7 +201,8 @@ public class CTestOSServer {
 	 * @throws Exception
 	 * 
 	 */
-	private void doTest() throws Exception {
+	@Override
+	protected void doTest() throws Exception {
 		pLogger.logInfo(this, "doTest", "BEGIN");
 
 		pCXOSServer = new CXOSServer(pLogger, buildExitdbCommand());
@@ -171,43 +220,18 @@ public class CTestOSServer {
 		pLogger.logInfo(this, "doTest", "END");
 	}
 
+	@Override
+	protected  void doUserCommand(final String wCmde) throws Exception{
+		if (CMD_CLOSE.equalsIgnoreCase(wCmde)) {
+			doCommandClose();
+		}
+	}
+
 	/**
 	 * @return
 	 */
 	private String getSudoPass() {
 		return "Olivier38";
-	}
-
-	/**
-	 * @return
-	 * @throws Exception
-	 */
-	private boolean waitForUserCommand() throws Exception {
-
-		pLogger.logInfo(this, "waitForUserCommand",
-				"START Stdin console. Wait for a close command to stop the server.");
-
-		pLogger.logInfo(this, "waitForStop", "=>");
-		Scanner wScanConsoleIn = new Scanner(System.in);
-		String wCmde = null;
-		do {
-
-			// Reads a single line from the console
-			wCmde = wScanConsoleIn.nextLine().toLowerCase();
-
-			pLogger.logInfo(this, "waitForStop",
-					"Stdin console command : [%s]", wCmde);
-
-			if (CMD_CLOSE.equalsIgnoreCase(wCmde)) {
-				doCommandClose();
-			}
-
-		} while (!CMD_CLOSE.equalsIgnoreCase(wCmde));
-
-		wScanConsoleIn.close();
-
-		pLogger.logInfo(this, "waitForUserCommand", "END");
-		return true;
 	}
 
 }
