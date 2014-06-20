@@ -54,7 +54,8 @@ public final class CXStringUtils implements IConstants {
 	 * @param aChar
 	 * @return
 	 */
-	public static Appendable appendCharInBuff(final Appendable aBuffer, final char aChar) {
+	public static Appendable appendCharInBuff(final Appendable aBuffer,
+			final char aChar) {
 
 		try {
 			return aBuffer.append(aChar);
@@ -70,7 +71,8 @@ public final class CXStringUtils implements IConstants {
 	 * @param aLen
 	 * @return
 	 */
-	public static Appendable appendChars(final Appendable aBuffer, final char aChar, final int aLen) {
+	public static Appendable appendChars(final Appendable aBuffer,
+			final char aChar, final int aLen) {
 
 		if (aLen < 1) {
 			return aBuffer;
@@ -92,8 +94,8 @@ public final class CXStringUtils implements IConstants {
 	 * @param aArgs
 	 * @return
 	 */
-	public static Appendable appendFormatStrInBuff(final Appendable aBuffer, final String aFormat,
-			final Object... aArgs) {
+	public static Appendable appendFormatStrInBuff(final Appendable aBuffer,
+			final String aFormat, final Object... aArgs) {
 
 		try {
 			return aBuffer.append(String.format(aFormat, aArgs));
@@ -131,8 +133,8 @@ public final class CXStringUtils implements IConstants {
 	 * @param aValue
 	 * @return
 	 */
-	public static Appendable appendKeyValInBuff(final Appendable aBuffer, final String aKey,
-			final Object aValue) {
+	public static Appendable appendKeyValInBuff(final Appendable aBuffer,
+			final String aKey, final Object aValue) {
 
 		try {
 
@@ -160,8 +162,8 @@ public final class CXStringUtils implements IConstants {
 	 * @param aValueB
 	 * @return
 	 */
-	public static Appendable appendKeyValsInBuff(final Appendable aBuffer, final String aKey,
-			final Object aValue, final Object aValueB) {
+	public static Appendable appendKeyValsInBuff(final Appendable aBuffer,
+			final String aKey, final Object aValue, final Object aValueB) {
 
 		try {
 			aBuffer.append(' ').append(aKey).append("=[");
@@ -223,8 +225,8 @@ public final class CXStringUtils implements IConstants {
 	 * @param aLeadingChar
 	 * @return
 	 */
-	static public Appendable appendSeqAdjustRight(final Appendable aBuffer, final String aValue,
-			final int aLen, final char aLeadingChar) {
+	static public Appendable appendSeqAdjustRight(final Appendable aBuffer,
+			final String aValue, final int aLen, final char aLeadingChar) {
 
 		try {
 			int wLen = aValue.length();
@@ -246,7 +248,8 @@ public final class CXStringUtils implements IConstants {
 	 * @param aStrs
 	 * @return
 	 */
-	public static Appendable appendStringsInBuff(final Appendable aBuffer, final String... aStrs) {
+	public static Appendable appendStringsInBuff(final Appendable aBuffer,
+			final String... aStrs) {
 
 		try {
 			if (aStrs != null && aStrs.length > 0) {
@@ -306,7 +309,8 @@ public final class CXStringUtils implements IConstants {
 		StringBuilder wSB = new StringBuilder();
 		wSB.append(LIB_APPEND_ERROR);
 		if (e != null) {
-			wSB.append(String.format(FORMAT_EXCEPTION, e.getClass().getSimpleName()));
+			wSB.append(String.format(FORMAT_EXCEPTION, e.getClass()
+					.getSimpleName()));
 			wSB.append(String.format(FORMAT_MESAGE, e.getMessage()));
 			wSB.append(CXException.getCleanedStackOfThrowable(e));
 		}
@@ -342,7 +346,8 @@ public final class CXStringUtils implements IConstants {
 	 * @param aSubString
 	 * @return the number of the searched sub-string int the string
 	 */
-	public static int countSubString(final String aString, final String aSubString) {
+	public static int countSubString(final String aString,
+			final String aSubString) {
 
 		if (aString == null || aSubString == null || aString.isEmpty()
 				|| aString.length() < aSubString.length()) {
@@ -358,10 +363,12 @@ public final class CXStringUtils implements IConstants {
 	 * @param aValue
 	 * @return
 	 */
-	public static String formatKeyValueInString(final String aKey, final Object aValue) {
+	public static String formatKeyValueInString(final String aKey,
+			final Object aValue) {
 
 		StringBuilder wSB = new StringBuilder();
-		return wSB.append(aKey).append("=[").append(aValue == null ? "null" : aValue.toString())
+		return wSB.append(aKey).append("=[")
+				.append(aValue == null ? "null" : aValue.toString())
 				.append(']').toString();
 	}
 
@@ -379,6 +386,26 @@ public final class CXStringUtils implements IConstants {
 	public static boolean hasContent(final String aStr) {
 
 		return aStr != null && !aStr.isEmpty();
+	}
+
+	/**
+	 * @param aString
+	 *            a String
+	 * @param aValues
+	 *            a set of values
+	 * @return true if one value matches the content of the passed string
+	 */
+	public static boolean isIn(final Object aString, final Object... aValues) {
+
+		if (aString == null || aValues == null || aValues.length < 1) {
+			return false;
+		}
+		for (Object wValue : aValues) {
+			if (wValue != null && wValue.equals(aString)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -416,7 +443,8 @@ public final class CXStringUtils implements IConstants {
 	 * @param aLen
 	 * @return true if all the characters are "trimable"
 	 */
-	public static boolean isTrimable(final String aValue, final int aOffset, final int aOffsetEnd) {
+	public static boolean isTrimable(final String aValue, final int aOffset,
+			final int aOffsetEnd) {
 
 		if (aValue == null) {
 			return false;
@@ -461,7 +489,8 @@ public final class CXStringUtils implements IConstants {
 	 */
 	public static String removeChars(final String aChars, final String aValue) {
 
-		if (aValue == null || aValue.isEmpty() || aChars == null || aChars.isEmpty()) {
+		if (aValue == null || aValue.isEmpty() || aChars == null
+				|| aChars.isEmpty()) {
 			return aValue;
 		}
 
@@ -484,7 +513,8 @@ public final class CXStringUtils implements IConstants {
 	 * @param aLeadingChar
 	 * @return
 	 */
-	static public String strAdjustLeft(String aValue, final int aLen, final char aLeadingChar) {
+	static public String strAdjustLeft(String aValue, final int aLen,
+			final char aLeadingChar) {
 
 		if (aValue == null) {
 			aValue = EMPTY;
@@ -516,7 +546,8 @@ public final class CXStringUtils implements IConstants {
 	 * @param aLeadingChar
 	 * @return
 	 */
-	static public String strAdjustRight(final long aValue, final int aLen, final char aLeadingChar) {
+	static public String strAdjustRight(final long aValue, final int aLen,
+			final char aLeadingChar) {
 
 		return strAdjustRight(String.valueOf(aValue), aLen, aLeadingChar);
 	}
@@ -527,7 +558,8 @@ public final class CXStringUtils implements IConstants {
 	 * @param aLeadingChar
 	 * @return
 	 */
-	static public String strAdjustRight(String aValue, final int aLen, final char aLeadingChar) {
+	static public String strAdjustRight(String aValue, final int aLen,
+			final char aLeadingChar) {
 
 		if (aValue == null) {
 			aValue = EMPTY;
@@ -555,11 +587,7 @@ public final class CXStringUtils implements IConstants {
 		if (aLen == 1) {
 			return String.valueOf(aChar);
 		}
-		char[] wBuffer = new char[aLen];
-		for (int wI = 0; wI < aLen; wI++) {
-			wBuffer[wI] = aChar;
-		}
-		return String.valueOf(wBuffer);
+		return String.valueOf(new char[aLen]).replace((char) 0x00, aChar);
 	}
 
 	/**
@@ -608,7 +636,8 @@ public final class CXStringUtils implements IConstants {
 			if (aBadCharsPrefix != null) {
 				int wLen = aStr.length();
 				int wPos = 0;
-				while (wPos < wLen && aBadCharsPrefix.indexOf(aStr.charAt(wPos)) != -1) {
+				while (wPos < wLen
+						&& aBadCharsPrefix.indexOf(aStr.charAt(wPos)) != -1) {
 					wPos++;
 				}
 				if (wPos > 0) {
@@ -618,7 +647,8 @@ public final class CXStringUtils implements IConstants {
 			if (aBadCharsSuffix != null && aStr.length() != 0) {
 				int wLen = aStr.length();
 				int wPos = wLen - 1;
-				while (wPos >= 0 && aBadCharsSuffix.indexOf(aStr.charAt(wPos)) != -1) {
+				while (wPos >= 0
+						&& aBadCharsSuffix.indexOf(aStr.charAt(wPos)) != -1) {
 					wPos--;
 				}
 				if (wPos < wLen - 1) {
@@ -647,7 +677,8 @@ public final class CXStringUtils implements IConstants {
 	 * @param aStringEnum
 	 * @return
 	 */
-	public static String stringEnumToString(final Enumeration<String> aStringEnum) {
+	public static String stringEnumToString(
+			final Enumeration<String> aStringEnum) {
 
 		return stringEnumToString(aStringEnum, ",");
 
@@ -658,8 +689,8 @@ public final class CXStringUtils implements IConstants {
 	 * @param aSeparator
 	 * @return
 	 */
-	public static String stringEnumToString(final Enumeration<String> aStringEnum,
-			final String aSeparator) {
+	public static String stringEnumToString(
+			final Enumeration<String> aStringEnum, final String aSeparator) {
 
 		if (aStringEnum == null || !aStringEnum.hasMoreElements()) {
 			return EMPTY;
@@ -692,7 +723,8 @@ public final class CXStringUtils implements IConstants {
 	 * @param sep
 	 * @return
 	 */
-	public static String stringListToString(final List<String> aStringList, final String aSeparator) {
+	public static String stringListToString(final List<String> aStringList,
+			final String aSeparator) {
 
 		if (aStringList == null || aStringList.size() == 0) {
 			return EMPTY;
@@ -723,7 +755,8 @@ public final class CXStringUtils implements IConstants {
 	 * @param sep
 	 * @return
 	 */
-	public static String stringTableToString(final String[] aValues, final String aSeparator) {
+	public static String stringTableToString(final String[] aValues,
+			final String aSeparator) {
 
 		if (aValues == null || aValues.length == 0) {
 			return EMPTY;
@@ -767,7 +800,8 @@ public final class CXStringUtils implements IConstants {
 	 * @param aCharLimit
 	 * @return
 	 */
-	public static String strKeepCharGreaterThan(final String aStr, final char aCharLimit) {
+	public static String strKeepCharGreaterThan(final String aStr,
+			final char aCharLimit) {
 
 		int wLen = aStr != null ? aStr.length() : 0;
 		if (wLen < 1) {
@@ -839,10 +873,11 @@ public final class CXStringUtils implements IConstants {
 	 * @param aBy
 	 * @return la nouvelle chaine de caracteres
 	 */
-	public static String strReplaceAll(final String aStr, final String aWhat, final String aBy) {
+	public static String strReplaceAll(final String aStr, final String aWhat,
+			final String aBy) {
 
-		if (aStr != null && aStr.length() != 0 && aWhat != null && aWhat.length() != 0
-				&& aBy != null) {
+		if (aStr != null && aStr.length() != 0 && aWhat != null
+				&& aWhat.length() != 0 && aBy != null) {
 			StringBuilder wRes = new StringBuilder(aStr);
 			int wWhatLength = aWhat.length();
 			int wPos = aStr.lastIndexOf(aWhat);
@@ -906,8 +941,8 @@ public final class CXStringUtils implements IConstants {
 	public static boolean strToBoolean(final String aStr) {
 
 		return aStr != null
-				&& (aStr.equals(VAL_YES) || aStr.equals(VAL_ON) || aStr.equals(VAL_OK) || aStr
-						.equals(VAL_TRUE));
+				&& (aStr.equals(VAL_YES) || aStr.equals(VAL_ON)
+						|| aStr.equals(VAL_OK) || aStr.equals(VAL_TRUE));
 	}
 
 	/**

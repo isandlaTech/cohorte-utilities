@@ -10,9 +10,13 @@
  *******************************************************************************/
 package org.psem2m.utilities;
 
+import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Renvoie un comparateur pour les properties
@@ -77,12 +81,174 @@ class CMapStringComparator<E> extends CXAbstractListComparator<E> {
 }
 
 /**
+ * java.lang.Comparable
+ * 
+ * @author ogattaz
+ * 
+ */
+class CStringEntry implements Map.Entry<String, String>,
+		Comparable<Map.Entry<String, String>> {
+
+	/**
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private static String toString(final Object aValue) {
+
+		if (aValue instanceof String[]) {
+			return CXStringUtils.stringTableToString((String[]) aValue);
+		}
+		if (aValue instanceof List<?>) {
+			return CXStringUtils.stringListToString((List<String>) aValue);
+		}
+		return String.valueOf(aValue);
+	}
+
+	private final Object pKey;
+
+	private Object pValue;
+
+	/**
+	 * @param aEntry
+	 */
+	CStringEntry(final Entry<?, ?> aEntry) {
+		this(aEntry.getKey(), aEntry.getValue());
+	}
+
+	/**
+	 * @param aKey
+	 * @param aValue
+	 */
+	/**
+	 * @param aKey
+	 * @param aValue
+	 */
+	CStringEntry(final Object aKey, final Object aValue) {
+		super();
+		pKey = aKey;
+		pValue = aValue;
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(final Entry<String, String> aEntry) {
+
+		return getKey().compareTo(aEntry.getKey());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.util.Map.Entry#getKey()
+	 */
+	@Override
+	public String getKey() {
+		return toString(pKey);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.util.Map.Entry#getValue()
+	 */
+	@Override
+	public String getValue() {
+		return toString(pValue);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.util.Map.Entry#setValue(java.lang.Object)
+	 */
+	@Override
+	public String setValue(final String aValue) {
+		Object wOldValue = pValue;
+		pValue = aValue;
+		return toString(wOldValue);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return String.format("%s=[%s]", getKey(), getValue());
+	}
+}
+
+/**
  * @author ogattaz
  * 
  */
 public class CXSortedMapString extends CXSortList<Entry<String, String>> {
 
 	private static final long serialVersionUID = 9156273794753617100L;
+
+	/**
+	 * @param aDictionary
+	 * @return
+	 */
+	public static CXSortedMapString convert(final Dictionary<?, ?> aDictionary) {
+		return convert(aDictionary, ASCENDING, SORTBYKEY);
+	}
+
+	/**
+	 * @param aDictionary
+	 * @param aSortAsc
+	 * @param aSortByKey
+	 * @return
+	 */
+	public static CXSortedMapString convert(final Dictionary<?, ?> aDictionary,
+			final boolean aSortAsc, final boolean aSortByKey) {
+		CXSortedMapString wMS = new CXSortedMapString(aSortAsc);
+		wMS.setComparator(new CPropertiesComparator<Entry<String, String>>(
+				aSortAsc, aSortByKey));
+
+		Enumeration<?> wKeysEnum = aDictionary.keys();
+		while (wKeysEnum.hasMoreElements()) {
+			Object wKey = wKeysEnum.nextElement();
+			wMS.add(new CStringEntry(wKey, aDictionary.get(wKey)));
+		}
+		return wMS;
+	}
+
+	/**
+	 * @param aDictionary
+	 * @return
+	 */
+	public static CXSortedMapString convert(final Map<?, ?> aMap) {
+		return convert(aMap, ASCENDING, SORTBYKEY);
+	}
+
+	/**
+	 * @param aDictionary
+	 * @param aSortAsc
+	 * @param aSortByKey
+	 * @return
+	 */
+	public static CXSortedMapString convert(final Map<?, ?> aMap,
+			final boolean aSortAsc, final boolean aSortByKey) {
+
+		CXSortedMapString wMS = new CXSortedMapString(aSortAsc);
+
+		wMS.setComparator(new CPropertiesComparator<Entry<String, String>>(
+				aSortAsc, aSortByKey));
+
+		Set<?> wKeys = aMap.keySet();
+
+		for (Object wKey : wKeys) {
+			wMS.add(new CStringEntry(wKey, aMap.get(wKey)));
+		}
+		return wMS;
+	}
 
 	/**
    * 
@@ -135,15 +301,22 @@ public class CXSortedMapString extends CXSortList<Entry<String, String>> {
 	}
 
 	/**
-	 * @param aIt
+	 * 
+	 */
+	public void add(final Object aKey, final Object aValue) {
+		add(new CStringEntry(aKey, aValue));
+	}
+
+	/**
+	 * @param aIterator
 	 * @param aComp
 	 */
-	private void init(final Iterator<Entry<String, String>> aIt,
+	private void init(final Iterator<Entry<String, String>> aIterator,
 			final CPropertiesComparator<Entry<String, String>> aComp) {
 		setComparator(aComp);
-		if (aIt != null) {
-			while (aIt.hasNext()) {
-				add(aIt.next());
+		if (aIterator != null) {
+			while (aIterator.hasNext()) {
+				add(aIterator.next());
 			}
 		}
 	}
