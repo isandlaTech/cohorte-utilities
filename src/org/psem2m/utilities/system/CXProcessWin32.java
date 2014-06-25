@@ -1,6 +1,5 @@
 package org.psem2m.utilities.system;
 
-import org.cohorte.utilities.Activator;
 import org.psem2m.utilities.CXException;
 
 /**
@@ -32,10 +31,10 @@ public class CXProcessWin32 extends CXProcess {
 			 * retreive the "IXProcessWin32Service" to get the PID on Win32
 			 * systems
 			 */
-			IXProcessWin32Service wProcessWin32Service = Activator
-					.getService(IXProcessWin32Service.class);
-
-			wPid = wProcessWin32Service.getProcessPid(getProcess());
+//			IXProcessWin32Service wProcessWin32Service = Activator
+//					.getService(IXProcessWin32Service.class);
+//
+//			wPid = wProcessWin32Service.getProcessPid(getProcess());
 
 		} catch (Throwable e) {
 			System.err.println(String.format(

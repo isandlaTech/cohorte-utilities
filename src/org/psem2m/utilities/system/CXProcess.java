@@ -18,7 +18,7 @@ public abstract class CXProcess {
 
 		if (CXProcessUnix.isProcessUnix(aProcess)) {
 			return new CXProcessUnix(aProcess);
-		} else if (CXProcessUnix.isProcessUnix(aProcess)) {
+		} else if (CXProcessWin32.isProcessWin32(aProcess)) {
 			return new CXProcessWin32(aProcess);
 		}
 		throw new IllegalArgumentException(
