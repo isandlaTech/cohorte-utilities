@@ -172,12 +172,15 @@ public class CTestOSServer extends CAbstractTest{
 		pLogger.logInfo(this, "destroy", "close the logger");
 	}
 
+
 	/**
+	 * @param aCmdeLine
 	 * @throws Exception
 	 */
-	private void doCommandClose() throws Exception {
+	@Override
+	protected void doCommandClose(final String aCmdeLine) throws Exception {
 		int wPid = pCXOSServer.getPid();
-		pLogger.logInfo(this, "doTest", "Pid=[%s]", wPid);
+		pLogger.logInfo(this, "doTest", "begin aCmdeLine=[%s] Pid=[%s] ",aCmdeLine, wPid);
 
 		boolean wStopped = false;
 
@@ -195,6 +198,14 @@ public class CTestOSServer extends CAbstractTest{
 
 		pLogger.logInfo(this, "doCommandClose", "ServerReport:\n%s",
 				pCXOSServer.getRepport());
+	}
+
+	/* (non-Javadoc)
+	 * @see tests.CAbstractTest#doUserCommand(java.lang.String)
+	 */
+	@Override
+	protected  void doCommandUser(final String aCmdeLine) throws Exception{
+
 	}
 
 	/**
@@ -218,13 +229,6 @@ public class CTestOSServer extends CAbstractTest{
 		waitForUserCommand();
 
 		pLogger.logInfo(this, "doTest", "END");
-	}
-
-	@Override
-	protected  void doUserCommand(final String wCmde) throws Exception{
-		if (CMD_CLOSE.equalsIgnoreCase(wCmde)) {
-			doCommandClose();
-		}
 	}
 
 	/**

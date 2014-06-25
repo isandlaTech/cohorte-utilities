@@ -123,16 +123,17 @@ public class CTestCXThreadUtils extends CAbstractTest {
 	/**
 	 * @throws Exception
 	 */
-	private void doCommandClose() throws Exception {
-		pLogger.logInfo(this, "doCommandClose", "begin");
+	@Override
+	protected void doCommandClose(final String aCmdeLine) throws Exception {
+		pLogger.logInfo(this, "doCommandClose", "begin aCmdeLine=[%s]",aCmdeLine);
 
 	}
 	
 	/**
 	 * @throws Exception
 	 */
-	private void doCommandTest() throws Exception {
-		pLogger.logInfo(this, "doCommandTest", "begin");
+	private void doCommandTest(final String aCmdeLine) throws Exception {
+		pLogger.logInfo(this, "doCommandTest", "begin aCmdeLine=[%s]",aCmdeLine);
 		
 		CXTimer wTimer = CXTimer.newStartedTimer();
 		for (int wIdx = 0; wIdx < NB_THREADS; wIdx++) {
@@ -157,6 +158,16 @@ public class CTestCXThreadUtils extends CAbstractTest {
 
 
 	/* (non-Javadoc)
+	 * @see tests.CAbstractTest#doUserCommand(java.lang.String)
+	 */
+	@Override
+	protected  void doCommandUser(final String aCmdeLine) throws Exception{
+		 if (isCommandX(aCmdeLine,CMD_TEST)) {
+			doCommandTest(aCmdeLine);
+		}
+	}
+	
+	/* (non-Javadoc)
 	 * @see tests.CAbstractTest#doTest()
 	 */
 	@Override
@@ -176,17 +187,5 @@ public class CTestCXThreadUtils extends CAbstractTest {
 		
 
 		pLogger.logInfo(this, "doTest", "end");
-	}
-	
-	/* (non-Javadoc)
-	 * @see tests.CAbstractTest#doUserCommand(java.lang.String)
-	 */
-	@Override
-	protected  void doUserCommand(final String wCmde) throws Exception{
-		if (CMD_CLOSE.equalsIgnoreCase(wCmde)) {
-			doCommandClose();
-		}else if (CMD_TEST.equalsIgnoreCase(wCmde)) {
-			doCommandTest();
-		}
 	}
 }
