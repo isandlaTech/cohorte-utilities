@@ -630,10 +630,10 @@ public class CXFileText extends CXFile {
 	 * @param aCol
 	 * @throws Exception
 	 */
-	public void write(Collection<Object> aCol) throws IOException {
+	public void write(Collection<? extends Object> aCol) throws IOException {
 		if (aCol != null) {
 			checkWrite();
-			Iterator<Object> wIt = aCol.iterator();
+			Iterator<? extends Object> wIt = aCol.iterator();
 			while (wIt.hasNext()) {
 				writeLine(wIt.next().toString());
 			}
@@ -662,7 +662,7 @@ public class CXFileText extends CXFile {
 	 * @param aCol
 	 * @throws Exception
 	 */
-	public void writeAll(Collection<Object> aCol) throws IOException {
+	public void writeAll(Collection<? extends Object> aCol) throws IOException {
 		openWrite();
 		write(aCol);
 		close();
