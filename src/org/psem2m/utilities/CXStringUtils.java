@@ -12,6 +12,9 @@ package org.psem2m.utilities;
 
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author isandlatech (www.isandlatech.com) - ogattaz
@@ -508,6 +511,43 @@ public final class CXStringUtils implements IConstants {
 	}
 
 	/**
+	 * <pre>
+	 * Hello ${name} Please find attached ${file}
+	 * </pre>
+	 * 
+	 * @param aText
+	 *            a text containin variables
+	 * @param aReplacements
+	 *            a map
+	 * @return
+	 */
+	public static String replaceVariables(final String aText,
+			final Map<String, String> aReplacements) {
+
+		if (aText == null || aText.isEmpty() || aReplacements == null
+				|| aReplacements.size() == 0) {
+			return aText;
+		}
+
+		Pattern pattern = Pattern.compile("\\$\\{(.+?)\\}");
+		Matcher matcher = pattern.matcher(aText);
+		// populate the replacements map ...
+		StringBuilder builder = new StringBuilder();
+		int i = 0;
+		while (matcher.find()) {
+			String replacement = aReplacements.get(matcher.group(1));
+			builder.append(aText.substring(i, matcher.start()));
+			if (replacement == null)
+				builder.append(matcher.group(0));
+			else
+				builder.append(replacement);
+			i = matcher.end();
+		}
+		builder.append(aText.substring(i, aText.length()));
+		return builder.toString();
+	}
+
+	/**
 	 * @param aValue
 	 * @param aLen
 	 * @param aLeadingChar
@@ -921,11 +961,21 @@ public final class CXStringUtils implements IConstants {
 		return wRes;
 	}
 
+	/**
+	 * @param aStr
+	 * @param aDelim
+	 * @return
+	 */
 	public static String strRightBack(final String aStr, final char aDelim) {
 
 		return strRightBack(aStr, String.valueOf(aDelim));
 	}
 
+	/**
+	 * @param aStr
+	 * @param aDelim
+	 * @return
+	 */
 	public static String strRightBack(final String aStr, final String aDelim) {
 
 		String wRes = "";
@@ -938,6 +988,19 @@ public final class CXStringUtils implements IConstants {
 		return wRes;
 	}
 
+	/**
+	 * @param aStr
+	 * @return
+	 */
+	public static String[] strToArguments(final String aStr) {
+		// The \\s is equivalent to [ \\t\\n\\x0B\\f\\r]
+		return aStr.split("\\s+");
+	}
+
+	/**
+	 * @param aStr
+	 * @return
+	 */
 	public static boolean strToBoolean(final String aStr) {
 
 		return aStr != null
@@ -946,37 +1009,10 @@ public final class CXStringUtils implements IConstants {
 	}
 
 	/**
-	 * @param aStr
-	 * @return a String contain hexadecimal that correspond to caractere of aStr
-	 */
-	public static String strtoHexadecimal(final String aStr) {
-
-		String result = "";
-		for (int i = 0; i < aStr.length(); i++) {
-			result += Integer.toHexString(aStr.charAt(i)) + "00";
-		}
-		return result;
-	}
-
-	/**
-	 * @param aStr
-	 * @param aDefValue
-	 * @return
-	 */
-	public static int strToInt(final String aStr, final int aDefValue) {
-
-		try {
-			return Integer.parseInt(aStr);
-		} catch (Exception e) {
-			return aDefValue;
-		}
-	}
-
-	/**
 	 * @param aText
 	 * @return
 	 */
-	public static String toFirstCharUpperCase(final String aText) {
+	public static String strToFirstCharUpperCase(final String aText) {
 
 		if (aText == null) {
 			return null;
@@ -1006,6 +1042,36 @@ public final class CXStringUtils implements IConstants {
 			wI++;
 		}
 		return new String(wChars);
+	}
+
+	/**
+	 * @param aStr
+	 * @return a String contain hexadecimal that correspond to caractere of aStr
+	 */
+	public static String strToHexadecimal(final String aStr) {
+
+		if (aStr == null || aStr.isEmpty()) {
+			return aStr;
+		}
+		StringBuilder wRes = new StringBuilder();
+		for (int i = 0; i < aStr.length(); i++) {
+			wRes.append(Integer.toHexString(aStr.charAt(i))).append("00");
+		}
+		return wRes.toString();
+	}
+
+	/**
+	 * @param aStr
+	 * @param aDefValue
+	 * @return
+	 */
+	public static int strToInt(final String aStr, final int aDefValue) {
+
+		try {
+			return Integer.parseInt(aStr);
+		} catch (Exception e) {
+			return aDefValue;
+		}
 	}
 
 	/**
