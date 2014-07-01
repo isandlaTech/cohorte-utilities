@@ -25,13 +25,4 @@ public interface IActivityLogger extends IActivityLoggerBase, IXDescriber {
 	 */
 	public void setLevel(Level aLevel);
 
-//	/**
-//	 * @return
-//	 */
-//	public CLogLineBuffer popLogLineBuffer();
-//
-//	/**
-//	 * @param aLoggerLineBuffer
-//	 */
-//	public void pushLogLineBuffer(CLogLineBuffer aLoggerLineBuffer);
 }
