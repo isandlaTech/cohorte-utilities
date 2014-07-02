@@ -126,8 +126,12 @@ public class CActivityLogger extends CActivityObject implements IActivityLogger 
 			String wLine = String.format(FORMAT_CLOSELOG, getLoggerName());
 			pLogger.logp(Level.INFO, getClass().getSimpleName(),
 					LIB_METHOD_CLOSE, wLine);
-			// close
-			pLogger.setLevel(Level.OFF);
+			
+			// close the logger
+			pLogger.setLevel(Level.OFF);			
+			// Flush any buffered messages.
+			pFileHandler.flush();
+			// Close all the files.
 			pFileHandler.close();
 
 			// disociates the file handler and the logger

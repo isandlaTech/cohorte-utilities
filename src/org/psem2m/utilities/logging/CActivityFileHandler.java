@@ -9,6 +9,7 @@ import java.util.logging.FileHandler;
 import org.psem2m.utilities.CXException;
 import org.psem2m.utilities.CXOSUtils;
 import org.psem2m.utilities.CXStringUtils;
+import org.psem2m.utilities.CXThreadUtils;
 import org.psem2m.utilities.IXDescriber;
 import org.psem2m.utilities.files.CXFileText;
 
@@ -137,6 +138,9 @@ public class CActivityFileHandler extends FileHandler implements IXDescriber {
 			wClosingThread.setDaemon(true);
 
 			wClosingThread.start();
+			
+			// sleep 0,5 sec
+			CXThreadUtils.sleep(500);
 
 		} else {
 			super.close();
