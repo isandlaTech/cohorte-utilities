@@ -207,16 +207,6 @@ public class CXOSCommand extends CXOSRunner implements IXOSCommand {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.psem2m.utilities.system.IXOSRunner#isRunTimeOut()
-	 */
-	@Override
-	public boolean isRunTimeOutDetected() {
-		return pCommandState == EXCommandState.CMD_RUN_TIMEOUT;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see org.psem2m.utilities.system.IXOSRunner#isRunOk()
 	 */
 	@Override
@@ -232,6 +222,16 @@ public class CXOSCommand extends CXOSRunner implements IXOSCommand {
 	@Deprecated
 	public boolean isRunTimeOut() {
 		return isRunTimeOutDetected();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.system.IXOSRunner#isRunTimeOut()
+	 */
+	@Override
+	public boolean isRunTimeOutDetected() {
+		return pCommandState == EXCommandState.CMD_RUN_TIMEOUT;
 	}
 
 	/*
@@ -275,13 +275,20 @@ public class CXOSCommand extends CXOSRunner implements IXOSCommand {
 	@Override
 	public boolean run(final long aTimeOut, final File aUserDir,
 			final Map<String, String> aEnv) {
+		// protection
+		File wUserDir = (aUserDir != null) ? aUserDir : CXFileDir.getUserDir();
 
-		pLogger.logDebug(this, "run", "TimeOut=[%s]", aTimeOut);
+		if (pLogger.isLogDebugOn()) {
+			boolean wChangeUserDir = !CXFileDir.getUserDir().equals(
+					wUserDir.getAbsolutePath());
+			pLogger.logDebug(this, "run", "TimeOut=[%s] wChangeUserDir=[%b]",
+					aTimeOut, wChangeUserDir);
+		}
 		try {
 			if (runDoBefore(aTimeOut)) {
 				CXOSLauncher wCXOSLauncher = new CXOSLauncher(pLogger, this);
-				pCommandState = wCXOSLauncher.launch(aTimeOut,
-						CXFileDir.getUserDir(), aEnv, getCmdLineArgs());
+				pCommandState = wCXOSLauncher.launch(aTimeOut, wUserDir, aEnv,
+						getCmdLineArgs());
 			}
 		} catch (Exception e) {
 			setRunException(e);
