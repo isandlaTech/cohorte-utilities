@@ -2,8 +2,6 @@ package org.psem2m.utilities.system;
 
 import java.lang.reflect.Field;
 
-import org.psem2m.utilities.CXOSUtils;
-
 /**
  * @author ogattaz
  * 
@@ -14,7 +12,7 @@ public class CXProcessUnix extends CXProcess {
 	 * @param aProcess
 	 * @return
 	 */
-	static boolean isProcessUnix(final Process aProcess) {
+	public static boolean isProcessUnix(final Process aProcess) {
 		return aProcess.getClass().getName().equals("java.lang.UNIXProcess");
 	}
 
@@ -26,28 +24,29 @@ public class CXProcessUnix extends CXProcess {
 	}
 
 	/*
+	 * get the PID on unix/linux systems
+	 * 
+	 * @see http://www.golesny.de/p/code/javagetpid
+	 * 
 	 * (non-Javadoc)
 	 * 
 	 * @see org.psem2m.utilities.system.CXProcess#getPid()
 	 */
 	@Override
-	int getPid() {
+	public int getPid() {
 
 		int wPid = -1;
-		/* get the PID on unix/linux systems */
 		try {
 			// getDeclaredField to get the private field
-			Field f = getProcess().getClass().getDeclaredField("pid");
-			f.setAccessible(true);
-			wPid = f.getInt(getProcess());
-			// décalage de 20 , sur Mac Os X ?
-			if (CXOSUtils.isOsMacOsX()) {
-				wPid += 20;
-			}
+			Field wFieldPid = getProcess().getClass().getDeclaredField("pid");
+			wFieldPid.setAccessible(true);
+			// get the int value of the field for the current instance oProcess
+			wPid = wFieldPid.getInt(getProcess());
 		} catch (Throwable e) {
 			System.err.println(String.format(
 					"Unable to retreive the pid of the %s", getProcessKind()));
 		}
 		return wPid;
 	}
+
 }

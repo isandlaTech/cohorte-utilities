@@ -1,13 +1,8 @@
 package org.psem2m.utilities.system;
 
-import static org.psem2m.utilities.system.CXOSLauncher.waitForProcessEnd;
-
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 
-import org.psem2m.utilities.CXOSUtils;
-import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.CXTimer;
 import org.psem2m.utilities.logging.IActivityLoggerBase;
 
@@ -22,6 +17,10 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 	public static final byte[] CTRLC = { (byte) 0x03 };
 
 	private EXServerState pServerState;
+
+	private CXOSCommand pStopCommand = null;
+
+	private long pStopDuration = -1;
 
 	private CXProcess pXProcess = null;
 
@@ -43,11 +42,12 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 	 * @param aCommandLine
 	 * @return
 	 */
-	private CXOSCommand execOsCommand(final long aTimeOut,
+	private CXOSCommand execOsCommand(final File aUserDir,
+			final Map<String, String> aEnv, final long aTimeOut,
 			final String... aCommandLine) {
 
 		CXOSCommand wCommand = new CXOSCommand(pLogger, aCommandLine);
-		wCommand.run(aTimeOut);
+		wCommand.run(aTimeOut, aUserDir, aEnv);
 		return wCommand;
 	}
 
@@ -70,60 +70,27 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 	 */
 	@Override
 	public String getRepport() {
-		StringBuilder wResult = new StringBuilder(2048);
-		wResult.append("CommandLine   : ").append(getCommandLine())
-				.append('\n');
-		wResult.append("OutputEncoding: ").append(getBuffEncoding())
-				.append(" (").append(CXOSUtils.getOsName()).append(',')
-				.append(CXOSUtils.getOsFileEncoding()).append(')').append('\n');
-		wResult.append("Launched      : ");
-		if (isLaunched()) {
-			wResult.append(getLaunchTimeStamp()).append('\n');
-		} else {
-			wResult.append("Not launched.\n");
-		}
-		if (isLaunched()) {
-			wResult.append("--> LaunchResult=")
-					.append(CXStringUtils.boolToOkKo(isRunOk())).append('\n');
-			wResult.append("--> ElapsedTime =")
-					.append(CXTimer.nanoSecToMicroSecStr(getRunElapsedTime()))
-					.append('\n');
-			wResult.append("--> Timeout     =")
-					.append((hasRunTimeOut()) ? getRunTimeOut() : "undefined")
-					.append('\n');
-			wResult.append("--> isRunOk     =").append(isRunOk()).append('\n');
-			/*
-			 * wResult.append("--> isExitOk    =").append(isExitOk()).append('\n'
-			 * ); wResult.append("--> ExitValue   =").append(getRunExitString())
-			 * .append('\n');
-			 */
-			if (hasRunException()) {
-				wResult.append("--> RunException=").append(hasRunException())
-						.append('\n');
-				wResult.append("--> Name        =")
-						.append(getRunException().getClass().getName())
-						.append('\n');
-				wResult.append("--> Message     =")
-						.append(getRunException().getMessage()).append('\n');
-				wResult.append(
-						CXStringUtils.getExceptionStack(getRunException()))
-						.append('\n');
-			}
-			if (isRunTimeOutDetected()) {
-				wResult.append("--> RunTimeOut  =")
-						.append(isRunTimeOutDetected()).append('\n');
-			}
+		StringBuilder wStopInfos = new StringBuilder(2048);
+		wStopInfos.append(String.format("--> LauncherPid   =[%s]\n",
+				(pXProcess != null) ? pXProcess.getPid() : -1));
+		wStopInfos.append(String.format("--> ServerState   =[%s]\n",
+				pServerState.name()));
 
-			if (hasRunStdOutput()) {
-				wResult.append("--> BUFFER OUTPUT\n");
-				appenTextLinesInSB(wResult, getRunStdOut());
-			}
-			if (hasRunStdOutputErr()) {
-				wResult.append("--> BUFFER ERROR\n");
-				appenTextLinesInSB(wResult, getRunStdErr());
-			}
+		if (pStopCommand != null) {
+			wStopInfos.append("--> StopCommand  =")
+					.append(pStopCommand.getCommandLine()).append('\n');
+			wStopInfos.append("--> StopDuration =")
+					.append(CXTimer.nanoSecToMicroSecStr(pStopDuration))
+					.append('\n');
 		}
-		return wResult.toString();
+
+		StringBuilder wRepport = new StringBuilder(2048);
+
+		wRepport.append(buildRepport(wStopInfos.toString()));
+		if (pStopCommand != null) {
+			wRepport.append(pStopCommand.getRepport());
+		}
+		return shiftTextLines(wRepport.toString(), "#OSServer > ");
 	}
 
 	/*
@@ -171,6 +138,13 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 	@Override
 	public boolean isRunTimeOutDetected() {
 		return pServerState == EXServerState.TIMEOUT;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isStopped() {
+		return pServerState == EXServerState.STOPPED;
 	}
 
 	/**
@@ -296,28 +270,25 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 		return wStarted;
 	}
 
-	/**
-	 * @param aTimeOut
-	 * @return true if stopped
-	 * @throws IOException
-	 * @throws InterruptedException
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.system.IXOSServer#stop(java.io.File,
+	 * java.util.Map, long, java.lang.String[])
 	 */
 	@Override
-	public boolean stop(final long aTimeOut, final String... aStopCommand) {
+	public boolean stop(final File aUserDir, final Map<String, String> aEnv,
+			final long aTimeOut, final String... aStopCommand) {
 		pLogger.logDebug(this, "stop", "StopCommand=[%s]", aStopCommand);
 
-		boolean wStopped = false;
+		boolean wServerStopped = false;
 		long wStartNanoTime = System.nanoTime();
 		try {
 			pServerState = EXServerState.STOPPING;
 
-			CXOSCommand wOsCommand = execOsCommand(5000, aStopCommand);
+			pStopCommand = execOsCommand(aUserDir, aEnv, 10000, aStopCommand);
 
-			if (wOsCommand.isRunOk()) {
-				EXCommandState wCommandState = waitForProcessEnd(
-						pXProcess.getProcess(), aTimeOut);
-				wStopped = wCommandState.isRunOK();
-			}
+			wServerStopped = (pStopCommand.isRunOk());
 
 			runDoAfter();
 
@@ -326,13 +297,18 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 			setRunException(e);
 		}
 
+		pStopDuration = System.nanoTime() - wStartNanoTime;
+
+		if (wServerStopped) {
+			pServerState = EXServerState.STOPPED;
+		}
+
 		pLogger.logDebug(this, "stop",
 				"Stopped=[%b] hasRunException=[%b] Stopping duration=[%s]",
-				wStopped, hasRunException(), CXTimer
-						.nanoSecToMicroSecStr(System.nanoTime()
-								- wStartNanoTime));
+				wServerStopped, hasRunException(),
+				CXTimer.nanoSecToMicroSecStr(pStopDuration));
 
-		return wStopped;
+		return wServerStopped;
 	}
 
 	/**

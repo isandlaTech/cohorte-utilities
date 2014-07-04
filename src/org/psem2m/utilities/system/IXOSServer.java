@@ -33,14 +33,12 @@ public interface IXOSServer extends IXOSRunner {
 	boolean start(final File aUserDir, final Map<String, String> aEnv);
 
 	/**
-	 * @param aTimeOut
-	 *            no timeout if <= 0
 	 * @param aUserDir
 	 *            the "user dir" of the command
 	 * @param aEnv
 	 *            a set of variables added in the context of the command
 	 * @param aSatrtTimeOut
-	 *            the timeout of the starting phase
+	 *            the timeout of the starting phase. no timeout if <= 0
 	 * @param aStrInStdOut
 	 *            the string which must be found in the stdout to indicate that
 	 *            the server is started
@@ -52,12 +50,16 @@ public interface IXOSServer extends IXOSRunner {
 			final String aStrInStdOut);
 
 	/**
-	 * @param aTimeOut
-	 *            no timeout if <= 0
+	 * @param aUserDir
+	 *            the "user dir" of the command
+	 * @param aEnv
+	 *            a set of variables added in the context of the command
+	 * @param aSatrtTimeOut
+	 *            the timeout of the starting phase. no timeout if <= 0
 	 * @param aStopCommand
-	 *            the command to stop the server
 	 * @return
 	 */
-	boolean stop(final long aTimeOut, final String... aStopCommand);
+	boolean stop(final File aUserDir, final Map<String, String> aEnv,
+			final long aTimeOut, final String... aStopCommand);
 
 }

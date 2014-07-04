@@ -1,7 +1,35 @@
 package org.psem2m.utilities.system;
 
+import java.lang.management.ManagementFactory;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+/**
+ * @author ogattaz
+ * 
+ */
 public abstract class CXProcess {
+
+	/**
+	 * @return
+	 */
+	public static String getCurrentProcessName() {
+		return ManagementFactory.getRuntimeMXBean().getName();
+	}
+
+	/**
+	 * @return
+	 */
+	public static int getCurrentProcessPid() {
+		return tryPattern1(getCurrentProcessName());
+	}
+
+	/**
+	 * @return
+	 */
+	public static long getCurrentProcessUpTime() {
+		return ManagementFactory.getRuntimeMXBean().getUptime();
+	}
 
 	/**
 	 * @param aProcess
@@ -27,6 +55,28 @@ public abstract class CXProcess {
 						aProcess.getClass().getName()));
 	}
 
+	/**
+	 * @param processName
+	 * @return
+	 */
+	private static Integer tryPattern1(final String processName) {
+		Integer result = null;
+
+		/* tested on: */
+		/* - windows xp sp 2, java 1.5.0_13 */
+		/* - mac os x 10.4.10, java 1.5.0 */
+		/* - debian linux, java 1.5.0_13 */
+		/* all return pid@host, e.g 2204@antonius */
+
+		Pattern pattern = Pattern.compile("^([0-9]+)@.+$",
+				Pattern.CASE_INSENSITIVE);
+		Matcher matcher = pattern.matcher(processName);
+		if (matcher.matches()) {
+			result = new Integer(Integer.parseInt(matcher.group(1)));
+		}
+		return result;
+	}
+
 	private final Process pProcess;
 
 	/**
@@ -44,7 +94,7 @@ public abstract class CXProcess {
 	/**
 	 * @return the PID of the process
 	 */
-	abstract int getPid();
+	public abstract int getPid();
 
 	/**
 	 * 

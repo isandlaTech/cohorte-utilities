@@ -209,7 +209,7 @@ public class CXSortedMapString extends CXSortList<Entry<String, String>> {
 	public static CXSortedMapString convert(final Dictionary<?, ?> aDictionary,
 			final boolean aSortAsc, final boolean aSortByKey) {
 		CXSortedMapString wMS = new CXSortedMapString(aSortAsc);
-		wMS.setComparator(new CPropertiesComparator<Entry<String, String>>(
+		wMS.setComparator(new CMapStringComparator<Entry<String, String>>(
 				aSortAsc, aSortByKey));
 
 		Enumeration<?> wKeysEnum = aDictionary.keys();
@@ -239,7 +239,7 @@ public class CXSortedMapString extends CXSortList<Entry<String, String>> {
 
 		CXSortedMapString wMS = new CXSortedMapString(aSortAsc);
 
-		wMS.setComparator(new CPropertiesComparator<Entry<String, String>>(
+		wMS.setComparator(new CMapStringComparator<Entry<String, String>>(
 				aSortAsc, aSortByKey));
 
 		Set<?> wKeys = aMap.keySet();
@@ -268,7 +268,7 @@ public class CXSortedMapString extends CXSortList<Entry<String, String>> {
 	 * @param aComp
 	 */
 	public CXSortedMapString(
-			final CPropertiesComparator<Entry<String, String>> aComp) {
+			final CMapStringComparator<Entry<String, String>> aComp) {
 		super(aComp);
 	}
 
@@ -296,7 +296,7 @@ public class CXSortedMapString extends CXSortList<Entry<String, String>> {
 			final boolean aSortAsc, final boolean aSortByKey) {
 		super();
 		init(aData.entrySet().iterator(),
-				new CPropertiesComparator<Entry<String, String>>(aSortAsc,
+				new CMapStringComparator<Entry<String, String>>(aSortAsc,
 						aSortByKey));
 	}
 
@@ -312,7 +312,7 @@ public class CXSortedMapString extends CXSortList<Entry<String, String>> {
 	 * @param aComp
 	 */
 	private void init(final Iterator<Entry<String, String>> aIterator,
-			final CPropertiesComparator<Entry<String, String>> aComp) {
+			final CMapStringComparator<Entry<String, String>> aComp) {
 		setComparator(aComp);
 		if (aIterator != null) {
 			while (aIterator.hasNext()) {

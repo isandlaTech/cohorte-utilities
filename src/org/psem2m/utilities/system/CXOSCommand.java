@@ -3,9 +3,6 @@ package org.psem2m.utilities.system;
 import java.io.File;
 import java.util.Map;
 
-import org.psem2m.utilities.CXOSUtils;
-import org.psem2m.utilities.CXStringUtils;
-import org.psem2m.utilities.CXTimer;
 import org.psem2m.utilities.files.CXFileDir;
 import org.psem2m.utilities.logging.CActivityLoggerNull;
 import org.psem2m.utilities.logging.IActivityLoggerBase;
@@ -103,59 +100,12 @@ public class CXOSCommand extends CXOSRunner implements IXOSCommand {
 	 */
 	@Override
 	public String getRepport() {
-		StringBuilder wResult = new StringBuilder(2048);
-		wResult.append("CommandLine   : ").append(getCommandLine())
+		StringBuilder wExitInfos = new StringBuilder(2048);
+		wExitInfos.append("--> isExitOk    =").append(isExitOk()).append('\n');
+		wExitInfos.append("--> ExitValue   =").append(getRunExitString())
 				.append('\n');
-		wResult.append("OutputEncoding: ").append(getBuffEncoding())
-				.append(" (").append(CXOSUtils.getOsName()).append(',')
-				.append(CXOSUtils.getOsFileEncoding()).append(')').append('\n');
-		wResult.append("Launched      : ");
-		if (isLaunched()) {
-			wResult.append(getLaunchTimeStamp()).append('\n');
-		} else {
-			wResult.append("Not launched.\n");
-		}
-		if (isLaunched()) {
-			wResult.append("--> LaunchResult=")
-					.append(CXStringUtils.boolToOkKo(isRunOk())).append('\n');
-			wResult.append("--> ElapsedTime =")
-					.append(CXTimer.nanoSecToMicroSecStr(getRunElapsedTime()))
-					.append('\n');
-			wResult.append("--> Timeout     =")
-					.append((hasRunTimeOut()) ? getRunTimeOut() : "undefined")
-					.append('\n');
-			wResult.append("--> isRunOk     =").append(isRunOk()).append('\n');
-			wResult.append("--> isExitOk    =").append(isExitOk()).append('\n');
-			wResult.append("--> ExitValue   =").append(getRunExitString())
-					.append('\n');
-
-			if (hasRunException()) {
-				wResult.append("--> RunException=").append(hasRunException())
-						.append('\n');
-				wResult.append("--> Name        =")
-						.append(getRunException().getClass().getName())
-						.append('\n');
-				wResult.append("--> Message     =")
-						.append(getRunException().getMessage()).append('\n');
-				wResult.append(
-						CXStringUtils.getExceptionStack(getRunException()))
-						.append('\n');
-			}
-			if (isRunTimeOutDetected()) {
-				wResult.append("--> RunTimeOut  =").append(isRunTimeOutDetected())
-						.append('\n');
-			}
-
-			if (hasRunStdOutput()) {
-				wResult.append("--> BUFFER OUTPUT\n");
-				appenTextLinesInSB(wResult, getRunStdOut());
-			}
-			if (hasRunStdOutputErr()) {
-				wResult.append("--> BUFFER ERROR\n");
-				appenTextLinesInSB(wResult, getRunStdErr());
-			}
-		}
-		return wResult.toString();
+		return shiftTextLines(buildRepport(wExitInfos.toString()),
+				"#OSCommand > ");
 	}
 
 	/**

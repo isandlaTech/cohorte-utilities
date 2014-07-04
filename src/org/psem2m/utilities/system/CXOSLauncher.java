@@ -5,11 +5,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.psem2m.utilities.CXSortedMapString;
 import org.psem2m.utilities.logging.CActivityLoggerNull;
 import org.psem2m.utilities.logging.IActivityLoggerBase;
 
@@ -87,7 +89,7 @@ public class CXOSLauncher {
 					}
 					pReadSize += wLine.length();
 					pNbLine++;
-					secureLogDebug("run",
+					secureLogLevel(Level.FINEST, "run",
 							"line(%3d) lineSize=[%5d] buffSize=[%5d] ",
 							pNbLine, pReadSize, wBuffSize);
 				}
@@ -105,6 +107,16 @@ public class CXOSLauncher {
 		private void secureLogDebug(final CharSequence aWhat,
 				final Object... aInfos) {
 			secureLog(pLogger, Level.FINE, this, aWhat, aInfos);
+		}
+
+		/**
+		 * @param aLevel
+		 * @param aWhat
+		 * @param aInfos
+		 */
+		private void secureLogLevel(final Level aLevel,
+				final CharSequence aWhat, final Object... aInfos) {
+			secureLog(pLogger, aLevel, this, aWhat, aInfos);
 		}
 
 		/**
@@ -270,6 +282,7 @@ public class CXOSLauncher {
 	 */
 	public Process start(final File aUserDir, final Map<String, String> aEnv,
 			final String... aCommandLine) throws Exception {
+
 		ProcessBuilder wProcessBuilder = new ProcessBuilder(aCommandLine);
 
 		wProcessBuilder.directory(aUserDir);
@@ -277,14 +290,17 @@ public class CXOSLauncher {
 		if (aEnv != null && !aEnv.isEmpty()) {
 			Map<String, String> wEnv = wProcessBuilder.environment();
 			if (wEnv != null) {
-				Set<Entry<String, String>> wCurrentEnvvariables = wEnv
-						.entrySet();
-				int wIdx = 0;
-				for (Entry<String, String> wEnvvariable : wCurrentEnvvariables) {
+				CXSortedMapString wSrtedEnv = CXSortedMapString.convert(wEnv);
 
-					pLogger.logDebug(this, "start",
+				Iterator<Entry<String, String>> wEnvVariables = wSrtedEnv
+						.iterator();
+
+				int wIdx = 0;
+				while (wEnvVariables.hasNext()) {
+					Entry<String, String> wEnvVariable = wEnvVariables.next();
+					pLogger.log(Level.FINEST, this, "start",
 							"Current env variable (%3d)=[%s][%s]", wIdx,
-							wEnvvariable.getKey(), wEnvvariable.getValue());
+							wEnvVariable.getKey(), wEnvVariable.getValue());
 					wIdx++;
 				}
 

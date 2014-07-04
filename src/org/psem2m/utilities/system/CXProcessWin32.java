@@ -23,18 +23,23 @@ public class CXProcessWin32 extends CXProcess {
 		super(aProcess);
 	}
 
+	/*
+	 * retreive the "IXProcessWin32Service" to get the PID on Win32 systems
+	 * 
+	 * @see http://www.golesny.de/p/code/javagetpid
+	 * 
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.system.CXProcess#getPid()
+	 */
 	@Override
-	int getPid() {
+	public int getPid() {
 		int wPid = -1;
 		try {
-			/*
-			 * retreive the "IXProcessWin32Service" to get the PID on Win32
-			 * systems
-			 */
-//			IXProcessWin32Service wProcessWin32Service = Activator
-//					.getService(IXProcessWin32Service.class);
-//
-//			wPid = wProcessWin32Service.getProcessPid(getProcess());
+			// IXProcessWin32Service wProcessWin32Service = Activator
+			// .getService(IXProcessWin32Service.class);
+			//
+			// wPid = wProcessWin32Service.getProcessPid(getProcess());
 
 		} catch (Throwable e) {
 			System.err.println(String.format(

@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import org.psem2m.utilities.CXDateTime;
 import org.psem2m.utilities.CXOSUtils;
 import org.psem2m.utilities.CXStringUtils;
+import org.psem2m.utilities.CXTimer;
 import org.psem2m.utilities.logging.CActivityLoggerNull;
 import org.psem2m.utilities.logging.IActivityLoggerBase;
 
@@ -57,6 +58,62 @@ public abstract class CXOSRunner implements IXOSRunner {
 		return aSB;
 	}
 
+	public String buildRepport(final String aExitInfos) {
+		StringBuilder wResult = new StringBuilder(2048);
+		wResult.append("---------- Command repport ----------").append('\n');
+		wResult.append("CommandLine        : ").append(getCommandLine())
+				.append('\n');
+		wResult.append("OutputEncoding     : ").append(getBuffEncoding())
+				.append(" (").append(CXOSUtils.getOsName()).append(',')
+				.append(CXOSUtils.getOsFileEncoding()).append(')').append('\n');
+		wResult.append("Launching TimeStamp : ");
+		if (isLaunched()) {
+			wResult.append(getLaunchTimeStamp()).append('\n');
+		} else {
+			wResult.append("Not launched.\n");
+		}
+		if (isLaunched()) {
+			wResult.append("--> LaunchResult=")
+					.append(CXStringUtils.boolToOkKo(isRunOk())).append('\n');
+			wResult.append("--> ElapsedTime =")
+					.append(CXTimer.nanoSecToMicroSecStr(getRunElapsedTime()))
+					.append('\n');
+			wResult.append("--> Timeout     =")
+					.append((hasRunTimeOut()) ? getRunTimeOut() : "undefined")
+					.append('\n');
+			wResult.append("--> isRunOk     =").append(isRunOk()).append('\n');
+			if (aExitInfos != null) {
+				wResult.append(aExitInfos);
+			}
+			if (hasRunException()) {
+				wResult.append("--> RunException=").append(hasRunException())
+						.append('\n');
+				wResult.append("--> Name        =")
+						.append(getRunException().getClass().getName())
+						.append('\n');
+				wResult.append("--> Message     =")
+						.append(getRunException().getMessage()).append('\n');
+				wResult.append(
+						CXStringUtils.getExceptionStack(getRunException()))
+						.append('\n');
+			}
+			if (isRunTimeOutDetected()) {
+				wResult.append("--> RunTimeOut  =")
+						.append(isRunTimeOutDetected()).append('\n');
+			}
+
+			if (hasRunStdOutput()) {
+				wResult.append("--> BUFFER OUTPUT\n");
+				appenTextLinesInSB(wResult, getRunStdOut());
+			}
+			if (hasRunStdOutputErr()) {
+				wResult.append("--> BUFFER ERROR\n");
+				appenTextLinesInSB(wResult, getRunStdErr());
+			}
+		}
+		return wResult.toString();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -67,7 +124,7 @@ public abstract class CXOSRunner implements IXOSRunner {
 	@Override
 	public int consumeStdOutputErrLine(final String aLine) {
 		// log with secured method
-		secureLogDebug("consumeStdOutputErrLine", "StdErr=[%s]", aLine);
+		secureLogFinest("consumeStdOutputErrLine", "StdErr=[%s]", aLine);
 
 		if (pRunBuffStdErr.length() > 0) {
 			pRunBuffStdErr.append('\n');
@@ -79,7 +136,7 @@ public abstract class CXOSRunner implements IXOSRunner {
 	@Override
 	public int consumeStdOutputLine(final String aLine) {
 		// log with secured method
-		secureLogDebug("consumeStdOutputLine", "StdOut=[%s]", aLine);
+		secureLogFinest("consumeStdOutputLine", "StdOut=[%s]", aLine);
 
 		if (pRunBuffStdOut.length() > 0) {
 			pRunBuffStdOut.append('\n');
@@ -254,14 +311,6 @@ public abstract class CXOSRunner implements IXOSRunner {
 		return hasRunException();
 	}
 
-	/**
-	 * @param aWhat
-	 * @param aInfos
-	 */
-	private void secureLogDebug(final CharSequence aWhat, final Object... aInfos) {
-		secureLog(pLogger, Level.FINE, this, aWhat, aInfos);
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -306,6 +355,15 @@ public abstract class CXOSRunner implements IXOSRunner {
 	}
 
 	/**
+	 * @param aWhat
+	 * @param aInfos
+	 */
+	private void secureLogFinest(final CharSequence aWhat,
+			final Object... aInfos) {
+		secureLog(pLogger, Level.FINEST, this, aWhat, aInfos);
+	}
+
+	/**
 	 * @param aExep
 	 */
 	protected void setRunException(final Exception aExep) {
@@ -317,6 +375,25 @@ public abstract class CXOSRunner implements IXOSRunner {
 	 */
 	protected void setRunTimeOut(final long aRunTimeOut) {
 		pRunTimeOut = aRunTimeOut;
+	}
+
+	/**
+	 * @param aText
+	 * @param aPrefix
+	 * @return
+	 */
+	protected String shiftTextLines(final String aText, final String aPrefix) {
+
+		if (aText == null || aText.isEmpty()) {
+			return aText;
+		}
+
+		StringBuilder wSB = new StringBuilder();
+		String[] wLines = aText.split("\\n");
+		for (String wLine : wLines) {
+			wSB.append(aPrefix).append(wLine).append('\n');
+		}
+		return wSB.toString();
 	}
 
 }

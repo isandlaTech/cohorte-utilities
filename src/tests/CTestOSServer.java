@@ -4,15 +4,23 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
+import org.psem2m.utilities.CXStringUtils;
+import org.psem2m.utilities.system.CXOSCommand;
 import org.psem2m.utilities.system.CXOSServer;
+import org.psem2m.utilities.system.CXProcess;
 
 /**
  * @author ogattaz
  * 
  */
-public class CTestOSServer extends CAbstractTest{
+public class CTestOSServer extends CAbstractTest {
 
+	public final static String CMD_SERVER_GETPID = "pid";
+	public final static String CMD_SERVER_KILL = "kill";
+	public final static String CMD_SERVER_START = "start";
+	public final static String CMD_SERVER_STOP = "stop";
 
 	/**
 	 * @param args
@@ -35,14 +43,124 @@ public class CTestOSServer extends CAbstractTest{
 	}
 
 	CXOSServer pCXOSServer = null;
-
-
+	int pServerPid = -1;
 
 	/**
 	 * 
 	 */
 	private CTestOSServer() {
 		super();
+
+		addOneCommand(CMD_SERVER_START, "Start the server");
+		addOneCommand(CMD_SERVER_STOP, "Stop the server");
+		addOneCommand(CMD_SERVER_KILL, "k", "Stop the server");
+		addOneCommand(CMD_SERVER_GETPID, "p", "get the pid of the server");
+
+		pLogger.setLevel(Level.FINE);
+
+		pLogger.logInfo(this, "<init>", "instanciated");
+	}
+
+	/**
+	 * <pre>
+	 * /bin/bash -c echo pwd=[$PWD];echo "Olivier38" | sudo -S -k -p "" "./bin/startup.sh";
+	 * </pre>
+	 * 
+	 * <pre>
+	 * /bin/bash -c echo pwd=[$PWD];echo "Olivier38" | sudo -S -k -p "" "./bin/shutdown.sh" -u admin - p root;
+	 * </pre>
+	 * 
+	 * <pre>
+	 * /bin/bash -c echo pwd=[$PWD];echo "Olivier38" | sudo -S -k -p "" lsof -n -i4TCP:8080
+	 * </pre>
+	 * 
+	 * The sudo prompt is sent in stdErr ! => the value "" for the prompt
+	 * argument -p "" remove it
+	 * 
+	 * The command is "bin/startup.sh;" according the user dir is
+	 * "/Applications/eXist-db.app/Contents/Resources/eXist-db" (on mac os // x)
+	 * 
+	 * Print user directory in stdIn of the sudo command
+	 * 
+	 * @param aExitdbCommand
+	 * @return
+	 */
+	private String[] buildCommandExitdb(final String aExitdbCommand,
+			final String... aCommandArgs) {
+
+		ArrayList<String> wCmdLineArgs = new ArrayList<String>();
+
+		wCmdLineArgs.add("/bin/bash");
+		wCmdLineArgs.add("-c");
+
+		StringBuilder wBashCommands = new StringBuilder();
+
+		// print user directory in stdIn of the sudo command
+		wBashCommands.append("echo pwd=[$PWD];");
+
+		// the sudo prompt is sent in stdErr ! => the value "" for the prompt
+		// argument -p "" remove it
+		wBashCommands.append(String.format(
+				"echo \"%s\" | sudo -S -k -p \"\" %s", getSudoPass(),
+				aExitdbCommand));
+
+		if (aCommandArgs != null && aCommandArgs.length > 0) {
+			for (String wArg : aCommandArgs) {
+				wBashCommands.append(String.format(" %s", wArg));
+			}
+		}
+		wBashCommands.append(';');
+
+		wCmdLineArgs.add(wBashCommands.toString());
+		return wCmdLineArgs.toArray(new String[wCmdLineArgs.size()]);
+	}
+
+	/**
+	 * @return
+	 */
+	private String[] buildCommandExitdbShutdown() {
+		return buildCommandExitdb("./bin/shutdown.sh", "-u", "admin", "-p",
+				"root");
+	}
+
+	/**
+	 * @return
+	 */
+	private String[] buildCommandExitdbStart() {
+		return buildCommandExitdb("./bin/startup.sh");
+	}
+
+	/**
+	 * The following pids have special meanings: -1 If superuser, broadcast the
+	 * signal to all processes; otherwise broadcast to all processes belonging
+	 * to the user.
+	 * 
+	 * @param aPid
+	 * 
+	 * @param aSignal
+	 * @return
+	 * @throws Exception
+	 */
+	private String[] buildCommandKill(final int aPid, final String aSignal)
+			throws Exception {
+
+		if (aPid < 0) {
+			throw new Exception(
+					"Unable to build kill command, the pid is less than 0");
+		}
+
+		return buildCommandExitdb("kill", String.format("-%s", aSignal),
+				String.valueOf(aPid));
+	}
+
+	/**
+	 * @param aPort
+	 * @return
+	 */
+	private String[] buildCommandLsof(final int aPort) {
+
+		return buildCommandExitdb("lsof", "-n",
+				String.format("-i4TCP:%d", aPort));
 	}
 
 	/**
@@ -91,68 +209,12 @@ public class CTestOSServer extends CAbstractTest{
 		Map<String, String> wEnv = new HashMap<String, String>();
 		wEnv.put("JAVA_HOME",
 				"/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre");
+		wEnv.put("EXIST_DATA_DIR",
+				"/Users/ogattaz/workspaces/Cristal-eXist-db/webapp/WEB-INF/data");
+		wEnv.put("EXIST_PID_DIR",
+				"/Users/ogattaz/workspaces/Cristal-eXist-db/webapp/WEB-INF/data");
+
 		return wEnv;
-	}
-
-	/**
-	 * 
-	 * The sudo prompt is sent in stdErr ! => the value "" for the prompt //
-	 * argument -p "" remove it
-	 * 
-	 * The command is "bin/startup.sh;" according the user dir is
-	 * "/Applications/eXist-db.app/Contents/Resources/eXist-db" (on mac os // x)
-	 * 
-	 * Print user directory in stdIn of the sudo command
-	 * 
-	 * @return
-	 */
-	private String[] buildExitdbCommand() {
-
-		ArrayList<String> wCmdLineArgs = new ArrayList<String>();
-
-		wCmdLineArgs.add("/bin/bash");
-		wCmdLineArgs.add("-c");
-
-		StringBuilder wBashCommands = new StringBuilder();
-
-		// print user directory in stdIn of the sudo command
-		wBashCommands.append("echo pwd=[$PWD];");
-
-		// the sudo prompt is sent in stdErr ! => the value "" for the prompt
-		// argument -p "" remove it
-		wBashCommands.append(String.format(
-				"echo \"%s\" | sudo -S -k -p \"\" bin/startup.sh;",
-				getSudoPass()));
-
-		wCmdLineArgs.add(wBashCommands.toString());
-		return wCmdLineArgs.toArray(new String[wCmdLineArgs.size()]);
-	}
-
-	/**
-	 * @param aPid
-	 * @param aSignal
-	 * @return
-	 */
-	private String[] buildKillCommand(final int aPid, final String aSignal) {
-
-		ArrayList<String> wCmdLineArgs = new ArrayList<String>();
-
-		wCmdLineArgs.add("/bin/bash");
-		wCmdLineArgs.add("-c");
-
-		StringBuilder wBashCommands = new StringBuilder();
-
-		// show user directory
-		wBashCommands.append("echo pwd=[$PWD];");
-
-		// the sudo prompt is sent in stdErr ! => remove the prompt !
-		wBashCommands
-				.append(String
-						.format("echo \"%s\" | sudo -S -k -p \"\" kill -%s %s; echo \"after kill\"",
-								getSudoPass(), aSignal.toUpperCase(), aPid));
-
-		wCmdLineArgs.add(wBashCommands.toString());
-		return wCmdLineArgs.toArray(new String[wCmdLineArgs.size()]);
 	}
 
 	/**
@@ -172,40 +234,185 @@ public class CTestOSServer extends CAbstractTest{
 		pLogger.logInfo(this, "destroy", "close the logger");
 	}
 
-
 	/**
 	 * @param aCmdeLine
 	 * @throws Exception
 	 */
 	@Override
 	protected void doCommandClose(final String aCmdeLine) throws Exception {
-		int wPid = pCXOSServer.getPid();
-		pLogger.logInfo(this, "doTest", "begin aCmdeLine=[%s] Pid=[%s] ",aCmdeLine, wPid);
+		pLogger.logInfo(this, "doCommandClose", "begin");
 
-		boolean wStopped = false;
+		doCommandStop(aCmdeLine);
 
-		// man kill on MacOsX
-		// The following pids have special meanings:
-		// -1 If superuser, broadcast the signal to all processes; otherwise
-		// broadcast to all processes belonging to the user.
-
-		if (wPid != -1) {
-			wStopped = pCXOSServer.stop(10000,
-					buildKillCommand(wPid, "SIGTERM"));
-		}
-
-		pLogger.logInfo(this, "doCommandClose", "Started=[%b]", wStopped);
-
-		pLogger.logInfo(this, "doCommandClose", "ServerReport:\n%s",
-				pCXOSServer.getRepport());
+		pLogger.logInfo(this, "doCommandClose", "end");
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * <pre>
+	 * 	/bin/bash -c echo pwd=[$PWD];echo "Olivier38" | sudo -S -k -p "" lsof -n -i4TCP:8080
+	 * </pre>
+	 * 
+	 * <pre>
+	 * pwd=[/Users/ogattaz/workspaces/PSEM2M_SDK_git_COHORTE2/trunk/java/isolates/org.psem2m.isolates.utilities]
+	 * COMMAND   PID USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+	 * java    68090 root  214u  IPv6 0xcaaf969d4a137d59      0t0  TCP *:http-alt (LISTEN)
+	 * </pre>
+	 * 
+	 * @see http 
+	 *      ://stackoverflow.com/questions/4421633/who-is-listening-on-a-given
+	 *      -tcp-port-on-mac-os-x
+	 * 
+	 * @param aCmdeLine
+	 * @throws Exception
+	 */
+	private void doCommandGetPid(final String aCmdeLine) throws Exception {
+		pLogger.logInfo(this, "doCommandGetPid", "begin aCmdeLine=[%s]",
+				aCmdeLine);
+
+		String[] wCommandLsof = buildCommandLsof(8080);
+
+		pLogger.logInfo(this, "doCommandGetPid", "CommandLsof=[%s]",
+				CXStringUtils.stringTableToString(wCommandLsof));
+
+		CXOSCommand wCommand = new CXOSCommand(pLogger, wCommandLsof);
+		boolean wIsOk = wCommand.run(5000);
+
+		if (wIsOk) {
+			pLogger.logInfo(this, "doCommandGetPid", "Repport:\n%s",
+					wCommand.getRepport());
+
+			String[] wStdOutLines = wCommand.getStdOutBuffer().toString()
+					.split("\\n");
+
+			for (String wLine : wStdOutLines) {
+				if (wLine != null && wLine.contains("(LISTEN)")) {
+
+					String[] wLsofLineArgs = CXStringUtils
+							.strToArguments(wLine);
+					pLogger.logInfo(this, "doCommandGetPid",
+							"LsofLineArgs=[%s]",
+							CXStringUtils.stringTableToString(wLsofLineArgs));
+
+					pServerPid = Integer.parseInt(wLsofLineArgs[1]);
+
+					pLogger.logInfo(this, "doCommandGetPid", "ServerPid=[%s]",
+							pServerPid);
+
+					break;
+				}
+			}
+
+		}
+
+	}
+
+	/**
+	 * @param aCmdeLine
+	 * @throws Exception
+	 */
+	private void doCommandKill(final String aCmdeLine) throws Exception {
+		pLogger.logInfo(this, "doCommandKill", "begin aCmdeLine=[%s]",
+				aCmdeLine);
+
+		try {
+			String[] wCommandKill = buildCommandKill(pServerPid, "SIGTERM");
+
+			pLogger.logInfo(this, "doCommandKill", "wCommandKill=[%s]",
+					CXStringUtils.stringTableToString(wCommandKill));
+
+			CXOSCommand wCommand = new CXOSCommand(pLogger, wCommandKill);
+			boolean wIsOk = wCommand.run(5000);
+
+			pLogger.logInfo(this, "doCommandKill", "Repport:\n%s",
+					wCommand.getRepport());
+
+		} catch (Exception e) {
+			pLogger.logSevere(this, "doCommandKill", "ERROR: %s",
+					e.getMessage());
+		}
+	}
+
+	/**
+	 * @param aCmdeLine
+	 * @throws Exception
+	 */
+	private void doCommandStart(final String aCmdeLine) throws Exception {
+
+		pLogger.logInfo(this, "doCommandStart", "begin aCmdeLine=[%s]",
+				aCmdeLine);
+
+		if (pCXOSServer != null) {
+			pLogger.logInfo(this, "doCommandStart",
+					"A process server is already launched !");
+		} else {
+
+			pCXOSServer = new CXOSServer(pLogger, buildCommandExitdbStart());
+
+			boolean wStarted = pCXOSServer.startAndWaitInStdOut(
+					buildUserDirFile(), buildExistdbEnv(), 15000,
+					"Server has started on ports");
+
+			pLogger.logInfo(this, "doCommandStart", "Started=[%b]", wStarted);
+
+			pLogger.logInfo(this, "doCommandStart", "ServerReport:\n%s",
+					pCXOSServer.getRepport());
+		}
+
+		pLogger.logInfo(this, "doCommandStart", "end");
+	}
+
+	/**
+	 * @param aCmdeLine
+	 * @throws Exception
+	 */
+	private void doCommandStop(final String aCmdeLine) throws Exception {
+
+		pLogger.logInfo(this, "doCommandStop", "begin aCmdeLine=[%s]",
+				aCmdeLine);
+
+		pLogger.logInfo(this, "doCommandStop",
+				"CurrentProcessPid=[%s] CurrentProcessName=[%s]",
+				CXProcess.getCurrentProcessPid(),
+				CXProcess.getCurrentProcessName());
+
+		if (pCXOSServer != null) {
+			boolean wStopped = pCXOSServer.stop(buildUserDirFile(),
+					buildExistdbEnv(), 10000, buildCommandExitdbShutdown());
+
+			pLogger.logInfo(this, "doCommandStop", "Stopped=[%b]", wStopped);
+
+			pLogger.logInfo(this, "doCommandStop", "ServerReport:\n%s",
+					pCXOSServer.getRepport());
+
+			pCXOSServer = null;
+
+		} else {
+			pLogger.logInfo(this, "doCommandStop",
+					"No process server available !");
+		}
+		pLogger.logInfo(this, "doCommandStop", "end");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see tests.CAbstractTest#doUserCommand(java.lang.String)
 	 */
 	@Override
-	protected  void doCommandUser(final String aCmdeLine) throws Exception{
+	protected void doCommandUser(final String aCmdeLine) throws Exception {
+		pLogger.logInfo(this, "doCommandUser", "BEGIN");
 
+		if (isCommandX(aCmdeLine, CMD_SERVER_START)) {
+			doCommandStart(aCmdeLine);
+		} else if (isCommandX(aCmdeLine, CMD_SERVER_STOP)) {
+			doCommandStop(aCmdeLine);
+		} else if (isCommandX(aCmdeLine, CMD_SERVER_KILL)) {
+			doCommandKill(aCmdeLine);
+		} else if (isCommandX(aCmdeLine, CMD_SERVER_GETPID)) {
+			doCommandGetPid(aCmdeLine);
+		}
+
+		pLogger.logInfo(this, "doCommandUser", "END");
 	}
 
 	/**
@@ -215,16 +422,6 @@ public class CTestOSServer extends CAbstractTest{
 	@Override
 	protected void doTest() throws Exception {
 		pLogger.logInfo(this, "doTest", "BEGIN");
-
-		pCXOSServer = new CXOSServer(pLogger, buildExitdbCommand());
-
-		boolean wStarted = pCXOSServer.startAndWaitInStdOut(buildUserDirFile(),
-				buildExistdbEnv(), 15000, "Server has started on ports");
-
-		pLogger.logInfo(this, "doTest", "Started=[%b]", wStarted);
-
-		pLogger.logInfo(this, "doTest", "ServerReport:\n%s",
-				pCXOSServer.getRepport());
 
 		waitForUserCommand();
 

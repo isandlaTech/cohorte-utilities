@@ -23,6 +23,8 @@ public class CActivityLoggerBasicConsole implements IActivityLogger {
 
 	private final IActivityFormater pActivityFormater;
 
+	private int pLevelValue = Level.INFO.intValue();
+
 	private final CLogLineTextBuilder pLogLineTextBuilder;
 
 	/**
@@ -124,6 +126,11 @@ public class CActivityLoggerBasicConsole implements IActivityLogger {
 	public void log(final Level aLevel, final Object aWho,
 			final CharSequence aWhat, final Object... aInfos) {
 
+		if (aLevel.intValue() < pLevelValue
+				|| pLevelValue == Level.OFF.intValue()) {
+			return;
+		}
+
 		String wLogText = pLogLineTextBuilder.buildLogLine(aInfos);
 
 		// System.out.println("wLogText="+((wLogText!=null)?wLogText:"null"));
@@ -215,18 +222,27 @@ public class CActivityLoggerBasicConsole implements IActivityLogger {
 	 * .Level)
 	 */
 	@Override
-	public void setLevel(Level aLevel) {
-		setLevel(aLevel.getName());
+	public void setLevel(final Level aLevel) {
+
+		pLevelValue = (aLevel != null) ? aLevel.intValue() : Level.INFO
+				.intValue();
 	}
 
 	/**
 	 * @param aLevel
 	 */
-	public void setLevel(String aLevel) {
-		//...
+	public void setLevel(final String aLevel) {
+
+		try {
+			setLevel(Level.parse(aLevel));
+		} catch (IllegalArgumentException e) {
+			setLevel(Level.INFO);
+		}
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.psem2m.utilities.IXDescriber#toDescription()
 	 */
 	@Override
