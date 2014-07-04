@@ -242,7 +242,9 @@ public class CTestOSServer extends CAbstractTest {
 	protected void doCommandClose(final String aCmdeLine) throws Exception {
 		pLogger.logInfo(this, "doCommandClose", "begin");
 
-		doCommandStop(aCmdeLine);
+		if (pCXOSServer != null) {
+			doCommandStop(aCmdeLine);
+		}
 
 		pLogger.logInfo(this, "doCommandClose", "end");
 	}
@@ -387,7 +389,7 @@ public class CTestOSServer extends CAbstractTest {
 			pCXOSServer = null;
 
 		} else {
-			pLogger.logInfo(this, "doCommandStop",
+			pLogger.logSevere(this, "doCommandStop",
 					"No process server available !");
 		}
 		pLogger.logInfo(this, "doCommandStop", "end");
