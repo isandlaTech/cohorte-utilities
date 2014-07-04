@@ -82,10 +82,11 @@ public class CTestOSServer extends CAbstractTest {
 	 * 
 	 * Print user directory in stdIn of the sudo command
 	 * 
-	 * @param aExitdbCommand
+	 * @param aCommand
+	 * @param aCommandArgs
 	 * @return
 	 */
-	private String[] buildCommandExitdb(final String aExitdbCommand,
+	private String[] buildCommandBash(final String aCommand,
 			final String... aCommandArgs) {
 
 		ArrayList<String> wCmdLineArgs = new ArrayList<String>();
@@ -100,9 +101,9 @@ public class CTestOSServer extends CAbstractTest {
 
 		// the sudo prompt is sent in stdErr ! => the value "" for the prompt
 		// argument -p "" remove it
-		wBashCommands.append(String.format(
-				"echo \"%s\" | sudo -S -k -p \"\" %s", getSudoPass(),
-				aExitdbCommand));
+		wBashCommands
+				.append(String.format("echo \"%s\" | sudo -S -k -p \"\" %s",
+						getSudoPass(), aCommand));
 
 		if (aCommandArgs != null && aCommandArgs.length > 0) {
 			for (String wArg : aCommandArgs) {
@@ -119,7 +120,7 @@ public class CTestOSServer extends CAbstractTest {
 	 * @return
 	 */
 	private String[] buildCommandExitdbShutdown() {
-		return buildCommandExitdb("./bin/shutdown.sh", "-u", "admin", "-p",
+		return buildCommandBash("./bin/shutdown.sh", "-u", "admin", "-p",
 				"root");
 	}
 
@@ -127,7 +128,7 @@ public class CTestOSServer extends CAbstractTest {
 	 * @return
 	 */
 	private String[] buildCommandExitdbStart() {
-		return buildCommandExitdb("./bin/startup.sh");
+		return buildCommandBash("./bin/startup.sh");
 	}
 
 	/**
@@ -149,7 +150,7 @@ public class CTestOSServer extends CAbstractTest {
 					"Unable to build kill command, the pid is less than 0");
 		}
 
-		return buildCommandExitdb("kill", String.format("-%s", aSignal),
+		return buildCommandBash("kill", String.format("-%s", aSignal),
 				String.valueOf(aPid));
 	}
 
@@ -159,8 +160,7 @@ public class CTestOSServer extends CAbstractTest {
 	 */
 	private String[] buildCommandLsof(final int aPort) {
 
-		return buildCommandExitdb("lsof", "-n",
-				String.format("-i4TCP:%d", aPort));
+		return buildCommandBash("lsof", "-n", String.format("-i4TCP:%d", aPort));
 	}
 
 	/**
