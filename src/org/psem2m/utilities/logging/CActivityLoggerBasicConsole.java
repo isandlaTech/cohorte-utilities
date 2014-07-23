@@ -23,6 +23,8 @@ public class CActivityLoggerBasicConsole implements IActivityLogger {
 
 	private final IActivityFormater pActivityFormater;
 
+	private Level pLevel = Level.INFO;
+
 	private int pLevelValue = Level.INFO.intValue();
 
 	private final CLogLineTextBuilder pLogLineTextBuilder;
@@ -68,6 +70,16 @@ public class CActivityLoggerBasicConsole implements IActivityLogger {
 	public void close() {
 		logWarn(this, "close",
 				"An instance of CActivityLoggerBasicConsole is not closable.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.logging.IActivityLoggerBase#getLevel()
+	 */
+	@Override
+	public Level getLevel() {
+		return pLevel;
 	}
 
 	/*
@@ -224,13 +236,14 @@ public class CActivityLoggerBasicConsole implements IActivityLogger {
 	@Override
 	public void setLevel(final Level aLevel) {
 
-		pLevelValue = (aLevel != null) ? aLevel.intValue() : Level.INFO
-				.intValue();
+		pLevel = (aLevel != null) ? aLevel : Level.INFO;
+		pLevelValue = pLevel.intValue();
 	}
 
 	/**
 	 * @param aLevel
 	 */
+	@Override
 	public void setLevel(final String aLevel) {
 
 		try {

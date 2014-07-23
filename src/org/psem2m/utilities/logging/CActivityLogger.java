@@ -59,7 +59,7 @@ public class CActivityLogger extends CActivityObject implements IActivityLogger 
 
 	private final String pFilePathPattern;
 
-	private String pLevel;
+	private Level pLevel;
 
 	private Logger pLogger;
 
@@ -83,7 +83,7 @@ public class CActivityLogger extends CActivityObject implements IActivityLogger 
 			final int aFileLimit, final int aFileCount) throws Exception {
 		super(null, aLoggerName);
 		pFilePathPattern = aFilePathPattern;
-		pLevel = aLevel;
+		setLevel(aLevel);
 		pFileLimit = aFileLimit;
 		pFileCount = aFileCount;
 	}
@@ -126,9 +126,9 @@ public class CActivityLogger extends CActivityObject implements IActivityLogger 
 			String wLine = String.format(FORMAT_CLOSELOG, getLoggerName());
 			pLogger.logp(Level.INFO, getClass().getSimpleName(),
 					LIB_METHOD_CLOSE, wLine);
-			
+
 			// close the logger
-			pLogger.setLevel(Level.OFF);			
+			pLogger.setLevel(Level.OFF);
 			// Flush any buffered messages.
 			pFileHandler.flush();
 			// Close all the files.
@@ -177,11 +177,21 @@ public class CActivityLogger extends CActivityObject implements IActivityLogger 
 		return pFilePathPattern;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.logging.IActivityLoggerBase#getLevel()
+	 */
+	@Override
+	public Level getLevel() {
+		return pLevel;
+	}
+
 	/**
 	 * @return
 	 */
-	protected String getLevel() {
-		return pLevel;
+	protected String getLevelName() {
+		return pLevel.getName();
 	}
 
 	/**
@@ -406,7 +416,7 @@ public class CActivityLogger extends CActivityObject implements IActivityLogger 
 				setFormater(pLogger.getParent(), pFileHandler.getFormatter());
 			}
 		}
-		pLogger.setLevel(CActivityUtils.levelToLevel(pLevel));
+		pLogger.setLevel(pLevel);
 
 		String wLine = String.format(FORMAT_OPENLOG, getLoggerName());
 		// log in the current logger and in its parent
@@ -475,10 +485,11 @@ public class CActivityLogger extends CActivityObject implements IActivityLogger 
 	/**
 	 * @param aLevel
 	 */
+	@Override
 	public void setLevel(String aLevel) {
-		pLevel = aLevel;
+		pLevel = CActivityUtils.levelToLevel(aLevel);
 		if (pLogger != null) {
-			pLogger.setLevel(CActivityUtils.levelToLevel(pLevel));
+			pLogger.setLevel(pLevel);
 		}
 	}
 }

@@ -53,7 +53,7 @@ public class CActivityUtils {
 	 * @param aLevel
 	 * @return
 	 */
-	static Level levelToLevel(String aLevelName) {
+	public static Level levelToLevel(String aLevelName) {
 
 		aLevelName = cleanLevelName(aLevelName);
 		if (aLevelName == null) {
@@ -61,7 +61,7 @@ public class CActivityUtils {
 		}
 
 		try {
-			return CActivityLevel.parse(aLevelName);
+			return Level.parse(aLevelName);
 		} catch (Exception e) {
 			System.out.println(CXException.eInString(e));
 			return Level.OFF;

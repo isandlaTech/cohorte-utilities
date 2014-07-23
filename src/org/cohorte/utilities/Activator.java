@@ -3,7 +3,6 @@ package org.cohorte.utilities;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 
 /**
  * @author ogattaz
@@ -20,15 +19,16 @@ public class Activator implements BundleActivator {
 		return sBundleContext;
 	}
 
-	/**
-	 * @param aSpecification
-	 * @return
-	 */
-	public static <T> T getService(final Class<T> aSpecification) {
-		ServiceReference<T> wSR = getContext().getServiceReference(
-				aSpecification);
-		return Activator.getContext().getService(wSR);
-	}
+	//
+	// /**
+	// * @param aSpecification
+	// * @return
+	// */
+	// public static <T> T getService(final Class<T> aSpecification) {
+	// ServiceReference<T> wSR = getContext().getServiceReference(
+	// aSpecification);
+	// return Activator.getContext().getService(wSR);
+	// }
 
 	/*
 	 * (non-Javadoc)

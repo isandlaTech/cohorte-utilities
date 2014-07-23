@@ -5,24 +5,29 @@ import java.util.logging.Level;
 import org.psem2m.utilities.IXDescriber;
 
 /**
- * @author Adonix Grenoble
- * @version 140
+ * @author ogattaz
+ * 
  */
 public interface IActivityLogger extends IActivityLoggerBase, IXDescriber {
 
-	/**
-	   * 
-	   */
-	public void close();
-	
-	/**
-	 * @return
-	 */
-	public IActivityRequester getRequester();
+    /**
+     *  
+     */
+    void close();
 
-	/**
-	 * @param aLevel
-	 */
-	public void setLevel(Level aLevel);
+    /**
+     * @return
+     */
+    IActivityRequester getRequester();
+
+    /**
+     * @param aLevel
+     */
+    void setLevel(Level aLevel);
+
+    /**
+     * @param aLevelName
+     */
+    void setLevel(String aLevelName);
 
 }

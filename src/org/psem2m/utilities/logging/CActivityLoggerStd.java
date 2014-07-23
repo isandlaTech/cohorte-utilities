@@ -60,7 +60,7 @@ public class CActivityLoggerStd extends CActivityObject implements
 
 	private final String pFilePathPattern;
 
-	private String pLevel;
+	private Level pLevel;
 
 	private Logger pLogger;
 
@@ -84,7 +84,7 @@ public class CActivityLoggerStd extends CActivityObject implements
 			final int aFileLimit, final int aFileCount) throws Exception {
 		super(null, aLoggerName);
 		pFilePathPattern = aFilePathPattern;
-		pLevel = aLevel;
+		setLevel(aLevel);
 		pFileLimit = aFileLimit;
 		pFileCount = aFileCount;
 	}
@@ -174,10 +174,8 @@ public class CActivityLoggerStd extends CActivityObject implements
 		return pFilePathPattern;
 	}
 
-	/**
-	 * @return
-	 */
-	protected String getLevel() {
+	@Override
+	public Level getLevel() {
 		return pLevel;
 	}
 
@@ -403,7 +401,7 @@ public class CActivityLoggerStd extends CActivityObject implements
 				setFormater(pLogger.getParent(), pFileHandler.getFormatter());
 			}
 		}
-		pLogger.setLevel(CActivityUtils.levelToLevel(pLevel));
+		pLogger.setLevel(pLevel);
 
 		String wLine = String.format(FORMAT_OPENLOG, getLoggerName());
 		// log in the current logger and in its parent
@@ -466,16 +464,17 @@ public class CActivityLoggerStd extends CActivityObject implements
 	 */
 	@Override
 	public void setLevel(Level aLevel) {
-		setLevel(aLevel.getName());
+		pLevel = (aLevel != null) ? aLevel : Level.INFO;
 	}
 
 	/**
 	 * @param aLevel
 	 */
+	@Override
 	public void setLevel(String aLevel) {
-		pLevel = aLevel;
+		pLevel = CActivityUtils.levelToLevel(aLevel);
 		if (pLogger != null) {
-			pLogger.setLevel(CActivityUtils.levelToLevel(pLevel));
+			pLogger.setLevel(pLevel);
 		}
 	}
 }

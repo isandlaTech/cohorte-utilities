@@ -6,8 +6,7 @@ import java.util.logging.LogRecord;
 import org.psem2m.utilities.IXDescriber;
 
 /**
- * @author Adonix Grenoble
- * @version 140
+ * @author ogattaz
  */
 public interface IActivityLoggerBase extends IXDescriber {
 
@@ -33,6 +32,8 @@ public interface IActivityLoggerBase extends IXDescriber {
     public static final String SEVERE = CActivityLevel.SEVERE.getName();
     // Level.WARNING => "WARNING", 900
     public static final String WARNING = CActivityLevel.WARNING.getName();
+
+    Level getLevel();
 
     /**
      * @return

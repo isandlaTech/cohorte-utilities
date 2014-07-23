@@ -50,6 +50,16 @@ public class CActivityLoggerNull implements IActivityLogger {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see org.psem2m.utilities.logging.IActivityLoggerBase#getLevel()
+	 */
+	@Override
+	public Level getLevel() {
+		return Level.OFF;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.psem2m.utilities.logging.IActivityLogger#getRequester()
 	 */
 	@Override
@@ -158,13 +168,25 @@ public class CActivityLoggerNull implements IActivityLogger {
 			final Object... aInfos) {
 	}
 
-
 	@Override
 	public void setLevel(Level aLevel) {
-		
+
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.psem2m.utilities.logging.IActivityLogger#setLevel(java.lang.String)
+	 */
+	@Override
+	public void setLevel(String aLevelName) {
+		// nothing
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.psem2m.utilities.IXDescriber#toDescription()
 	 */
 	@Override
