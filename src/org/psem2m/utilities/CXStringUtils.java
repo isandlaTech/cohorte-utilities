@@ -522,9 +522,9 @@ public final class CXStringUtils implements IConstants {
      * </pre>
      * 
      * @param aText
-     *            a text containin variables
+     *            a text containing variables as ${variableId}
      * @param aReplacements
-     *            a map
+     *            a map of values to replace the ${variableId} in the string
      * @return
      */
     public static String replaceVariables(final String aText,

@@ -3,6 +3,7 @@ package org.psem2m.utilities.files;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.logging.CActivityLoggerNull;
@@ -14,12 +15,14 @@ import org.psem2m.utilities.logging.IActivityLoggerBase;
  */
 public class CXFileTextPatcher {
 
+	private boolean pApplyWithPrefix = false;
 	private final CXFileText pFileToBePatched;
 	private final CXFileText pFileToSaveOriginal;
 	private List<CXFileTextPatch> pListOfPaches = null;
 	private final IActivityLoggerBase pLogger;
 	private List<String> pPatchedLines = null;
-	private boolean pWithPrefix = false;
+	private final Properties pReplacementVariables = new Properties();
+	private CXFileTextPatchTargetOptions pTargetOptions = null;
 
 	/**
 	 * @param aFileText
@@ -79,6 +82,8 @@ public class CXFileTextPatcher {
 			throws IllegalArgumentException {
 		this(aTarget.getFileTextToBePatched(aEncoding), aTarget
 				.getFileTextToSaveOriginal(aEncoding), aLogger);
+
+		pTargetOptions = aTarget.getOptions();
 	}
 
 	/**
@@ -140,6 +145,12 @@ public class CXFileTextPatcher {
 
 		// copies the lines of the patch
 		for (String wLine : aPatch.getTextLines()) {
+
+			if (pTargetOptions != null && pTargetOptions.mustReplaceVariables()
+					&& hasReplacementVariables()) {
+				wLine = replaceVariablesInLine(wLine,
+						pTargetOptions.getVariablesdDelimiter());
+			}
 			addLine(wLinesPatched, wLine, calcPrefix(wLinesPatched, "patch"));
 		}
 
@@ -202,8 +213,8 @@ public class CXFileTextPatcher {
 	 */
 	private String calcPrefix(final List<String> aListLines,
 			final String aPrefix) {
-		return (pWithPrefix) ? String.format("%4d %6s >", aListLines.size(),
-				aPrefix) : null;
+		return (pApplyWithPrefix) ? String.format("%4d %6s >",
+				aListLines.size(), aPrefix) : null;
 	}
 
 	/**
@@ -226,7 +237,8 @@ public class CXFileTextPatcher {
 		for (String wLineToBePatched : aLinesToBePatched) {
 
 			if (wLocationLine == null) {
-				wLocationLine = aPatch.getLoweredTrimedLocationLine(wNbFoundLines);
+				wLocationLine = aPatch
+						.getLoweredTrimedLocationLine(wNbFoundLines);
 			}
 
 			if (wLineToBePatched != null
@@ -297,8 +309,53 @@ public class CXFileTextPatcher {
 	/**
 	 * @return
 	 */
+	public boolean hasReplacementVariables() {
+		return pReplacementVariables != null
+				&& pReplacementVariables.size() > 0;
+	}
+
+	/**
+	 * @return
+	 */
 	public boolean isPatchesApplied() {
 		return hasListOfPatches() && hasPatchedLines();
+	}
+
+	/**
+	 * @param aLine
+	 * @param aVariableDelimiter
+	 * @return
+	 */
+	private String replaceVariablesInLine(final String aLine,
+			final String aVariableDelimiter) {
+
+		if (aLine == null || aLine.isEmpty()) {
+			return aLine;
+		}
+		int wPosDelimStart = aLine.indexOf(aVariableDelimiter);
+		if (wPosDelimStart == -1) {
+			return aLine;
+		}
+		int wPosDelimEnd = aLine.indexOf(aVariableDelimiter, wPosDelimStart
+				+ aVariableDelimiter.length());
+		if (wPosDelimEnd == -1) {
+			return aLine;
+		}
+		String wVariableName = aLine.substring(wPosDelimStart
+				+ aVariableDelimiter.length(), wPosDelimEnd);
+
+		String wValue = pReplacementVariables.getProperty(wVariableName);
+		if (wValue == null) {
+			return aLine;
+		}
+		String wNewLine = aLine.replace(
+				aLine.substring(wPosDelimStart, wPosDelimEnd
+						+ aVariableDelimiter.length()), wValue);
+
+		if (!wNewLine.contains(aVariableDelimiter)) {
+			return wNewLine;
+		}
+		return replaceVariablesInLine(wNewLine, aVariableDelimiter);
 	}
 
 	/**
@@ -332,13 +389,57 @@ public class CXFileTextPatcher {
 	 */
 	private void saveResult(final List<String> aPatchedLines) throws Exception {
 
-		pFileToBePatched.copyTo(pFileToSaveOriginal, true);
+		if (pFileToSaveOriginal.exists()){
+			boolean wDeleted = pFileToSaveOriginal.delete();
+			pLogger.logInfo(this, "saveResult", "DeletePreviousOriginal=[%s]",
+					wDeleted);
+		}
+		pFileToBePatched.renameTo(pFileToSaveOriginal);
 		pLogger.logInfo(this, "saveResult", "SavedOriginal=[%s]",
 				pFileToSaveOriginal.getAbsolutePath());
 
 		pFileToBePatched.writeAll(aPatchedLines);
 		pLogger.logInfo(this, "saveResult", "  PatchedFile=[%s]",
 				pFileToBePatched.getAbsolutePath());
+	}
+
+	/**
+	 * Patch with prefix example:
+	 * 
+	 * <pre>
+	 *    2 before >  <display-name>Interactive Web Server</display-name>
+	 *    3  patch ><!-- X3 crypted exchange : patch start : add listeners -->
+	 *    4  patch ><listener>
+	 *    5  patch ><listener-class>com.isandlatech.x3.cryptedexchange.CWebAppListener</listener-class>
+	 *    6  patch ></listener>
+	 *    7  patch ><listener>
+	 *    8  patch ><listener-class>com.isandlatech.x3.cryptedexchange.CSessionListener</listener-class>
+	 *    9  patch ></listener>
+	 *   10  patch ><!-- X3 crypted exchange : patch end -->
+	 *   11  after >  <security-constraint>
+	 *   12  after >          <web-resource-collection>
+	 * </pre>
+	 * 
+	 * @param aWithPrefix
+	 *            the flag to activate or not the prefixing of the patched lines
+	 *            with "before","patch" or "after".
+	 */
+	public void setApplyWithPrefix(final boolean aWithPrefix) {
+		pApplyWithPrefix = aWithPrefix;
+	}
+
+	/**
+	 * 
+	 */
+	public void setApplyWithPrefixOff() {
+		setApplyWithPrefix(false);
+	}
+
+	/**
+	 * 
+	 */
+	public void setApplyWithPrefixOn() {
+		setApplyWithPrefix(true);
 	}
 
 	/**
@@ -356,24 +457,17 @@ public class CXFileTextPatcher {
 	}
 
 	/**
-	 * @param aWithPrefix
+	 * @param aReplacementVariables
+	 *            a properties instance containing pairs "Id+Value". These
+	 *            values are used to replace the variables present in the lines
+	 *            of the patches
 	 */
-	public void setWithPrefix(final boolean aWithPrefix) {
-		pWithPrefix = aWithPrefix;
-	}
+	public void setReplacementVariables(final Properties aReplacementVariables) {
 
-	/**
-	 * 
-	 */
-	public void setWithPrefixOff() {
-		setWithPrefix(false);
-	}
-
-	/**
-	 * 
-	 */
-	public void setWithPrefixOn() {
-		setWithPrefix(true);
+		if (aReplacementVariables != null && aReplacementVariables.size() > 0) {
+			pReplacementVariables.clear();
+			pReplacementVariables.putAll(aReplacementVariables);
+		}
 	}
 
 	/**
