@@ -20,11 +20,28 @@ import java.util.List;
 public final class CXArray implements IConstants {
 
 	/**
+	 * @param aObjects
+	 *            an array of objects
+	 * @param aObjectToInsert
+	 *            an object to add in the array
+	 * @param aIdx
+	 *            the index of the position of the inserted object
+	 * @return the new array of objects with the inserted object
+	 */
+	public static Object[] appendOneObject(final Object[] aObjects,
+			final Object aObjectToInsert) {
+
+		return insertOneObject(aObjects, aObjectToInsert,
+				(aObjects != null) ? aObjects.length : -1);
+	}
+
+	/**
 	 * @param aValues
 	 * @param aSeparator
 	 * @return
 	 */
-	public static String arrayToString(final Object[] aValues, final String aSeparator) {
+	public static String arrayToString(final Object[] aValues,
+			final String aSeparator) {
 		return arrayToString(aValues, aSeparator, false);
 	}
 
@@ -33,8 +50,8 @@ public final class CXArray implements IConstants {
 	 * @param aSeparator
 	 * @return
 	 */
-	public static String arrayToString(final Object[] aValues, final String aSeparator,
-			final boolean aJumpIfNull) {
+	public static String arrayToString(final Object[] aValues,
+			final String aSeparator, final boolean aJumpIfNull) {
 		if (aValues == null) {
 			return String.valueOf(aValues);
 		}
@@ -77,16 +94,16 @@ public final class CXArray implements IConstants {
 	 * @return the common class of the objects stored in the array and that of
 	 *         the object to be added
 	 */
-	public static Class<?> calcClassOfArrayElmts(final Object[] aObjects, final Object aObjectToAdd) {
+	public static Class<?> calcClassOfArrayElmts(final Object[] aObjects,
+			final Object aObjectToAdd) {
 		if (aObjects == null) {
 			return Object.class;
 		}
 		int wMax = aObjects.length;
-		if (wMax < 1) {
-			return Object.class;
-		}
-		if (aObjects[0] == null) {
-			return Object.class;
+
+		if (wMax < 1 || aObjects[0] == null) {
+			return (aObjectToAdd != null) ? aObjectToAdd.getClass()
+					: Object.class;
 		}
 
 		// if the class of all the objets stored ine the array is the same, it's
@@ -112,6 +129,32 @@ public final class CXArray implements IConstants {
 	/**
 	 * @param aObjects
 	 *            an array of objects
+	 * @param aObject
+	 *            an object to test
+	 * @return true if the object is present in the array
+	 */
+	public static boolean contains(final Object[] aObjects, final Object aObject) {
+
+		if (aObjects != null) {
+
+			int wMax = aObjects.length;
+			Object wValue;
+			for (int wI = 0; wI < wMax; wI++) {
+				wValue = aObjects[wI];
+				if (wValue == null && aObject == null) {
+					return true;
+				}
+				if (wValue.equals(aObject)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * @param aObjects
+	 *            an array of objects
 	 * @param aObjectToInsert
 	 *            an object to add in the array
 	 * @return the new array of objects with the inserted object
@@ -130,15 +173,12 @@ public final class CXArray implements IConstants {
 	 *            the index of the position of the inserted object
 	 * @return the new array of objects with the inserted object
 	 */
-	public static Object[] insertOneObject(final Object[] aObjects, final Object aObjectToInsert,
-			final int aIdx) {
+	public static Object[] insertOneObject(final Object[] aObjects,
+			final Object aObjectToInsert, final int aIdx) {
 		if (aObjects == null) {
 			return aObjects;
 		}
 		int wPreviousLen = aObjects.length;
-//		if (wPreviousLen < 1) {
-//			return aObjects;
-//		}
 
 		validObjectsIndex(aObjects, aIdx);
 
@@ -151,7 +191,7 @@ public final class CXArray implements IConstants {
 			System.arraycopy(aObjects, 0, wNewArray, 1, wPreviousLen);
 			wNewArray[0] = aObjectToInsert;
 			// if we must remove the last object
-		} else if (aIdx == wPreviousLen - 1) {
+		} else if (aIdx == wPreviousLen) {
 			System.arraycopy(aObjects, 0, wNewArray, 0, wPreviousLen);
 			wNewArray[wNewLen - 1] = aObjectToInsert;
 			//
@@ -160,7 +200,8 @@ public final class CXArray implements IConstants {
 			// wSubLenA = aIdx = 5 (old index 0 to 4)
 			// wSubLenb = wNewMax- aIdx = 4 (old index 6 to 9)
 			System.arraycopy(aObjects, 0, wNewArray, 0, aIdx);
-			System.arraycopy(aObjects, aIdx, wNewArray, aIdx + 1, wPreviousLen - aIdx);
+			System.arraycopy(aObjects, aIdx, wNewArray, aIdx + 1, wPreviousLen
+					- aIdx);
 			wNewArray[aIdx] = aObjectToInsert;
 
 		}
@@ -172,7 +213,8 @@ public final class CXArray implements IConstants {
 	 * @param aSeparator
 	 * @return
 	 */
-	public static String listToString(final List<?> aValues, final String aSeparator) {
+	public static String listToString(final List<?> aValues,
+			final String aSeparator) {
 		return listToString(aValues, aSeparator, false);
 	}
 
@@ -181,8 +223,8 @@ public final class CXArray implements IConstants {
 	 * @param aSeparator
 	 * @return
 	 */
-	public static String listToString(final List<?> aValues, final String aSeparator,
-			final boolean aJumpIfNull) {
+	public static String listToString(final List<?> aValues,
+			final String aSeparator, final boolean aJumpIfNull) {
 		if (aValues == null) {
 			return String.valueOf(aValues);
 		}
@@ -213,8 +255,8 @@ public final class CXArray implements IConstants {
 	 * @return the new array of objects
 	 * @throws IndexOutOfBoundsException
 	 */
-	public static Object[] removeOneObject(final Object[] aObjects, final int aIdx)
-			throws IndexOutOfBoundsException {
+	public static Object[] removeOneObject(final Object[] aObjects,
+			final int aIdx) throws IndexOutOfBoundsException {
 		if (aObjects == null) {
 			return aObjects;
 		}
@@ -226,7 +268,8 @@ public final class CXArray implements IConstants {
 		validObjectsIndex(aObjects, aIdx);
 
 		int wNewLen = wLen - 1;
-		Object[] wNewArray = (Object[]) Array.newInstance(calcClassOfArrayElmts(aObjects), wNewLen);
+		Object[] wNewArray = (Object[]) Array.newInstance(
+				calcClassOfArrayElmts(aObjects), wNewLen);
 
 		// if we must remove the first object
 		if (aIdx == 0) {
@@ -238,7 +281,8 @@ public final class CXArray implements IConstants {
 			// wSubLenA = aIdx = 5 (old index 0 to 4)
 			// wSubLenb = wNewMax- aIdx = 4 (old index 6 to 9)
 			System.arraycopy(aObjects, 0, wNewArray, 0, aIdx);
-			System.arraycopy(aObjects, aIdx + 1, wNewArray, aIdx, wNewLen - aIdx);
+			System.arraycopy(aObjects, aIdx + 1, wNewArray, aIdx, wNewLen
+					- aIdx);
 		}
 
 		return wNewArray;
@@ -249,21 +293,22 @@ public final class CXArray implements IConstants {
 	 * @param aIdx
 	 * @throws IndexOutOfBoundsException
 	 */
-	private static void validObjectsIndex(final Object[] aObjects, final int aIdx)
-			throws IndexOutOfBoundsException {
+	private static void validObjectsIndex(final Object[] aObjects,
+			final int aIdx) throws IndexOutOfBoundsException {
 		if (aObjects == null) {
 			throw new IndexOutOfBoundsException("the target array is null");
 		}
 		int wLen = aObjects.length;
-		if (wLen==0 && aIdx==0 ){
-			return ; // OK
+		if (wLen == 0 && aIdx == 0) {
+			return; // OK
 		}
-		if (aIdx < 0 || aIdx > wLen - 1) {
-			throw new IndexOutOfBoundsException(String.format("index [%d] is less than zero", aIdx));
-		}
-		if (aIdx > wLen - 1) {
+		if (aIdx < 0) {
 			throw new IndexOutOfBoundsException(String.format(
-					"index [%d] is greater than len-1 (len=[%d])", aIdx, wLen));
+					"index [%d] is less than zero", aIdx));
+		}
+		if (aIdx > wLen) {
+			throw new IndexOutOfBoundsException(String.format(
+					"index [%d] is greater than len (len=[%d] )", aIdx, wLen));
 		}
 	}
 
