@@ -15,10 +15,10 @@ import org.psem2m.utilities.CXTimer;
  * 
  */
 public class CTestCXThreadUtils extends CAbstractTest {
-	
+
 	/**
 	 * @author ogattaz
-	 *
+	 * 
 	 */
 	class CRunnable implements Runnable {
 
@@ -52,7 +52,9 @@ public class CTestCXThreadUtils extends CAbstractTest {
 			return pContinue;
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see java.lang.Runnable#run()
 		 */
 		@Override
@@ -68,8 +70,6 @@ public class CTestCXThreadUtils extends CAbstractTest {
 
 	}
 
-	public final static String CMD_TEST = "test";
-
 	private static final int NB_THREADS = 100;
 
 	/**
@@ -78,20 +78,30 @@ public class CTestCXThreadUtils extends CAbstractTest {
 	public static void main(final String[] args) {
 
 		try {
-			CTestCXThreadUtils wTest = new CTestCXThreadUtils();
-			wTest.doTest();
+			CTestCXThreadUtils wTest = new CTestCXThreadUtils(args);
+			wTest.runTest();
 			wTest.destroy();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * @param args
+	 */
+	public CTestCXThreadUtils(final String[] args) {
+		super(args);
+		addOneCommand(CMD_TEST, "test the threading tools");
+		pLogger.logInfo(this, "<init>", "instanciated");
+	}
+
 	/**
 	 * @param aIdx
 	 * @return
 	 */
 	private CRunnable createRunnable(final int aIdx) {
 
-		String wName = createRunnableName( aIdx);
+		String wName = createRunnableName(aIdx);
 		CRunnable wRunnable = new CRunnable(wName, 200);
 		new Thread(wRunnable, wName).start();
 		return wRunnable;
@@ -119,59 +129,75 @@ public class CTestCXThreadUtils extends CAbstractTest {
 		}
 		return wCRunnables;
 	}
-	
-	/**
-	 * @throws Exception
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see tests.CAbstractTest#doCommandClose(java.lang.String)
 	 */
 	@Override
 	protected void doCommandClose(final String aCmdeLine) throws Exception {
-		pLogger.logInfo(this, "doCommandClose", "begin aCmdeLine=[%s]",aCmdeLine);
+		pLogger.logInfo(this, "doCommandClose", "begin aCmdeLine=[%s]",
+				aCmdeLine);
 
 	}
-	
+
 	/**
+	 * @param aCmdeLine
 	 * @throws Exception
 	 */
 	private void doCommandTest(final String aCmdeLine) throws Exception {
-		pLogger.logInfo(this, "doCommandTest", "begin aCmdeLine=[%s]",aCmdeLine);
-		
+		pLogger.logInfo(this, "doCommandTest", "begin aCmdeLine=[%s]",
+				aCmdeLine);
+
 		CXTimer wTimer = CXTimer.newStartedTimer();
 		for (int wIdx = 0; wIdx < NB_THREADS; wIdx++) {
-			Thread wThread = CXThreadUtils.getActiveThread(createRunnableName( wIdx));
-			if (wThread==null){
-				pLogger.logSevere(this, "doCommandTest", "Can't retreive runable [%s]",wIdx);
+			Thread wThread = CXThreadUtils
+					.getActiveThread(createRunnableName(wIdx));
+			if (wThread == null) {
+				pLogger.logSevere(this, "doCommandTest",
+						"Can't retreive runable [%s]", wIdx);
 			}
 		}
-		pLogger.logInfo(this, "doCommandTest", "getActiveThread duration=[%s] for [%s] search",wTimer.getDurationStrMicroSec(),NB_THREADS);
+		pLogger.logInfo(this, "doCommandTest",
+				"getActiveThread duration=[%s] for [%s] search",
+				wTimer.getDurationStrMicroSec(), NB_THREADS);
 
 		wTimer = CXTimer.newStartedTimer();
 		for (int wIdx = 0; wIdx < NB_THREADS; wIdx++) {
-			Thread wThread = CXThreadUtils.getLiveThread(createRunnableName(wIdx));
-			if (wThread==null){
-				pLogger.logSevere(this, "doCommandTest", "Can't retreive runable [%s]",wIdx);
+			Thread wThread = CXThreadUtils
+					.getLiveThread(createRunnableName(wIdx));
+			if (wThread == null) {
+				pLogger.logSevere(this, "doCommandTest",
+						"Can't retreive runable [%s]", wIdx);
 			}
 		}
-		pLogger.logInfo(this, "doCommandTest", "getLiveThread duration=[%s] for [%s] search",wTimer.getDurationStrMicroSec(),NB_THREADS);
+		pLogger.logInfo(this, "doCommandTest",
+				"getLiveThread duration=[%s] for [%s] search",
+				wTimer.getDurationStrMicroSec(), NB_THREADS);
 
 		pLogger.logInfo(this, "doCommandTest", "end");
 	}
 
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see tests.CAbstractTest#doUserCommand(java.lang.String)
 	 */
 	@Override
-	protected  void doCommandUser(final String aCmdeLine) throws Exception{
-		 if (isCommandX(aCmdeLine,CMD_TEST)) {
+	protected void doCommandUser(final String aCmdeLine) throws Exception {
+		if (isCommandX(aCmdeLine, CMD_TEST)) {
 			doCommandTest(aCmdeLine);
 		}
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see tests.CAbstractTest#doTest()
 	 */
 	@Override
-	protected void doTest() throws Exception{
+	protected void runTest() throws Exception {
 		pLogger.logInfo(this, "doTest", "begin");
 		pLogger.logInfo(this, "doTest", CXOSUtils.getEnvContext());
 		pLogger.logInfo(this, "doTest", CXJvmUtils.getJavaContext());
@@ -179,12 +205,11 @@ public class CTestCXThreadUtils extends CAbstractTest {
 		List<CRunnable> wRunnables = createRunnables(NB_THREADS);
 
 		waitForUserCommand();
-		
+
 		// stop the threads
 		for (CRunnable wRunnable : wRunnables) {
 			wRunnable.end();
 		}
-		
 
 		pLogger.logInfo(this, "doTest", "end");
 	}

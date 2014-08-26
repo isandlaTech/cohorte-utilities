@@ -14,9 +14,14 @@ import org.psem2m.utilities.logging.IActivityLogger;
  */
 public abstract class CAbstractTest {
 
+	public final static String APPLICATION_PARAM_AUTO = "auto";
+
 	public final static String CMD_CLOSE = "close";
 	public final static String CMD_HELP = "help";
 	public final static String CMD_QUIT = "quit";
+	public final static String CMD_TEST = "test";
+
+	protected final String[] pArgs;
 
 	private final Map<String, CCommand> pCommands = new HashMap<String, CCommand>();
 
@@ -25,8 +30,9 @@ public abstract class CAbstractTest {
 	/**
 	 * 
 	 */
-	public CAbstractTest() {
+	public CAbstractTest(final String[] args) {
 		super();
+		pArgs = args;
 		pLogger = CActivityLoggerBasicConsole.getInstance();
 
 		addOneCommand(CMD_CLOSE, "c", "Close the tester");
@@ -86,6 +92,7 @@ public abstract class CAbstractTest {
 	 * @param aCmdeLine
 	 * @throws Exception
 	 */
+
 	protected abstract void doCommandUser(final String aCmdeLine)
 			throws Exception;
 
@@ -107,11 +114,6 @@ public abstract class CAbstractTest {
 
 		return wWantClose;
 	}
-
-	/**
-	 * @throws Exception
-	 */
-	protected abstract void doTest() throws Exception;
 
 	/**
 	 * @param aCmdeLine
@@ -149,9 +151,15 @@ public abstract class CAbstractTest {
 		}
 
 		CCommand wCommand = pCommands.get(aCommandId);
-		return wCmdeArgs[0].toLowerCase().equals(wCommand.getVerb())
-				|| wCmdeArgs[0].toLowerCase().equals(wCommand.getAlias());
+		return wCommand != null
+				&& (wCmdeArgs[0].toLowerCase().equals(wCommand.getVerb()) || wCmdeArgs[0]
+						.toLowerCase().equals(wCommand.getAlias()));
 	}
+
+	/**
+	 * @throws Exception
+	 */
+	protected abstract void runTest() throws Exception;
 
 	/**
 	 * @return
@@ -182,6 +190,15 @@ public abstract class CAbstractTest {
 
 		pLogger.logInfo(this, "waitForUserCommand", "END");
 		return true;
+	}
+
+	/**
+	 * @param aCmdeLine
+	 * @throws Exception
+	 */
+	protected void wrongCommandUser(final String aCmdeLine) throws Exception {
+		pLogger.logSevere(this, "wrongCommandUser", "Unknown command [%s]",
+				aCmdeLine);
 	}
 
 }

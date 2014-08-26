@@ -30,13 +30,12 @@ public class CTestOSServer extends CAbstractTest {
 		int wExitCode = 0;
 		CTestOSServer wTest = null;
 		try {
-			wTest = new CTestOSServer();
-			wTest.doTest();
+			wTest = new CTestOSServer(args);
+			wTest.runTest();
 		} catch (Exception e) {
 			e.printStackTrace();
 			wExitCode = 1;
 		} finally {
-
 			wTest.destroy();
 		}
 		System.exit(wExitCode);
@@ -46,10 +45,10 @@ public class CTestOSServer extends CAbstractTest {
 	int pServerPid = -1;
 
 	/**
-	 * 
+	 * @param args
 	 */
-	private CTestOSServer() {
-		super();
+	public CTestOSServer(final String[] args) {
+		super(args);
 
 		addOneCommand(CMD_SERVER_START, "Start the server");
 		addOneCommand(CMD_SERVER_STOP, "Stop the server");
@@ -324,6 +323,7 @@ public class CTestOSServer extends CAbstractTest {
 
 			CXOSCommand wCommand = new CXOSCommand(pLogger, wCommandKill);
 			boolean wIsOk = wCommand.run(5000);
+			pLogger.logInfo(this, "doCommandKill", "IsOk=[%s]", wIsOk);
 
 			pLogger.logInfo(this, "doCommandKill", "Repport:\n%s",
 					wCommand.getRepport());
@@ -418,23 +418,23 @@ public class CTestOSServer extends CAbstractTest {
 	}
 
 	/**
+	 * @return
+	 */
+	private String getSudoPass() {
+		return "Olivier38";
+	}
+
+	/**
 	 * @throws Exception
 	 * 
 	 */
 	@Override
-	protected void doTest() throws Exception {
+	protected void runTest() throws Exception {
 		pLogger.logInfo(this, "doTest", "BEGIN");
 
 		waitForUserCommand();
 
 		pLogger.logInfo(this, "doTest", "END");
-	}
-
-	/**
-	 * @return
-	 */
-	private String getSudoPass() {
-		return "Olivier38";
 	}
 
 }

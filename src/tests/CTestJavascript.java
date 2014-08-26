@@ -35,25 +35,26 @@ public class CTestJavascript extends CAbstractTest {
 		}
 
 		@Override
-		public void trace(CharSequence aSB) {
+		public void trace(final CharSequence aSB) {
 			pLogger.logInfo(this, "trace", aSB);
 
 		}
 
 		@Override
-		public void trace(Object aObj, CharSequence aSB) {
+		public void trace(final Object aObj, final CharSequence aSB) {
 			pLogger.logInfo(aObj, "trace", "%s", aSB);
 
 		}
 
 		@Override
-		public void trace(Object aObj, CharSequence aSB, Throwable e) {
+		public void trace(final Object aObj, final CharSequence aSB,
+				final Throwable e) {
 			pLogger.logInfo(aObj, "trace", "%s\n%s", aSB, e);
 
 		}
 
 		@Override
-		public void trace(Object aObj, Throwable e) {
+		public void trace(final Object aObj, final Throwable e) {
 			pLogger.logInfo(aObj, "trace", "%s", e);
 
 		}
@@ -68,8 +69,8 @@ public class CTestJavascript extends CAbstractTest {
 	public static void main(final String[] args) {
 
 		try {
-			CTestJavascript wTest = new CTestJavascript();
-			wTest.doTest();
+			CTestJavascript wTest = new CTestJavascript(args);
+			wTest.runTest();
 			wTest.destroy();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -77,25 +78,34 @@ public class CTestJavascript extends CAbstractTest {
 	}
 
 	/**
-	 * 
+	 * @param args
 	 */
-	public CTestJavascript() {
-		super();
-		addOneCommand(CMD_RUN,"r","run script");
-
+	public CTestJavascript(final String[] args) {
+		super(args);
+		addOneCommand(CMD_RUN, "r", "run script");
+		pLogger.logInfo(this, "<init>", "instanciated");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see tests.CAbstractTest#doCommandClose(java.lang.String)
+	 */
 	@Override
-	protected void doCommandClose(String aCmdeLine) throws Exception {
+	protected void doCommandClose(final String aCmdeLine) throws Exception {
 		pLogger.logInfo(this, "doCommandClose", "begin");
 		pLogger.logInfo(this, "doCommandClose", "end");
 	}
 
+	/**
+	 * @param aCmdeLine
+	 * @throws Exception
+	 */
 	private void doCommandRun(final String aCmdeLine) throws Exception {
 		pLogger.logInfo(this, "doCommandRun", "begin");
 
 		CXJsManager wXJsManager = new CXJsManager("JavaScript");
-		
+
 		CXJsEngine wXJsEngine = wXJsManager.getScriptEngineFactory()
 				.getScriptEngine();
 
@@ -107,19 +117,19 @@ public class CTestJavascript extends CAbstractTest {
 
 		pLogger.logInfo(this, "initOneProvider", "new RsrcProvider  for [%s]",
 				wDir.getAbsolutePath());
-		
-		IXjsTracer wXjsTracer = new CJsTracer();
-		
-        CXJsSourceMain wMain=wXJsManager.getMainSource(wProvider, new CXRsrcUriPath("test.js"),wXjsTracer);
-        
-        CXJsScriptContext wCtx=new CXJsScriptContext(1024);
-        wCtx.setAttribute("ENGSCOP", "ENGINE_1", ScriptContext.ENGINE_SCOPE);
-        wCtx.setAttribute("GLOSCOP", "GLOBAL_1", ScriptContext.GLOBAL_SCOPE);
-        
 
-		Object wResult = wXJsEngine.eval(wMain,wCtx,wXjsTracer);
-		
-		pLogger.logInfo(this, "doCommandRun", "end wResult=[%s]",wResult);
+		IXjsTracer wXjsTracer = new CJsTracer();
+
+		CXJsSourceMain wMain = wXJsManager.getMainSource(wProvider,
+				new CXRsrcUriPath("test.js"), wXjsTracer);
+
+		CXJsScriptContext wCtx = new CXJsScriptContext(1024);
+		wCtx.setAttribute("ENGSCOP", "ENGINE_1", ScriptContext.ENGINE_SCOPE);
+		wCtx.setAttribute("GLOSCOP", "GLOBAL_1", ScriptContext.GLOBAL_SCOPE);
+
+		Object wResult = wXJsEngine.eval(wMain, wCtx, wXjsTracer);
+
+		pLogger.logInfo(this, "doCommandRun", "end wResult=[%s]", wResult);
 
 	}
 
@@ -141,7 +151,7 @@ public class CTestJavascript extends CAbstractTest {
 	 * @see tests.CAbstractTest#doTest()
 	 */
 	@Override
-	protected void doTest() throws Exception {
+	protected void runTest() throws Exception {
 		pLogger.logInfo(this, "doTest", "begin");
 		pLogger.logInfo(this, "doTest", CXOSUtils.getEnvContext());
 		pLogger.logInfo(this, "doTest", CXJvmUtils.getJavaContext());
@@ -150,7 +160,5 @@ public class CTestJavascript extends CAbstractTest {
 
 		pLogger.logInfo(this, "doTest", "end");
 	}
-
-
 
 }
