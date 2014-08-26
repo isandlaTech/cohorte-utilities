@@ -32,6 +32,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
@@ -324,6 +325,37 @@ public class CXDomUtils implements ErrorHandler {
 	}
 
 	/**
+	 * @param aElement
+	 * @return
+	 */
+	public static String dumpAttributes(Element aElement){
+		
+		return dumpAttributesInSB(new StringBuilder(),aElement).toString();
+	}
+
+	/**
+	 * @param aSB
+	 * @param aElement
+	 * @return
+	 */
+	public static StringBuilder dumpAttributesInSB(final StringBuilder aSB,
+			final Element aElement) {
+
+		aSB.append('{');
+		NamedNodeMap wAtributes = aElement.getAttributes();
+		int wMax = wAtributes.getLength();
+		for (int wIdx = 0; wIdx < wMax; wIdx++) {
+			if (wIdx>0){
+				aSB.append(',');
+			}
+			Node wAttrNode = wAtributes.item(wIdx);
+			aSB.append(String.format("%s=[%s]", wAttrNode.getNodeName(),wAttrNode.getTextContent()));
+		}
+		aSB.append('}');
+		return aSB;
+	}
+
+	/**
 	 * 
 	 * @param aNode
 	 * @return
@@ -340,7 +372,7 @@ public class CXDomUtils implements ErrorHandler {
 
 		return wNode;
 	}
-
+	
 	/**
 	 * Renvoie la valeur de l'attribut aAttrib de aElmt sous la forme d'un
 	 * Integer Renvoie aDefValue si erreur
@@ -354,7 +386,27 @@ public class CXDomUtils implements ErrorHandler {
 					aDefValue);
 		}
 	}
-
+	
+	
+	/**
+	 * @param aElement
+	 * @return
+	 */
+	public static List<Element> getElements(Element aElement) {
+		
+		if (aElement == null) {
+			return null;
+		}
+		List<Element> wElmts = new ArrayList<Element>();
+		NodeList wList = aElement.getChildNodes();
+		for (int wI = 0; wI < wList.getLength(); wI++) {
+			if (wList.item(wI).getNodeType() == Node.ELEMENT_NODE) {
+				wElmts.add((Element) wList.item(wI));
+			}
+		}
+		return wElmts;		
+	}
+	
 	/**
 	 * @param aNode
 	 * @param aTagName
@@ -375,6 +427,7 @@ public class CXDomUtils implements ErrorHandler {
 		}
 		return wElmts;
 	}
+
 
 	/**
 	 * @param aNode
