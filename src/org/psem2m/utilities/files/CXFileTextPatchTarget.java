@@ -17,7 +17,7 @@ import org.w3c.dom.Element;
  * 			<name>web.xml.original</name><!-- if none : the same as the target + .original -->
  * 		</originalcopy>
  * 		<options>
- *      	<variables replace=yes" delimiter="$$" />
+ *      	<variables replace="true" delimiter="$$" delimiter.end="$$" path.separator="forced_slash" />
  *      </options>
  * 	</target>
  * </pre>
@@ -71,43 +71,45 @@ public class CXFileTextPatchTarget {
 		CXFileTextPatchTarget wTarget = new CXFileTextPatchTarget();
 
 		// never null for an element node
-		String wFilePathToBePatched = wPathElmt
-				.getTextContent().trim();
+		String wFilePathToBePatched = wPathElmt.getTextContent().trim();
 		// replace the params ${paramId}
-		if (!wFilePathToBePatched.isEmpty()){
-			wFilePathToBePatched = CXStringUtils.replaceVariables(wFilePathToBePatched, aReplacementParams);
+		if (!wFilePathToBePatched.isEmpty()) {
+			wFilePathToBePatched = CXStringUtils.replaceVariables(
+					wFilePathToBePatched, aReplacementParams);
 		}
 		// if it is empty => error
-		else{
+		else {
 			throw new Exception(
-					"The [path] element in the [target] element is empty");	
+					"The [path] element in the [target] element is empty");
 		}
-		wTarget.pFilePathToBePatched  = wFilePathToBePatched;
+		wTarget.pFilePathToBePatched = wFilePathToBePatched;
 		wTarget.pFileToBePatched = new CXFile(wFilePathToBePatched);
-
 
 		// never null for an element node
 		String wCopyDir = wDirElmt.getTextContent().trim();
 		// replace the params ${paramId}
-		if (!wCopyDir.isEmpty()){
-			wCopyDir= CXStringUtils.replaceVariables(wCopyDir, aReplacementParams);
+		if (!wCopyDir.isEmpty()) {
+			wCopyDir = CXStringUtils.replaceVariables(wCopyDir,
+					aReplacementParams);
 		}
 		// use the same dir as the file to be patched
-		else{
+		else {
 			wCopyDir = wTarget.pFileToBePatched.getParent();
 		}
-		
+
 		// never null for an element node
 		String wCopyName = wNameElmt.getTextContent().trim();
 		// replace the params ${paramId}
-		if (!wCopyName.isEmpty()){
-			wCopyName= CXStringUtils.replaceVariables(wCopyName, aReplacementParams);
+		if (!wCopyName.isEmpty()) {
+			wCopyName = CXStringUtils.replaceVariables(wCopyName,
+					aReplacementParams);
 		}
-		// else, use the name of the file to be patched and add the suffix".orginal"
-		else{
-			wCopyName = wTarget.pFileToBePatched.getName()+".original";
+		// else, use the name of the file to be patched and add the
+		// suffix".orginal"
+		else {
+			wCopyName = wTarget.pFileToBePatched.getName() + ".original";
 		}
-		
+
 		wTarget.pFileToSaveOriginal = new CXFile(wCopyDir, wCopyName);
 
 		wTarget.pFilePathToSaveOriginal = wTarget.pFileToSaveOriginal
@@ -305,7 +307,7 @@ public class CXFileTextPatchTarget {
 /**
  * <pre>
  * 	<options>
- * 		<variables replace="true" delimiter="$$" />
+ * 		<variables replace="true" delimiter="$$" delimiter.end="$$" rules="forced_slash" />
  * 	</options>
  * </pre>
  * 
@@ -314,9 +316,17 @@ public class CXFileTextPatchTarget {
  */
 class CXFileTextPatchTargetOptions {
 
+	private static final String ATTR_DELIM = "delimiter";
+	private static final String ATTR_DELIM_END = "delimiter.end";
+	private static final String ATTR_REPLACE = "replace";
+	private static final String ATTR_RULES = "rules";
+	private static final String RULE_FORCED_SLASH = "forced_slash";
+
 	private boolean pHasOptions = false;
 	private boolean pReplacpVariables = false;
+	private String pRules = null;
 	private String pVariablesdDelimiter = CXStringUtils.EMPTY;
+	private String pVariablesdDelimiterEnd = CXStringUtils.EMPTY;
 
 	/**
 	 * @param aOptionsElmt
@@ -331,6 +341,13 @@ class CXFileTextPatchTargetOptions {
 	 */
 	public String getVariablesdDelimiter() {
 		return pVariablesdDelimiter;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getVariablesdDelimiterEnd() {
+		return pVariablesdDelimiterEnd;
 	}
 
 	/**
@@ -355,11 +372,30 @@ class CXFileTextPatchTargetOptions {
 
 			if (wVariablesElmt != null) {
 				pReplacpVariables = "true".equalsIgnoreCase(wVariablesElmt
-						.getAttribute("replace"));
-				pVariablesdDelimiter = wVariablesElmt.getAttribute("delimiter");
+						.getAttribute(ATTR_REPLACE));
+				pVariablesdDelimiter = wVariablesElmt.getAttribute(ATTR_DELIM);
+				pVariablesdDelimiterEnd = wVariablesElmt
+						.getAttribute(ATTR_DELIM_END);
+				pRules = wVariablesElmt.getAttribute(ATTR_RULES);
 				pHasOptions = true;
 			}
 		}
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isRuleForceSlashOn() {
+		return isRuleOn(RULE_FORCED_SLASH);
+	}
+
+	/**
+	 * @param aRule
+	 * @return
+	 */
+	private boolean isRuleOn(final String aRule) {
+		return (pRules != null && !pRules.isEmpty() && aRule != null
+				&& !aRule.isEmpty() && pRules.toLowerCase().contains(aRule));
 	}
 
 	/**

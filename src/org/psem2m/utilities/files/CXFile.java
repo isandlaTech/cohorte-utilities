@@ -258,7 +258,7 @@ public class CXFile extends CXFileBase {
 	 * @return
 	 * @throws Exception
 	 */
-	public CXFileDir getParentDirectory() throws IOException {
+	public CXFileDir getParentDirectory() {
 		return new CXFileDir(getParentFile().getAbsolutePath());
 	}
 

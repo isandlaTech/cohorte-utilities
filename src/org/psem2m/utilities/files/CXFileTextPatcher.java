@@ -348,6 +348,10 @@ public class CXFileTextPatcher {
 		if (wValue == null) {
 			return aLine;
 		}
+		if (pTargetOptions != null && pTargetOptions.isRuleForceSlashOn()){
+			//replacing all occurrences of oldChars
+			wValue = wValue.replace('\\', '/');
+		}
 		String wNewLine = aLine.replace(
 				aLine.substring(wPosDelimStart, wPosDelimEnd
 						+ aVariableDelimiter.length()), wValue);
