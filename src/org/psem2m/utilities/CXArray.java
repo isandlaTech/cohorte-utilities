@@ -96,34 +96,15 @@ public final class CXArray implements IConstants {
 	 */
 	public static Class<?> calcClassOfArrayElmts(final Object[] aObjects,
 			final Object aObjectToAdd) {
+
 		if (aObjects == null) {
 			return Object.class;
 		}
-		int wMax = aObjects.length;
+		// Returns the Class representing the component type of an array.
+		// If this "aObjects" does not represent an array class this method
+		// returns null.
 
-		if (wMax < 1 || aObjects[0] == null) {
-			return (aObjectToAdd != null) ? aObjectToAdd.getClass()
-					: Object.class;
-		}
-
-		// if the class of all the objets stored ine the array is the same, it's
-		// the found class.
-		Class<?> wFoundClass = aObjects[0].getClass();
-		for (int wI = 1; wI < wMax; wI++) {
-			if (aObjects[wI] == null || aObjects[wI].getClass() != wFoundClass) {
-				wFoundClass = Object.class;
-				// break
-				wI = wMax;
-			}
-		}
-		// if the object to add isn't null and if the found class does'nt equal
-		// the
-		// class of the object => Object class
-		if (aObjectToAdd != null && wFoundClass != aObjectToAdd.getClass()) {
-			wFoundClass = Object.class;
-		}
-
-		return wFoundClass;
+		return aObjects.getClass().getComponentType();
 	}
 
 	/**
