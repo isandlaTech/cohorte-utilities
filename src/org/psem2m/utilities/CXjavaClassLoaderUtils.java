@@ -11,12 +11,29 @@ public class CXjavaClassLoaderUtils {
 	private static boolean sIsOsgiEnv = calcOsgiEnv();
 
 	/**
+	 * @return true if one key of the system properties starts whith the prefix
+	 *         "osgi."
+	 */
+	private static boolean calcOsgiEnv() {
+
+		String wOsgiPrefix = "osgi.";
+		Set<Object> wKeys = System.getProperties().keySet();
+		for (Object wKey : wKeys) {
+			if (wKey instanceof String
+					&& ((String) wKey).toLowerCase().startsWith(wOsgiPrefix)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * @param aResourceId
 	 *            the full qualified id of the resource (eg:
 	 *            com.isandlatech.mytexts_fr).
 	 * @return a package Id
 	 */
-	public static String extractPackageId(String aResourceId) {
+	public static String extractPackageId(final String aResourceId) {
 
 		int wPos = aResourceId.lastIndexOf('.');
 		return (wPos != -1) ? aResourceId.substring(0, wPos) : aResourceId;
@@ -28,7 +45,7 @@ public class CXjavaClassLoaderUtils {
 	 *            com.isandlatech.mytexts_fr).
 	 * @return the classLoader which manages the package of the resource.
 	 */
-	public static ClassLoader getCallerClassLoader(String aResourceId) {
+	public static ClassLoader getCallerClassLoader(final String aResourceId) {
 
 		try {
 			String wPackageId = extractPackageId(aResourceId);
@@ -46,17 +63,16 @@ public class CXjavaClassLoaderUtils {
 		}
 	}
 
-	
 	/**
 	 * retrives the classloader of a class
 	 * 
 	 * @param aClass
 	 * @return
 	 */
-	public static ClassLoader getClassLoader (Class<?> aClass){
-		return getClassLoader(aClass.getName());	
+	public static ClassLoader getClassLoader(final Class<?> aClass) {
+		return getClassLoader(aClass.getName());
 	}
-	
+
 	/**
 	 * Gestion automatique de la recherche du classLoader
 	 * 
@@ -65,7 +81,7 @@ public class CXjavaClassLoaderUtils {
 	 *            com.isandlatech.mytexts_fr).
 	 * @return the classLoader which manages the package of the resource.
 	 */
-	public static ClassLoader getClassLoader(String aResourceId) {
+	public static ClassLoader getClassLoader(final String aResourceId) {
 
 		if (isOsgiEnv()) {
 			return getCallerClassLoader(aResourceId);
@@ -80,13 +96,15 @@ public class CXjavaClassLoaderUtils {
 	 * @return
 	 */
 	private static String getMessages(Throwable e) {
-		if (e == null)
+		if (e == null) {
 			return "null";
+		}
 		StringBuilder wSB = new StringBuilder();
 		while (e != null) {
 			String wMess = e.getLocalizedMessage();
 			wSB.append(String.format("[%s]", (wMess != null) ? wMess : e
 					.getClass().getSimpleName()));
+			e = e.getCause();
 		}
 		return wSB.toString();
 	}
@@ -109,22 +127,5 @@ public class CXjavaClassLoaderUtils {
 	 */
 	public static boolean isOsgiEnv() {
 		return sIsOsgiEnv;
-	}
-
-	/**
-	 * @return true if one key of the system properties starts whith the prefix
-	 *         "osgi."
-	 */
-	private static boolean calcOsgiEnv() {
-
-		String wOsgiPrefix = "osgi.";
-		Set<Object> wKeys = System.getProperties().keySet();
-		for (Object wKey : wKeys) {
-			if (wKey instanceof String
-					&& ((String) wKey).toLowerCase().startsWith(wOsgiPrefix)) {
-				return true;
-			}
-		}
-		return false;
 	}
 }
