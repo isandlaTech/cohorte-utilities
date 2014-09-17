@@ -46,12 +46,19 @@ public final class CXStringUtils implements IConstants {
     public static final String UNICODE_PREFIX = "\\u";
 
     public static final String VAL_FALSE = "false";
+
     public static final String VAL_KO = "ko";
+
     public static final String VAL_NO = "no";
+
     public static final String VAL_OFF = "off";
+
     public static final String VAL_OK = "ok";
+
     public static final String VAL_ON = "on";
+
     public static final String VAL_TRUE = "true";
+
     public static final String VAL_YES = "yes";
 
     /** Doesn't contain the underscore character **/
@@ -68,7 +75,7 @@ public final class CXStringUtils implements IConstants {
 
         try {
             return aBuffer.append(aChar);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.out.println(buildAppendErrorMess(e));
             return aBuffer;
         }
@@ -92,7 +99,7 @@ public final class CXStringUtils implements IConstants {
                 aBuffer.append(aChar);
             }
             return aBuffer;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return new StringBuilder().append(CXException.eInString(e));
         }
     }
@@ -108,7 +115,7 @@ public final class CXStringUtils implements IConstants {
 
         try {
             return aBuffer.append(String.format(aFormat, aArgs));
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.out.println(buildAppendErrorMess(e));
             return aBuffer;
         }
@@ -124,13 +131,13 @@ public final class CXStringUtils implements IConstants {
 
         try {
             if (aDescribers != null && aDescribers.length > 0) {
-                for (IXDescriber wDescribers : aDescribers) {
+                for (final IXDescriber wDescribers : aDescribers) {
                     aBuffer.append(' ');
                     wDescribers.addDescriptionInBuffer(aBuffer);
                 }
             }
             return aBuffer;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.out.println(buildAppendErrorMess(e));
             return aBuffer;
         }
@@ -158,7 +165,7 @@ public final class CXStringUtils implements IConstants {
             }
 
             return aBuffer.append(']');
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.out.println(buildAppendErrorMess(e));
             return aBuffer;
         }
@@ -196,7 +203,7 @@ public final class CXStringUtils implements IConstants {
 
             return aBuffer.append(']');
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.out.println(buildAppendErrorMess(e));
             return aBuffer;
         }
@@ -213,7 +220,7 @@ public final class CXStringUtils implements IConstants {
             final CharSequence aValue, final int aLen, final char aLeadingChar) {
 
         try {
-            int wLen = aValue.length();
+            final int wLen = aValue.length();
             if (wLen < aLen) {
                 aBuffer.append(aValue);
                 return appendChars(aBuffer, aLeadingChar, aLen - wLen);
@@ -222,7 +229,7 @@ public final class CXStringUtils implements IConstants {
             } else {
                 return aBuffer.append(aValue);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return new StringBuilder().append(CXException.eInString(e));
         }
     }
@@ -238,7 +245,7 @@ public final class CXStringUtils implements IConstants {
             final String aValue, final int aLen, final char aLeadingChar) {
 
         try {
-            int wLen = aValue.length();
+            final int wLen = aValue.length();
             if (wLen < aLen) {
                 appendChars(aBuffer, aLeadingChar, aLen - wLen);
                 return aBuffer.append(aValue);
@@ -247,7 +254,7 @@ public final class CXStringUtils implements IConstants {
             } else {
                 return aBuffer.append(aValue);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return new StringBuilder().append(CXException.eInString(e));
         }
     }
@@ -262,12 +269,12 @@ public final class CXStringUtils implements IConstants {
 
         try {
             if (aStrs != null && aStrs.length > 0) {
-                for (String wStr : aStrs) {
+                for (final String wStr : aStrs) {
                     aBuffer.append(' ').append(wStr);
                 }
             }
             return aBuffer;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.out.println(buildAppendErrorMess(e));
             return aBuffer;
         }
@@ -315,7 +322,7 @@ public final class CXStringUtils implements IConstants {
      */
     private static String buildAppendErrorMess(final Exception e) {
 
-        StringBuilder wSB = new StringBuilder();
+        final StringBuilder wSB = new StringBuilder();
         wSB.append(LIB_APPEND_ERROR);
         if (e != null) {
             wSB.append(String.format(FORMAT_EXCEPTION, e.getClass()
@@ -339,7 +346,7 @@ public final class CXStringUtils implements IConstants {
         }
 
         int wCount = 0;
-        int wMax = aString.length();
+        final int wMax = aString.length();
         int wI = 0;
         while (wI < wMax) {
             if (aString.charAt(wI) == aChar) {
@@ -362,7 +369,7 @@ public final class CXStringUtils implements IConstants {
                 || aString.length() < aSubString.length()) {
             return -1;
         }
-        String[] wSplited = aString.split(aSubString);
+        final String[] wSplited = aString.split(aSubString);
 
         return wSplited.length - 1;
     }
@@ -375,7 +382,7 @@ public final class CXStringUtils implements IConstants {
     public static String formatKeyValueInString(final String aKey,
             final Object aValue) {
 
-        StringBuilder wSB = new StringBuilder();
+        final StringBuilder wSB = new StringBuilder();
         return wSB.append(aKey).append("=[")
                 .append(aValue == null ? "null" : aValue.toString())
                 .append(']').toString();
@@ -383,7 +390,7 @@ public final class CXStringUtils implements IConstants {
 
     public static String getExceptionStack(final Throwable e) {
 
-        java.io.StringWriter wSW = new java.io.StringWriter();
+        final java.io.StringWriter wSW = new java.io.StringWriter();
         e.printStackTrace(new java.io.PrintWriter(wSW));
         return wSW.toString();
     }
@@ -409,7 +416,7 @@ public final class CXStringUtils implements IConstants {
         if (aString == null || aValues == null || aValues.length < 1) {
             return false;
         }
-        for (Object wValue : aValues) {
+        for (final Object wValue : aValues) {
             if (wValue != null && wValue.equals(aString)) {
                 return true;
             }
@@ -426,7 +433,7 @@ public final class CXStringUtils implements IConstants {
         if (!hasContent(aStr)) {
             return false;
         }
-        int wMax = aStr.length();
+        final int wMax = aStr.length();
         int wI = 0;
         while (wI < wMax) {
             if (!Character.isDigit(aStr.charAt(wI))) {
@@ -459,7 +466,7 @@ public final class CXStringUtils implements IConstants {
             return false;
         }
 
-        int wMax = aOffsetEnd;
+        final int wMax = aOffsetEnd;
         int wI = aOffset;
         while (wI < wMax) {
             if (!isTrimableChar(aValue.charAt(wI))) {
@@ -503,9 +510,9 @@ public final class CXStringUtils implements IConstants {
             return aValue;
         }
 
-        StringBuilder wSB = new StringBuilder();
+        final StringBuilder wSB = new StringBuilder();
 
-        int wMaxVal = aValue.length();
+        final int wMaxVal = aValue.length();
         char wCharVal;
         for (int wI = 0; wI < wMaxVal; wI++) {
             wCharVal = aValue.charAt(wI);
@@ -535,13 +542,13 @@ public final class CXStringUtils implements IConstants {
             return aText;
         }
 
-        Pattern pattern = Pattern.compile("\\$\\{(.+?)\\}");
-        Matcher matcher = pattern.matcher(aText);
+        final Pattern pattern = Pattern.compile("\\$\\{(.+?)\\}");
+        final Matcher matcher = pattern.matcher(aText);
         // populate the replacements map ...
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         int i = 0;
         while (matcher.find()) {
-            String replacement = aReplacements.get(matcher.group(1));
+            final String replacement = aReplacements.get(matcher.group(1));
             builder.append(aText.substring(i, matcher.start()));
             if (replacement == null) {
                 builder.append(matcher.group(0));
@@ -567,7 +574,7 @@ public final class CXStringUtils implements IConstants {
             aValue = EMPTY;
         }
 
-        int wLen = aValue.length();
+        final int wLen = aValue.length();
         if (wLen < aLen) {
             return aValue + strFromChar(aLeadingChar, aLen - wLen);
         } else if (wLen > aLen) {
@@ -611,7 +618,7 @@ public final class CXStringUtils implements IConstants {
         if (aValue == null) {
             aValue = EMPTY;
         }
-        int wLen = aValue.length();
+        final int wLen = aValue.length();
         if (wLen < aLen) {
             return strFromChar(aLeadingChar, aLen - wLen) + aValue;
         } else if (wLen > aLen) {
@@ -681,7 +688,7 @@ public final class CXStringUtils implements IConstants {
 
         if (hasContent(aStr)) {
             if (aBadCharsPrefix != null) {
-                int wLen = aStr.length();
+                final int wLen = aStr.length();
                 int wPos = 0;
                 while (wPos < wLen
                         && aBadCharsPrefix.indexOf(aStr.charAt(wPos)) != -1) {
@@ -692,7 +699,7 @@ public final class CXStringUtils implements IConstants {
                 }
             }
             if (aBadCharsSuffix != null && aStr.length() != 0) {
-                int wLen = aStr.length();
+                final int wLen = aStr.length();
                 int wPos = wLen - 1;
                 while (wPos >= 0
                         && aBadCharsSuffix.indexOf(aStr.charAt(wPos)) != -1) {
@@ -742,7 +749,7 @@ public final class CXStringUtils implements IConstants {
         if (aStringEnum == null || !aStringEnum.hasMoreElements()) {
             return EMPTY;
         }
-        StringBuilder wSB = new StringBuilder(256);
+        final StringBuilder wSB = new StringBuilder(256);
         int wI = 0;
         while (aStringEnum.hasMoreElements()) {
             if (wI > 0) {
@@ -776,9 +783,9 @@ public final class CXStringUtils implements IConstants {
         if (aStringList == null || aStringList.size() == 0) {
             return EMPTY;
         }
-        StringBuilder wSB = new StringBuilder(256);
+        final StringBuilder wSB = new StringBuilder(256);
         int wI = 0;
-        for (String wStr : aStringList) {
+        for (final String wStr : aStringList) {
             if (wI > 0) {
                 wSB.append(aSeparator);
             }
@@ -808,8 +815,8 @@ public final class CXStringUtils implements IConstants {
         if (aValues == null || aValues.length == 0) {
             return EMPTY;
         }
-        StringBuilder wSB = new StringBuilder(256);
-        int wMax = aValues.length;
+        final StringBuilder wSB = new StringBuilder(256);
+        final int wMax = aValues.length;
         for (int wI = 0; wI < wMax; wI++) {
             if (wI > 0) {
                 wSB.append(aSeparator);
@@ -828,7 +835,7 @@ public final class CXStringUtils implements IConstants {
         try {
             Integer.parseInt(aStr);
             return true;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return false;
         }
     }
@@ -850,12 +857,12 @@ public final class CXStringUtils implements IConstants {
     public static String strKeepCharGreaterThan(final String aStr,
             final char aCharLimit) {
 
-        int wLen = aStr != null ? aStr.length() : 0;
+        final int wLen = aStr != null ? aStr.length() : 0;
         if (wLen < 1) {
             return aStr;
         }
 
-        StringBuilder wSB = new StringBuilder(wLen);
+        final StringBuilder wSB = new StringBuilder(wLen);
         char wChar;
         int wI = 0;
         while (wI < wLen) {
@@ -877,7 +884,7 @@ public final class CXStringUtils implements IConstants {
 
         String wRes = EMPTY;
         if (aStr != null && aDelim != null) {
-            int wPos = aStr.indexOf(aDelim);
+            final int wPos = aStr.indexOf(aDelim);
             if (wPos != -1 && wPos != 0) {
                 wRes = aStr.substring(0, wPos);
             }
@@ -904,7 +911,7 @@ public final class CXStringUtils implements IConstants {
 
         String wRes = "";
         if (aStr != null && aDelim != null) {
-            int wPos = aStr.lastIndexOf(aDelim);
+            final int wPos = aStr.lastIndexOf(aDelim);
             if (wPos != -1 && wPos != 0) {
                 wRes = aStr.substring(0, wPos);
             }
@@ -925,8 +932,8 @@ public final class CXStringUtils implements IConstants {
 
         if (aStr != null && aStr.length() != 0 && aWhat != null
                 && aWhat.length() != 0 && aBy != null) {
-            StringBuilder wRes = new StringBuilder(aStr);
-            int wWhatLength = aWhat.length();
+            final StringBuilder wRes = new StringBuilder(aStr);
+            final int wWhatLength = aWhat.length();
             int wPos = aStr.lastIndexOf(aWhat);
             // Pour bloquer la recusivite si aWhat contient aBy
             int wLastPos = aStr.length();
@@ -960,7 +967,7 @@ public final class CXStringUtils implements IConstants {
 
         String wRes = "";
         if (aStr != null && aDelim != null) {
-            int wPos = aStr.indexOf(aDelim);
+            final int wPos = aStr.indexOf(aDelim);
             if (wPos != -1 && wPos != aStr.length() - 1) {
                 wRes = aStr.substring(wPos + aDelim.length());
             }
@@ -987,7 +994,7 @@ public final class CXStringUtils implements IConstants {
 
         String wRes = "";
         if (aStr != null && aDelim != null) {
-            int wPos = aStr.lastIndexOf(aDelim);
+            final int wPos = aStr.lastIndexOf(aDelim);
             if (wPos != -1 && wPos != aStr.length() - 1) {
                 wRes = aStr.substring(wPos + aDelim.length());
             }
@@ -1025,11 +1032,11 @@ public final class CXStringUtils implements IConstants {
         if (aText == null) {
             return null;
         }
-        int wMax = aText.length();
+        final int wMax = aText.length();
         if (wMax == 0) {
             return aText;
         }
-        char[] wChars = aText.toCharArray();
+        final char[] wChars = aText.toCharArray();
         int wI = 0;
         char wChar;
         boolean wIsWordSeparator = false;
@@ -1061,7 +1068,7 @@ public final class CXStringUtils implements IConstants {
         if (aStr == null || aStr.isEmpty()) {
             return aStr;
         }
-        StringBuilder wRes = new StringBuilder();
+        final StringBuilder wRes = new StringBuilder();
         for (int i = 0; i < aStr.length(); i++) {
             wRes.append(Integer.toHexString(aStr.charAt(i))).append("00");
         }
@@ -1077,9 +1084,75 @@ public final class CXStringUtils implements IConstants {
 
         try {
             return Integer.parseInt(aStr);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return aDefValue;
         }
+    }
+
+    /**
+     * @param aObj
+     * @param aLenMax
+     * @return
+     */
+    public static String toTruncatedString(final Object aObj, final int aLenMax) {
+
+        return toTruncatedString(aObj, aLenMax, null);
+    }
+
+    /**
+     * @param aObj
+     * @param aLenMax
+     * @param aTruncatedSuffix
+     * @return
+     */
+    public static String toTruncatedString(final Object aObj,
+            final int aLenMax, final String aTruncatedSuffix) {
+
+        if (aObj == null) {
+            return "null";
+        }
+        final String wStr = aObj.toString();
+        if (wStr.length() <= aLenMax) {
+            return wStr;
+        }
+        if (aTruncatedSuffix != null) {
+            return wStr.substring(0, aLenMax).concat(aTruncatedSuffix);
+        } else {
+            return wStr.substring(0, aLenMax);
+        }
+    }
+
+    /**
+     * @param aObj
+     * @param aEnd
+     * @return
+     */
+    public static String toTruncatedString(final Object aObj, final String aEnd) {
+
+        return toTruncatedString(aObj, aEnd, null);
+    }
+
+    /**
+     * @param aObj
+     * @param aEnd
+     * @param aTruncatedSuffix
+     * @return
+     */
+    public static String toTruncatedString(final Object aObj,
+            final String aEnd, final String aTruncatedSuffix) {
+
+        if (aObj == null) {
+            return "null";
+        }
+        final String wStr = aObj.toString();
+        if (aEnd == null) {
+            return wStr;
+        }
+        final int wPos = wStr.indexOf(aEnd);
+        if (wPos == -1) {
+            return wStr;
+        }
+        return toTruncatedString(wStr, wPos, aTruncatedSuffix);
     }
 
     /**
