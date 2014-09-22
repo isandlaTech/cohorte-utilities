@@ -22,13 +22,13 @@ import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.*;
-import static java.nio.file.StandardCopyOption.*;
+
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
 /**
@@ -231,6 +231,8 @@ public class PackageMojo
                 }
             } catch( IOException e1 ) {
                 getLog().error("Can not create source archive file!");
+            } catch( ArchiverException e2) {
+                getLog().error("Can not create source archive file!");
             }
 
             /* attach only the source zip to be uploaded to the repository */
@@ -242,7 +244,7 @@ public class PackageMojo
         }
     }
 
-    private File createSourceArchive() throws IOException {
+    private File createSourceArchive() throws IOException, ArchiverException {
         getLog().info("Start creating maven source file...");
         File f1 = new File(baseDir+"/src/main/python");
         File f2 = new File(baseDir+"/target/dist/"+pkgName+"-"+pkgVersion+"-source.zip");
@@ -253,7 +255,8 @@ public class PackageMojo
     }
 
     private void runSetupToolsPackaging() throws IOException, InterruptedException {
-    	ProcessBuilder pb = new ProcessBuilder("python", "setup.py", "sdist", "--formats=zip");
+    	/*
+        ProcessBuilder pb = new ProcessBuilder("python", "setup.py", "sdist", "--formats=zip");
     	pb.directory(new File(baseDir+"/target/"+pkgTopLevel));
     	if (verbose.toString().equalsIgnoreCase("true")) {
 	    	pb.redirectErrorStream(true);
@@ -269,7 +272,27 @@ public class PackageMojo
 			getLog().info("Packaging terminated! (result on /target/dist)");
 		} else {
 			getLog().info("Packaging terminated with errors!");
-		}
+		}*/
+        try {
+            executeMojo(
+                    plugin(
+                            groupId("org.codehaus.mojo"),
+                            artifactId("exec-maven-plugin")
+                    ),
+                    goal("exec"),
+                    configuration(
+                            element(name("workingDirectory"), baseDir+"/target/"+pkgTopLevel),
+                            element(name("executable"), "python"),
+                            element(name("arguments"), element(name("argument"),"setup.py"), element(name("argument"), "sdist"), element(name("argument"), "--formats=zip"))
+                    ), executionEnvironment(
+                    m_project,
+                    m_session,
+                    m_pluginManager
+            )
+            );
+        } catch (MojoExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     private void attachArtifact(File file, String type) {

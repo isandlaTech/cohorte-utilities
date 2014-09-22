@@ -16,11 +16,17 @@ package org.cohorte.plugins;
  * limitations under the License.
  */
 
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.project.MavenProject;
 
 import java.io.*;
 import java.util.*;
+
+import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
+
 /**
  * <p>Goal which runs unit test on python (and java) code.</p>
  * <p>This Mojo requires the following configuration:<br/>
@@ -78,6 +84,32 @@ public class TestMojo
     *   expression="${project.artifactId}"
     **/
     private String bundleName;
+
+    /**
+     * The Maven project.
+     *
+     * @parameter expression="${project}"
+     * @required
+     * @readonly
+     */
+    private MavenProject m_project;
+
+    /**
+     * The Maven project.
+     *
+     * @parameter expression="${session}"
+     * @required
+     * @readonly
+     */
+    private MavenSession m_session;
+
+    /**
+     * The Maven BuildPluginManager component.
+     *
+     * @component
+     * @required
+     */
+    private BuildPluginManager m_pluginManager;
 
  	private Object pkgTopLevel;
     private Object skipTest;
@@ -145,6 +177,7 @@ public class TestMojo
     }
 
     public void runSetupToolsTest() throws IOException, InterruptedException {
+        /*
     	ProcessBuilder pb = new ProcessBuilder("python", "setup.py", "test");
     	pb.directory(new File(baseDir+"/target/"+pkgTopLevel+"_tests"));
     	if (verbose.toString().equalsIgnoreCase("true")) {
@@ -158,20 +191,31 @@ public class TestMojo
     	getLog().info("Starting tests...");	
     	final Process process = pb.start();
     	process.waitFor();
-		/*if (verbose.toString().equalsIgnoreCase("true")) {
-			InputStream is = process.getInputStream();
-			InputStreamReader isr = new InputStreamReader(is);
-			BufferedReader br = new BufferedReader(isr);
-			String line;
-			while ((line = br.readLine()) != null) {
-				getLog().info(line);
-			}
-		}*/
 		if (process.exitValue() == 0) {
 			getLog().info("Test terminated!");
 		} else {
 			getLog().info("Test terminated with errors!");
-		}
+		}*/
+        try {
+            executeMojo(
+                    plugin(
+                            groupId("org.codehaus.mojo"),
+                            artifactId("exec-maven-plugin")
+                    ),
+                    goal("exec"),
+                    configuration(
+                            element(name("workingDirectory"), baseDir+"/target/"+pkgTopLevel+"_tests"),
+                            element(name("executable"), "python"),
+                            element(name("arguments"), element(name("argument"),"setup.py"), element(name("argument"), "test"))
+                    ), executionEnvironment(
+                    m_project,
+                    m_session,
+                    m_pluginManager
+            )
+            );
+        } catch (MojoExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setTest(Map instructions) { this.testInstructions = instructions; }
