@@ -1,0 +1,1 @@
+dictionary = {"hello" , "world", "welcome", "to", "the", "ipopo", "tutorial"}

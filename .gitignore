@@ -1,0 +1,54 @@
+# OS
+*~
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Java generated classes  #
+*.class
+
+# IntelliJ IDEA files #
+.idea
+*.iml
+out 
+
+# Felix #
+felix-cache/
+
+# Eclipse 
+.metadata
+RemoteSystemsTempFiles/
+
+
+# Binaries
+*.tar.gz
+bin/
+target/
+*.dat
+small-install.zip
+*.pid
+*.access
+
+# C
+*.o
+
+# Python
+*.pyc
+*.pyo
+__pycache__/
+
+# Coverage (Python)
+.coverage
+htmlcov/
+
+# Sonar
+.sonar/
+sonar-project.properties
+
+# PSEM2M Compiler
+auto_build_psem2m.xml
+

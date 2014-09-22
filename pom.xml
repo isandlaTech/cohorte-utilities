@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!--   
+    Copyright 2012-2014 isandlaTech (http://isandlatech.com/) 
+     
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file 
+	except in compliance with the License. You may obtain a copy of the License 
+	at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable 
+	law or agreed to in writing, software distributed under the License is distributed 
+	on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either 
+	express or implied. See the License for the specific language governing permissions 
+	and limitations under the License. 
+	-->
+	
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.cohorte</groupId>
+	<artifactId>cohorte-community</artifactId>
+	<version>1.0.0</version>
+	<packaging>pom</packaging>	
+
+<!-- General project information -->
+
+	<name>COHORTE Project (Community Edition)</name>
+	<url>https://isandlatech.github.io/cohorte-community</url>
+
+	<licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+            <distribution>manual</distribution>
+        </license>
+    </licenses>
+
+    <organization>
+        <name>isandlaTech</name>
+        <url>http://isandlatech.com</url>
+    </organization>
+
+	<issueManagement>
+        <system>Github</system>
+        <url>https://github.com/isandlaTech/cohorte-community/issues</url>
+    </issueManagement>
+
+<!-- Repositories: 
+	     we use only isandlaTech repositories to control our eco-system -->
+
+	<repositories>
+		<repository>
+			<id>isandlatech</id>
+			<name>isandlatech-repo</name>
+			<layout>default</layout>
+			<url>http://repo.isandlatech.com/maven</url>
+			<snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>	
+		<pluginRepository>
+			<id>isandlatech</id>
+			<name>isandlatech-repo</name>
+			<layout>default</layout>
+			<url>http://repo.isandlatech.com/maven</url>
+			<snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<distributionManagement>
+		<repository>
+	      <id>isandlatech-release</id>
+	      <name>isandlaTech Repository</name>
+	      <url>ftp://isandlatech.com/maven</url>
+	    </repository>
+        <!--snapshotRepository>
+            <id>isandlatech-snapshot</id>
+            <name>isandlaTech Snapshot Repository</name>
+            <url>dav:https://repo.isandlatech.com/maven/snapshots</url>
+        </snapshotRepository-->
+	</distributionManagement>
+
+<!-- Profiles -->
+
+    <profiles>
+    	<!-- development profile -->
+    	<profile>
+    		<id>dev</id>
+    		<activation>
+    			<property>
+    				<name>env</name>
+    				<value>dev</value>
+    			</property>
+    		</activation>
+    		<modules>
+    			<module>3rd-party</module>
+				<module>framework</module>
+				<module>platforms</module>
+				<module>tools</module>
+				<module>demos</module>
+			</modules>
+    	</profile>
+    	<!-- release profile -->
+    	<profile>
+    		<id>framework</id>
+    		<activation>
+				<property>
+					<name>env</name>
+					<value>framework</value>
+				</property>
+    		</activation>
+    		<modules>
+				<module>framework</module>
+			</modules>
+    	</profile>
+    	<profile>
+    		<id>platforms</id>
+    		<activation>
+				<property>
+					<name>env</name>
+					<value>platforms</value>
+				</property>
+    		</activation>
+    		<modules>
+				<module>platforms</module>
+			</modules>
+    	</profile>
+        <profile>
+            <id>demos</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>demos</value>
+                </property>
+            </activation>
+            <modules>
+                <module>demos</module>
+            </modules>
+        </profile>
+    	<profile>
+    		<id>3rd-party</id>    		
+    		<activation>
+    			<property>
+    				<name>env</name>
+    				<value>3rd-party</value>
+    			</property>
+    		</activation>
+    		<modules>
+				<module>3rd-party</module>
+			</modules>			
+    	</profile>
+    	<profile>
+    		<id>tools</id>    		
+    		<activation>
+    			<property>
+    				<name>env</name>
+    				<value>tools</value>
+    			</property>
+    		</activation>
+    		<modules>
+				<module>tools</module>
+			</modules>			
+    	</profile>
+    </profiles>
+
+    <build>
+    	<extensions>
+	      <!-- Enabling the use of FTP -->
+	      <extension>
+	        <groupId>org.apache.maven.wagon</groupId>
+	         <artifactId>wagon-ftp</artifactId>
+	         <version>1.0-beta-6</version>
+	      </extension>
+	    </extensions>
+	</build>
+
+</project>

@@ -1,0 +1,214 @@
+#!/usr/bin/env python
+# -- Content-Encoding: UTF-8 --
+"""
+Node Composer: Vote-based isolate distributor
+
+Clusters the components of a composition into groups according to several
+criteria.
+
+:author: Thomas Calmant
+:copyright: Copyright 2013, isandlaTech
+:license: GPLv3
+:version: 3.0.0
+
+..
+
+    This file is part of Cohorte.
+
+    Cohorte is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Cohorte is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Cohorte. If not, see <http://www.gnu.org/licenses/>.
+"""
+
+# Module version
+__version_info__ = (3, 0, 0)
+__version__ = ".".join(str(x) for x in __version_info__)
+
+# Documentation strings format
+__docformat__ = "restructuredtext en"
+
+# ------------------------------------------------------------------------------
+
+# Composer
+import cohorte.composer
+import cohorte.composer.node.beans as beans
+
+# Vote service
+import cohorte.vote
+
+# iPOPO Decorators
+from pelix.ipopo.decorators import ComponentFactory, Requires, Provides, \
+    Instantiate
+
+# Standard library
+import logging
+import operator
+
+# ------------------------------------------------------------------------------
+
+_logger = logging.getLogger(__name__)
+
+# ------------------------------------------------------------------------------
+
+@ComponentFactory()
+@Provides(cohorte.composer.SERVICE_DISTRIBUTOR_ISOLATE)
+@Requires('_distance_criteria',
+          cohorte.composer.SERVICE_NODE_CRITERION_DISTANCE, aggregate=True)
+@Requires('_reliability_criteria',
+          cohorte.composer.SERVICE_NODE_CRITERION_RELIABILITY, aggregate=True,
+          optional=True)
+@Requires('_vote', cohorte.vote.SERVICE_VOTE_CORE)
+@Instantiate('cohorte-composer-node-distributor')
+class IsolateDistributor(object):
+    """
+    Clusters components into isolates using a vote.
+    """
+    def __init__(self):
+        """
+        Sets up members
+        """
+        # Distance criteria
+        self._distance_criteria = []
+
+        # Reliability criteria
+        self._reliability_criteria = []
+
+        # Vote system
+        self._vote = None
+
+        # Distribution loop index
+        self._nb_distribution = 0
+
+
+    def _get_matching_isolates(self, component, isolates):
+        """
+        Returns the isolates that match the given component.
+
+        :param component: Component to check
+        :param isolates: Extra available isolates
+        :return: A set of isolates that could host the component (can be empty)
+        """
+        # Filter: component language
+        language = component.language
+
+        # FIXME: ugly trick due to python/python3 comparison problem
+        authorized_languages = set((None, language))
+        if language.startswith('python'):
+            authorized_languages.update(('python', 'python3'))
+
+        return [isolate for isolate in isolates
+                if isolate.language in authorized_languages]
+
+
+    def distribute(self, components, existing_isolates):
+        """
+        Computes the distribution of the given components
+
+        :param components: A list of RawComponent beans
+        :param existing_isolates: A set of pre-existing eligible isolates
+        :return: A tuple of tuples: updated and new EligibleIsolate beans
+        """
+        # Nominate electors
+        electors = set(self._distance_criteria)
+        electors.update(self._reliability_criteria)
+
+        # Growing list of candidates
+        all_candidates = set(existing_isolates)
+
+        # Hide components of the vote
+        for candidate in all_candidates:
+            candidate.hide(components)
+
+        # Prepare the return
+        updated_isolates = set()
+        new_isolates = set()
+
+        # Prepare parameters of the vote
+        # -> -5 votes on "against"
+        # -> Remove candidate after 2 "against"
+        kind = "approbation"
+        parameters = {'penalty': 5, 'exclusion': 2}
+
+        self._nb_distribution += 1
+        prefix = "Distribution {0}".format(self._nb_distribution)
+
+        # Sort components by name
+        sorted_components = list(components)
+        sorted_components.sort(key=operator.attrgetter('name'))
+
+        for component in sorted_components:
+            # Compute the isolates that could match this component
+            matching_isolates = self._get_matching_isolates(component,
+                                                            all_candidates)
+
+            # Sort candidates by name
+            matching_isolates = sorted(matching_isolates,
+                                       key=operator.attrgetter('name'))
+
+            # Add an empty isolate in the candidates
+            neutral = beans.EligibleIsolate()
+            matching_isolates.append(neutral)
+
+            for candidate in matching_isolates:
+                # Show the component in this vote
+                candidate.unhide(component)
+
+            # Vote !
+            isolate = self._vote.vote(electors, matching_isolates, component,
+                                      "{0}-{1}".format(prefix, component.name),
+                                      kind, parameters)
+            if isolate is None:
+                # Vote without result
+                isolate = neutral
+
+            # Associate the component to the isolate
+            isolate.add_component(component)
+
+            # Add the new isolate for the next round
+            all_candidates.add(isolate)
+
+            # Isolate rename accepted
+            if not isolate.name:
+                isolate.accepted_rename()
+
+            # Store the isolate
+            if isolate is neutral:
+                # New isolate
+                new_isolates.add(isolate)
+
+            elif isolate not in new_isolates:
+                # Old one updated
+                updated_isolates.add(isolate)
+
+            # Reset others
+            for other_isolate in matching_isolates:
+                if other_isolate is not isolate:
+                    other_isolate.rejected_rename()
+
+                    # Re-hide component
+                    other_isolate.hide((component,))
+
+        return tuple(updated_isolates), tuple(new_isolates)
+
+
+    def handle_event(self, event):
+        """
+        Handles a component/composition event
+
+        :param event: The event to handle
+        """
+        # Nominate electors
+        electors = set(self._distance_criteria)
+        electors.update(self._reliability_criteria)
+
+        for elector in electors:
+            elector.handle_event(event)
