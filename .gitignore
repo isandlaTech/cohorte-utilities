@@ -52,3 +52,6 @@ sonar-project.properties
 # PSEM2M Compiler
 auto_build_psem2m.xml
 
+# Maven
+# generated
+src/lib/python
