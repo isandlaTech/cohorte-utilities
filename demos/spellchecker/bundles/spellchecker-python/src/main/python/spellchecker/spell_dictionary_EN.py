@@ -10,10 +10,12 @@ Dictionary service. It contains some English words.
 """
 
 # iPOPO decorators
-from pelix.ipopo.decorators import ComponentFactory,Property, Provides, \
-    Validate, Invalidate, Instantiate
+from pelix.ipopo.decorators import ComponentFactory, Property, Provides, \
+    Validate, Invalidate
 
-import os
+import logging
+
+_logger = logging.getLogger("spellchecker.spell_dictionary_EN")
 
 # Name the iPOPO component factory
 @ComponentFactory("spell_dictionary_en_factory")
@@ -37,11 +39,8 @@ class SpellDictionary(object):
         The component is validated. This method is called right before the
         provided service is registered to the framework.
         """
-        # All setup should be done here
-        os.rename("dictionary_en.txt", "dictionary_en.py")
-        import dictionary_en
-        self.dictionary = dictionary_en.dictionary
-        print('An English dictionary has been added')
+        _logger.info("SpellDictionary EN validated")
+        self.dictionary = {"hello" , "world", "welcome", "to", "the", "ipopo", "tutorial"}
 
     @Invalidate
     def invalidate(self, context):
@@ -50,7 +49,6 @@ class SpellDictionary(object):
         the provided service has been removed from the framework.
         """
         self.dictionary = None
-        os.rename("dictionary_en.py", "dictionary_en.txt")
 
     def check_word(self, word):
         """

@@ -29,7 +29,8 @@
 			 */
 			"name" : "spell_client_python",
 			"factory" : "spell_client_factory",
-			"language" : "python"
+			"language" : "python",
+			"isolate" : "client-isolate"
 		} ]
 	}
 }

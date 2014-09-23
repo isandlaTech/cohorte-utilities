@@ -15,6 +15,10 @@ from pelix.ipopo.decorators import ComponentFactory,Property, Provides, \
 
 import os
 
+import logging
+
+_logger = logging.getLogger("spellchecker.spell_dictionary_FR")
+
 # Name the iPOPO component factory
 @ComponentFactory("spell_dictionary_fr_factory")
 # This component provides a dictionary service
@@ -31,18 +35,14 @@ class SpellDictionary(object):
         """
         self.dictionary = None
 
-
     @Validate
     def validate(self, context):
         """
         The component is validated. This method is called right before the
         provided service is registered to the framework.
         """
-        # All setup should be done here
-        os.rename("dictionary_fr.txt", "dictionary_fr.py")
-        import dictionary_fr
-        self.dictionary = dictionary_fr.dictionary
-        print('A French dictionary has been added')
+        _logger.info("SpellDictionary FR validated")
+        self.dictionary = {"bonjour", "le", "monde", "au", "a", "ipopo", "tutoriel"}
 
     @Invalidate
     def invalidate(self, context):
@@ -51,7 +51,6 @@ class SpellDictionary(object):
         the provided service has been removed from the framework.
         """
         self.dictionary = None
-        os.rename("dictionary_fr.py", "dictionary_fr.txt")
 
     def check_word(self, word):
         """

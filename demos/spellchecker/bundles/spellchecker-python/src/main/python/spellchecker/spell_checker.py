@@ -8,18 +8,21 @@ The spell_dictionary component is a simple dictionary implementation of the Dict
 """
 
 # iPOPO decorators
-from pelix.ipopo.decorators import ComponentFactory,Property, Provides, \
-    Validate, Invalidate, Requires, Instantiate, BindField, UnbindField
+from pelix.ipopo.decorators import ComponentFactory, Provides, \
+    Validate, Invalidate, Requires, BindField, UnbindField
 
 # Standard library
+import logging
 import re
+
+_logger = logging.getLogger("spellchecker.spell_checker")
 
 # Name the component factory
 @ComponentFactory("spell_checker_factory")
 # Provide a Spell Checker service
 @Provides("spell_checker_service")
 # Consume all Spell Dictionary services available (aggregate them)
-@Requires("_spell_dictionaries", "spell_dictionary_service", aggregate=True)
+@Requires("_dictionaries", "spell_dictionary_service", aggregate=True)
 class SpellChecker(object):
     """
     A component that uses spell dictionary services to check the spelling of
@@ -30,7 +33,7 @@ class SpellChecker(object):
         Define class members
         """
         # the spell dictionary service, injected list
-        self._spell_dictionaries = []
+        self._dictionaries = []
 
         # the list of available dictionaries, constructed
         self.languages = {}
@@ -40,12 +43,14 @@ class SpellChecker(object):
         self.punctuation_marks = None
 
 
-    @BindField('_spell_dictionaries')
+    @BindField('_dictionaries')
     def bind_dict(self, field, service, svc_ref):
         """
         Called by iPOPO when a spell dictionary service is bound to this
         component
         """
+        _logger.info("New installed dictionary")
+
         # Extract the dictionary language from its properties
         language = svc_ref.get_property('language')
 
@@ -53,7 +58,7 @@ class SpellChecker(object):
         self.languages[language] = service
 
 
-    @UnbindField('_spell_dictionaries')
+    @UnbindField('_dictionaries')
     def unbind_dict(self, field, service, svc_ref):
         """
         Called by iPOPO when a dictionary service has gone away
@@ -72,9 +77,9 @@ class SpellChecker(object):
         This spell checker has been validated, i.e. at least one dictionary
         service has been bound.
         """
+        _logger.info("SpellChecker validated")
         # Set up internal members
         self.punctuation_marks = set((',',';','.','?','!',':', ' '))
-        print('A dictionary checker has been started')
 
 
     @Invalidate
@@ -83,14 +88,13 @@ class SpellChecker(object):
         The component has been invalidated
         """
         self.punctuation_marks = None
-        print('A dictionary checker has been stopped')
 
 
-    def check(self, passage, language="EN"):
+    def check(self, paragraph, language="EN"):
         """
         Checks the given passage for misspelled words.
 
-        @param passage the passage to spell check.
+        @param paragraph the passage to spell check.
         @param language language of the spell dictionary
         @return An array of misspelled words or null if no words are misspelled.
         @raise KeyError No dictionary for this language
@@ -99,15 +103,16 @@ class SpellChecker(object):
         error_list = []
 
         # list of words to be checked in the given passage without the punctuation marks
-        checked_list = re.split("([!,?.:; ])", passage)
+        checked_list = re.split("([!,?.:; ])", paragraph)
 
         try:
             # Get the dictionary corresponding to the requested language
             dictionary = self.languages[language]
 
         except KeyError:
-            # Not found
-            raise KeyError('Unknown language: {0}'.format(language))
+            # raise KeyError('Unknown language: {0}'.format(language))
+            _logger.error("Unknown language, or dictionary provider for this language is not installed!");
+            return None
 
         # Do the job, calling the found service
         return [word for word in checked_list

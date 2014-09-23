@@ -1,1 +1,0 @@
-dictionary = {"bonjour", "le", "monde", "au", "a", "ipopo", "tutoriel"}
