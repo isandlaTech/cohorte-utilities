@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.cohorte.utilities</groupId>
+	<artifactId>parent</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<properties>
+		<tycho-version>0.21.0</tycho-version>
+		<ipojo-version>1.12.0</ipojo-version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>juno</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/releases/juno</url>
+		</repository>
+	</repositories>
+	
+	<modules>
+	   <module>org.cohorte.utilities</module>
+	</modules>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<extensions>true</extensions>
+			</plugin>
+		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<!-- Add iPOJO annotations to the classpath -->
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-compiler-plugin</artifactId>
+					<version>${tycho-version}</version>
+					<configuration>
+						<source>1.7</source>
+						<target>1.7</target>
+						<extraClasspathElements>
+							<!-- iPOJO Annotations are not in a bundle -->
+							<extraClasspathElement>
+								<groupId>org.apache.felix</groupId>
+								<artifactId>org.apache.felix.ipojo.annotations</artifactId>
+								<version>${ipojo-version}</version>
+							</extraClasspathElement>
+						</extraClasspathElements>
+					</configuration>
+				</plugin>
+
+				<!-- iPOJO Manipulation -->
+				<plugin>
+					<groupId>org.apache.felix</groupId>
+					<artifactId>maven-ipojo-plugin</artifactId>
+					<version>${ipojo-version}</version>
+					<configuration>
+						<!-- Add support for Tycho packaging -->
+						<m_supportedProjectTypes>
+							<type>eclipse-plugin</type>
+						</m_supportedProjectTypes>
+					</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>ipojo-bundle</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>

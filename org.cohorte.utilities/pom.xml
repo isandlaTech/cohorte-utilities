@@ -4,12 +4,12 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.cohorte</groupId>
-		<artifactId>cohorte-java</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../../pom.xml</relativePath>
+		<groupId>org.cohorte.utilities</groupId>
+		<artifactId>parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<artifactId>org.psem2m.isolates.utilities</artifactId>
+	<artifactId>org.cohorte.utilities</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>eclipse-plugin</packaging>
 </project>
