@@ -1,0 +1,14 @@
+# Eclipse / IntelliJ
+.metadata
+RemoteSystemsTempFiles/
+.idea/
+
+# Binaries
+*.tar.gz
+bin/
+target/
+
+# Sonar
+.sonar/
+sonar-project.properties
+
