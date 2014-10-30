@@ -15,6 +15,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
 
 import org.psem2m.utilities.CXStringUtils;
 
@@ -37,8 +38,8 @@ public class CXFile extends CXFileBase {
 	 * @return
 	 * @throws Exception
 	 */
-	public static CXFile createTempFile(String aPref, String aSuff, CXFileDir aParentDir)
-			throws Exception {
+	public static CXFile createTempFile(String aPref, String aSuff,
+			CXFileDir aParentDir) throws Exception {
 		File wFile = File.createTempFile(aPref, aSuff, aParentDir);
 		return new CXFile(wFile.getPath());
 	}
@@ -49,7 +50,8 @@ public class CXFile extends CXFileBase {
 	 * @return
 	 * @throws Exception
 	 */
-	private static CXFile replaceContentBy(CXFile aDestFile, CXFile aContentFile) throws Exception {
+	private static CXFile replaceContentBy(CXFile aDestFile, CXFile aContentFile)
+			throws Exception {
 		RandomAccessFile wRAF = new RandomAccessFile(aDestFile, "rw");
 		wRAF.setLength(0);// clean file
 		wRAF.write(aContentFile.readAllBytes());
@@ -99,8 +101,8 @@ public class CXFile extends CXFileBase {
 	 */
 	private void assertExist(String aAction) throws IOException {
 		if (!exists()) {
-			throw new IOException("Can't " + aAction + " file '" + getAbsolutePath()
-					+ "'.\nFile not found.");
+			throw new IOException("Can't " + aAction + " file '"
+					+ getAbsolutePath() + "'.\nFile not found.");
 		}
 	}
 
@@ -117,7 +119,8 @@ public class CXFile extends CXFileBase {
 	 * @return aDestFile
 	 * @throws Exception
 	 */
-	public CXFile copyTo(CXFile aDestFile, boolean aDeleteIfExists) throws IOException {
+	public CXFile copyTo(CXFile aDestFile, boolean aDeleteIfExists)
+			throws IOException {
 		assertExist("copy");
 		this.close();
 		if ((!aDestFile.exists()) || (aDestFile.exists() && aDeleteIfExists)) {
@@ -155,7 +158,8 @@ public class CXFile extends CXFileBase {
 	 * @return fichier de destination
 	 * @throws Exception
 	 */
-	public CXFile copyTo(CXFileDir aDir, String aName, boolean aDeleteIfExists) throws IOException {
+	public CXFile copyTo(CXFileDir aDir, String aName, boolean aDeleteIfExists)
+			throws IOException {
 		CXFileDir wDir = aDir;
 		if (wDir == null) {
 			wDir = getParentDirectory();
@@ -192,7 +196,8 @@ public class CXFile extends CXFileBase {
 	 * @return
 	 * @throws Exception
 	 */
-	public CXFile duplicateIn(CXFile aDestFile, boolean aCreateIfNotExists) throws Exception {
+	public CXFile duplicateIn(CXFile aDestFile, boolean aCreateIfNotExists)
+			throws Exception {
 		assertExist("duplicateIn");
 
 		if (aCreateIfNotExists && !aDestFile.exists()) {
@@ -278,12 +283,22 @@ public class CXFile extends CXFileBase {
 	}
 
 	/**
+	 * 
+	 * @return true if the file exist and its size is 0
+	 */
+	public boolean isEmpty() {
+
+		return size() == 0;
+	}
+
+	/**
 	 * @param aDestFile
 	 * @param aDeleteIfExists
 	 * @return
 	 * @throws Exception
 	 */
-	public CXFile moveTo(CXFile aDestFile, boolean aDeleteIfExists) throws IOException {
+	public CXFile moveTo(CXFile aDestFile, boolean aDeleteIfExists)
+			throws IOException {
 		assertExist("move");
 		close();
 
@@ -291,13 +306,15 @@ public class CXFile extends CXFileBase {
 			if (aDeleteIfExists) {
 				aDestFile.delete();
 			} else {
-				throw new IOException("Can't move file '" + getAbsolutePath() + "' to '"
-						+ aDestFile.getAbsolutePath() + "'.\nDestination file already exists.");
+				throw new IOException("Can't move file '" + getAbsolutePath()
+						+ "' to '" + aDestFile.getAbsolutePath()
+						+ "'.\nDestination file already exists.");
 			}
 		}
 		if (!renameTo(aDestFile)) {
-			throw new IOException("Can't move file '" + getAbsolutePath() + "' to '"
-					+ aDestFile.getAbsolutePath() + "'.\nMethode \"renameTo\" return false.");
+			throw new IOException("Can't move file '" + getAbsolutePath()
+					+ "' to '" + aDestFile.getAbsolutePath()
+					+ "'.\nMethode \"renameTo\" return false.");
 		}
 		return aDestFile;
 	}
@@ -313,7 +330,8 @@ public class CXFile extends CXFileBase {
 	 *            - Suppresion du fichier destination
 	 * @throws Exception
 	 */
-	public CXFile moveTo(CXFileDir aDir, String aName, boolean aDeleteIfExists) throws IOException {
+	public CXFile moveTo(CXFileDir aDir, String aName, boolean aDeleteIfExists)
+			throws IOException {
 		CXFileDir wDir = aDir;
 		if (wDir == null) {
 			wDir = getParentDirectory();
@@ -345,7 +363,8 @@ public class CXFile extends CXFileBase {
 			wStream.close();
 			return wData;
 		} else {
-			throw new IOException("File not opened - Can't read file '" + getAbsolutePath() + "'");
+			throw new IOException("File not opened - Can't read file '"
+					+ getAbsolutePath() + "'");
 		}
 	}
 
@@ -363,6 +382,18 @@ public class CXFile extends CXFileBase {
 	}
 
 	/**
+	 * 
+	 * @return the size of the file or -1 if an exception occurs
+	 */
+	public long size() {
+		try {
+			return Files.size(this.toPath());
+		} catch (IOException e) {
+			return -1;
+		}
+	}
+
+	/**
 	 * @param aData
 	 * @throws Exception
 	 */
@@ -373,5 +404,4 @@ public class CXFile extends CXFileBase {
 			wStream.close();
 		}
 	}
-
 }
