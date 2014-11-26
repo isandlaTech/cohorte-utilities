@@ -22,7 +22,7 @@ import java.util.TreeSet;
  */
 public final class CXJvmUtils {
 
-	private static final int ID_WITDH = 30;
+	private static final int ID_WITDH = 40;
 
 	private static final int LINE_WITDH = 130;
 
