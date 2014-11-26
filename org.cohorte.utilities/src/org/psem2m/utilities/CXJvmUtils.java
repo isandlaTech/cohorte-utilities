@@ -179,6 +179,56 @@ public final class CXJvmUtils {
 	}
 
 	/**
+	 * @param aRepport
+	 * @param aClass
+	 * @param aTargetCastClass
+	 */
+	public static StringBuilder appendClassInfosInSB(
+			final StringBuilder aRepport, final Class<?> aClass) {
+		Class<?> wClass = aClass;
+		int wLevel = 0;
+		while (wClass != null) {
+			aRepport.append(String.format("\nClass(%2d)=[%75s from %s]",
+					wLevel, wClass.getName(), wClass.getClassLoader()));
+
+			appendInterfaceInfosInSB(aRepport, wClass, 1);
+
+			wLevel++;
+			wClass = wClass.getSuperclass();
+		}
+		return aRepport;
+	}
+
+	/**
+	 * @param aRepport
+	 * @param aClass
+	 * @param aInterfaceLevel
+	 */
+	private static StringBuilder appendInterfaceInfosInSB(
+			final StringBuilder aRepport, final Class<?> aClass,
+			final int aInterfaceLevel) {
+
+		Class<?>[] wInterfaces = aClass.getInterfaces();
+		if (wInterfaces != null && wInterfaces.length > 0) {
+			int wNbInterfaces = wInterfaces.length;
+			Class<?> wInterface;
+			for (int wInterfaceIdx = 0; wInterfaceIdx < wNbInterfaces; wInterfaceIdx++) {
+				wInterface = wInterfaces[wInterfaceIdx];
+
+				aRepport.append(String.format(
+						"\n  Interface(%d.%d)=[%68s from %s]", aInterfaceLevel,
+						wInterfaceIdx, wInterface.getName(),
+						wInterface.getClassLoader()));
+
+				appendInterfaceInfosInSB(aRepport, wInterface,
+						(aInterfaceLevel + 1));
+			}
+
+		}
+		return aRepport;
+	}
+
+	/**
 	 * 14w_009 - Intégration WebServices
 	 * 
 	 * @param wSB
@@ -375,53 +425,6 @@ public final class CXJvmUtils {
 	}
 
 	/**
-	 * @param aRepport
-	 * @param aClass
-	 * @param aTargetCastClass
-	 */
-	public static void dumpClassInfosInSB(final StringBuilder aRepport,
-			final Class<?> aClass) {
-		Class<?> wClass = aClass;
-		int wLevel = 0;
-		while (wClass != null) {
-			aRepport.append(String.format("\nClass(%2d)=[%75s from %s]",
-					wLevel, wClass.getName(), wClass.getClassLoader()));
-
-			dumpInterfaceInfosInSB(aRepport, wClass, 1);
-
-			wLevel++;
-			wClass = wClass.getSuperclass();
-		}
-	}
-
-	/**
-	 * @param aRepport
-	 * @param aClass
-	 * @param aInterfaceLevel
-	 */
-	private static void dumpInterfaceInfosInSB(final StringBuilder aRepport,
-			final Class<?> aClass, final int aInterfaceLevel) {
-
-		Class<?>[] wInterfaces = aClass.getInterfaces();
-		if (wInterfaces != null && wInterfaces.length > 0) {
-			int wNbInterfaces = wInterfaces.length;
-			Class<?> wInterface;
-			for (int wInterfaceIdx = 0; wInterfaceIdx < wNbInterfaces; wInterfaceIdx++) {
-				wInterface = wInterfaces[wInterfaceIdx];
-
-				aRepport.append(String.format(
-						"\n  Interface(%d.%d)=[%68s from %s]", aInterfaceLevel,
-						wInterfaceIdx, wInterface.getName(),
-						wInterface.getClassLoader()));
-
-				dumpInterfaceInfosInSB(aRepport, wInterface,
-						(aInterfaceLevel + 1));
-			}
-
-		}
-	}
-
-	/**
 	 * @param aValueMultiLine
 	 * @param adumpSupportedEncodings
 	 * @return
@@ -446,6 +449,58 @@ public final class CXJvmUtils {
 			}
 		}
 		return wSB.toString();
+	}
+
+	/**
+	 * <pre>
+	 * Class( 0)=[                                         com.ibm.mq.jms.MQConnectionFactory from o.e.o.i.b.DefaultClassLoader@2cd84149[com.ibm.msg.client.osgi.wmq:8.0.0.0(id=47)]]
+	 * Class( 1)=[                  com.ibm.msg.client.jms.admin.JmsJndiConnectionFactoryImpl from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
+	 *   Interface(1.0)=[                                          javax.naming.Referenceable from null]
+	 *   Interface(1.1)=[                                                java.io.Serializable from null]
+	 * Class( 2)=[                      com.ibm.msg.client.jms.admin.JmsConnectionFactoryImpl from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
+	 *   Interface(1.0)=[                         com.ibm.msg.client.jms.JmsConnectionFactory from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
+	 *   Interface(2.0)=[                           com.ibm.msg.client.jms.JmsPropertyContext from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
+	 *   Interface(3.0)=[                   com.ibm.msg.client.jms.JmsReadablePropertyContext from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
+	 *   Interface(4.0)=[                                                java.io.Serializable from null]
+	 *   Interface(3.1)=[                                                       java.util.Map from null]
+	 *   Interface(2.1)=[                                         javax.jms.ConnectionFactory from o.e.o.i.b.DefaultClassLoader@1d2ac818[com.ibm.msg.client.osgi.jms.prereq:8.0.0.0(id=6)]]
+	 * Class( 3)=[                     com.ibm.msg.client.jms.internal.JmsPropertyContextImpl from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
+	 *   Interface(1.0)=[                           com.ibm.msg.client.jms.JmsPropertyContext from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
+	 *   Interface(2.0)=[                   com.ibm.msg.client.jms.JmsReadablePropertyContext from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
+	 *   Interface(3.0)=[                                                java.io.Serializable from null]
+	 *   Interface(2.1)=[                                                       java.util.Map from null]
+	 *   Interface(1.1)=[         com.ibm.msg.client.provider.ProviderPropertyContextCallback from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
+	 * Class( 4)=[             com.ibm.msg.client.jms.internal.JmsReadablePropertyContextImpl from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
+	 *   Interface(1.0)=[                   com.ibm.msg.client.jms.JmsReadablePropertyContext from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
+	 *   Interface(2.0)=[                                                java.io.Serializable from null]
+	 * Class( 5)=[                                                           java.lang.Object from null]
+	 * </pre>
+	 * 
+	 * @param aClass
+	 * @return
+	 */
+	public static String getClassInfos(final Class<?> aClass) {
+
+		return appendClassInfosInSB(new StringBuilder(256), aClass).toString();
+	}
+
+	/**
+	 * <pre>
+	 *   Interface(1.0)=[                         com.ibm.msg.client.jms.JmsConnectionFactory from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
+	 *   Interface(2.0)=[                           com.ibm.msg.client.jms.JmsPropertyContext from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
+	 *   Interface(3.0)=[                   com.ibm.msg.client.jms.JmsReadablePropertyContext from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
+	 *   Interface(4.0)=[                                                java.io.Serializable from null]
+	 *   Interface(3.1)=[                                                       java.util.Map from null]
+	 *   Interface(2.1)=[                                         javax.jms.ConnectionFactory from o.e.o.i.b.DefaultClassLoader@1d2ac818[com.ibm.msg.client.osgi.jms.prereq:8.0.0.0(id=6)]]
+	 * </pre>
+	 * 
+	 * @param aInterface
+	 * @return
+	 */
+	public static String getInterfaceInfos(final Class<?> aInterface) {
+
+		return appendInterfaceInfosInSB(new StringBuilder(256), aInterface, 1)
+				.toString();
 	}
 
 	/**
