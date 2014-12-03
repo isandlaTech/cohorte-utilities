@@ -425,6 +425,42 @@ public final class CXJvmUtils {
 	}
 
 	/**
+	 * @param aRepport
+	 * @param aClass
+	 * @param aTargetCastClass
+	 */
+	public static void dumpClassInfosInSB(final StringBuilder aRepport,
+			final Class<?> aClass) {
+		Class<?> wClass = aClass;
+		int wLevel = 0;
+		while (wClass != null) {
+			aRepport.append(String.format("\nClass(%2d)=[%70s from %s]",
+					wLevel, wClass.getName(), wClass.getClassLoader()));
+
+			Class<?>[] wInterfaces = wClass.getInterfaces();
+			if (wInterfaces != null && wInterfaces.length > 0) {
+				int wNbInterfaces = wInterfaces.length;
+				Class<?> wInterface;
+				for (int wInterfaceIdx = 0; wInterfaceIdx < wNbInterfaces; wInterfaceIdx++) {
+					wInterface = wInterfaces[wInterfaceIdx];
+					int wInterfaceLevel = 0;
+					while (wInterface != null) {
+						aRepport.append(String.format(
+								"\n     Interface(%d.%d)=[%70s from %s]",
+								wInterfaceIdx, wInterfaceLevel,
+								wInterface.getName(),
+								wInterface.getClassLoader()));
+						wInterfaceLevel++;
+						wInterface = wInterface.getSuperclass();
+					}
+				}
+			}
+			wLevel++;
+			wClass = wClass.getSuperclass();
+		}
+	}
+
+	/**
 	 * @param aValueMultiLine
 	 * @param adumpSupportedEncodings
 	 * @return
