@@ -4,6 +4,7 @@ import java.nio.charset.Charset;
 
 import javax.script.ScriptContext;
 
+import org.cohorte.utilities.tests.CAbstractTest;
 import org.psem2m.utilities.CXBytesUtils;
 import org.psem2m.utilities.CXJvmUtils;
 import org.psem2m.utilities.CXOSUtils;

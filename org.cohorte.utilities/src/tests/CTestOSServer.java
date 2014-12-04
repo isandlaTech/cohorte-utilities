@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.cohorte.utilities.tests.CAbstractTest;
 import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.system.CXOSCommand;
 import org.psem2m.utilities.system.CXOSServer;

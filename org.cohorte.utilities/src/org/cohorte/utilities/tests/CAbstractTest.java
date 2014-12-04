@@ -1,4 +1,4 @@
-package tests;
+package org.cohorte.utilities.tests;
 
 import java.util.HashMap;
 import java.util.Map;

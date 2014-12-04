@@ -5,6 +5,7 @@ import static org.psem2m.utilities.CXThreadUtils.sleep;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.cohorte.utilities.tests.CAbstractTest;
 import org.psem2m.utilities.CXJvmUtils;
 import org.psem2m.utilities.CXOSUtils;
 import org.psem2m.utilities.CXThreadUtils;

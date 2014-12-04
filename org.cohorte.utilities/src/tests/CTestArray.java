@@ -3,6 +3,7 @@
  */
 package tests;
 
+import org.cohorte.utilities.tests.CAbstractTest;
 import org.psem2m.utilities.CXArray;
 
 /**

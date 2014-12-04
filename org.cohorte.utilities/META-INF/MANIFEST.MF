@@ -6,6 +6,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: isandlaTech.com
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: javax.script,
+ org.cohorte.utilities.tests;version="1.0.0",
  org.psem2m.utilities;version="1.0.0",
  org.psem2m.utilities.files;version="1.0.0",
  org.psem2m.utilities.json;version="1.0.0",
