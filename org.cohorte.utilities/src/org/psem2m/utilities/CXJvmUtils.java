@@ -24,7 +24,7 @@ public final class CXJvmUtils {
 
 	private static final int ID_WITDH = 40;
 
-	private static final int LINE_WITDH = 130;
+	private static final int LINE_WITDH = 140;
 
 	public static final int MASK_INFOS_JAVA = 1;
 	public static final int MASK_INFOS_OS = 2;

@@ -4,7 +4,7 @@ import java.nio.charset.Charset;
 
 import javax.script.ScriptContext;
 
-import org.cohorte.utilities.tests.CAbstractTest;
+import org.cohorte.utilities.tests.CAppConsoleBase;
 import org.psem2m.utilities.CXBytesUtils;
 import org.psem2m.utilities.CXJvmUtils;
 import org.psem2m.utilities.CXOSUtils;
@@ -21,7 +21,7 @@ import org.psem2m.utilities.scripting.IXjsTracer;
  * @author ogattaz
  * 
  */
-public class CTestJavascript extends CAbstractTest {
+public class CTestJavascript extends CAppConsoleBase {
 
 	class CJsTracer implements IXjsTracer {
 
@@ -71,7 +71,7 @@ public class CTestJavascript extends CAbstractTest {
 
 		try {
 			CTestJavascript wTest = new CTestJavascript(args);
-			wTest.runTest();
+			wTest.runApp();
 			wTest.destroy();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -83,7 +83,7 @@ public class CTestJavascript extends CAbstractTest {
 	 */
 	public CTestJavascript(final String[] args) {
 		super(args);
-		addOneCommand(CMD_RUN, "r", "run script");
+		addOneCommand(CMD_RUN, "r", new String[] { "run script" });
 		pLogger.logInfo(this, "<init>", "instanciated");
 	}
 
@@ -93,8 +93,9 @@ public class CTestJavascript extends CAbstractTest {
 	 * @see tests.CAbstractTest#doCommandClose(java.lang.String)
 	 */
 	@Override
-	protected void doCommandClose(final String aCmdeLine) throws Exception {
+	protected void doCommandClose() throws Exception {
 		pLogger.logInfo(this, "doCommandClose", "begin");
+		// ...
 		pLogger.logInfo(this, "doCommandClose", "end");
 	}
 
@@ -141,7 +142,7 @@ public class CTestJavascript extends CAbstractTest {
 	 */
 	@Override
 	protected void doCommandUser(final String aCmdeLine) throws Exception {
-		if (isCommandX(aCmdeLine, CMD_RUN)) {
+		if (isCommandX(CMD_RUN)) {
 			doCommandRun(aCmdeLine);
 		}
 	}
@@ -152,12 +153,12 @@ public class CTestJavascript extends CAbstractTest {
 	 * @see tests.CAbstractTest#doTest()
 	 */
 	@Override
-	protected void runTest() throws Exception {
+	protected void runApp() throws Exception {
 		pLogger.logInfo(this, "doTest", "begin");
 		pLogger.logInfo(this, "doTest", CXOSUtils.getEnvContext());
 		pLogger.logInfo(this, "doTest", CXJvmUtils.getJavaContext());
 
-		waitForUserCommand();
+		waitForCommand();
 
 		pLogger.logInfo(this, "doTest", "end");
 	}

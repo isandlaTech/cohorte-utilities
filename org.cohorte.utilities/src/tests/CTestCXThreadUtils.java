@@ -5,7 +5,7 @@ import static org.psem2m.utilities.CXThreadUtils.sleep;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.cohorte.utilities.tests.CAbstractTest;
+import org.cohorte.utilities.tests.CAppConsoleBase;
 import org.psem2m.utilities.CXJvmUtils;
 import org.psem2m.utilities.CXOSUtils;
 import org.psem2m.utilities.CXThreadUtils;
@@ -15,7 +15,7 @@ import org.psem2m.utilities.CXTimer;
  * @author ogattaz
  * 
  */
-public class CTestCXThreadUtils extends CAbstractTest {
+public class CTestCXThreadUtils extends CAppConsoleBase {
 
 	/**
 	 * @author ogattaz
@@ -80,7 +80,7 @@ public class CTestCXThreadUtils extends CAbstractTest {
 
 		try {
 			CTestCXThreadUtils wTest = new CTestCXThreadUtils(args);
-			wTest.runTest();
+			wTest.runApp();
 			wTest.destroy();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -92,7 +92,7 @@ public class CTestCXThreadUtils extends CAbstractTest {
 	 */
 	public CTestCXThreadUtils(final String[] args) {
 		super(args);
-		addOneCommand(CMD_TEST, "test the threading tools");
+		addOneCommand(CMD_TEST, new String[] { "test the threading tools" });
 		pLogger.logInfo(this, "<init>", "instanciated");
 	}
 
@@ -137,9 +137,9 @@ public class CTestCXThreadUtils extends CAbstractTest {
 	 * @see tests.CAbstractTest#doCommandClose(java.lang.String)
 	 */
 	@Override
-	protected void doCommandClose(final String aCmdeLine) throws Exception {
+	protected void doCommandClose() throws Exception {
 		pLogger.logInfo(this, "doCommandClose", "begin aCmdeLine=[%s]",
-				aCmdeLine);
+				getCmdeLine());
 
 	}
 
@@ -187,7 +187,7 @@ public class CTestCXThreadUtils extends CAbstractTest {
 	 */
 	@Override
 	protected void doCommandUser(final String aCmdeLine) throws Exception {
-		if (isCommandX(aCmdeLine, CMD_TEST)) {
+		if (isCommandX(CMD_TEST)) {
 			doCommandTest(aCmdeLine);
 		}
 	}
@@ -198,14 +198,14 @@ public class CTestCXThreadUtils extends CAbstractTest {
 	 * @see tests.CAbstractTest#doTest()
 	 */
 	@Override
-	protected void runTest() throws Exception {
+	protected void runApp() throws Exception {
 		pLogger.logInfo(this, "doTest", "begin");
 		pLogger.logInfo(this, "doTest", CXOSUtils.getEnvContext());
 		pLogger.logInfo(this, "doTest", CXJvmUtils.getJavaContext());
 
 		List<CRunnable> wRunnables = createRunnables(NB_THREADS);
 
-		waitForUserCommand();
+		waitForCommand();
 
 		// stop the threads
 		for (CRunnable wRunnable : wRunnables) {

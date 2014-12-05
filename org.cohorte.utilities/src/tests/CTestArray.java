@@ -3,14 +3,14 @@
  */
 package tests;
 
-import org.cohorte.utilities.tests.CAbstractTest;
+import org.cohorte.utilities.tests.CAppConsoleBase;
 import org.psem2m.utilities.CXArray;
 
 /**
  * @author ogattaz
  * 
  */
-public class CTestArray extends CAbstractTest {
+public class CTestArray extends CAppConsoleBase {
 
 	/**
 	 * @param args
@@ -19,7 +19,7 @@ public class CTestArray extends CAbstractTest {
 
 		try {
 			CTestArray wTest = new CTestArray(args);
-			wTest.runTest();
+			wTest.runApp();
 			wTest.destroy();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -31,7 +31,7 @@ public class CTestArray extends CAbstractTest {
 	 */
 	private CTestArray(final String[] args) {
 		super(args);
-		addOneCommand(CMD_TEST, "test the array tools");
+		addOneCommand(CMD_TEST, new String[] { "test the array tools" });
 		pLogger.logInfo(this, "<init>", "instanciated");
 	}
 
@@ -49,9 +49,9 @@ public class CTestArray extends CAbstractTest {
 	 * @see tests.CAbstractTest#doCommandClose(java.lang.String)
 	 */
 	@Override
-	protected void doCommandClose(final String aCmdeLine) throws Exception {
+	protected void doCommandClose() throws Exception {
 		pLogger.logInfo(this, "doCommandClose", "begin aCmdeLine=[%s]",
-				aCmdeLine);
+				getCmdeLine());
 
 	}
 
@@ -151,7 +151,7 @@ public class CTestArray extends CAbstractTest {
 	 */
 	@Override
 	protected void doCommandUser(final String aCmdeLine) throws Exception {
-		if (isCommandX(aCmdeLine, CMD_TEST)) {
+		if (isCommandX(CMD_TEST)) {
 			doCommandTest(aCmdeLine);
 		} else {
 			wrongCommandUser(aCmdeLine);
@@ -173,7 +173,7 @@ public class CTestArray extends CAbstractTest {
 	}
 
 	@Override
-	protected void runTest() throws Exception {
+	protected void runApp() throws Exception {
 		pLogger.logInfo(this, "doTest", "begin");
 		// pLogger.logInfo(this, "doTest", CXOSUtils.getEnvContext());
 		// pLogger.logInfo(this, "doTest", CXJvmUtils.getJavaContext());
@@ -181,7 +181,7 @@ public class CTestArray extends CAbstractTest {
 		if (CXArray.contains(pArgs, APPLICATION_PARAM_AUTO)) {
 			doCommandTest(null);
 		} else {
-			waitForUserCommand();
+			waitForCommand();
 		}
 
 		pLogger.logInfo(this, "doTest", "end");

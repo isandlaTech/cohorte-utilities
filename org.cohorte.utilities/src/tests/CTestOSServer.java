@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.cohorte.utilities.tests.CAbstractTest;
+import org.cohorte.utilities.tests.CAppConsoleBase;
 import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.system.CXOSCommand;
 import org.psem2m.utilities.system.CXOSServer;
@@ -16,7 +16,7 @@ import org.psem2m.utilities.system.CXProcess;
  * @author ogattaz
  * 
  */
-public class CTestOSServer extends CAbstractTest {
+public class CTestOSServer extends CAppConsoleBase {
 
 	public final static String CMD_SERVER_GETPID = "pid";
 	public final static String CMD_SERVER_KILL = "kill";
@@ -32,7 +32,7 @@ public class CTestOSServer extends CAbstractTest {
 		CTestOSServer wTest = null;
 		try {
 			wTest = new CTestOSServer(args);
-			wTest.runTest();
+			wTest.runApp();
 		} catch (Exception e) {
 			e.printStackTrace();
 			wExitCode = 1;
@@ -51,10 +51,11 @@ public class CTestOSServer extends CAbstractTest {
 	public CTestOSServer(final String[] args) {
 		super(args);
 
-		addOneCommand(CMD_SERVER_START, "Start the server");
-		addOneCommand(CMD_SERVER_STOP, "Stop the server");
-		addOneCommand(CMD_SERVER_KILL, "k", "Stop the server");
-		addOneCommand(CMD_SERVER_GETPID, "p", "get the pid of the server");
+		addOneCommand(CMD_SERVER_START, new String[] { "Start the server" });
+		addOneCommand(CMD_SERVER_STOP, new String[] { "Stop the server" });
+		addOneCommand(CMD_SERVER_KILL, "k", new String[] { "Stop the server" });
+		addOneCommand(CMD_SERVER_GETPID, "p",
+				new String[] { "get the pid of the server" });
 
 		pLogger.setLevel(Level.FINE);
 
@@ -235,15 +236,14 @@ public class CTestOSServer extends CAbstractTest {
 	}
 
 	/**
-	 * @param aCmdeLine
 	 * @throws Exception
 	 */
 	@Override
-	protected void doCommandClose(final String aCmdeLine) throws Exception {
+	protected void doCommandClose() throws Exception {
 		pLogger.logInfo(this, "doCommandClose", "begin");
 
 		if (pCXOSServer != null) {
-			doCommandStop(aCmdeLine);
+			doCommandStop(getCmdeLine());
 		}
 
 		pLogger.logInfo(this, "doCommandClose", "end");
@@ -405,13 +405,13 @@ public class CTestOSServer extends CAbstractTest {
 	protected void doCommandUser(final String aCmdeLine) throws Exception {
 		pLogger.logInfo(this, "doCommandUser", "BEGIN");
 
-		if (isCommandX(aCmdeLine, CMD_SERVER_START)) {
+		if (isCommandX(CMD_SERVER_START)) {
 			doCommandStart(aCmdeLine);
-		} else if (isCommandX(aCmdeLine, CMD_SERVER_STOP)) {
+		} else if (isCommandX(CMD_SERVER_STOP)) {
 			doCommandStop(aCmdeLine);
-		} else if (isCommandX(aCmdeLine, CMD_SERVER_KILL)) {
+		} else if (isCommandX(CMD_SERVER_KILL)) {
 			doCommandKill(aCmdeLine);
-		} else if (isCommandX(aCmdeLine, CMD_SERVER_GETPID)) {
+		} else if (isCommandX(CMD_SERVER_GETPID)) {
 			doCommandGetPid(aCmdeLine);
 		}
 
@@ -430,10 +430,10 @@ public class CTestOSServer extends CAbstractTest {
 	 * 
 	 */
 	@Override
-	protected void runTest() throws Exception {
+	protected void runApp() throws Exception {
 		pLogger.logInfo(this, "doTest", "BEGIN");
 
-		waitForUserCommand();
+		waitForCommand();
 
 		pLogger.logInfo(this, "doTest", "END");
 	}

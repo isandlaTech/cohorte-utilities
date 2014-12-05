@@ -36,7 +36,7 @@ public class CActivityLoggerBasicConsole implements IActivityLogger {
 		super();
 
 		pActivityFormater = CActivityFormaterBasic
-				.getInstance(IActivityFormater.SHORT_LINE);
+				.getInstance(IActivityFormater.LINE_CONSOLE);
 		pActivityFormater.acceptMultiline(IActivityFormater.MULTILINES_TEXT);
 		pLogLineTextBuilder = CLogLineTextBuilder.getInstance();
 	}
