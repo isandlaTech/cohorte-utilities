@@ -41,7 +41,7 @@ public class CAbstractComponentWithLogger extends CAbstractComponentBase {
 			wLogger = getService(IActivityLogger.class);
 
 		} catch (Exception e) {
-			CSocLogger.logInMain(Level.SEVERE, this, "<init>",
+			CComponentLogger.logInMain(Level.SEVERE, this, "<init>",
 					"unable to retreive the service IActivityLogger: %s", e);
 		}
 		return wLogger;

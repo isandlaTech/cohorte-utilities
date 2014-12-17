@@ -27,7 +27,7 @@ public class CAbstractComponentBase {
 			return CServicesRegistry.getRegistry()
 					.getServiceRef(aSpecification).getService();
 		} catch (Exception e) {
-			CSocLogger.logInMain(Level.SEVERE, this, "getService",
+			CComponentLogger.logInMain(Level.SEVERE, this, "getService",
 					"unable to get service [‰s] : %s",
 					IActivityLogger.class.getSimpleName(), e.getLocalizedMessage());
 			throw e;
@@ -46,7 +46,7 @@ public class CAbstractComponentBase {
 		try {
 			registerService(aSpecification, this);
 		} catch (Exception e) {
-			CSocLogger.logInMain(Level.SEVERE, this, "<init>",
+			CComponentLogger.logInMain(Level.SEVERE, this, "<init>",
 					"unable to register me as service [‰s] : %s",
 					aSpecification.getSimpleName(), e.getLocalizedMessage());
 		}

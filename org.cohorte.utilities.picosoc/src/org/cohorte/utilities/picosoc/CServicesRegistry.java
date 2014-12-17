@@ -51,7 +51,7 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	 */
 	@Override
 	public void clear() {
-		CSocLogger.logInMain(Level.INFO, this, "clear", "NbService=[%s]",
+		CComponentLogger.logInMain(Level.INFO, this, "clear", "NbService=[%s]",
 				pServicesRegistry.size());
 		pServicesRegistry.clear();
 	}
@@ -95,7 +95,7 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 			throw new Exception(String.format(
 					"Unable to find the specification [%s]", aSpecification.getSimpleName()));
 		}
-		CSocLogger.logInMain(Level.FINE, this, "getServiceRef",
+		CComponentLogger.logInMain(Level.FINE, this, "getServiceRef",
 				"specification=[%s] Service=[%s]", aSpecification,
 				wWebAppServicRef.getService());
 
@@ -120,7 +120,7 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 		}
 		CServicReference<T> wWebAppServicRef = new CServicReference<T>(aService);
 		pServicesRegistry.put(aSpecification, wWebAppServicRef);
-		CSocLogger.logInMain(Level.INFO, this, "registerService",
+		CComponentLogger.logInMain(Level.INFO, this, "registerService",
 				"specification=[%s] Service=[%s]", aSpecification,
 				wWebAppServicRef.getService());
 		return wWebAppServicRef;
