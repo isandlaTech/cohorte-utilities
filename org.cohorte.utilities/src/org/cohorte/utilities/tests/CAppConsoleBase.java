@@ -63,7 +63,7 @@ public abstract class CAppConsoleBase {
 
 	private final Map<String, CCommand> pCommands = new HashMap<String, CCommand>();
 
-	protected final IActivityLogger pLogger = CActivityLoggerBasicConsole
+	protected IActivityLogger pLogger = CActivityLoggerBasicConsole
 			.getInstance();
 
 	private String pCmdeLine;
@@ -232,6 +232,13 @@ public abstract class CAppConsoleBase {
 	/**
 	 * @return
 	 */
+	public IActivityLogger getLogger() {
+		return pLogger;
+	}
+
+	/**
+	 * @return
+	 */
 	protected int getNbCommandArg() {
 		return (pCommandArgs != null) ? pCommandArgs.length : -1;
 	}
@@ -299,6 +306,13 @@ public abstract class CAppConsoleBase {
 	 */
 	protected void setAppOptions(final CAppOptionsBase aAppOptions) {
 		pAppOptions = aAppOptions;
+	}
+
+	/**
+	 * @param aLogger
+	 */
+	protected void setLogger(final IActivityLogger aLogger) {
+		pLogger = aLogger;
 	}
 
 	/**
