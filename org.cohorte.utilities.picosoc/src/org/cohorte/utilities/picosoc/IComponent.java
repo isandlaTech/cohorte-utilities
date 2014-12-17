@@ -4,27 +4,17 @@ package org.cohorte.utilities.picosoc;
  * @author ogattaz
  * 
  */
-public interface ISvcServiceRegistry {
-
-	/**
-	 * 
-	 */
-	void clear();
+public interface IComponent {
 
 	/**
 	 * @param aSpecification
 	 * @return
 	 */
-	<T> boolean contains(Class<? extends T> aSpecification);
-
-	/**
-	 * @return
-	 */
-	public String dump();
+	<T> boolean doesServiceExist(Class<? extends T> aSpecification);
 
 	/**
 	 * @param aSpecification
-	 * @return an instance of CServicReference<T> if the service exists
+	 * @return
 	 * @throws Exception
 	 */
 	<T> CServicReference<T> findServiceRef(Class<? extends T> aSpecification)
@@ -32,23 +22,36 @@ public interface ISvcServiceRegistry {
 
 	/**
 	 * @param aSpecification
-	 * @return an instance of CServicReference<T>
+	 * @return
 	 * @throws Exception
-	 *             if no instance of aSpecification
+	 */
+	<T> T getService(Class<? extends T> aSpecification) throws Exception;
+
+	/**
+	 * @param aSpecification
+	 * @return
+	 * @throws Exception
 	 */
 	<T> CServicReference<T> getServiceRef(Class<? extends T> aSpecification)
 			throws Exception;
 
 	/**
 	 * @param aSpecification
+	 */
+	<T> void registerMeAsService(Class<? extends T> aSpecification);
+
+	/**
+	 * @param aSpecification
 	 * @param aService
-	 * @return the ServiceReference
+	 * @return
+	 * @throws Exception
 	 */
 	<T> CServicReference<T> registerService(Class<? extends T> aSpecification,
 			T aService) throws Exception;
 
 	/**
 	 * @param aServiceRef
+	 * @return
 	 * @throws Exception
 	 */
 	<T> boolean removeService(CServicReference<T> aServiceRef) throws Exception;
