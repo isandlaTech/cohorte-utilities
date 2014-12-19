@@ -1,5 +1,7 @@
 package org.cohorte.utilities.tests;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +17,11 @@ import org.psem2m.utilities.CXJvmUtils;
 import org.psem2m.utilities.CXOSUtils;
 import org.psem2m.utilities.CXSortList;
 import org.psem2m.utilities.CXStringUtils;
+import org.psem2m.utilities.CXTimer;
+import org.psem2m.utilities.files.CXFile;
+import org.psem2m.utilities.files.CXFileDir;
+import org.psem2m.utilities.files.CXFileFilter;
+import org.psem2m.utilities.files.CXFileText;
 import org.psem2m.utilities.logging.CActivityLoggerBasicConsole;
 import org.psem2m.utilities.logging.IActivityLogger;
 
@@ -31,6 +38,8 @@ public abstract class CAppConsoleBase {
 	public final static String CMD_QUIT = "quit";
 	public final static String CMD_TEST = "test";
 	public final static String CMD_INFO = "info";
+	public final static String CMD_REDO = "redo";
+	public final static String CMD_SCRIPT = "script";
 
 	/**
 	 * Pattern that is capable of dealing with complex command line quoting and
@@ -55,26 +64,37 @@ public abstract class CAppConsoleBase {
 					"[^\\s]*\"(\\\\+\"|[^\"])*?\"|[^\\s]*'(\\\\+'|[^'])*?'|(\\\\\\s|[^\\s])+",
 					Pattern.MULTILINE);
 
-	protected CAppOptionsBase pAppOptions = null;
+	// Default Options. Overrided by the extend class if needed
+	protected CAppOptionsBase pAppOptions = new CAppOptionsBase(getClass()
+			.getSimpleName());
 
 	protected final String[] pArgs;
 
+	// la commande courante
 	private String[] pCommandArgs = new String[0];
 
+	// les définitions des commandes acceptables
 	private final Map<String, CCommand> pCommands = new HashMap<String, CCommand>();
 
 	protected IActivityLogger pLogger = CActivityLoggerBasicConsole
 			.getInstance();
 
 	private String pCmdeLine;
+	private String pCmdeLast;
 
-	private static final String INFO_ALL = "*";
+	private static final String INFO_KIND_ALL = "*";
+	private static final String INFO_KIND_ENV = "env";
+	private static final String INFO_KIND_JVM = "jvm";
 
-	private static final String INFO_ENV = "env";
+	private static final String ACTION_LIST = "list";
+	private static final String ACTION_RUN = "run";
 
-	private static final String INFO_JVM = "jvm";
+	private CXFileDir pScriptDir = CXFileDir.getUserDir();
 
 	/**
+	 * ?
+	 * 
+	 * @throws
 	 * 
 	 */
 	public CAppConsoleBase(final String[] args) {
@@ -82,11 +102,19 @@ public abstract class CAppConsoleBase {
 		pArgs = args;
 
 		addOneCommand(CMD_CLOSE, "c", new String[] { "Close the tester" });
+
 		addOneCommand(CMD_QUIT, "q", new String[] { "Close the tester" });
+		addOneCommand(CMD_REDO, "r",
+				new String[] { "Redo the last command line" });
+
 		addOneCommand(CMD_HELP, "?", new String[] { "Show help",
 				"--usage for the options" });
+
 		addOneCommand(CMD_INFO, "i", new String[] { "Show infos",
 				"--kind : '*','env','jvm'" });
+
+		addOneCommand(CMD_SCRIPT, "s", new String[] { "manage scripts",
+				"--action : 'list','run'" });
 
 	}
 
@@ -145,15 +173,107 @@ public abstract class CAppConsoleBase {
 	 */
 	protected void doCommandInfo() throws OptionException {
 
-		String wKind = getAppOptions().getKindValue();
+		String wKind = getAppOptions().getKindValue(INFO_KIND_ALL);
 
-		if (wKind == null || INFO_ENV.equalsIgnoreCase(wKind)
-				|| INFO_ALL.equalsIgnoreCase(wKind)) {
+		if (INFO_KIND_ENV.equalsIgnoreCase(wKind)
+				|| INFO_KIND_ALL.equalsIgnoreCase(wKind)) {
 			pLogger.logInfo(this, "doCommandInfo", CXOSUtils.getEnvContext());
 		}
-		if (wKind == null || INFO_JVM.equalsIgnoreCase(wKind)
-				|| INFO_ALL.equalsIgnoreCase(wKind)) {
+		if (INFO_KIND_JVM.equalsIgnoreCase(wKind)
+				|| INFO_KIND_ALL.equalsIgnoreCase(wKind)) {
 			pLogger.logInfo(this, "doCommandInfo", CXJvmUtils.getJavaContext());
+		}
+	}
+
+	/**
+	 * @param aCmdeLine
+	 * @return
+	 * @throws Exception
+	 */
+	private boolean doCommandLine(final String aCmdeLine) throws Exception {
+		boolean wWantClose = false;
+		pCommandArgs = splitCommandLine(aCmdeLine);
+		// parse the argurmennts after the first
+		pAppOptions.parse((String[]) CXArray.removeOneObject(pCommandArgs, 0));
+		// sho the options's values
+		if (pAppOptions.hasValue()) {
+			pLogger.logInfo(this, "waitForCommand", "AppOptions: %s",
+					pAppOptions.toString());
+		}
+
+		if (pAppOptions.hasUsageOn()) {
+			pLogger.logInfo(this, "waitForCommand", "Usage:\n%s",
+					pAppOptions.getUsage());
+		} else {
+			try {
+				wWantClose = doCommandX();
+				// memo last executed command
+				pCmdeLast = aCmdeLine;
+			} catch (Exception e) {
+				pLogger.logSevere(this, "waitForCommand", "ERROR:\n%s", e);
+			}
+		}
+		return wWantClose;
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	protected void doCommandRedo() throws Exception {
+
+		if (isLineRunnable(pCmdeLast)) {
+			pLogger.logInfo(this, "doCommandRedo", "REDO  BEGIN ===== [%s]",
+					pCmdeLast);
+			CXTimer wTimer = CXTimer.newStartedTimer();
+			doCommandLine(pCmdeLast);
+			wTimer.stop();
+			pLogger.logInfo(this, "doCommandRedo",
+					"REDO END   ===== [%s] ===== Duration=[%s]", pCmdeLast,
+					wTimer.getDurationStrMicroSec());
+		}
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	protected void doCommandScript() throws Exception {
+		pLogger.logInfo(this, "doCommandScript", "ScriptDir=[%s]",
+				getScriptDir().getAbsolutePath());
+
+		String wOptAction = getAppOptions().getActionValue(ACTION_LIST);
+
+		if (ACTION_LIST.equalsIgnoreCase(wOptAction)) {
+			String wDump = dumpSciptsList();
+			pLogger.logInfo(this, "doCommandScript", "List :\n%s", wDump);
+
+		} else if (ACTION_RUN.equalsIgnoreCase(wOptAction)) {
+
+			String wOptName = getAppOptions().getNameValue();
+			CXFileText wScriptFile = (CXFileText) findScriptFile(wOptName);
+			if (wScriptFile == null) {
+				pLogger.logSevere(this, "doCommandScript",
+						"UNKNWON SCRIPT [%s]", wOptName);
+
+			} else {
+				List<String> wLines = wScriptFile.readLines();
+
+				pLogger.logInfo(this, "doCommandScript",
+						"NameOrIdx=[%s] FileName=[%s] size=[%s]", wOptName,
+						wScriptFile.getName(), wLines.size());
+
+				for (String wLine : wLines) {
+					if (isLineRunnable(wLine)) {
+						pLogger.logInfo(this, "doCommandScript",
+								"RUN  BEGIN ===== [%s]", wLine);
+						CXTimer wTimer = CXTimer.newStartedTimer();
+						doCommandLine(wLine);
+						wTimer.stop();
+						pLogger.logInfo(this, "doCommandScript",
+								"RUN  END   ===== [%s] ===== Duration=[%s]",
+								wLine, wTimer.getDurationStrMicroSec());
+					}
+				}
+			}
 		}
 	}
 
@@ -179,11 +299,66 @@ public abstract class CAppConsoleBase {
 			doCommandHelp();
 		} else if (isCommandX(CMD_INFO)) {
 			doCommandInfo();
+		} else if (isCommandX(CMD_SCRIPT)) {
+			doCommandScript();
+		} else if (isCommandX(CMD_REDO)) {
+			doCommandRedo();
 		} else {
 			doCommandUser(getCmdeLine());
 		}
 
 		return wWantClose;
+	}
+
+	/**
+	 * @return
+	 * @throws IOException
+	 */
+	protected String dumpSciptsList() throws IOException {
+		StringBuilder wSB = new StringBuilder();
+		List<File> wScriptFiles = getScriptFiles();
+
+		int wIdx = 1;
+		for (File wScriptFile : wScriptFiles) {
+			if (wIdx > 1) {
+				wSB.append('\n');
+			}
+			wSB.append(String.format("script(%1$2d):%2$s", wIdx,
+					((CXFile) wScriptFile).getNameWithoutExtension()));
+			wIdx++;
+		}
+		return wSB.toString();
+	}
+
+	/**
+	 * @param aScriptNameOrIndex
+	 * @return
+	 * @throws IOException
+	 */
+	protected CXFile findScriptFile(final String aScriptNameOrIndex)
+			throws IOException {
+
+		List<File> wScriptFiles = getScriptFiles();
+		int wIdx = -1;
+		try {
+			wIdx = Integer.parseInt(aScriptNameOrIndex);
+
+		} catch (Exception e) {
+		}
+		if (wIdx < 1 || wIdx > wScriptFiles.size()) {
+			wIdx = -1;
+		}
+		if (wIdx > 0) {
+			return (CXFile) wScriptFiles.get(wIdx - 1);
+		}
+		for (File wFile : wScriptFiles) {
+			CXFile wScriptFile = (CXFile) wFile;
+			if (wScriptFile.getNameWithoutExtension().equalsIgnoreCase(
+					aScriptNameOrIndex)) {
+				return wScriptFile;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -243,8 +418,21 @@ public abstract class CAppConsoleBase {
 		return (pCommandArgs != null) ? pCommandArgs.length : -1;
 	}
 
-	protected boolean hasAppOptions() {
-		return getAppOptions() != null;
+	/**
+	 * @return
+	 */
+	public CXFileDir getScriptDir() {
+		return pScriptDir;
+	}
+
+	/**
+	 * @return
+	 * @throws IOException
+	 */
+	protected List<File> getScriptFiles() throws IOException {
+		return pScriptDir.getMySortedFiles(
+				CXFileFilter.getFilterExtension(CXFile.EXTENSION_TXT),
+				!CXFileDir.WITH_DIR, CXFileDir.WITH_TEXTFILE);
 	}
 
 	/**
@@ -279,6 +467,7 @@ public abstract class CAppConsoleBase {
 	 */
 	protected boolean isCommandX(final String aCommandId) {
 
+		//
 		if (!hasCommandArg()) {
 			return false;
 		}
@@ -289,6 +478,26 @@ public abstract class CAppConsoleBase {
 		return wCommand != null
 				&& (wFirstCommandArg.toLowerCase().equals(wCommand.getVerb()) || wFirstCommandArg
 						.toLowerCase().equals(wCommand.getAlias()));
+	}
+
+	/**
+	 * <pre>
+	 * 
+	 * # create the base "BASE_TEST" and load
+	 * base --name BASE_TEST --action create --from test-resources/xml/input.xml
+	 * 
+	 * # dump base info
+	 * base --name BASE_TEST --action valid
+	 * </pre>
+	 * 
+	 * @param aLine
+	 * @return true if the line is not null and not empty and doesn't start by
+	 *         '#' character and doesn't start by the command "redo"
+	 */
+	private boolean isLineRunnable(final String aLine) {
+
+		return (aLine != null && !aLine.isEmpty() && aLine.charAt(0) != '#' && !aLine
+				.startsWith(CMD_REDO));
 	}
 
 	protected void logEndConstructor() {
@@ -313,6 +522,13 @@ public abstract class CAppConsoleBase {
 	 */
 	protected void setLogger(final IActivityLogger aLogger) {
 		pLogger = aLogger;
+	}
+
+	/**
+	 * @param aScriptDir
+	 */
+	protected void setScriptDir(final CXFileDir aScriptDir) {
+		pScriptDir = aScriptDir;
 	}
 
 	/**
@@ -343,7 +559,7 @@ public abstract class CAppConsoleBase {
 	 */
 	@Override
 	public String toString() {
-		return String.format("hasOption=[%b] ", hasAppOptions());
+		return String.format("AppConsole=[%s] ", getClass().getName());
 	}
 
 	/**
@@ -366,24 +582,7 @@ public abstract class CAppConsoleBase {
 			pLogger.logInfo(this, "waitForCommand",
 					"Stdin console command line: [%s]", getCmdeLine());
 
-			pCommandArgs = splitCommandLine(getCmdeLine());
-			if (hasAppOptions()) {
-				// parse the argurmennts after the first
-				pAppOptions.parse((String[]) CXArray.removeOneObject(
-						pCommandArgs, 0));
-				// sho the options's values
-				if (pAppOptions.hasValue()) {
-					pLogger.logInfo(this, "waitForCommand", "AppOptions: %s",
-							pAppOptions.toString());
-				}
-			}
-
-			if (hasAppOptions() && pAppOptions.hasUsageOn()) {
-				pLogger.logInfo(this, "waitForCommand", "Usage:\n%s",
-						pAppOptions.getUsage());
-			} else {
-				wWantClose = doCommandX();
-			}
+			wWantClose = doCommandLine(getCmdeLine());
 
 		} while (!wWantClose);
 

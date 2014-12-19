@@ -14,6 +14,8 @@ public class CAppOptionsBase extends CAppCommandLineParser implements
 	public final static String OPT_USAGE = "usage";
 	public final static String OPT_VERBOSE = "verbose";
 	public final static String OPT_KIND = "kind";
+	public final static String OPT_ACTION = "action";
+	public final static String OPT_NAME = "name";
 
 	List<String> pOoptionHelpStrings = new ArrayList<String>();
 
@@ -25,9 +27,14 @@ public class CAppOptionsBase extends CAppCommandLineParser implements
 	 * @param aApplicationName
 	 * @throws Exception
 	 */
-	public CAppOptionsBase(String aApplicationName) throws Exception {
+	public CAppOptionsBase(String aApplicationName) {
 		super();
 		defineAppName(aApplicationName);
+
+		defineOptionHelp(addStringOption('a', OPT_ACTION),
+				"the sub-action of the command");
+
+		defineOptionHelp(addStringOption('n', OPT_NAME), "a name or an index");
 
 		defineOptionHelp(addStringOption('k', OPT_KIND),
 				"A kind of info for exemple (a generic option)");
@@ -77,8 +84,53 @@ public class CAppOptionsBase extends CAppCommandLineParser implements
 	 * @return
 	 * @throws OptionException
 	 */
+	public String getActionValue() throws OptionException {
+		return getActionValue("???");
+	}
+
+	/**
+	 * @param aDefault
+	 * @return
+	 * @throws OptionException
+	 */
+	public String getActionValue(final String aDefault) throws OptionException {
+
+		return getStringOptionValue(OPT_ACTION, aDefault);
+	}
+
+	/**
+	 * @return
+	 * @throws OptionException
+	 */
 	public String getKindValue() throws OptionException {
-		return getStringOptionValue(OPT_KIND);
+		return getKindValue("???");
+	}
+
+	/**
+	 * @param aDefault
+	 * @return
+	 * @throws OptionException
+	 */
+	public String getKindValue(final String aDefault) throws OptionException {
+
+		return getStringOptionValue(OPT_KIND, aDefault);
+	}
+
+	/**
+	 * @return
+	 * @throws OptionException
+	 */
+	public String getNameValue() throws OptionException {
+		return getNameValue("???");
+	}
+
+	/**
+	 * @param aDefault
+	 * @return
+	 * @throws OptionException
+	 */
+	public String getNameValue(final String aDefault) throws OptionException {
+		return getStringOptionValue(OPT_NAME);
 	}
 
 	/*

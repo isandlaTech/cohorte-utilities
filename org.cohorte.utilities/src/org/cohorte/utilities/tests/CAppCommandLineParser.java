@@ -76,8 +76,8 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 		 */
 		CastOptionException(String optionName, Class<?> aClassToCast) {
 			this(optionName, aClassToCast, String.format(
-					"Unable to cast the value of the option '%s'  to '%s'.", optionName,
-					aClassToCast.getSimpleName()));
+					"Unable to cast the value of the option '%s'  to '%s'.",
+					optionName, aClassToCast.getSimpleName()));
 		}
 
 		/**
@@ -127,8 +127,11 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 		 * @param value
 		 */
 		public <T> IllegalOptionValueException(Option<T> opt, String value) {
-			super("Illegal value '" + value + "' for option "
-					+ (opt.shortForm() != null ? "-" + opt.shortForm() + "/" : "") + "--" + opt.longForm());
+			super("Illegal value '"
+					+ value
+					+ "' for option "
+					+ (opt.shortForm() != null ? "-" + opt.shortForm() + "/"
+							: "") + "--" + opt.longForm());
 			this.option = opt;
 			this.value = value;
 		}
@@ -202,7 +205,8 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 		 * @param unflaggish
 		 */
 		NotFlagException(String option, char unflaggish) {
-			super(option, "Illegal option: '" + option + "', '" + unflaggish + "' requires a value");
+			super(option, "Illegal option: '" + option + "', '" + unflaggish
+					+ "' requires a value");
 			notflag = unflaggish;
 		}
 
@@ -258,9 +262,11 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 			}
 
 			@Override
-			protected Double parseValue(String arg, Locale locale) throws IllegalOptionValueException {
+			protected Double parseValue(String arg, Locale locale)
+					throws IllegalOptionValueException {
 				try {
-					NumberFormat format = NumberFormat.getNumberInstance(locale);
+					NumberFormat format = NumberFormat
+							.getNumberInstance(locale);
 					Number num = format.parse(arg);
 					return new Double(num.doubleValue());
 				} catch (ParseException e) {
@@ -282,7 +288,8 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 			}
 
 			@Override
-			protected Integer parseValue(String arg, Locale locale) throws IllegalOptionValueException {
+			protected Integer parseValue(String arg, Locale locale)
+					throws IllegalOptionValueException {
 				try {
 					return new Integer(arg);
 				} catch (NumberFormatException e) {
@@ -304,7 +311,8 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 			}
 
 			@Override
-			protected Long parseValue(String arg, Locale locale) throws IllegalOptionValueException {
+			protected Long parseValue(String arg, Locale locale)
+					throws IllegalOptionValueException {
 				try {
 					return new Long(arg);
 				} catch (NumberFormatException e) {
@@ -385,10 +393,12 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 		 * @return
 		 */
 		public String getMandatoryLib(int aLen) {
-			return CXStringUtils.strAdjustLeft((isMandatory()) ? "mandatory" : "optional", aLen, ' ');
+			return CXStringUtils.strAdjustLeft((isMandatory()) ? "mandatory"
+					: "optional", aLen, ' ');
 		}
 
-		public final T getValue(String arg, Locale locale) throws IllegalOptionValueException {
+		public final T getValue(String arg, Locale locale)
+				throws IllegalOptionValueException {
 			if (this.wantsValue) {
 				if (arg == null) {
 					throw new IllegalOptionValueException(this, "");
@@ -414,7 +424,8 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 		 * @return
 		 */
 		public boolean isUsage() {
-			return "?".equalsIgnoreCase(shortForm()) || "usage".equalsIgnoreCase(longForm())
+			return "?".equalsIgnoreCase(shortForm())
+					|| "usage".equalsIgnoreCase(longForm())
 					|| "help".equalsIgnoreCase(longForm());
 		}
 
@@ -445,7 +456,8 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 		 * Override to extract and convert an option value passed on the
 		 * command-line
 		 */
-		protected T parseValue(String arg, Locale locale) throws IllegalOptionValueException {
+		protected T parseValue(String arg, Locale locale)
+				throws IllegalOptionValueException {
 
 			return null;
 		}
@@ -522,7 +534,7 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 		 * @param optionName
 		 * @param msg
 		 */
-		UnknownOptionException(String optionName, String msg) {
+		public UnknownOptionException(String optionName, String msg) {
 			super(msg);
 			this.optionName = optionName;
 		}
@@ -542,7 +554,8 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 	 * 
 	 * @author Vidar Holen
 	 */
-	public static class UnknownSuboptionException extends UnknownOptionException {
+	public static class UnknownSuboptionException extends
+			UnknownOptionException {
 
 		private static final long serialVersionUID = -3845269102125590349L;
 
@@ -552,8 +565,9 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 		 * @param option
 		 * @param suboption
 		 */
-		UnknownSuboptionException(String option, char suboption) {
-			super(option, "Illegal option: '" + suboption + "' in '" + option + "'");
+		public UnknownSuboptionException(String option, char suboption) {
+			super(option, "Illegal option: '" + suboption + "' in '" + option
+					+ "'");
 			this.suboption = suboption;
 		}
 
@@ -562,20 +576,23 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 		}
 	}
 
-	private final Map<String, Option<?>> pOptionsMap = new HashMap<String, Option<?>>(10);
+	private final Map<String, Option<?>> pOptionsMap = new HashMap<String, Option<?>>(
+			10);
 
 	private final List<Option<?>> pOptionsList = new ArrayList<Option<?>>();
 
 	private String[] pRemainingArgs = null;
 
-	private final Map<String, List<?>> pValues = new HashMap<String, List<?>>(10);
+	private final Map<String, List<?>> pValues = new HashMap<String, List<?>>(
+			10);
 
 	/**
 	 * Convenience method for adding a boolean option.
 	 * 
 	 * @return the new Option
 	 */
-	public final Option<Boolean> addBooleanOption(char shortForm, String longForm) {
+	public final Option<Boolean> addBooleanOption(char shortForm,
+			String longForm) {
 		return addOption(new Option.BooleanOption(shortForm, longForm));
 	}
 
@@ -611,7 +628,8 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 	 * 
 	 * @return the new Option
 	 */
-	public final Option<Integer> addIntegerOption(char shortForm, String longForm) {
+	public final Option<Integer> addIntegerOption(char shortForm,
+			String longForm) {
 		return addOption(new Option.IntegerOption(shortForm, longForm));
 	}
 
@@ -700,7 +718,8 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 	 * @return
 	 * @throws OptionException
 	 */
-	public boolean getBooleanOptionValue(String aOptionName) throws OptionException {
+	public boolean getBooleanOptionValue(String aOptionName)
+			throws OptionException {
 		return getBooleanOptionValue(aOptionName, false);
 	}
 
@@ -710,12 +729,14 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 	 * @return
 	 * @throws OptionException
 	 */
-	public boolean getBooleanOptionValue(String aOptionName, boolean aDefault) throws OptionException {
+	public boolean getBooleanOptionValue(String aOptionName, boolean aDefault)
+			throws OptionException {
 
 		aOptionName = validOptionName(aOptionName);
 		try {
 			@SuppressWarnings("unchecked")
-			Option<Boolean> wOption = (Option<Boolean>) this.pOptionsMap.get(aOptionName);
+			Option<Boolean> wOption = (Option<Boolean>) this.pOptionsMap
+					.get(aOptionName);
 
 			if (wOption == null)
 				throw new UnknownOptionException(aOptionName);
@@ -744,12 +765,14 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 	 * @return
 	 * @throws OptionException
 	 */
-	public int getIntegerOptionValue(String aOptionName, int aDefault) throws OptionException {
+	public int getIntegerOptionValue(String aOptionName, int aDefault)
+			throws OptionException {
 
 		aOptionName = validOptionName(aOptionName);
 		try {
 			@SuppressWarnings("unchecked")
-			Option<Integer> wOption = (Option<Integer>) this.pOptionsMap.get(aOptionName);
+			Option<Integer> wOption = (Option<Integer>) this.pOptionsMap
+					.get(aOptionName);
 
 			if (wOption == null)
 				throw new UnknownOptionException(aOptionName);
@@ -830,7 +853,8 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 	 * @return
 	 * @throws UnknownOptionException
 	 */
-	public String getStringOptionValue(String aOptionName) throws OptionException {
+	public String getStringOptionValue(String aOptionName)
+			throws OptionException {
 		return getStringOptionValue(aOptionName, null);
 	}
 
@@ -840,12 +864,14 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 	 * @return
 	 * @throws UnknownOptionException
 	 */
-	public String getStringOptionValue(String aOptionName, String aDefault) throws OptionException {
+	public String getStringOptionValue(String aOptionName, String aDefault)
+			throws OptionException {
 
 		aOptionName = validOptionName(aOptionName);
 		try {
 			@SuppressWarnings("unchecked")
-			Option<String> wOption = (Option<String>) this.pOptionsMap.get(aOptionName);
+			Option<String> wOption = (Option<String>) this.pOptionsMap
+					.get(aOptionName);
 
 			if (wOption == null)
 				throw new UnknownOptionException(aOptionName);
@@ -890,8 +916,8 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 	/**
 	 * @return
 	 */
-	public boolean hasValue(){
-		return pValues.size()>0;
+	public boolean hasValue() {
+		return pValues.size() > 0;
 	}
 
 	/**
@@ -908,7 +934,8 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 	 * command-line arguments. The specified locale is used for parsing options
 	 * whose values might be locale-specific.
 	 */
-	public final void parse(String[] aArgv, Locale locale) throws OptionException {
+	public final void parse(String[] aArgv, Locale locale)
+			throws OptionException {
 
 		// reset
 		pValues.clear();
@@ -932,9 +959,11 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 					}
 				} else if (curArg.length() > 2) { // handle -abcd
 					for (int i = 1; i < curArg.length(); i++) {
-						Option<?> opt = this.pOptionsMap.get("-" + curArg.charAt(i));
+						Option<?> opt = this.pOptionsMap.get("-"
+								+ curArg.charAt(i));
 						if (opt == null) {
-							throw new UnknownSuboptionException(curArg, curArg.charAt(i));
+							throw new UnknownSuboptionException(curArg,
+									curArg.charAt(i));
 						}
 						if (opt.wantsValue()) {
 							throw new NotFlagException(curArg, curArg.charAt(i));
@@ -992,9 +1021,13 @@ public abstract class CAppCommandLineParser implements IAppOptions {
 
 			Object wValue = getOptionValue(wOption, null);
 			if (wValue != null) {
-				wSB.append(String.format("\nname=[%15s]%s Mandatory=[%s] value=[%s]", wOption.longFormArg(),
-						CXStringUtils.strAdjustLeft(String.format("(%s)", wOption.shortFormArg()), 5, ' '),
-						CXStringUtils.strAdjustLeft(String.valueOf(wOption.isMandatory()), 5, ' '), wValue));
+				wSB.append(String.format(
+						"\nname=[%15s]%s Mandatory=[%s] value=[%s]", wOption
+								.longFormArg(), CXStringUtils.strAdjustLeft(
+								String.format("(%s)", wOption.shortFormArg()),
+								5, ' '), CXStringUtils.strAdjustLeft(
+								String.valueOf(wOption.isMandatory()), 5, ' '),
+						wValue));
 			}
 		}
 		return wSB.toString();
