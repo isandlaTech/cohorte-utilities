@@ -29,6 +29,10 @@ public class CXFile extends CXFileBase {
 	public static final String EXTENSION_SEP = ".";
 	public static final char EXTENSION_SEP_CHAR = '.';
 
+	public static final String EXTENSION_XML = "xml";
+	public static final String EXTENSION_TXT = "txt";
+	public static final String EXTENSION_LOG = "log";
+
 	private static final long serialVersionUID = 4122260644587321138L;
 
 	/**

@@ -28,12 +28,16 @@ import org.psem2m.utilities.CXStringUtils;
  */
 public class CXFileDir extends CXFileBase implements IXFilesContainer {
 
-	private static final CXFileDir DIR_TMP = new CXFileDir(getTempAbsolutePath());
+	private static final CXFileDir DIR_TMP = new CXFileDir(
+			getTempAbsolutePath());
 
 	private static final CXFileDir DIR_USER = new CXFileDir(
 			System.getProperty(CXJvmUtils.SYSPROP_USER_DIR));
 
 	private static final long serialVersionUID = 3257562910606570550L;
+
+	public static final boolean WITH_DIR = true;
+	public static final boolean WITH_TEXTFILE = true;
 
 	/**
 	 * 
@@ -77,7 +81,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	public static FileFilter getExcluderExtension(final String aListExt,
 			final FileFilter aSubFileFilter) {
 
-		return new CXFileFilterExtension(aListExt, aSubFileFilter, !CXFileFilter.INCLUDE);
+		return new CXFileFilterExtension(aListExt, aSubFileFilter,
+				!CXFileFilter.INCLUDE);
 	}
 
 	/**
@@ -99,7 +104,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	public static FileFilter getExcluderName(final String aListRegExp,
 			final FileFilter aSubFileFilter) {
 
-		return new CXFileFilterName(aListRegExp, aSubFileFilter, !CXFileFilter.INCLUDE);
+		return new CXFileFilterName(aListRegExp, aSubFileFilter,
+				!CXFileFilter.INCLUDE);
 	}
 
 	/**
@@ -123,7 +129,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	public static FileFilter getExcluderSubPath(final String aListSubPath,
 			final FileFilter aSubFileFilter) {
 
-		return new CXFileFilterSubPath(aListSubPath, aSubFileFilter, !CXFileFilter.INCLUDE);
+		return new CXFileFilterSubPath(aListSubPath, aSubFileFilter,
+				!CXFileFilter.INCLUDE);
 	}
 
 	/**
@@ -162,7 +169,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	public static FileFilter getFilterExtension(final String aListExt,
 			final FileFilter aSubFileFilter) {
 
-		return new CXFileFilterExtension(aListExt, aSubFileFilter, CXFileFilter.INCLUDE);
+		return new CXFileFilterExtension(aListExt, aSubFileFilter,
+				CXFileFilter.INCLUDE);
 	}
 
 	/**
@@ -181,9 +189,11 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @param aSubFileFilter
 	 * @return
 	 */
-	public static FileFilter getFilterName(final String aListRegExp, final FileFilter aSubFileFilter) {
+	public static FileFilter getFilterName(final String aListRegExp,
+			final FileFilter aSubFileFilter) {
 
-		return new CXFileFilterName(aListRegExp, aSubFileFilter, CXFileFilter.INCLUDE);
+		return new CXFileFilterName(aListRegExp, aSubFileFilter,
+				CXFileFilter.INCLUDE);
 	}
 
 	/**
@@ -206,7 +216,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	public static FileFilter getFilterSubPath(final String aListSubPath,
 			final FileFilter aSubFileFilter) {
 
-		return new CXFileFilterSubPath(aListSubPath, aSubFileFilter, CXFileFilter.INCLUDE);
+		return new CXFileFilterSubPath(aListSubPath, aSubFileFilter,
+				CXFileFilter.INCLUDE);
 	}
 
 	/**
@@ -270,7 +281,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 		StringBuilder wSB = new StringBuilder();
 		if (aArgs != null && aArgs.length != 0) {
 			for (Object xObj : aArgs) {
-				String wPath = CXStringUtils.strFullTrim(xObj != null ? xObj.toString() : null);
+				String wPath = CXStringUtils.strFullTrim(xObj != null ? xObj
+						.toString() : null);
 				if (wPath != null && !wPath.isEmpty()) {
 					char wFirst = wPath.charAt(0);
 					if (wFirst != '/' && wFirst != '\\') {
@@ -280,7 +292,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 				}
 			}
 		}
-		return aRoot == null ? new CXFileDir(wSB.toString()) : new CXFileDir(aRoot, wSB.toString());
+		return aRoot == null ? new CXFileDir(wSB.toString()) : new CXFileDir(
+				aRoot, wSB.toString());
 	}
 
 	/**
@@ -337,7 +350,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	public CXFileDir(final File aDir) {
 		super(aDir);
 	}
-	
+
 	/**
 	 * @param aParentDir
 	 * @param aSubDir
@@ -413,8 +426,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @return
 	 * @throws IOException
 	 */
-	public int copyTo(final CXFileDir aDstDir, final boolean aDeleteExinstingContent)
-			throws IOException {
+	public int copyTo(final CXFileDir aDstDir,
+			final boolean aDeleteExinstingContent) throws IOException {
 
 		if (aDeleteExinstingContent) {
 			aDstDir.remove();
@@ -434,7 +447,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @return
 	 * @throws IOException
 	 */
-	public int copyTo(final CXFileDir aDstDir, final FileFilter aFilter) throws IOException {
+	public int copyTo(final CXFileDir aDstDir, final FileFilter aFilter)
+			throws IOException {
 
 		aDstDir.remove();
 		return copyTo(aDstDir, aFilter, true, true);
@@ -460,7 +474,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @throws IOException
 	 */
 	public int copyTo(final CXFileDir aDstDir, final FileFilter aFilter,
-			final boolean aDeleteExinstingFiles, final boolean aCreateEmptyDir) throws IOException {
+			final boolean aDeleteExinstingFiles, final boolean aCreateEmptyDir)
+			throws IOException {
 
 		if (!exists()) {
 			return 0;
@@ -475,12 +490,14 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 		while (wIt.hasNext()) {
 			File wFile = wIt.next();
 			if (wFile.isFile()) {
-				((CXFile) wFile).copyTo(aDstDir, wFile.getName(), aDeleteExinstingFiles);
+				((CXFile) wFile).copyTo(aDstDir, wFile.getName(),
+						aDeleteExinstingFiles);
 				wRes++;
 			} else if (wFile.isDirectory()) {
 				wRes += ((CXFileDir) wFile).copyTo(
-						new CXFileDir(aDstDir.getAbsolutePath(), wFile.getName()), aFilter,
-						aDeleteExinstingFiles, aCreateEmptyDir);
+						new CXFileDir(aDstDir.getAbsolutePath(), wFile
+								.getName()), aFilter, aDeleteExinstingFiles,
+						aCreateEmptyDir);
 			}
 		}
 		if (wRes == 0 && !aCreateEmptyDir) {
@@ -517,7 +534,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	public void failIfNotExist() throws IOException {
 
 		if (!exists()) {
-			throw new IOException("Directory not found [" + getAbsolutePath() + "]");
+			throw new IOException("Directory not found [" + getAbsolutePath()
+					+ "]");
 		}
 	}
 
@@ -529,8 +547,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @return
 	 * @throws IOException
 	 */
-	public ArrayList<File> getMyFiles(final FileFilter aFilter, final boolean aWithDirs)
-			throws IOException {
+	public ArrayList<File> getMyFiles(final FileFilter aFilter,
+			final boolean aWithDirs) throws IOException {
 
 		return getMyFiles(aFilter, aWithDirs, !WITH_TEXTFILE);
 	}
@@ -545,8 +563,9 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * , boolean, boolean)
 	 */
 	@Override
-	public ArrayList<File> getMyFiles(final FileFilter aFilter, final boolean aWithDirs,
-			final boolean aInstanciateTxtFiles) throws IOException {
+	public ArrayList<File> getMyFiles(final FileFilter aFilter,
+			final boolean aWithDirs, final boolean aInstanciateTxtFiles)
+			throws IOException {
 
 		failIfNotExist();
 
@@ -562,15 +581,18 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 			File wFile = wList[wI];
 
 			if (wFile.isFile()) {
-				CXFileBase wNewFile = newFile(wFile.getAbsolutePath(), aInstanciateTxtFiles);
+				CXFileBase wNewFile = newFile(wFile.getAbsolutePath(),
+						aInstanciateTxtFiles);
 				if (hasScanListener()) {
-					getScanListener().listenOneFile(getScanLevel(), wResult.size(), wNewFile);
+					getScanListener().listenOneFile(getScanLevel(),
+							wResult.size(), wNewFile);
 				}
 				wResult.add(wNewFile);
 			} else if (aWithDirs && wFile.isDirectory()) {
 				CXFileBase wNewFileDir = newFileDir(wFile.getAbsolutePath());
 				if (hasScanListener()) {
-					getScanListener().listenOneFile(getScanLevel(), wResult.size(), wNewFileDir);
+					getScanListener().listenOneFile(getScanLevel(),
+							wResult.size(), wNewFileDir);
 				}
 				wResult.add(wNewFileDir);
 			}
@@ -588,10 +610,11 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @return
 	 * @throws IOException
 	 */
-	public ArrayList<File> getMySortedFiles(final FileFilter aFilter, final boolean aWithDirs)
-			throws IOException {
+	public ArrayList<File> getMySortedFiles(final FileFilter aFilter,
+			final boolean aWithDirs) throws IOException {
 
-		ArrayList<File> wList = getMySortedFiles(aFilter, aWithDirs, !WITH_TEXTFILE);
+		ArrayList<File> wList = getMySortedFiles(aFilter, aWithDirs,
+				!WITH_TEXTFILE);
 
 		return wList;
 	}
@@ -610,8 +633,9 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @return
 	 * @throws IOException
 	 */
-	public ArrayList<File> getMySortedFiles(final FileFilter aFilter, final boolean aWithDirs,
-			final boolean aInstanciateTxtFiles) throws IOException {
+	public ArrayList<File> getMySortedFiles(final FileFilter aFilter,
+			final boolean aWithDirs, final boolean aInstanciateTxtFiles)
+			throws IOException {
 
 		failIfNotExist();
 
@@ -630,15 +654,18 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 		for (int wI = 0; wI < wListSorted.length; wI++) {
 			File wFile = wListSorted[wI];
 			if (wFile.isFile()) {
-				CXFileBase wNewFile = newFile(wFile.getAbsolutePath(), aInstanciateTxtFiles);
+				CXFileBase wNewFile = newFile(wFile.getAbsolutePath(),
+						aInstanciateTxtFiles);
 				if (hasScanListener()) {
-					getScanListener().listenOneFile(getScanLevel(), wResult.size(), wNewFile);
+					getScanListener().listenOneFile(getScanLevel(),
+							wResult.size(), wNewFile);
 				}
 				wResult.add(wNewFile);
 			} else if (aWithDirs && wFile.isDirectory()) {
 				CXFileBase wNewFileDir = newFileDir(wFile.getAbsolutePath());
 				if (hasScanListener()) {
-					getScanListener().listenOneFile(getScanLevel(), wResult.size(), wNewFileDir);
+					getScanListener().listenOneFile(getScanLevel(),
+							wResult.size(), wNewFileDir);
 				}
 				wResult.add(wNewFileDir);
 			}
@@ -757,7 +784,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @return
 	 * @throws IOException
 	 */
-	public int moveTo(final CXFileDir aDstDir, final FileFilter aFilter) throws IOException {
+	public int moveTo(final CXFileDir aDstDir, final FileFilter aFilter)
+			throws IOException {
 
 		aDstDir.remove();
 		return moveTo(aDstDir, aFilter, true, true);
@@ -783,7 +811,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @throws IOException
 	 */
 	public int moveTo(final CXFileDir aDstDir, final FileFilter aFilter,
-			final boolean aDeleteExinstingFiles, final boolean aCreateEmptyDir) throws IOException {
+			final boolean aDeleteExinstingFiles, final boolean aCreateEmptyDir)
+			throws IOException {
 
 		if (!exists()) {
 			return 0;
@@ -799,12 +828,14 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 		while (wIt.hasNext()) {
 			File wFile = wIt.next();
 			if (wFile.isFile()) {
-				((CXFile) wFile).moveTo(aDstDir, wFile.getName(), aDeleteExinstingFiles);
+				((CXFile) wFile).moveTo(aDstDir, wFile.getName(),
+						aDeleteExinstingFiles);
 				wRes++;
 			} else if (wFile.isDirectory()) {
 				wRes += ((CXFileDir) wFile).moveTo(
-						new CXFileDir(aDstDir.getAbsolutePath(), wFile.getName()), aFilter,
-						aDeleteExinstingFiles, aCreateEmptyDir);
+						new CXFileDir(aDstDir.getAbsolutePath(), wFile
+								.getName()), aFilter, aDeleteExinstingFiles,
+						aCreateEmptyDir);
 			}
 		}
 		// Suppression si dossier source si vide
@@ -823,7 +854,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	/**
 	 * Instancie un objet fichier - CAdminFile et classes derivees
 	 */
-	protected CXFile newFile(final String aPath, final boolean aInstanciateTxtFiles) {
+	protected CXFile newFile(final String aPath,
+			final boolean aInstanciateTxtFiles) {
 
 		if (aInstanciateTxtFiles) {
 			return new CXFileText(aPath);
@@ -849,7 +881,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @return
 	 * @throws IOException
 	 */
-	public boolean processAllFiles(final IXFileProcessor aXFileProcessor) throws IOException {
+	public boolean processAllFiles(final IXFileProcessor aXFileProcessor)
+			throws IOException {
 
 		return processAllFiles(aXFileProcessor, WITH_DIRS, NO_FILTER);
 	}
@@ -864,17 +897,20 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @throws IOException
 	 */
 	protected boolean processAllFiles(final IXFileProcessor aXFileProcessor,
-			final boolean aWithSubDirs, final FileFilter aFilter) throws IOException {
+			final boolean aWithSubDirs, final FileFilter aFilter)
+			throws IOException {
 
 		boolean wContinue = true;
 
-		Iterator<File> wIt = getMyFiles(aFilter, WITH_DIRS, !WITH_TEXTFILE).iterator();
+		Iterator<File> wIt = getMyFiles(aFilter, WITH_DIRS, !WITH_TEXTFILE)
+				.iterator();
 		while (wContinue && wIt.hasNext()) {
 			File wFile = wIt.next();
 
 			wContinue = aXFileProcessor.processFile(wFile);
 			if (wFile.isDirectory() && aWithSubDirs) {
-				((CXFileDir) wFile).processAllFiles(aXFileProcessor, aWithSubDirs, aFilter);
+				((CXFileDir) wFile).processAllFiles(aXFileProcessor,
+						aWithSubDirs, aFilter);
 			}
 		}
 		return wContinue;
@@ -898,7 +934,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @return
 	 * @throws IOException
 	 */
-	private int remove(final boolean aRemoveMe, final FileFilter aFileFilter) throws IOException {
+	private int remove(final boolean aRemoveMe, final FileFilter aFileFilter)
+			throws IOException {
 
 		int wNbFile = 0;
 		if (exists()) {
@@ -917,9 +954,10 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 			if (aRemoveMe) {
 				boolean wDeleted = this.delete();
 				if (!wDeleted) {
-					throw new IOException(String.format(
-							"Unable to delete [%s]. canWrite=[%b]. isEmpty=[%b]",
-							getAbsolutePath(), canWrite(), isEmpty()));
+					throw new IOException(
+							String.format(
+									"Unable to delete [%s]. canWrite=[%b]. isEmpty=[%b]",
+									getAbsolutePath(), canWrite(), isEmpty()));
 				}
 				wNbFile++;
 			}
@@ -947,19 +985,22 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @throws IOException
 	 */
 	@Override
-	public CXSortListFiles scanAll(CXSortListFiles aList, final FileFilter aFilter,
-			final boolean aSubDirs, final boolean aInstanciateTxtFiles) throws IOException {
+	public CXSortListFiles scanAll(CXSortListFiles aList,
+			final FileFilter aFilter, final boolean aSubDirs,
+			final boolean aInstanciateTxtFiles) throws IOException {
 
 		if (aList == null) {
 			aList = new CXSortListFiles();
 		}
-		Iterator<File> wIt = getMyFiles(aFilter, true, aInstanciateTxtFiles).iterator();
+		Iterator<File> wIt = getMyFiles(aFilter, true, aInstanciateTxtFiles)
+				.iterator();
 		while (wIt.hasNext()) {
 			File wFile = wIt.next();
 
 			aList.add(wFile);
 			if (wFile.isDirectory() && aSubDirs) {
-				((CXFileDir) wFile).scanAll(aList, aFilter, aSubDirs, aInstanciateTxtFiles);
+				((CXFileDir) wFile).scanAll(aList, aFilter, aSubDirs,
+						aInstanciateTxtFiles);
 			}
 
 		}
@@ -973,8 +1014,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @return
 	 * @throws IOException
 	 */
-	public CXSortListFiles scanAll(final FileFilter aFilter, final boolean aSubDirs)
-			throws IOException {
+	public CXSortListFiles scanAll(final FileFilter aFilter,
+			final boolean aSubDirs) throws IOException {
 
 		return scanAll(null, aFilter, aSubDirs, false);
 	}
@@ -994,7 +1035,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @return
 	 * @throws IOException
 	 */
-	public CXSortListFiles scanAllDirs(final boolean aSubDirs) throws IOException {
+	public CXSortListFiles scanAllDirs(final boolean aSubDirs)
+			throws IOException {
 
 		return scanAllDirs(null, null, aSubDirs, true);
 	}
@@ -1006,8 +1048,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @return
 	 * @throws IOException
 	 */
-	public CXSortListFiles scanAllDirs(final CXSortListFiles aList, final boolean aSubDirs)
-			throws IOException {
+	public CXSortListFiles scanAllDirs(final CXSortListFiles aList,
+			final boolean aSubDirs) throws IOException {
 
 		return scanAllDirs(aList, null, aSubDirs, true);
 	}
@@ -1022,19 +1064,22 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @throws IOException
 	 */
 	@Override
-	public CXSortListFiles scanAllDirs(CXSortListFiles aList, final FileFilter aFilter,
-			final boolean aSubDirs, final boolean aInstanciateTxtFiles) throws IOException {
+	public CXSortListFiles scanAllDirs(CXSortListFiles aList,
+			final FileFilter aFilter, final boolean aSubDirs,
+			final boolean aInstanciateTxtFiles) throws IOException {
 
 		if (aList == null) {
 			aList = new CXSortListFiles();
 		}
-		Iterator<File> wIt = getMyFiles(aFilter, true, aInstanciateTxtFiles).iterator();
+		Iterator<File> wIt = getMyFiles(aFilter, true, aInstanciateTxtFiles)
+				.iterator();
 		while (wIt.hasNext()) {
 			File wFile = wIt.next();
 			if (wFile.isDirectory()) {
 				aList.add(wFile);
 				if (aSubDirs) {
-					((CXFileDir) wFile).scanAllDirs(aList, aFilter, aSubDirs, aInstanciateTxtFiles);
+					((CXFileDir) wFile).scanAllDirs(aList, aFilter, aSubDirs,
+							aInstanciateTxtFiles);
 				}
 			}
 		}
@@ -1048,8 +1093,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @return
 	 * @throws Exception
 	 */
-	public CXSortListFiles scanAllDirs(final FileFilter aFilter, final boolean aSubDirs)
-			throws Exception {
+	public CXSortListFiles scanAllDirs(final FileFilter aFilter,
+			final boolean aSubDirs) throws Exception {
 
 		return scanAllDirs(null, aFilter, aSubDirs, true);
 	}
@@ -1073,7 +1118,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @return
 	 * @throws Exception
 	 */
-	public CXSortListFiles scanAllFiles(final boolean aWithSubDirs) throws Exception {
+	public CXSortListFiles scanAllFiles(final boolean aWithSubDirs)
+			throws Exception {
 
 		return scanAllFiles(null, null, aWithSubDirs, false);
 	}
@@ -1092,14 +1138,16 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * .files.CXSortListFiles, java.io.FileFilter, boolean, boolean)
 	 */
 	@Override
-	public CXSortListFiles scanAllFiles(CXSortListFiles aList, final FileFilter aFilter,
-			final boolean aSubDirs, final boolean aInstanciateTxtFiles) throws Exception {
+	public CXSortListFiles scanAllFiles(CXSortListFiles aList,
+			final FileFilter aFilter, final boolean aSubDirs,
+			final boolean aInstanciateTxtFiles) throws Exception {
 
 		if (aList == null) {
 			aList = new CXSortListFiles();
 		}
 
-		Iterator<File> wIt = getMyFiles(aFilter, true, aInstanciateTxtFiles).iterator();
+		Iterator<File> wIt = getMyFiles(aFilter, true, aInstanciateTxtFiles)
+				.iterator();
 		while (wIt.hasNext()) {
 			File wFile = wIt.next();
 			if (wFile.isFile()) {
@@ -1109,7 +1157,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 					((CXFileDir) wFile).setScanListner(getScanListener());
 				}
 				((CXFileDir) wFile).setScanLevel(getScanLevel() + 1);
-				((CXFileDir) wFile).scanAllFiles(aList, aFilter, aSubDirs, aInstanciateTxtFiles);
+				((CXFileDir) wFile).scanAllFiles(aList, aFilter, aSubDirs,
+						aInstanciateTxtFiles);
 			}
 		}
 		if (hasScanListener() && isScanLevelZero()) {
@@ -1130,8 +1179,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @return
 	 * @throws Exception
 	 */
-	public CXSortListFiles scanAllFiles(final FileFilter aFilter, final boolean aSubDirs)
-			throws Exception {
+	public CXSortListFiles scanAllFiles(final FileFilter aFilter,
+			final boolean aSubDirs) throws Exception {
 
 		return scanAllFiles(null, aFilter, aSubDirs, false);
 	}
@@ -1149,8 +1198,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @return
 	 * @throws Exception
 	 */
-	public CXSortListFiles scanAllFiles(final String aListeExtensions, final boolean aSubDirs)
-			throws Exception {
+	public CXSortListFiles scanAllFiles(final String aListeExtensions,
+			final boolean aSubDirs) throws Exception {
 
 		if (aListeExtensions != null) {
 			return scanAllFiles(getFilterExtension(aListeExtensions), aSubDirs);
@@ -1182,8 +1231,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @return
 	 * @throws Exception
 	 */
-	public CXSortListFiles scanAllTextFiles(final FileFilter aFilter, final boolean aSubDirs)
-			throws Exception {
+	public CXSortListFiles scanAllTextFiles(final FileFilter aFilter,
+			final boolean aSubDirs) throws Exception {
 
 		return scanAllFiles((CXSortListFiles) null, aFilter, aSubDirs, true);
 	}
@@ -1199,11 +1248,12 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @return
 	 * @throws Exception
 	 */
-	public CXSortListFiles scanAllTextFiles(final String aListeExtensions, final boolean aSubDirs)
-			throws Exception {
+	public CXSortListFiles scanAllTextFiles(final String aListeExtensions,
+			final boolean aSubDirs) throws Exception {
 
 		if (aListeExtensions != null) {
-			return scanAllTextFiles(getFilterExtension(aListeExtensions), aSubDirs);
+			return scanAllTextFiles(getFilterExtension(aListeExtensions),
+					aSubDirs);
 		} else {
 			return scanAllTextFiles((FileFilter) null, aSubDirs);
 		}
