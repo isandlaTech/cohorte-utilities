@@ -67,7 +67,7 @@ public abstract class CInstallerBase extends CAbstractComponentBase implements
 		// registration: it registers itself)
 		new CInstallerData();
 
-		// install a ShutdownHook as izPack doesn't have a
+		// install a ShutdownHook as izPack doesn't call the listeners when the installer stops
 		// http://docs.oracle.com/javase/7/docs/api/java/lang/Runtime.html#addShutdownHook(java.lang.Thread)
 		Thread wShutdownHook = new Thread(new CExitListener(), "ExitListener");
 		Runtime.getRuntime().addShutdownHook(wShutdownHook);
