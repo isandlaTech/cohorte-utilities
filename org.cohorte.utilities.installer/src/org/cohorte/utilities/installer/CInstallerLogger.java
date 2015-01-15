@@ -255,15 +255,15 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	}
 
 	/**
-	 * @param aName
+	 * @param aLoggerName
+	 *            eg. "X3CryptedExchange_CInstaller" or "iCT4X3_CUninstaller"
 	 */
-	private void initFileLogger(final String aName) {
+	private void initFileLogger(final String aLoggerName) {
 
 		try {
 			String wLevel = "FINE";
 
-			String wLoggerName = String.format("X3CryptedExchange_%s", aName);
-			String wLogFileNamePattern = buildFileNamePattern(wLoggerName);
+			String wLogFileNamePattern = buildFileNamePattern(aLoggerName);
 
 			File wDirLogs = CXFileDir.getTempDir();
 			CXFileDir wLogFilePattern = new CXFileDir(wDirLogs,
@@ -272,7 +272,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 			pAbsolutePathPattern = wLogFilePattern.getAbsolutePath();
 
 			sFileLogger = (CActivityLoggerBasic) CActivityLoggerBasic
-					.newLogger(wLoggerName, pAbsolutePathPattern, wLevel,
+					.newLogger(aLoggerName, pAbsolutePathPattern, wLevel,
 							10 * 1024 * 1024, 10, IActivityFormater.LINE_SHORT,
 							IActivityFormater.MULTILINES_TEXT);
 
