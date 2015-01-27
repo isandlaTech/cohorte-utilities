@@ -12,3 +12,5 @@ target/
 .sonar/
 sonar-project.properties
 
+# Mac related metadata
+.DS_Store
