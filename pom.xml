@@ -1,125 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
+  <!--   
+    Copyright 2012-2014 isandlaTech (http://isandlatech.com/)   
+  -->
+	
 <project
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.cohorte.utilities</groupId>
-	<artifactId>cohorte-utilities</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<artifactId>utilities-parent</artifactId>
+	<version>1.0.0</version>
+
 	<packaging>pom</packaging>
 
 	<properties>
-		<tycho-version>0.21.0</tycho-version>
-		<ipojo-version>1.12.0</ipojo-version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<tycho-version>0.22.0</tycho-version>
+		<osgi-version>5.0.0</osgi-version>		
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>		
+		<eclipse-p2-repo.url>http://download.eclipse.org/releases/luna</eclipse-p2-repo.url>	
 	</properties>
 
-	<modules>
-	   <module>org.cohorte.utilities</module>
+	<dependencies>
+	
+	</dependencies>
+
+	<modules>		
+		<module>org.cohorte.utilities</module>
+		<module>org.cohorte.utilities.picosoc</module>
+		<module>org.cohorte.utilities.installer</module>
+		<module>org.cohorte.utilities.crypto</module>
 	</modules>
+
+	<repositories>
+		<repository>
+            <id>eclipse-p2-repo</id>
+            <url>${eclipse-p2-repo.url}</url>
+            <layout>p2</layout>
+        </repository>
+	</repositories>
 
 	<build>
 		<plugins>
+			<!-- tyco plugin -->
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
 				<version>${tycho-version}</version>
 				<extensions>true</extensions>
-			</plugin>
-		</plugins>
-
-		<pluginManagement>
-			<plugins>
-				<!-- Add iPOJO annotations to the classpath -->
-				<plugin>
-					<groupId>org.eclipse.tycho</groupId>
-					<artifactId>tycho-compiler-plugin</artifactId>
-					<version>${tycho-version}</version>
-					<configuration>
-						<source>1.7</source>
-						<target>1.7</target>
-						<extraClasspathElements>
-							<!-- iPOJO Annotations are not in a bundle -->
-							<extraClasspathElement>
-								<groupId>org.apache.felix</groupId>
-								<artifactId>org.apache.felix.ipojo.annotations</artifactId>
-								<version>${ipojo-version}</version>
-							</extraClasspathElement>
-						</extraClasspathElements>
-					</configuration>
-				</plugin>
-
-				<!-- iPOJO Manipulation -->
-				<plugin>
-					<groupId>org.apache.felix</groupId>
-					<artifactId>maven-ipojo-plugin</artifactId>
-					<version>${ipojo-version}</version>
-					<configuration>
-						<!-- Add support for Tycho packaging -->
-						<m_supportedProjectTypes>
-							<type>eclipse-plugin</type>
-						</m_supportedProjectTypes>
-					</configuration>
-					<executions>
-						<execution>
-							<goals>
-								<goal>ipojo-bundle</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-			</plugins>
-		</pluginManagement>
+			</plugin>			
+		</plugins>		
 		<extensions>
-			<!-- Enabling the use of FTP to deploy the artifacts -->
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ftp</artifactId>
-				<version>1.0-beta-6</version>
-			</extension>
-		</extensions>
+	      <!-- Enabling the use of FTP -->
+	      <extension>
+	        <groupId>org.apache.maven.wagon</groupId>
+	         <artifactId>wagon-ftp</artifactId>
+	         <version>1.0-beta-6</version>
+	      </extension>
+	    </extensions>
 	</build>
-
-	<repositories>
-		<repository>
-			<id>juno</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/juno</url>
-		</repository>
-		<repository>
-			<id>isandlatech.snapshots</id>
-			<name>isandlaTech Snapshot Repository</name>
-			<url>http://repo.isandlatech.com/maven/snapshots</url>
-			<releases>
-                <enabled>false</enabled>
-            </releases>
-			<snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-		</repository>
-		<repository>
-			<id>isandlatech.releases</id>
-			<name>isandlaTech Releases Repository</name>
-			<url>http://repo.isandlatech.com/maven/releases</url>
-			<releases>
-                <enabled>true</enabled>
-            </releases>
-			<snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-		</repository>
-	</repositories>
+	
 	<distributionManagement>
 		<repository>
 	      <id>isandlatech</id>
-	      <name>isandlaTech Releases Repository</name>
-	      <url>ftp://isandlatech.com/maven/releases</url>
+	      <name>isandlaTech iCT4SX3 Releases Repository</name>
+	      <url>ftp://isandlatech.com/maven/ict4sx3</url>
 	      <layout>default</layout>
 	    </repository>
 	    <snapshotRepository>
 	      <id>isandlatech</id>
-	      <name>isandlaTech Snapshots Repository</name>
-	      <url>ftp://isandlatech.com/maven/snapshots</url>
+	      <name>isandlaTech iCT4SX3 Snapshots Repository</name>
+	      <url>ftp://isandlatech.com/maven/ict4sx3</url>
 	      <uniqueVersion>true</uniqueVersion>
 	      <layout>default</layout>
 	    </snapshotRepository>
