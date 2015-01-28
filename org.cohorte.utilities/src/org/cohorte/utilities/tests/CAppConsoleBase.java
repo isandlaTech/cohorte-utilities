@@ -22,14 +22,12 @@ import org.psem2m.utilities.files.CXFile;
 import org.psem2m.utilities.files.CXFileDir;
 import org.psem2m.utilities.files.CXFileFilter;
 import org.psem2m.utilities.files.CXFileText;
-import org.psem2m.utilities.logging.CActivityLoggerBasicConsole;
-import org.psem2m.utilities.logging.IActivityLogger;
 
 /**
  * @author ogattaz
  * 
  */
-public abstract class CAppConsoleBase {
+public abstract class CAppConsoleBase extends CAppObjectBase {
 
 	public final static String APPLICATION_PARAM_AUTO = "auto";
 
@@ -75,9 +73,6 @@ public abstract class CAppConsoleBase {
 
 	// les définitions des commandes acceptables
 	private final Map<String, CCommand> pCommands = new HashMap<String, CCommand>();
-
-	protected IActivityLogger pLogger = CActivityLoggerBasicConsole
-			.getInstance();
 
 	private String pCmdeLine;
 	private String pCmdeLast;
@@ -407,13 +402,6 @@ public abstract class CAppConsoleBase {
 	/**
 	 * @return
 	 */
-	public IActivityLogger getLogger() {
-		return pLogger;
-	}
-
-	/**
-	 * @return
-	 */
 	protected int getNbCommandArg() {
 		return (pCommandArgs != null) ? pCommandArgs.length : -1;
 	}
@@ -515,13 +503,6 @@ public abstract class CAppConsoleBase {
 	 */
 	protected void setAppOptions(final CAppOptionsBase aAppOptions) {
 		pAppOptions = aAppOptions;
-	}
-
-	/**
-	 * @param aLogger
-	 */
-	protected void setLogger(final IActivityLogger aLogger) {
-		pLogger = aLogger;
 	}
 
 	/**
