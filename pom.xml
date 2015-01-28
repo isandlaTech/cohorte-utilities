@@ -28,7 +28,7 @@
 		<module>org.cohorte.utilities</module>
 		<module>org.cohorte.utilities.picosoc</module>
 		<module>org.cohorte.utilities.installer</module>
-		<!-- <module>org.cohorte.utilities.crypto</module> -->
+		<module>org.cohorte.utilities.crypto</module>
 	</modules>
 
 	<repositories>
