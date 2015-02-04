@@ -105,8 +105,8 @@ public class CAesKeyContext {
 			NoSuchAlgorithmException {
 
 		SecureRandom random = new SecureRandom();
-		byte[] wIV = new byte[16];// generate random 16 byte IV AES is always
-									// 16bytes
+		// generate random 16 byte IV AES is always 16bytes
+		byte[] wIV = new byte[16];
 		random.nextBytes(wIV);
 		return wIV;
 	}

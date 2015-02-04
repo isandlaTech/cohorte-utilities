@@ -85,8 +85,8 @@ public class CDecoderAES {
 		pAesKeyContext = aAesKeyContext;
 
 		if (pLogger.isLogDebugOn()) {
-			pLogger.logDebug(this, "<init>", "instanciated OK",
-					haspAesKeyContext());
+			pLogger.logDebug(this, "<init>", "instanciated OK  hasAesKeyContext=[%b]",
+					hasAesKeyContext());
 		}
 	}
 
@@ -442,7 +442,15 @@ public class CDecoderAES {
 	/**
 	 * @return
 	 */
-	public boolean haspAesKeyContext() {
+	public boolean hasAesKeyContext() {
 		return pAesKeyContext != null;
+	}
+	/**
+	 * @return
+	 * @deprecated
+	 */
+	@Deprecated
+	public boolean haspAesKeyContext() {
+		return hasAesKeyContext();
 	}
 }
