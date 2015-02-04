@@ -42,11 +42,14 @@ public class CAesKeyContext {
 	public CAesKeyContext(final IActivityLogger aLogger)
 			throws UnsupportedEncodingException, NoSuchAlgorithmException {
 		super();
-		pLogger = aLogger;
+		pLogger = (aLogger != null) ? aLogger : CActivityLoggerNull
+				.getInstance();
 		pIV = initIV();
 		pKey = initKey();
 
-		pLogger.logDebug(this, "<init>", "instanciated OK");
+		if (pLogger.isLogDebugOn()) {
+			pLogger.logDebug(this, "<init>", "instanciated OK");
+		}
 	}
 
 	/**
@@ -55,7 +58,7 @@ public class CAesKeyContext {
 	public byte[] getAesIv() {
 		return pIV;
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -67,7 +70,7 @@ public class CAesKeyContext {
 	 * @return
 	 */
 	public IvParameterSpec getAesIvSpec() {
-		return  new IvParameterSpec(getAesIv());
+		return new IvParameterSpec(getAesIv());
 	}
 
 	/**
@@ -77,7 +80,7 @@ public class CAesKeyContext {
 		return pKey;
 
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -89,8 +92,8 @@ public class CAesKeyContext {
 	/**
 	 * @return
 	 */
-	public SecretKeySpec getAesKeySpec(){
-		return  new SecretKeySpec(getAesKey(), "AES");
+	public SecretKeySpec getAesKeySpec() {
+		return new SecretKeySpec(getAesKey(), "AES");
 	}
 
 	/**
@@ -100,11 +103,12 @@ public class CAesKeyContext {
 	 */
 	private byte[] initIV() throws UnsupportedEncodingException,
 			NoSuchAlgorithmException {
-		
-		 SecureRandom random = new SecureRandom();
-         byte[] wIV = new byte[16];//generate random 16 byte IV AES is always 16bytes
-         random.nextBytes(wIV);
-         return wIV;
+
+		SecureRandom random = new SecureRandom();
+		byte[] wIV = new byte[16];// generate random 16 byte IV AES is always
+									// 16bytes
+		random.nextBytes(wIV);
+		return wIV;
 	}
 
 	/**
@@ -116,11 +120,12 @@ public class CAesKeyContext {
 	private byte[] initKey() throws NoSuchAlgorithmException {
 
 		KeyGenerator keygen = KeyGenerator.getInstance("AES");
-		// To use 256 bit keys, you need the "unlimited strength" encryption policy files from Sun.
-        keygen.init(128);  
-        byte[] wKey = keygen.generateKey().getEncoded();
-        
-        return wKey;
+		// To use 256 bit keys, you need the "unlimited strength" encryption
+		// policy files from Sun.
+		keygen.init(128);
+		byte[] wKey = keygen.generateKey().getEncoded();
+
+		return wKey;
 	}
 
 }

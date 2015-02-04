@@ -40,7 +40,11 @@ public class CDecoderRSA extends CDecoderAES {
 		super(aLogger);
 		pRsaKeyContext = aRsaKeyContext;
 
-		pLogger.logDebug(this, "<init>", "instanciated. RsaKeyContext.TimeStamp[%s]", pRsaKeyContext.getTimeStampIso8601());
+		if (pLogger.isLogDebugOn()) {
+			pLogger.logDebug(this, "<init>",
+					"instanciated. RsaKeyContext.TimeStamp[%s]",
+					pRsaKeyContext.getTimeStampIso8601());
+		}
 	}
 
 	/**

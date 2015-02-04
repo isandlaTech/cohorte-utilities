@@ -36,6 +36,7 @@ public class CRsaGenerator {
 
 	/** String to hold name of the encryption algorithm. */
 	public static final String ALGORITHM_GENERATE = "RSA";
+	public static final int ALGORITHM_GENERATE_SIZE = 1024;
 
 	/** String to hold name of the encryption algorithm. */
 	public static final String ALGORITHM_SIGN = "SHA1withRSA";
@@ -68,9 +69,12 @@ public class CRsaGenerator {
 				.isEmpty()) ? aDistinguishedName : DISTINGUISEDNAME;
 
 		keyGen = KeyPairGenerator.getInstance(ALGORITHM_GENERATE);
-		keyGen.initialize(1024);
+		keyGen.initialize(ALGORITHM_GENERATE_SIZE);
 
-		pLogger.logDebug(this, "<init>", "keyGen=[%s]", keyGen);
+		if (pLogger.isLogDebugOn()) {
+			pLogger.logDebug(this, "<init>", "keyGen=[%s] Algo=[%s] Size=[%s]",
+					keyGen, ALGORITHM_GENERATE, ALGORITHM_GENERATE_SIZE);
+		}
 	}
 
 	/**
@@ -134,11 +138,13 @@ public class CRsaGenerator {
 			KeyPair aKeyPair, int aNbDays, String aX509SignAlgorithm)
 			throws GeneralSecurityException, IOException {
 
-		pLogger.logDebug(
-				this,
-				"generateCertificate",
-				"DistinguishedName=[%s] NbDays=[%s] Algorithm=[%s] KeyPair=[%s]",
-				aDistinguishedName, aNbDays, aX509SignAlgorithm, aKeyPair);
+		if (pLogger.isLogDebugOn()) {
+			pLogger.logDebug(
+					this,
+					"generateCertificate",
+					"DistinguishedName=[%s] NbDays=[%s] Algorithm=[%s] KeyPair=[%s]",
+					aDistinguishedName, aNbDays, aX509SignAlgorithm, aKeyPair);
+		}
 
 		PrivateKey privkey = aKeyPair.getPrivate();
 
@@ -166,8 +172,10 @@ public class CRsaGenerator {
 		wX509CertInfo.set(X509CertInfo.ALGORITHM_ID,
 				new CertificateAlgorithmId(wAlgorithmId));
 
-		pLogger.logDebug(this, "generateCertificate", "X509CertInfo=[%s]",
-				wX509CertInfo);
+		if (pLogger.isLogDebugOn()) {
+			pLogger.logDebug(this, "generateCertificate", "X509CertInfo=[%s]",
+					wX509CertInfo);
+		}
 
 		// Sign the cert to identify the algorithm that's used.
 		X509CertImpl wCertificate = new X509CertImpl(wX509CertInfo);
@@ -192,13 +200,14 @@ public class CRsaGenerator {
 
 		KeyPair wKeyPair = keyGen.generateKeyPair();
 		wTimer.stop();
-
-		pLogger.logDebug(this, "generateKeyPair",
-				"Duration=[%s] Format=[%s] Public=[%s]", wTimer
-						.getDurationStrMilliSec(), wKeyPair.getPublic()
-						.getFormat(), CXBytesUtils.bytesToHexaString(wKeyPair
-						.getPublic().getEncoded()));
-
+		if (pLogger.isLogDebugOn()) {
+			pLogger.logDebug(this, "generateKeyPair",
+					"Duration=[%s] Format=[%s] Public=[%s]", wTimer
+							.getDurationStrMilliSec(), wKeyPair.getPublic()
+							.getFormat(), CXBytesUtils
+							.bytesToHexaString(wKeyPair.getPublic()
+									.getEncoded()));
+		}
 		return wKeyPair;
 	}
 
@@ -225,9 +234,11 @@ public class CRsaGenerator {
 		CRsaKeyContext wCRsaKeyContext = new CRsaKeyContext(wKeyPair,
 				wKeyTimer, wX509Certificate, wCertificatTimer);
 
-		pLogger.logDebug(this, "generateRsaKeyContext", "OK RsaKeyContext.TimeStamp=[%s]",
-				wCRsaKeyContext.getTimeStampIso8601());
-
+		if (pLogger.isLogDebugOn()) {
+			pLogger.logDebug(this, "generateRsaKeyContext",
+					"OK RsaKeyContext.TimeStamp=[%s]",
+					wCRsaKeyContext.getTimeStampIso8601());
+		}
 		return wCRsaKeyContext;
 	}
 

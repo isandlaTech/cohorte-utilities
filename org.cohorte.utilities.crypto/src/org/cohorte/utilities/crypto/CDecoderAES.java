@@ -80,10 +80,14 @@ public class CDecoderAES {
 	public CDecoderAES(final IActivityLogger aLogger,
 			CAesKeyContext aAesKeyContext) {
 		super();
-		pLogger = aLogger;
+		pLogger = (aLogger != null) ? aLogger : CActivityLoggerNull
+				.getInstance();;
 		pAesKeyContext = aAesKeyContext;
 
-		pLogger.logDebug(this, "<init>", "instanciated OK", haspAesKeyContext());
+		if (pLogger.isLogDebugOn()) {
+			pLogger.logDebug(this, "<init>", "instanciated OK",
+					haspAesKeyContext());
+		}
 	}
 
 	/**
@@ -289,12 +293,12 @@ public class CDecoderAES {
 
 		byte[] wEncryptedBytes = wCipher.doFinal(wDecryptedBytes);
 
-		pLogger.logDebug(this, "encryptAES",
-				"DecryptedBytes.len=[%s] EncryptedBytes.len=[%s] ",
-				wEncryptedBytes.length, wDecryptedBytes.length);
-
+		if (pLogger.isLogDebugOn()) {
+			pLogger.logDebug(this, "encryptAES",
+					"DecryptedBytes.len=[%s] EncryptedBytes.len=[%s] ",
+					wEncryptedBytes.length, wDecryptedBytes.length);
+		}
 		return wEncryptedBytes;
-
 	}
 
 	/**
@@ -341,7 +345,6 @@ public class CDecoderAES {
 		}
 		return encryptAESBase64(aData, pAesKeyContext.getAesKey(),
 				pAesKeyContext.getAesIv());
-
 	}
 
 	/**
@@ -360,8 +363,10 @@ public class CDecoderAES {
 		String wData = DatatypeConverter.printBase64Binary(encryptAES(aData,
 				aAesKey, aAesIv));
 
-		pLogger.logDebug(this, "encryptAESBase64", "EncryptedData=[%s]", wData);
-
+		if (pLogger.isLogDebugOn()) {
+			pLogger.logDebug(this, "encryptAESBase64", "EncryptedData=[%s]",
+					wData);
+		}
 		return wData;
 	}
 
@@ -381,8 +386,10 @@ public class CDecoderAES {
 		String wData = DatatypeConverter.printBase64Binary(encryptAES(aData,
 				aAesKeyHexBinary, aAesIvHexBinary));
 
-		pLogger.logDebug(this, "encryptAESBase64", "EncryptedData=[%s]", wData);
-
+		if (pLogger.isLogDebugOn()) {
+			pLogger.logDebug(this, "encryptAESBase64", "EncryptedData=[%s]",
+					wData);
+		}
 		return wData;
 	}
 
@@ -402,9 +409,10 @@ public class CDecoderAES {
 		String wData = DatatypeConverter.printHexBinary(encryptAES(aData,
 				aAesKey, aIV));
 
-		pLogger.logDebug(this, "encryptAESHexBinary", "encryptAESBase64=[%s]",
-				wData);
-
+		if (pLogger.isLogDebugOn()) {
+			pLogger.logDebug(this, "encryptAESHexBinary",
+					"encryptAESBase64=[%s]", wData);
+		}
 		return wData;
 	}
 
@@ -424,11 +432,16 @@ public class CDecoderAES {
 		String wData = DatatypeConverter.printHexBinary(encryptAES(aData,
 				aAesKeyHexBinary, aAesIvHexBinary));
 
-		pLogger.logDebug(this, "encryptAESBase64", "EncryptedData=[%s]", wData);
-
+		if (pLogger.isLogDebugOn()) {
+			pLogger.logDebug(this, "encryptAESBase64", "EncryptedData=[%s]",
+					wData);
+		}
 		return wData;
 	}
 
+	/**
+	 * @return
+	 */
 	public boolean haspAesKeyContext() {
 		return pAesKeyContext != null;
 	}

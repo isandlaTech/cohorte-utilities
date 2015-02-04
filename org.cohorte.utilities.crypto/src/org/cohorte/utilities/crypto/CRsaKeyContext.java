@@ -12,20 +12,17 @@ import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.CXTimer;
 
 /**
- * An instance of CRsaKeyContext contains  
+ * An instance of CRsaKeyContext contains
  * 
  * @author ogattaz
  * 
  */
-public class CRsaKeyContext  extends CX509Certificate{
-
-
+public class CRsaKeyContext extends CX509Certificate {
 
 	private final CXTimer pCertificatTimer;
 	private final KeyPair pKeyPair;
 	private final CXTimer pKeyTimer;
 	private final long pTimeStamp;
-	
 
 	/**
 	 * @param aKeyPair
@@ -38,10 +35,10 @@ public class CRsaKeyContext  extends CX509Certificate{
 	 * @throws CertificateEncodingException
 	 */
 	CRsaKeyContext(final KeyPair aKeyPair, final CXTimer aKeyTimer,
-			final X509Certificate aX509Certificate,final CXTimer aCertificatTimer)
-			throws CertificateEncodingException {
+			final X509Certificate aX509Certificate,
+			final CXTimer aCertificatTimer) throws CertificateEncodingException {
 		super(aX509Certificate);
-		
+
 		pTimeStamp = System.currentTimeMillis();
 		pKeyPair = aKeyPair;
 		pKeyTimer = aKeyTimer;
@@ -55,12 +52,6 @@ public class CRsaKeyContext  extends CX509Certificate{
 	public String getCertificatDuration() {
 		return pCertificatTimer.getDurationStrMilliSec();
 	}
-
-
-
-
-
-
 
 	/**
 	 * @return a formated string ("%6.3f") containing the duration in in
@@ -128,7 +119,6 @@ public class CRsaKeyContext  extends CX509Certificate{
 	public String getTimeStampIso8601() {
 		return CXDateTime.getIso8601TimeStamp(getTimeStamp());
 	}
-
 
 	/*
 	 * (non-Javadoc)
