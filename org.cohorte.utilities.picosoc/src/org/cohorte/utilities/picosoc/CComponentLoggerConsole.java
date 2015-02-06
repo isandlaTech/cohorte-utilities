@@ -177,7 +177,7 @@ public class CComponentLoggerConsole extends CComponentLogger {
 	 */
 	@Override
 	public void logSevere(Object aWho, CharSequence aWhat, Object... aInfos) {
-		pLogger.logWarn(aWho, aWhat, aInfos);
+		pLogger.logSevere(aWho, aWhat, aInfos);
 	}
 
 	/*

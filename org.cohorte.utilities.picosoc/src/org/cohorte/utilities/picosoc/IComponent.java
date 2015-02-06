@@ -25,8 +25,16 @@ public interface IComponent {
 	 * @return
 	 * @throws Exception
 	 */
-	<T> T getService(Class<? extends T> aSpecification) throws Exception;
+	<T> T getOptionalService(Class<? extends T> aSpecification);
 
+	
+	/**
+	 * @param aSpecification
+	 * @return
+	 * @throws Exception
+	 */
+	<T> T getService(Class<? extends T> aSpecification) throws Exception;
+	
 	/**
 	 * @param aSpecification
 	 * @return

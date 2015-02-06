@@ -6,8 +6,11 @@ import java.util.logging.LogRecord;
 
 import org.psem2m.utilities.files.CXFileDir;
 import org.psem2m.utilities.logging.CActivityLoggerBasic;
+import org.psem2m.utilities.logging.CActivityLoggerNull;
+import org.psem2m.utilities.logging.EActivityLogColumn;
 import org.psem2m.utilities.logging.IActivityFormater;
 import org.psem2m.utilities.logging.IActivityLogger;
+import org.psem2m.utilities.logging.IActivityRequester;
 
 /**
  * @author ogattaz
@@ -61,7 +64,7 @@ public abstract class CComponentLoggerFile extends CComponentLogger {
 		CComponentLogger.logInMain(record);
 	}
 
-	private IActivityLogger pFileLogger = null;
+	private final IActivityLogger pFileLogger;
 
 	private final ISvcLoggerConfigurator pSvcLoggerConfigurator;
 
@@ -74,8 +77,9 @@ public abstract class CComponentLoggerFile extends CComponentLogger {
 
 		pSvcLoggerConfigurator = getService(ISvcLoggerConfigurator.class);
 
-		initFileLogger();
+		pFileLogger = initFileLogger();
 
+		pFileLogger.logInfo(this, "<init>", "OK");
 	}
 
 	/**
@@ -121,16 +125,43 @@ public abstract class CComponentLoggerFile extends CComponentLogger {
 		return (pFileLogger != null) ? pFileLogger : super.getLogger();
 	}
 
-	/**
+	/*
+	 * (non-Javadoc)
 	 * 
+	 * @see org.cohorte.utilities.picosoc.CComponentLogger#getRequester()
 	 */
-	private void initFileLogger() {
+	@Override
+	public IActivityRequester getRequester() {
+		return pFileLogger.getRequester();
 
+	}
+
+	/**
+	 * @return an instance of IActivityLogger
+	 */
+	private IActivityLogger initFileLogger() {
+
+		IActivityLogger wActivityLogger = CActivityLoggerNull.getInstance();
 		try {
-			// ex : X3LoadBalancerProbe
-			String wLoggerName = pSvcLoggerConfigurator.getLoggerName();
 
+			// the three main informations
+			String wLoggerName = pSvcLoggerConfigurator.getLoggerName();
 			File wDirLogs = pSvcLoggerConfigurator.getDirLogs();
+			String wLevel = pSvcLoggerConfigurator.getLevel().getName();
+
+			// the specialized informatons
+			int wFileLimit = 10 * 1024 * 1024;
+			int wNbFile = 10;
+			EActivityLogColumn[] wLineDef = IActivityFormater.LINE_SHORT;
+			boolean wIsMultiLine = false;
+
+			ISvcActivityLoggerConfigurator wActivityLoggerConfigurator = getOptionalService(ISvcActivityLoggerConfigurator.class);
+			if (wActivityLoggerConfigurator != null) {
+				wFileLimit = wActivityLoggerConfigurator.getFileLimit();
+				wNbFile = wActivityLoggerConfigurator.getNbFile();
+				wLineDef = wActivityLoggerConfigurator.getLineDef();
+				wIsMultiLine = wActivityLoggerConfigurator.isMultiline();
+			}
 
 			String wLogFileNamePattern = buildFileNamePattern(wLoggerName);
 
@@ -139,24 +170,206 @@ public abstract class CComponentLoggerFile extends CComponentLogger {
 
 			String wAbsolutePathPattern = wLogFilePattern.getAbsolutePath();
 
-			String wLevel = pSvcLoggerConfigurator.getLevel().getName();
-
-			pFileLogger = CActivityLoggerBasic.newLogger(wLoggerName,
-					wAbsolutePathPattern, wLevel, 10 * 1024 * 1024, 10,
-					IActivityFormater.LINE_SHORT,
-					IActivityFormater.MULTILINES_TEXT);
+			wActivityLogger = CActivityLoggerBasic.newLogger(wLoggerName,
+					wAbsolutePathPattern, wLevel, wFileLimit, wNbFile,
+					wLineDef, wIsMultiLine);
 
 			logInfo(this, "initFileLogger", "FileLogger: %s",
-					pFileLogger.toDescription());
+					wActivityLogger.toDescription());
 
 		} catch (Exception e) {
 			logSevere(this, "initFileLogger", e);
 		}
+		return wActivityLogger;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.cohorte.utilities.picosoc.CComponentLogger#isLogDebugOn()
+	 */
+	@Override
+	public boolean isLogDebugOn() {
+
+		return (pFileLogger != null) ? pFileLogger.isLogDebugOn() : super
+				.isLogDebugOn();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.cohorte.utilities.picosoc.CComponentLogger#isLoggable(java.util.logging
+	 * .Level)
+	 */
 	@Override
 	public boolean isLoggable(final Level aLevel) {
+
 		return (pFileLogger != null) ? pFileLogger.isLoggable(aLevel) : super
 				.isLoggable(aLevel);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.cohorte.utilities.picosoc.CComponentLogger#isLogInfoOn()
+	 */
+	@Override
+	public boolean isLogInfoOn() {
+
+		return (pFileLogger != null) ? pFileLogger.isLogInfoOn() : super
+				.isLogInfoOn();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.cohorte.utilities.picosoc.CComponentLogger#isLogSevereOn()
+	 */
+	@Override
+	public boolean isLogSevereOn() {
+		return (pFileLogger != null) ? pFileLogger.isLogSevereOn() : super
+				.isLogSevereOn();
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.cohorte.utilities.picosoc.CComponentLogger#isLogWarningOn()
+	 */
+	@Override
+	public boolean isLogWarningOn() {
+
+		return (pFileLogger != null) ? pFileLogger.isLogWarningOn() : super
+				.isLogWarningOn();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.cohorte.utilities.picosoc.CComponentLogger#log(java.util.logging.
+	 * Level, java.lang.Object, java.lang.CharSequence, java.lang.Object[])
+	 */
+	@Override
+	public void log(Level aLevel, Object aWho, CharSequence aWhat,
+			Object... aInfos) {
+
+		if (pFileLogger != null)
+			pFileLogger.log(aLevel, aWho, aWhat, aInfos);
+		else
+			super.log(aLevel, aWho, aWhat, aInfos);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.cohorte.utilities.picosoc.CComponentLogger#log(java.util.logging.
+	 * LogRecord)
+	 */
+	@Override
+	public void log(LogRecord record) {
+
+		if (pFileLogger != null)
+			pFileLogger.log(record);
+		else
+			super.log(record);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.cohorte.utilities.picosoc.CComponentLogger#logDebug(java.lang.Object,
+	 * java.lang.CharSequence, java.lang.Object[])
+	 */
+	@Override
+	public void logDebug(Object aWho, CharSequence aWhat, Object... aInfos) {
+
+		if (pFileLogger != null)
+			pFileLogger.logDebug(aWho, aWhat, aInfos);
+		else
+			super.logDebug(aWho, aWhat, aInfos);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.cohorte.utilities.picosoc.CComponentLogger#logInfo(java.lang.Object,
+	 * java.lang.CharSequence, java.lang.Object[])
+	 */
+	@Override
+	public void logInfo(Object aWho, CharSequence aWhat, Object... aInfos) {
+
+		if (pFileLogger != null)
+			pFileLogger.logInfo(aWho, aWhat, aInfos);
+		else
+			super.logInfo(aWho, aWhat, aInfos);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.cohorte.utilities.picosoc.CComponentLogger#logSevere(java.lang.Object
+	 * , java.lang.CharSequence, java.lang.Object[])
+	 */
+	@Override
+	public void logSevere(Object aWho, CharSequence aWhat, Object... aInfos) {
+
+		if (pFileLogger != null)
+			pFileLogger.logSevere(aWho, aWhat, aInfos);
+		else
+			super.logSevere(aWho, aWhat, aInfos);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.cohorte.utilities.picosoc.CComponentLogger#logWarn(java.lang.Object,
+	 * java.lang.CharSequence, java.lang.Object[])
+	 */
+	@Override
+	public void logWarn(Object aWho, CharSequence aWhat, Object... aInfos) {
+
+		if (pFileLogger != null)
+			pFileLogger.logWarn(aWho, aWhat, aInfos);
+		else
+			super.logWarn(aWho, aWhat, aInfos);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.cohorte.utilities.picosoc.CComponentLogger#setLevel(java.util.logging
+	 * .Level)
+	 */
+	@Override
+	public void setLevel(Level aLevel) {
+
+		if (pFileLogger != null)
+			pFileLogger.setLevel(aLevel);
+		else
+			super.setLevel(aLevel);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.cohorte.utilities.picosoc.CComponentLogger#setLevel(java.lang.String)
+	 */
+	@Override
+	public void setLevel(String aLevelName) {
+
+		if (pFileLogger != null)
+			pFileLogger.setLevel(aLevelName);
+		else
+			super.setLevel(aLevelName);
 	}
 }

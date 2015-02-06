@@ -73,6 +73,26 @@ public abstract class CAbstractComponentAppConsole extends CAppConsoleBase
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see
+	 * org.cohorte.utilities.picosoc.IComponent#getOptionalService(java.lang
+	 * .Class)
+	 */
+	@Override
+	public <T> T getOptionalService(Class<? extends T> aSpecification) {
+		try {
+			return CServicesRegistry.getRegistry()
+					.getServiceRef(aSpecification).getService();
+		} catch (Exception e) {
+			log(Level.FINE, this, "getOptionalService",
+					"unable to get the optional service [‰s]",
+					aSpecification.getSimpleName());
+			return null;
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.cohorte.utilities.picosoc.IComponent#getService(java.lang.Class)
 	 */
 	@Override
@@ -81,7 +101,7 @@ public abstract class CAbstractComponentAppConsole extends CAppConsoleBase
 			return CServicesRegistry.getRegistry()
 					.getServiceRef(aSpecification).getService();
 		} catch (Exception e) {
-			CComponentLogger.logInMain(Level.SEVERE, this, "getService",
+			log(Level.SEVERE, this, "getService",
 					"unable to get service [‰s] : %s",
 					IActivityLogger.class.getSimpleName(),
 					e.getLocalizedMessage());
@@ -102,6 +122,23 @@ public abstract class CAbstractComponentAppConsole extends CAppConsoleBase
 		return CServicesRegistry.getRegistry().getServiceRef(aSpecification);
 	}
 
+	/**
+	 * @param aLevel
+	 * @param aWho
+	 * @param aWhat
+	 * @param aInfos
+	 */
+	private void log(Level aLevel, final Object aWho, CharSequence aWhat,
+			Object... aInfos) {
+
+		IActivityLogger wLogger = getOptionalService(IActivityLogger.class);
+		if (wLogger != null) {
+			wLogger.log(aLevel, aWho, aWhat, aInfos);
+		} else {
+			CComponentLogger.logInMain(aLevel, aWho, aWhat, aInfos);
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -115,7 +152,7 @@ public abstract class CAbstractComponentAppConsole extends CAppConsoleBase
 		try {
 			registerService(aSpecification, this);
 		} catch (Exception e) {
-			CComponentLogger.logInMain(Level.SEVERE, this, "<init>",
+			log(Level.SEVERE, this, "<init>",
 					"unable to register me as service [‰s] : %s",
 					aSpecification.getSimpleName(), e.getLocalizedMessage());
 		}

@@ -18,6 +18,10 @@ import org.psem2m.utilities.logging.IActivityFormater;
 import org.psem2m.utilities.logging.IActivityLogger;
 import org.psem2m.utilities.logging.IActivityRequester;
 
+/**
+ * @author ogattaz
+ * 
+ */
 abstract class CComponentLogger extends CAbstractComponentBase implements
 		IActivityLogger {
 
@@ -131,10 +135,9 @@ abstract class CComponentLogger extends CAbstractComponentBase implements
 					}
 				}
 			} catch (Exception e) {
-				Exception wEx = new Exception(
-						String.format(
-								"TomcatLogger: unable to set the formater of the main logger [%s]",
-								wMainLogger.getName()), e);
+				Exception wEx = new Exception(String.format(
+						"Unable to set the formater of the main logger [%s]",
+						wMainLogger.getName()), e);
 				System.err.println(sToolsException.eInString(wEx));
 			}
 
@@ -143,11 +146,31 @@ abstract class CComponentLogger extends CAbstractComponentBase implements
 		logInMain(
 				Level.INFO,
 				CComponentLogger.class,
-				"initLoggers",
+				"initJvmLoggers",
 				"hasMainLogger=[%b] MainLoggerLevel=[%s] ConsoleHandlerConfigured=[%b] FileHandlerConfigured=[%b]",
 				wHasMainLogger, wMainLoggerLevel, wConsoleHandlerConfigured,
 				wFileHandlerConfigured);
 
+	}
+
+	/**
+	 * @param aLevel
+	 * @return
+	 */
+	public static boolean isLogInMainOn(final Level aLevel) {
+		Logger wMainLogger = getMainLogger();
+
+		// si on ne doit pas logger !
+		if (wMainLogger == null) {
+			return false;
+		}
+		Level wMainLevel = wMainLogger.getLevel();
+		// si pas de level sur le main logger ou si le level du main logger
+		// est supérieur au level de la demande de log => no log
+		if (wMainLevel == null || aLevel.intValue() < wMainLevel.intValue()) {
+			return false;
+		}
+		return true;
 	}
 
 	/**

@@ -52,7 +52,7 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	 */
 	@Override
 	public void clear() {
-		CComponentLogger.logInMain(Level.INFO, this, "clear", "NbService=[%s]",
+		log(Level.INFO, this, "clear", "NbService=[%s]",
 				pServicesRegistry.size());
 		pServicesRegistry.clear();
 	}
@@ -123,11 +123,23 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 					"Unable to find the specification [%s]",
 					aSpecification.getSimpleName()));
 		}
-		CComponentLogger.logInMain(Level.FINE, this, "getServiceRef",
+		log(Level.FINE, this, "getServiceRef",
 				"specification=[%s] Service=[%s]", aSpecification,
 				wWebAppServicRef.getService());
 
 		return wWebAppServicRef;
+	}
+
+	/**
+	 * @param aLevel
+	 * @param aWho
+	 * @param aWhat
+	 * @param aInfos
+	 */
+	private void log(Level aLevel, final Object aWho, CharSequence aWhat,
+			Object... aInfos) {
+
+		CComponentLogger.logInMain(aLevel, aWho, aWhat, aInfos);
 	}
 
 	/*
@@ -149,7 +161,8 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 		CServicReference<T> wWebAppServicRef = new CServicReference<T>(
 				aSpecification, aService);
 		pServicesRegistry.put(aSpecification, wWebAppServicRef);
-		CComponentLogger.logInMain(Level.INFO, this, "registerService",
+
+		log(Level.INFO, this, "registerService",
 				"specification=[%s] Service=[%s]", aSpecification,
 				wWebAppServicRef.getService());
 		return wWebAppServicRef;
@@ -174,7 +187,13 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 					wSpecification.getSimpleName()));
 		}
 
-		CServicReference<?> wRemoved = pServicesRegistry.remove(wSpecification);
-		return (wRemoved != null);
+		CServicReference<?> wServiceRemoved = pServicesRegistry
+				.remove(wSpecification);
+		boolean wIsServiceRemoved = (wServiceRemoved != null);
+
+		log(Level.INFO, this, "removeService",
+				"IsServiceRemoved=[%s] ServiceRef=[%s]", wIsServiceRemoved,
+				wServiceRemoved);
+		return wIsServiceRemoved;
 	}
 }
