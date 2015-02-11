@@ -11,8 +11,8 @@ import org.psem2m.utilities.logging.IActivityFormater;
  * 
  * 
  */
-public abstract class CAbstractActivityLoggerConfigurator extends CAbstractComponentBase
-		implements ISvcActivityLoggerConfigurator {
+public abstract class CAbstractActivityLoggerConfigurator extends
+		CAbstractComponentBase implements ISvcActivityLoggerConfigurator {
 
 	protected File pDirLogs = null;
 	protected int pFileLimit = 10 * 1024 * 1024;
@@ -28,9 +28,8 @@ public abstract class CAbstractActivityLoggerConfigurator extends CAbstractCompo
 	public CAbstractActivityLoggerConfigurator() {
 		super();
 
-		// register thi class
+		// register this instance as two services
 		registerMeAsService(ISvcLoggerConfigurator.class);
-
 		registerMeAsService(ISvcActivityLoggerConfigurator.class);
 	}
 

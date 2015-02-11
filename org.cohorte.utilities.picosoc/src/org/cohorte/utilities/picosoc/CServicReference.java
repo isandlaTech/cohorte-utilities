@@ -1,5 +1,7 @@
 package org.cohorte.utilities.picosoc;
 
+import java.util.Map;
+
 /**
  * @author ogattaz
  * 
@@ -8,12 +10,13 @@ public class CServicReference<T> {
 
 	private final T pService;
 	private final Class<? extends T> pSpecification;
+	private final CServiceKey<T> pServiceKey;
 
 	/**
 	 * @param aService
 	 */
-	public CServicReference(Class<? extends T> aSpecification, T aService)
-			throws Exception {
+	public CServicReference(Class<? extends T> aSpecification,
+			final Map<String, String> aProperties, T aService) throws Exception {
 		super();
 		if (aService == null) {
 			throw new Exception(
@@ -21,6 +24,7 @@ public class CServicReference<T> {
 		}
 		pService = aService;
 		pSpecification = aSpecification;
+		pServiceKey = new CServiceKey<T>(aSpecification, aProperties);
 	}
 
 	/**
@@ -33,8 +37,31 @@ public class CServicReference<T> {
 	/**
 	 * @return
 	 */
+	public CServiceKey<T> getServiceKey() {
+		return pServiceKey;
+	}
+
+	/**
+	 * @return
+	 */
 	public Class<? extends T> getSpecification() {
 
 		return pSpecification;
+	}
+
+	/**
+	 * @param aKey
+	 * @return
+	 */
+	public String removeProperty(final String aKey) {
+		return pServiceKey.removeProperty(aKey);
+	}
+
+	/**
+	 * @param aKey
+	 * @param aValue
+	 */
+	public String setProperty(final String aKey, final String aValue) {
+		return pServiceKey.setProperty(aKey, aValue);
 	}
 }

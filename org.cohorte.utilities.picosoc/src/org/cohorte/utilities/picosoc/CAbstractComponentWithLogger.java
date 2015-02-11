@@ -74,4 +74,5 @@ public class CAbstractComponentWithLogger extends CAbstractComponentBase {
 	protected boolean isLogWarningOn() {
 		return pLogger.isLogWarningOn();
 	}
+
 }

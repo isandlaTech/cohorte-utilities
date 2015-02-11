@@ -1,5 +1,7 @@
 package org.cohorte.utilities.picosoc;
 
+import java.util.Map;
+
 /**
  * @author ogattaz
  * 
@@ -15,7 +17,8 @@ public interface ISvcServiceRegistry {
 	 * @param aSpecification
 	 * @return
 	 */
-	<T> boolean contains(Class<? extends T> aSpecification);
+	<T> boolean contains(final Class<? extends T> aSpecification,
+			final Map<String, String> aProperties);
 
 	/**
 	 * @return
@@ -27,8 +30,9 @@ public interface ISvcServiceRegistry {
 	 * @return an instance of CServicReference<T> if the service exists
 	 * @throws Exception
 	 */
-	<T> CServicReference<T> findServiceRef(Class<? extends T> aSpecification)
-			throws Exception;
+	<T> CServicReference<T> findServiceRef(
+			final Class<? extends T> aSpecification,
+			final Map<String, String> aProperties) throws Exception;
 
 	/**
 	 * @param aSpecification
@@ -36,8 +40,9 @@ public interface ISvcServiceRegistry {
 	 * @throws Exception
 	 *             if no instance of aSpecification
 	 */
-	<T> CServicReference<T> getServiceRef(Class<? extends T> aSpecification)
-			throws Exception;
+	<T> CServicReference<T> getServiceRef(
+			final Class<? extends T> aSpecification,
+			final Map<String, String> aProperties) throws Exception;
 
 	/**
 	 * @param aSpecification
@@ -45,7 +50,8 @@ public interface ISvcServiceRegistry {
 	 * @return the ServiceReference
 	 */
 	<T> CServicReference<T> registerService(Class<? extends T> aSpecification,
-			T aService) throws Exception;
+			final Map<String, String> aProperties, final T aService)
+			throws Exception;
 
 	/**
 	 * @param aServiceRef

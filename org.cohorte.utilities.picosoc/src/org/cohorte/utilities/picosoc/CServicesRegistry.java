@@ -1,6 +1,8 @@
 package org.cohorte.utilities.picosoc;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -35,16 +37,16 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 		return new CServicesRegistry();
 	}
 
-	private final Map<Class<?>, CServicReference<?>> pServicesRegistry = new HashMap<Class<?>, CServicReference<?>>();
+	private final Map<CServiceKey<?>, CServicReference<?>> pServicesRegistry = new HashMap<CServiceKey<?>, CServicReference<?>>();
 
 	/**
 	 * 
 	 */
 	private CServicesRegistry() throws Exception {
 		super();
-		sServicesRegistry = this;
 
-		registerService(ISvcServiceRegistry.class, this);
+		sServicesRegistry = this;
+		registerMeAsService(ISvcServiceRegistry.class);
 	}
 
 	/**
@@ -54,6 +56,8 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	public void clear() {
 		log(Level.INFO, this, "clear", "NbService=[%s]",
 				pServicesRegistry.size());
+
+		unregisterMe();
 		pServicesRegistry.clear();
 	}
 
@@ -65,8 +69,11 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	 * Class)
 	 */
 	@Override
-	public <T> boolean contains(Class<? extends T> aSpecification) {
-		return pServicesRegistry.containsKey(aSpecification);
+	public <T> boolean contains(Class<? extends T> aSpecification,
+			final Map<String, String> aProperties) {
+
+		return pServicesRegistry.containsKey(new CServiceKey<T>(aSpecification,
+				aProperties));
 	}
 
 	/**
@@ -77,13 +84,13 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 		StringBuilder wSB = new StringBuilder();
 		int wIdx = 0;
 
-		for (Map.Entry<Class<?>, CServicReference<?>> wEntry : pServicesRegistry
+		for (Map.Entry<CServiceKey<?>, CServicReference<?>> wEntry : pServicesRegistry
 				.entrySet()) {
 			if (wIdx > 0) {
 				wSB.append('\n');
 			}
-			wSB.append(String.format("(%d)%30s=%s", wIdx, wEntry.getKey()
-					.getSimpleName(), wEntry.getValue().getService()));
+			wSB.append(String.format("(%d)%80s ==> %s", wIdx, wEntry.getKey()
+					.toString(), wEntry.getValue().getService()));
 			wIdx++;
 		}
 		return wSB.toString();
@@ -99,8 +106,49 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> CServicReference<T> findServiceRef(
-			Class<? extends T> aSpecification) throws Exception {
-		return (CServicReference<T>) pServicesRegistry.get(aSpecification);
+			Class<? extends T> aSpecification,
+			final Map<String, String> aProperties) {
+
+		return (CServicReference<T>) pServicesRegistry.get(new CServiceKey<T>(
+				aSpecification, aProperties));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.cohorte.utilities.picosoc.IComponent#getOptionalService(java.lang
+	 * .Class, java.util.Map)
+	 */
+	@Override
+	public <T> T getOptionalService(Class<? extends T> aSpecification,
+			Map<String, String> aProperties) {
+
+		CServicReference<T> wServicReference = findServiceRef(aSpecification,
+				aProperties);
+
+		return (wServicReference != null) ? wServicReference.getService()
+				: null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.cohorte.utilities.picosoc.IComponent#getService(java.lang.Class,
+	 * java.util.Map)
+	 */
+	@Override
+	public <T> T getService(Class<? extends T> aSpecification,
+			Map<String, String> aProperties) throws Exception {
+
+		CServicReference<T> wServicReference = findServiceRef(aSpecification,
+				aProperties);
+		if (wServicReference == null) {
+			throw new Exception(String.format("Unable to get the service [%s]",
+					new CServiceKey<T>(aSpecification, aProperties).toString()));
+		}
+
+		return wServicReference.getService();
 	}
 
 	/*
@@ -112,22 +160,49 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	 */
 	@Override
 	public <T> CServicReference<T> getServiceRef(
-			Class<? extends T> aSpecification) throws Exception {
+			Class<? extends T> aSpecification,
+			final Map<String, String> aProperties) throws Exception {
 
-		@SuppressWarnings("unchecked")
-		CServicReference<T> wWebAppServicRef = (CServicReference<T>) pServicesRegistry
-				.get(aSpecification);
+		CServicReference<T> wWebAppServicRef = findServiceRef(aSpecification,
+				aProperties);
 
 		if (wWebAppServicRef == null) {
-			throw new Exception(String.format(
-					"Unable to find the specification [%s]",
-					aSpecification.getSimpleName()));
+			throw new Exception(String.format("Unable to get the service [%s]",
+					new CServiceKey<T>(aSpecification, aProperties)));
 		}
 		log(Level.FINE, this, "getServiceRef",
-				"specification=[%s] Service=[%s]", aSpecification,
-				wWebAppServicRef.getService());
+				"specification=[%s] Service=[%s]",
+				wWebAppServicRef.getServiceKey(), wWebAppServicRef.getService());
 
 		return wWebAppServicRef;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.cohorte.utilities.picosoc.CAbstractComponentBase#getServiceRefs(java
+	 * .lang.Class, java.util.Map)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> List<CServicReference<T>> getServiceRefs(
+			Class<? extends T> aSpecification, Map<String, String> aProperties) {
+
+		CServiceKey<T> wServiceKey = new CServiceKey<T>(aSpecification,
+				aProperties);
+		List<CServicReference<T>> wServiceRefs = new ArrayList<CServicReference<T>>();
+
+		synchronized (this) {
+			for (Map.Entry<CServiceKey<?>, CServicReference<?>> wEntry : pServicesRegistry
+					.entrySet()) {
+
+				if (wEntry.getKey().match(wServiceKey)) {
+					wServiceRefs.add((CServicReference<T>) wEntry.getValue());
+				}
+			}
+		}
+		return wServiceRefs;
 	}
 
 	/**
@@ -151,20 +226,26 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	 */
 	@Override
 	public <T> CServicReference<T> registerService(
-			Class<? extends T> aSpecification, T aService) throws Exception {
+			Class<? extends T> aSpecification,
+			final Map<String, String> aProperties, final T aService)
+			throws Exception {
 
-		if (pServicesRegistry.containsKey(aSpecification)) {
-			throw new Exception(String.format(
-					"The specification [%s] already registered",
-					aSpecification.getSimpleName()));
-		}
 		CServicReference<T> wWebAppServicRef = new CServicReference<T>(
-				aSpecification, aService);
-		pServicesRegistry.put(aSpecification, wWebAppServicRef);
+				aSpecification, aProperties, aService);
+
+		if (pServicesRegistry.containsKey(wWebAppServicRef.getServiceKey())) {
+			throw new Exception(String.format(
+					"The service [%s] already registered", wWebAppServicRef
+							.getServiceKey().toString()));
+		}
+
+		pServicesRegistry.put(wWebAppServicRef.getServiceKey(),
+				wWebAppServicRef);
 
 		log(Level.INFO, this, "registerService",
-				"specification=[%s] Service=[%s]", aSpecification,
-				wWebAppServicRef.getService());
+				"ServiceKey=[%s] Service=[%s] ServiceRef=[%s]",
+				wWebAppServicRef.getServiceKey(),
+				wWebAppServicRef.getService(), wWebAppServicRef);
 		return wWebAppServicRef;
 	}
 
@@ -179,20 +260,19 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	public <T> boolean removeService(CServicReference<T> aServiceRef)
 			throws Exception {
 
-		Class<? extends T> wSpecification = aServiceRef.getSpecification();
-
-		if (!pServicesRegistry.containsKey(wSpecification)) {
+		if (!pServicesRegistry.containsKey(aServiceRef.getServiceKey())) {
 			throw new Exception(String.format(
-					"The specification [%s] isn't registered",
-					wSpecification.getSimpleName()));
+					"The service [%s] isn't registered",
+					aServiceRef.getServiceKey()));
 		}
 
 		CServicReference<?> wServiceRemoved = pServicesRegistry
-				.remove(wSpecification);
+				.remove(aServiceRef.getServiceKey());
 		boolean wIsServiceRemoved = (wServiceRemoved != null);
 
 		log(Level.INFO, this, "removeService",
-				"IsServiceRemoved=[%s] ServiceRef=[%s]", wIsServiceRemoved,
+				"IsServiceRemoved=[%s] ServiceKey=[%s] ServiceRef=[%s]",
+				wIsServiceRemoved, wServiceRemoved.getServiceKey(),
 				wServiceRemoved);
 		return wIsServiceRemoved;
 	}
