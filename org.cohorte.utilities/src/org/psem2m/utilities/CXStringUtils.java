@@ -799,6 +799,44 @@ public final class CXStringUtils implements IConstants {
 	 * @param aValues
 	 * @return
 	 */
+	public static String stringMapToString(final Map<String, String> aStringMap) {
+
+		return stringMapToString(aStringMap, ",");
+	}
+
+	/**
+	 * @param strings
+	 * @param sep
+	 * @return
+	 */
+	public static String stringMapToString(
+			final Map<String, String> aStringMap, final String aSeparator) {
+
+		if (aStringMap == null) {
+			return "null";
+		}
+		if (aStringMap.isEmpty()) {
+			return "{}";
+		}
+		StringBuilder wSB = new StringBuilder(256);
+		wSB.append('{');
+		int wI = 0;
+		for (Map.Entry<String, String> wKeyValue : aStringMap.entrySet()) {
+			if (wI > 0) {
+				wSB.append(aSeparator);
+			}
+			wSB.append(String.format("%s=[%s]", wKeyValue.getKey(),
+					wKeyValue.getValue()));
+			wI++;
+		}
+		wSB.append('}');
+		return wSB.toString();
+	}
+
+	/**
+	 * @param aValues
+	 * @return
+	 */
 	public static String stringTableToString(final String[] aValues) {
 
 		return stringTableToString(aValues, ",");
