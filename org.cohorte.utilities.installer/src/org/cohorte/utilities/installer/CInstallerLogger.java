@@ -41,7 +41,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * @return
 	 */
 	public static boolean isLogOn(Level aLevel) {
-		return (sFileLogger != null) ? sFileLogger.isLoggable(aLevel) : true;
+		return (sFileLogger != null) ? sFileLogger.isLoggable(aLevel) : false;
 	}
 
 	/**
