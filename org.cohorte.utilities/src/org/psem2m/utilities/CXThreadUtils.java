@@ -18,7 +18,7 @@ public class CXThreadUtils {
 		if (aName != null && !aName.isEmpty()) {
 
 			for (Thread wThread : getActiveThreads()) {
-				if (wThread!=null && aName.equals(wThread.getName())) {
+				if (wThread != null && aName.equals(wThread.getName())) {
 					return wThread;
 				}
 
@@ -48,7 +48,7 @@ public class CXThreadUtils {
 		// the java.lang.ThreadGroup.enumerate(Thread[]) method of the current
 		// thread's thread group.
 		Thread.enumerate(wThreadsArray);
-		
+
 		return wThreadsArray;
 	}
 
@@ -59,12 +59,9 @@ public class CXThreadUtils {
 	public static Thread getLiveThread(final String aName) {
 
 		if (aName != null && !aName.isEmpty()) {
-			
-			// Returns a map of stack traces for all live threads. The map keys
-			// are threads and each map value is an array of StackTraceElement
-			// that represents the stack dump of the corresponding Thread.
-			Set<Thread> wThreadSet = Thread.getAllStackTraces().keySet();
-			
+
+			Set<Thread> wThreadSet = getLiveThreads();
+
 			for (Thread wThread : wThreadSet) {
 				if (aName.equals(wThread.getName())) {
 					return wThread;
@@ -72,6 +69,16 @@ public class CXThreadUtils {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * @return a map of set of all live threads.
+	 */
+	public static Set<Thread> getLiveThreads() {
+		// Returns a map of stack traces for all live threads. The map keys
+		// are threads and each map value is an array of StackTraceElement
+		// that represents the stack dump of the corresponding Thread.
+		return Thread.getAllStackTraces().keySet();
 	}
 
 	/**
