@@ -17,6 +17,7 @@ import org.psem2m.utilities.CXJvmUtils;
 import org.psem2m.utilities.CXOSUtils;
 import org.psem2m.utilities.CXSortList;
 import org.psem2m.utilities.CXStringUtils;
+import org.psem2m.utilities.CXThreadUtils;
 import org.psem2m.utilities.CXTimer;
 import org.psem2m.utilities.files.CXFile;
 import org.psem2m.utilities.files.CXFileDir;
@@ -38,6 +39,7 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	public final static String CMD_INFOS = "infos";
 	public final static String CMD_REDO = "redo";
 	public final static String CMD_SCRIPT = "script";
+	public final static String CMD_SLEEP = "sleep";
 
 	/**
 	 * Pattern that is capable of dealing with complex command line quoting and
@@ -102,6 +104,7 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 		addOneCommand(CMD_CLOSE, "c", new String[] { "Close the tester" });
 
 		addOneCommand(CMD_QUIT, "q", new String[] { "Close the tester" });
+
 		addOneCommand(CMD_REDO, "r",
 				new String[] { "Redo the last command line" });
 
@@ -114,6 +117,8 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 		addOneCommand(CMD_SCRIPT, "s", new String[] { "manage scripts",
 				"--action : 'list','dump','run'", "--name : idx | name" });
 
+		addOneCommand(CMD_SLEEP, "S", new String[] { "Sleep a duration",
+				"--value n milli-seconds" });
 	}
 
 	/**
@@ -302,6 +307,22 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	}
 
 	/**
+	 * @throws Exception
+	 */
+	protected void doCommandSleep() throws Exception {
+
+		String wOptValue = getAppOptions().getStringOptionValue(
+				IAppOptions.OPT_VALUE, "1000");
+
+		boolean wSleepComplete = CXThreadUtils.sleep(wOptValue);
+
+		pLogger.logInfo(this, "doCommandScript",
+				"Sleep : %s milliseconds (sleep complete=[%s])", wOptValue,
+				wSleepComplete);
+
+	}
+
+	/**
 	 * @param aCmdeLine
 	 * @throws Exception
 	 */
@@ -327,6 +348,8 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 			doCommandScript();
 		} else if (isCommandX(CMD_REDO)) {
 			doCommandRedo();
+		} else if (isCommandX(CMD_SLEEP)) {
+			doCommandSleep();
 		} else {
 			doCommandUser(getCmdeLine());
 		}
@@ -610,7 +633,7 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 		do {
 
 			// Reads a single line from the console
-			pCmdeLine = wScanConsoleIn.nextLine().toLowerCase();
+			pCmdeLine = wScanConsoleIn.nextLine();
 
 			pLogger.logInfo(this, "waitForCommand",
 					"Stdin console command line: [%s]", getCmdeLine());

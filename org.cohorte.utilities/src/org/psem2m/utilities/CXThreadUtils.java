@@ -82,7 +82,8 @@ public class CXThreadUtils {
 	}
 
 	/**
-	 * @param aDuration in milli-second
+	 * @param aDuration
+	 *            in milli-second
 	 * @return false if interupted, true if the sleeping is complete
 	 */
 	public static boolean sleep(final long aDuration) {
@@ -95,7 +96,8 @@ public class CXThreadUtils {
 	}
 
 	/**
-	 * @param aDuration in milli-second
+	 * @param aDuration
+	 *            in milli-second
 	 * @return false if interupted, true if the sleeping is complete
 	 */
 	public static boolean sleep(final String aDuration) {
