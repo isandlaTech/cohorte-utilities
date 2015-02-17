@@ -178,7 +178,7 @@ public class CTestArray extends CAppConsoleBase {
 		// pLogger.logInfo(this, "doTest", CXOSUtils.getEnvContext());
 		// pLogger.logInfo(this, "doTest", CXJvmUtils.getJavaContext());
 
-		if (CXArray.contains(pArgs, APPLICATION_PARAM_AUTO)) {
+		if (CXArray.contains(pAppArgs, APPLICATION_PARAM_AUTO)) {
 			doCommandTest(null);
 		} else {
 			waitForCommand();
