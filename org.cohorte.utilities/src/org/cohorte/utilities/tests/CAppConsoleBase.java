@@ -35,7 +35,7 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	public final static String CMD_HELP = "help";
 	public final static String CMD_QUIT = "quit";
 	public final static String CMD_TEST = "test";
-	public final static String CMD_INFO = "info";
+	public final static String CMD_INFOS = "infos";
 	public final static String CMD_REDO = "redo";
 	public final static String CMD_SCRIPT = "script";
 
@@ -66,7 +66,7 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	protected CAppOptionsBase pAppOptions = new CAppOptionsBase(getClass()
 			.getSimpleName());
 
-	protected final String[] pArgs;
+	protected final String[] pAppArgs;
 
 	// la commande courante
 	private String[] pCommandArgs = new String[0];
@@ -77,12 +77,15 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	private String pCmdeLine;
 	private String pCmdeLast;
 
-	private static final String INFO_KIND_ALL = "*";
-	private static final String INFO_KIND_ENV = "env";
-	private static final String INFO_KIND_JVM = "jvm";
+	public static final String INFO_KIND_ALL = "*";
+	public static final String INFO_KIND_ENV = "env";
+	public static final String INFO_KIND_JVM = "jvm";
+	public static final String INFO_KIND_DIRS = "dirs";
+	public static final String INFO_KIND_ARGS = "args";
 
-	private static final String ACTION_LIST = "list";
-	private static final String ACTION_RUN = "run";
+	public static final String ACTION_LIST = "list";
+	public static final String ACTION_RUN = "run";
+	public static final String ACTION_DUMP = "dump";
 
 	private CXFileDir pScriptDir = CXFileDir.getUserDir();
 
@@ -94,7 +97,7 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	 */
 	public CAppConsoleBase(final String[] args) {
 		super();
-		pArgs = args;
+		pAppArgs = args;
 
 		addOneCommand(CMD_CLOSE, "c", new String[] { "Close the tester" });
 
@@ -105,11 +108,11 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 		addOneCommand(CMD_HELP, "?", new String[] { "Show help",
 				"--usage for the options" });
 
-		addOneCommand(CMD_INFO, "i", new String[] { "Show infos",
-				"--kind : '*','env','jvm'" });
+		addOneCommand(CMD_INFOS, "i", new String[] { "Show infos",
+				"--kind : '*','env','jvm','dirs','args'" });
 
 		addOneCommand(CMD_SCRIPT, "s", new String[] { "manage scripts",
-				"--action : 'list','run'" });
+				"--action : 'list','dump','run'", "--name : idx | name" });
 
 	}
 
@@ -166,17 +169,30 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	/**
 	 * @throws OptionException
 	 */
-	protected void doCommandInfo() throws OptionException {
+	protected void doCommandInfos() throws OptionException {
 
 		String wKind = getAppOptions().getKindValue(INFO_KIND_ALL);
 
-		if (INFO_KIND_ENV.equalsIgnoreCase(wKind)
+		// env
+		if (optionMatch(wKind, INFO_KIND_ENV)
 				|| INFO_KIND_ALL.equalsIgnoreCase(wKind)) {
 			pLogger.logInfo(this, "doCommandInfo", CXOSUtils.getEnvContext());
-		}
-		if (INFO_KIND_JVM.equalsIgnoreCase(wKind)
+		} else
+		// jvm
+		if (optionMatch(wKind, INFO_KIND_JVM)
 				|| INFO_KIND_ALL.equalsIgnoreCase(wKind)) {
 			pLogger.logInfo(this, "doCommandInfo", CXJvmUtils.getJavaContext());
+		} else
+		// args
+		if (optionMatch(wKind, INFO_KIND_ARGS)
+				|| INFO_KIND_ALL.equalsIgnoreCase(wKind)) {
+			pLogger.logInfo(this, "doCommandInfo", "Application arguments; %s",
+					CXStringUtils.stringTableToString(pAppArgs));
+		} else
+		// dirs
+		if (optionMatch(wKind, INFO_KIND_DIRS)
+				|| INFO_KIND_ALL.equalsIgnoreCase(wKind)) {
+			// Nothing => must be implmeented in the app
 		}
 	}
 
@@ -237,19 +253,32 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 
 		String wOptAction = getAppOptions().getActionValue(ACTION_LIST);
 
-		if (ACTION_LIST.equalsIgnoreCase(wOptAction)) {
+		if (optionMatch(wOptAction, ACTION_LIST)) {
 			String wDump = dumpSciptsList();
 			pLogger.logInfo(this, "doCommandScript", "List :\n%s", wDump);
 
-		} else if (ACTION_RUN.equalsIgnoreCase(wOptAction)) {
+		} else if (optionMatch(wOptAction, ACTION_DUMP)) {
 
 			String wOptName = getAppOptions().getNameValue();
 			CXFileText wScriptFile = (CXFileText) findScriptFile(wOptName);
 			if (wScriptFile == null) {
 				pLogger.logSevere(this, "doCommandScript",
 						"UNKNWON SCRIPT [%s]", wOptName);
-
 			} else {
+				pLogger.logSevere(this, "doCommandScript", "SCRIPT [%s]\n%s",
+						wOptName, wScriptFile.readAll());
+			}
+
+		} else if (optionMatch(wOptAction, ACTION_RUN)) {
+
+			String wOptName = getAppOptions().getNameValue();
+			CXFileText wScriptFile = (CXFileText) findScriptFile(wOptName);
+
+			if (wScriptFile == null) {
+				pLogger.logSevere(this, "doCommandScript",
+						"UNKNWON SCRIPT [%s]", wOptName);
+			} else {
+
 				List<String> wLines = wScriptFile.readLines();
 
 				pLogger.logInfo(this, "doCommandScript",
@@ -292,8 +321,8 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 			doCommandClose();
 		} else if (isCommandX(CMD_HELP)) {
 			doCommandHelp();
-		} else if (isCommandX(CMD_INFO)) {
-			doCommandInfo();
+		} else if (isCommandX(CMD_INFOS)) {
+			doCommandInfos();
 		} else if (isCommandX(CMD_SCRIPT)) {
 			doCommandScript();
 		} else if (isCommandX(CMD_REDO)) {
@@ -491,6 +520,29 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	protected void logEndConstructor() {
 		pLogger.logInfo(this, "<init>", "App [%s] instanciated. %s", this
 				.getClass().getSimpleName(), toString());
+	}
+
+	/**
+	 * @param aOptAction
+	 * @param aOption
+	 * @return
+	 */
+	protected boolean optionMatch(final String aOptAction, final String aOption) {
+		return aOptAction != null
+				&& aOptAction != null
+				&& (aOptAction.toLowerCase().contains(aOption.toLowerCase()) || optionMatchFirstChar(
+						aOptAction, aOption));
+	}
+
+	/**
+	 * @param aOptAction
+	 * @param aOption
+	 * @return
+	 */
+	protected boolean optionMatchFirstChar(final String aOptAction,
+			final String aOption) {
+		return aOptAction != null && aOptAction != null
+				&& aOptAction.toLowerCase().charAt(0) == aOption.charAt(0);
 	}
 
 	/**
