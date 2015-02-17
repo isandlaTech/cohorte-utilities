@@ -82,7 +82,7 @@ public class CXThreadUtils {
 	}
 
 	/**
-	 * @param aDuration
+	 * @param aDuration in milli-second
 	 * @return false if interupted, true if the sleeping is complete
 	 */
 	public static boolean sleep(final long aDuration) {
@@ -92,6 +92,15 @@ public class CXThreadUtils {
 		} catch (InterruptedException e) {
 			return false;
 		}
+	}
+
+	/**
+	 * @param aDuration in milli-second
+	 * @return false if interupted, true if the sleeping is complete
+	 */
+	public static boolean sleep(final String aDuration) {
+
+		return sleep(Long.parseLong(aDuration));
 	}
 
 }
