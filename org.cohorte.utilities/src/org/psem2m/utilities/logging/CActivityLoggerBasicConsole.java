@@ -21,13 +21,13 @@ public class CActivityLoggerBasicConsole implements IActivityLogger {
 		return sCActivityLoggerBasicConsole;
 	}
 
-	private final IActivityFormater pActivityFormater;
+	protected IActivityFormater pActivityFormater;
 
 	private Level pLevel = Level.INFO;
 
-	private int pLevelValue = Level.INFO.intValue();
+	protected int pLevelValue = Level.INFO.intValue();
 
-	private final CLogLineTextBuilder pLogLineTextBuilder;
+	protected CLogLineTextBuilder pLogLineTextBuilder;
 
 	/**
 	 * 
