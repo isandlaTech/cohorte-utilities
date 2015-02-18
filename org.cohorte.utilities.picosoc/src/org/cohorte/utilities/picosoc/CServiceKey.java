@@ -12,7 +12,9 @@ import org.psem2m.utilities.CXStringUtils;
  */
 public class CServiceKey<T> implements Comparable<CServiceKey<T>> {
 
+	private static final Map<String, String> EMPTY_PROPS = new LinkedHashMap<String, String>();
 	private final Class<? extends T> pSpecification;
+	private final int pHash;
 	private final Map<String, String> pProperties;
 	private final boolean pWithProperty;
 	private String pKey = "";
@@ -26,18 +28,19 @@ public class CServiceKey<T> implements Comparable<CServiceKey<T>> {
 
 		super();
 		pSpecification = aSpecification;
+		pHash = pSpecification.getName().hashCode();
 		pWithProperty = (aProperties != null);
-		pProperties = pWithProperty ? aProperties
-				: new LinkedHashMap<String, String>();
+		pProperties = pWithProperty ? aProperties : EMPTY_PROPS;
 		calcKey();
 	}
 
 	/**
-	 * 
+	 * @return the calculated key
 	 */
-	void calcKey() {
+	String calcKey() {
 		pKey = String.format("/%s/%s/", pSpecification.getName(),
 				CXStringUtils.stringMapToString(pProperties));
+		return pKey;
 	}
 
 	/*
@@ -77,7 +80,7 @@ public class CServiceKey<T> implements Comparable<CServiceKey<T>> {
 	 */
 	@Override
 	public int hashCode() {
-		return pKey.hashCode();
+		return pHash;
 	}
 
 	/**
@@ -95,7 +98,7 @@ public class CServiceKey<T> implements Comparable<CServiceKey<T>> {
 		if (pProperties.isEmpty() && aServiceKey.pProperties.isEmpty()) {
 			return true;
 		}
-		if (pProperties.size() != aServiceKey.pProperties.size()) {
+		if (pProperties.size() < aServiceKey.pProperties.size()) {
 			return false;
 		}
 		// Return true if the properties of this key contains those of the given

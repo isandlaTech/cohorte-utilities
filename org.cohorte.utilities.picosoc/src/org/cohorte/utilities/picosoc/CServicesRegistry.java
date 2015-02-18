@@ -15,6 +15,8 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 
 	private static CServicesRegistry sServicesRegistry;
 
+	private static final boolean SEARCH_MODE_STRICT = true;
+
 	/**
 	 * @return
 	 */
@@ -103,14 +105,13 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	 * org.cohorte.utilities.picosoc.ISvcServiceRegistry#findServiceRef(java
 	 * .lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T> CServicReference<T> findServiceRef(
 			Class<? extends T> aSpecification,
 			final Map<String, String> aProperties) {
 
-		return (CServicReference<T>) pServicesRegistry.get(new CServiceKey<T>(
-				aSpecification, aProperties));
+		return searchServiceRef(aSpecification, aProperties,
+				!SEARCH_MODE_STRICT);
 	}
 
 	/*
@@ -124,8 +125,8 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	public <T> T getOptionalService(Class<? extends T> aSpecification,
 			Map<String, String> aProperties) {
 
-		CServicReference<T> wServicReference = findServiceRef(aSpecification,
-				aProperties);
+		CServicReference<T> wServicReference = searchServiceRef(aSpecification,
+				aProperties, !SEARCH_MODE_STRICT);
 
 		return (wServicReference != null) ? wServicReference.getService()
 				: null;
@@ -141,8 +142,8 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	public <T> T getService(Class<? extends T> aSpecification,
 			Map<String, String> aProperties) throws Exception {
 
-		CServicReference<T> wServicReference = findServiceRef(aSpecification,
-				aProperties);
+		CServicReference<T> wServicReference = searchServiceRef(aSpecification,
+				aProperties, SEARCH_MODE_STRICT);
 		if (wServicReference == null) {
 			throw new Exception(String.format("Unable to get the service [%s]",
 					new CServiceKey<T>(aSpecification, aProperties).toString()));
@@ -163,8 +164,8 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 			Class<? extends T> aSpecification,
 			final Map<String, String> aProperties) throws Exception {
 
-		CServicReference<T> wWebAppServicRef = findServiceRef(aSpecification,
-				aProperties);
+		CServicReference<T> wWebAppServicRef = searchServiceRef(aSpecification,
+				aProperties, SEARCH_MODE_STRICT);
 
 		if (wWebAppServicRef == null) {
 			throw new Exception(String.format("Unable to get the service [%s]",
@@ -189,7 +190,7 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	public <T> List<CServicReference<T>> getServiceRefs(
 			Class<? extends T> aSpecification, Map<String, String> aProperties) {
 
-		CServiceKey<T> wServiceKey = new CServiceKey<T>(aSpecification,
+		CServiceKey<T> wSearchedKey = new CServiceKey<T>(aSpecification,
 				aProperties);
 		List<CServicReference<T>> wServiceRefs = new ArrayList<CServicReference<T>>();
 
@@ -197,7 +198,7 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 			for (Map.Entry<CServiceKey<?>, CServicReference<?>> wEntry : pServicesRegistry
 					.entrySet()) {
 
-				if (wEntry.getKey().match(wServiceKey)) {
+				if (wEntry.getKey().match(wSearchedKey)) {
 					wServiceRefs.add((CServicReference<T>) wEntry.getValue());
 				}
 			}
@@ -275,5 +276,40 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 				wIsServiceRemoved, wServiceRemoved.getServiceKey(),
 				wServiceRemoved);
 		return wIsServiceRemoved;
+	}
+
+	/**
+	 * @param aSpecification
+	 * @param aProperties
+	 * @param aSearchModeStrict
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private <T> CServicReference<T> searchServiceRef(
+			Class<? extends T> aSpecification,
+			final Map<String, String> aProperties,
+			final boolean aSearchModeStrict) {
+
+		CServiceKey<T> wSearchedKey = new CServiceKey<T>(aSpecification,
+				aProperties);
+
+		CServicReference<T> wServiceRef = (CServicReference<T>) pServicesRegistry
+				.get(wSearchedKey);
+
+		if (wServiceRef == null && !aSearchModeStrict && aProperties != null
+				&& !aProperties.isEmpty()) {
+
+			synchronized (this) {
+				for (Map.Entry<CServiceKey<?>, CServicReference<?>> wEntry : pServicesRegistry
+						.entrySet()) {
+
+					if (wEntry.getKey().match(wSearchedKey)) {
+						wServiceRef = (CServicReference<T>) wEntry.getValue();
+						break;
+					}
+				}
+			}
+		}
+		return wServiceRef;
 	}
 }
