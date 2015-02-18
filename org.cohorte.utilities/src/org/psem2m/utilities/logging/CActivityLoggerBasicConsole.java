@@ -171,7 +171,7 @@ public class CActivityLoggerBasicConsole implements IActivityLogger {
 	@Override
 	public void log(final LogRecord record) {
 
-		System.out.println(pActivityFormater.format(record));
+		System.out.print(pActivityFormater.format(record));
 	}
 
 	/*

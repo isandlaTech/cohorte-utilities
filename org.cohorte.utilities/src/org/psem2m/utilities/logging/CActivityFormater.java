@@ -132,8 +132,7 @@ abstract class CActivityFormater extends Formatter implements IActivityFormater 
 	@Override
 	public String format(final LogRecord aRecord) {
 
-		return format(aRecord, !WITH_END_LINE);
-
+		return format(aRecord, WITH_END_LINE);
 	}
 
 	/*
