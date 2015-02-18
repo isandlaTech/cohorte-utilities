@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.psem2m.utilities;
 
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -895,6 +896,32 @@ public final class CXBytesUtils {
 	public static int oneByteToInt(final byte[] aBuffer, final int aPos)
 			throws IllegalArgumentException {
 		return unsignedByteToInt(aBuffer[aPos]);
+	}
+
+	/**
+	 * @param aInputStream
+	 * @return
+	 * @throws Exception
+	 */
+	public static byte[] readAllBytes(InputStream aInputStream)
+			throws Exception {
+		return readBytes(aInputStream, aInputStream.available());
+	}
+
+	/**
+	 * @param aInputStream
+	 * @param aSize
+	 * @return
+	 * @throws Exception
+	 */
+	public static byte[] readBytes(InputStream aInputStream, int aSize)
+			throws Exception {
+
+		int wMax = Math.min(aSize, aInputStream.available());
+		byte[] wData = new byte[wMax];
+		aInputStream.read(wData);
+		aInputStream.close();
+		return wData;
 	}
 
 	/**

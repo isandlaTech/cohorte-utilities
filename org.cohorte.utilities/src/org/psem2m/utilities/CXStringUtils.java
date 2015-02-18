@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.psem2m.utilities;
 
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -642,6 +643,18 @@ public final class CXStringUtils implements IConstants {
 			return String.valueOf(aChar);
 		}
 		return String.valueOf(new char[aLen]).replace((char) 0x00, aChar);
+	}
+
+	/**
+	 * @param aInputStream
+	 * @param aEncoding
+	 * @return
+	 * @throws Exception
+	 */
+	public static String strFromInputStream(InputStream aInputStream,
+			String aCharsetName) throws Exception {
+
+		return new String(CXBytesUtils.readAllBytes(aInputStream), aCharsetName);
 	}
 
 	/**
