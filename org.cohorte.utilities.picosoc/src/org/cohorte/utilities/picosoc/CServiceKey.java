@@ -73,6 +73,14 @@ public class CServiceKey<T> implements Comparable<CServiceKey<T>> {
 		return super.equals(obj);
 	}
 
+	/**
+	 * @param aKey
+	 * @return
+	 */
+	String getProperty(final String aKey) {
+		return pProperties.get(aKey);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 

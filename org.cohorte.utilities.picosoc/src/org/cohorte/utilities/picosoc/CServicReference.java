@@ -28,6 +28,14 @@ public class CServicReference<T> {
 	}
 
 	/**
+	 * @param aKey
+	 * @return
+	 */
+	public String getProperty(final String aKey) {
+		return pServiceKey.getProperty(aKey);
+	}
+
+	/**
 	 * @return
 	 */
 	public T getService() {
