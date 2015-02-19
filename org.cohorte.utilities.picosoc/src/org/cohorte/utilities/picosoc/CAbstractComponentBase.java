@@ -260,8 +260,9 @@ public abstract class CAbstractComponentBase implements IComponent {
 
 		try {
 			pMyServiceRef = registerService(aSpecification, aProperties, this);
-			log(Level.INFO, this, "registerMeAsService", "MyServiceRef=[%s]",
-					pMyServiceRef);
+			log(Level.INFO, this, "registerMeAsService",
+					"MyServiceKey=[%s] MyServiceRef=[%s]",
+					pMyServiceRef.getServiceKey(), pMyServiceRef);
 
 		} catch (Exception e) {
 			log(Level.SEVERE, this, "registerMeAsService",
