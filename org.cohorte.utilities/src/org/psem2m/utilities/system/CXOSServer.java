@@ -16,6 +16,12 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 
 	public static final byte[] CTRLC = { (byte) 0x03 };
 
+	private final String FORMAT_CANT_WAIT_STRING = "%s, the waited string [%s] is not in the stdout of the process. timeout=[%s]";
+
+	private final String MESS_UNABLE_TO_START = "Unable to start the server";
+
+	private final String MESS_UNABLE_TO_WRITE = "Unable to write to the server";
+
 	private EXServerState pServerState;
 
 	private CXOSCommand pStopCommand = null;
@@ -245,10 +251,8 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 			if (aStrInStdOut != null) {
 				wStarted = waitStrInStdOut(aStartTimeout, aStrInStdOut);
 				if (!wStarted) {
-					throw new Exception(
-							String.format(
-									"Unable to start the server, the string [%s] is not in the stdout of the process. timeout=[%s]",
-									aStrInStdOut, aStartTimeout));
+					throw new Exception(String.format(FORMAT_CANT_WAIT_STRING,
+							MESS_UNABLE_TO_START, aStrInStdOut, aStartTimeout));
 				}
 			}
 
@@ -347,5 +351,67 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 				wFound, CXTimer.nanoSecToMicroSecStr(System.nanoTime()
 						- wStartNanoTime), aString, aTimeOut);
 		return wFound;
+	}
+
+	/**
+	 * @param aServerCommand
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean write(final String aServerCommand, final String aCharSet)
+			throws Exception {
+		return writeAndWaitInStdOut(aServerCommand, aCharSet, -1, null);
+	}
+
+	/**
+	 * @param aServerCommand
+	 * @param aStartTimeout
+	 * @param aStrInStdOu
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean writeAndWaitInStdOut(final String aServerCommand,
+			final String aCharSet, final long aStartTimeout,
+			final String aStrInStdOut) throws Exception {
+
+		if (!hasProcess()) {
+			throw new Exception(
+					"Can't write to the server. Process not available");
+		}
+		if (!getServerState().isStarted()) {
+			throw new Exception(
+					"Can't write to the server. Process not started");
+		}
+
+		boolean wWrote = false;
+		long wStartNanoTime = System.nanoTime();
+		try {
+			// Returns the output stream connected to the normal input of the
+			// subprocess. Output to the stream is piped into the standard input
+			// of the process represented by this Process object.
+			pXProcess.getProcess().getOutputStream()
+					.write(aServerCommand.getBytes(aCharSet));
+
+			// wait for the passed aStrInStdOut in the stdout of the new
+			// process
+			if (aStrInStdOut != null) {
+				wWrote = waitStrInStdOut(aStartTimeout, aStrInStdOut);
+				if (!wWrote) {
+					throw new Exception(String.format(FORMAT_CANT_WAIT_STRING,
+							MESS_UNABLE_TO_WRITE, aStrInStdOut, aStartTimeout));
+				}
+			}
+
+		} catch (Exception e) {
+
+			setRunException(e);
+		}
+
+		pLogger.logDebug(this, "writeAndWaitInStdOut",
+				"Wrote=[%b] hasRunException=[%b] Starting duration=[%s]",
+				wWrote, hasRunException(), CXTimer.nanoSecToMicroSecStr(System
+						.nanoTime() - wStartNanoTime));
+
+		return wWrote;
 	}
 }

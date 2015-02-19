@@ -64,15 +64,15 @@ public class CTestOSServer extends CAppConsoleBase {
 
 	/**
 	 * <pre>
-	 * /bin/bash -c echo pwd=[$PWD];echo "Olivier38" | sudo -S -k -p "" "./bin/startup.sh";
+	 * /bin/bash -c echo pwd=[$PWD];echo "myPass" | sudo -S -k -p "" "./bin/startup.sh";
 	 * </pre>
 	 * 
 	 * <pre>
-	 * /bin/bash -c echo pwd=[$PWD];echo "Olivier38" | sudo -S -k -p "" "./bin/shutdown.sh" -u admin - p root;
+	 * /bin/bash -c echo pwd=[$PWD];echo "myPass" | sudo -S -k -p "" "./bin/shutdown.sh" -u admin - p root;
 	 * </pre>
 	 * 
 	 * <pre>
-	 * /bin/bash -c echo pwd=[$PWD];echo "Olivier38" | sudo -S -k -p "" lsof -n -i4TCP:8080
+	 * /bin/bash -c echo pwd=[$PWD];echo "myPass" | sudo -S -k -p "" lsof -n -i4TCP:8080
 	 * </pre>
 	 * 
 	 * The sudo prompt is sent in stdErr ! => the value "" for the prompt
@@ -422,7 +422,7 @@ public class CTestOSServer extends CAppConsoleBase {
 	 * @return
 	 */
 	private String getSudoPass() {
-		return "Olivier38";
+		return "myPass";
 	}
 
 	/**
