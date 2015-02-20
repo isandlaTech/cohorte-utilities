@@ -61,14 +61,28 @@ public class CTestArray extends CAppConsoleBase {
 	 */
 	private void doCommandTest(final String aCmdeLine) throws Exception {
 		pLogger.logInfo(this, "doCommandTest", "begin");
+
+		pLogger.logInfo(this, "doCommandTest", "--- TestAppend");
 		doCommandTestAppend();
+		pLogger.logInfo(this, "doCommandTest", "--- TestInsert");
 		doCommandTestInsert();
+		pLogger.logInfo(this, "doCommandTest", "--- TestInsertFirst");
 		doCommandTestInsertFirst();
+		pLogger.logInfo(this, "doCommandTest", "--- TestAppendArray");
+		doCommandTestAppendArray();
+		pLogger.logInfo(this, "doCommandTest", "--- TestInsertArray");
+		doCommandTestInsertArray();
+		pLogger.logInfo(this, "doCommandTest", "--- TestInsertFirstArray");
+		doCommandTestInsertFirstArray();
+
 		pLogger.logInfo(this, "doCommandTest", "end");
 	}
 
 	/**
-	 * 
+	 * <pre>
+	 * doCommandTestAppend; Original : Value0|Value1|Value2 
+	 * doCommandTestAppend; Appended : Value0|Value1|Value2|Appended
+	 * </pre>
 	 */
 	private void doCommandTestAppend() {
 		String[] wStrings = newStringArray(3);
@@ -82,7 +96,34 @@ public class CTestArray extends CAppConsoleBase {
 	}
 
 	/**
+	 * <pre>
+	 * doCommandTestAppendArray; Original : Value0|Value1|Value2|Value3|Value4|Value5 
+	 * doCommandTestAppendArray; Appended : Value0|Value1|Value2|Value3|Value4|Value5|Appended_1|Appended_2|Appended_3
+	 * </pre>
 	 * 
+	 */
+	private void doCommandTestAppendArray() {
+		String[] wStrings = newStringArray(6);
+		pLogger.logInfo(this, "doCommandTestAppendArray", "Original : %s ",
+				CXArray.arrayToString(wStrings, "|"));
+
+		wStrings = (String[]) CXArray.appendObjects(wStrings, new String[] {
+				"Appended_1", "Appended_2", "Appended_3" });
+
+		pLogger.logInfo(this, "doCommandTestAppendArray", "Appended : %s ",
+				CXArray.arrayToString(wStrings, "|"));
+	}
+
+	/**
+	 * <pre>
+	 * doCommandTestInsert; Original :  
+	 * doCommandTestInsert; Inserted : Inserted_0 
+	 * doCommandTestInsert; Original : Value0|Value1|Value2 
+	 * doCommandTestInsert; Inserted : Value0|Value1|Value2|Inserted_3 
+	 * doCommandTestInsert; Inserted : Value0|Value1|Inserted_2|Value2|Inserted_3 
+	 * doCommandTestInsert; Inserted : Value0|Inserted_1|Value1|Inserted_2|Value2|Inserted_3
+	 * doCommandTestInsert; Inserted : index [10] is greater than len (len=[6] )
+	 * </pre>
 	 */
 	private void doCommandTestInsert() {
 
@@ -120,6 +161,7 @@ public class CTestArray extends CAppConsoleBase {
 		pLogger.logInfo(this, "doCommandTestInsert", "Inserted : %s ",
 				CXArray.arrayToString(wStrings, "|"));
 
+		// test : Inserted : index [10] is greater than len (len=[6] )
 		try {
 			wStrings = (String[]) CXArray.insertOneObject(wStrings,
 					"Inserted_1", 10);
@@ -130,7 +172,41 @@ public class CTestArray extends CAppConsoleBase {
 	}
 
 	/**
+	 * <pre>
+	 * doCommandTestInsertArray; Original : Value0|Value1|Value2|Value3|Value4|Value5 
+	 * doCommandTestInsertArray; Inserted : Value0|Value1|Inserted_1|Inserted_2|Inserted_3|Value2|Value3|Value4|Value5
+	 * doCommandTestInsertArray; Inserted : index [99] is greater than len (len=[9] )
+	 * </pre>
 	 * 
+	 */
+	private void doCommandTestInsertArray() {
+
+		String[] wStrings = newStringArray(6);
+
+		pLogger.logInfo(this, "doCommandTestInsertArray", "Original : %s ",
+				CXArray.arrayToString(wStrings, "|"));
+
+		wStrings = (String[]) CXArray.insertObjects(wStrings, new String[] {
+				"Inserted_1", "Inserted_2", "Inserted_3" }, 2);
+
+		pLogger.logInfo(this, "doCommandTestInsertArray", "Inserted : %s ",
+				CXArray.arrayToString(wStrings, "|"));
+
+		// test : Inserted : index [99] is greater than len (len=[9] )
+		try {
+			wStrings = (String[]) CXArray.insertObjects(wStrings, new String[] {
+					"Inserted_1", "Inserted_2", "Inserted_3" }, 99);
+		} catch (Exception e) {
+			pLogger.logSevere(this, "doCommandTestInsertArray",
+					"Inserted : %s ", e.getMessage());
+		}
+	}
+
+	/**
+	 * <pre>
+	 * doCommandTestAppend; Original : Value0|Value1|Value2 
+	 * doCommandTestAppend; Appended : InsertedFirst|Value0|Value1|Value2
+	 * </pre>
 	 */
 	private void doCommandTestInsertFirst() {
 		String[] wStrings = newStringArray(3);
@@ -142,6 +218,25 @@ public class CTestArray extends CAppConsoleBase {
 
 		pLogger.logInfo(this, "doCommandTestAppend", "Appended : %s ",
 				CXArray.arrayToString(wStrings, "|"));
+	}
+
+	/**
+	 * <pre>
+	 * mmandTestInsertFirstArray; Original : Value0|Value1|Value2|Value3|Value4|Value5 
+	 * mmandTestInsertFirstArray; Inserted : Inserted_1|Inserted_2|Inserted_3|Value0|Value1|Value2|Value3|Value4|Value5
+	 * </pre>
+	 * 
+	 */
+	private void doCommandTestInsertFirstArray() {
+		String[] wStrings = newStringArray(6);
+		pLogger.logInfo(this, "doCommandTestInsertFirstArray",
+				"Original : %s ", CXArray.arrayToString(wStrings, "|"));
+
+		wStrings = (String[]) CXArray.insertFirstObjects(wStrings,
+				new String[] { "Inserted_1", "Inserted_2", "Inserted_3" });
+
+		pLogger.logInfo(this, "doCommandTestInsertFirstArray",
+				"Inserted : %s ", CXArray.arrayToString(wStrings, "|"));
 	}
 
 	/*

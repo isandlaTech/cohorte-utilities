@@ -22,11 +22,24 @@ public final class CXArray implements IConstants {
 	/**
 	 * @param aObjects
 	 *            an array of objects
+	 * @param aObjectsToInsert
+	 *            an array of objects to add at the end the arrayy
+	 * 
+	 * @return the new array of objects with the added object
+	 * */
+	public static Object[] appendObjects(final Object[] aObjects,
+			final Object[] aObjectsToInsert) {
+
+		return insertObjects(aObjects, aObjectsToInsert,
+				(aObjects != null) ? aObjects.length : -1);
+	}
+
+	/**
+	 * @param aObjects
+	 *            an array of objects
 	 * @param aObjectToInsert
-	 *            an object to add in the array
-	 * @param aIdx
-	 *            the index of the position of the inserted object
-	 * @return the new array of objects with the inserted object
+	 *            an object to add at the end the array
+	 * @return the new array of objects with the added objects
 	 */
 	public static Object[] appendOneObject(final Object[] aObjects,
 			final Object aObjectToInsert) {
@@ -136,13 +149,79 @@ public final class CXArray implements IConstants {
 	/**
 	 * @param aObjects
 	 *            an array of objects
+	 * @param aObjectsToInsert
+	 *            an array of objects to add at the end the arrayy
+	 * @return the new array of objects with the inserted objects
+	 */
+	public static Object[] insertFirstObjects(final Object[] aObjects,
+			final Object[] aObjectsToInsert) {
+
+		return insertObjects(aObjects, aObjectsToInsert, 0);
+	}
+
+	/**
+	 * @param aObjects
+	 *            an array of objects
 	 * @param aObjectToInsert
 	 *            an object to add in the array
 	 * @return the new array of objects with the inserted object
 	 */
 	public static Object[] insertFirstOneObject(final Object[] aObjects,
 			final Object aObjectToInsert) {
+
 		return insertOneObject(aObjects, aObjectToInsert, 0);
+	}
+
+	/**
+	 * @param aObjects
+	 *            an array of objects
+	 * @param aObjectsToInsert
+	 *            an array of objects to add at the end the arrayy
+	 * @param aIdx
+	 *            the index of the position of the inserted objects
+	 * @return the new array of objects with the inserted objects
+	 */
+	public static Object[] insertObjects(final Object[] aObjects,
+			final Object[] aObjectsToInsert, final int aIdx) {
+
+		if (aObjects == null || aObjectsToInsert == null
+				|| aObjectsToInsert.length == 0) {
+			return aObjects;
+		}
+		int wPreviousLen = aObjects.length;
+
+		validObjectsIndex(aObjects, aIdx);
+
+		int wInsertedLen = aObjectsToInsert.length;
+		int wNewLen = wPreviousLen + wInsertedLen;
+		Object[] wNewArray = (Object[]) Array.newInstance(
+				calcClassOfArrayElmts(aObjects, aObjectsToInsert), wNewLen);
+
+		// if we must add the object first
+		if (aIdx == 0) {
+			System.arraycopy(aObjectsToInsert, 0, wNewArray, 0, wInsertedLen);
+			System.arraycopy(aObjects, 0, wNewArray, wInsertedLen, wPreviousLen);
+
+		} else
+		// if we must remove the last object
+		if (aIdx == wPreviousLen) {
+			System.arraycopy(aObjects, 0, wNewArray, 0, wPreviousLen);
+			System.arraycopy(aObjectsToInsert, 0, wNewArray, wPreviousLen,
+					wInsertedLen);
+		} else
+		//
+		{
+			// wLen = 10 and aIdx = 5 and wInsertedLen 3 => wNewLen = 13
+			// wSubLenA = aIdx = 5 (old index 0 to 4)
+			// wSubLenb = wOldLen - aIdx = 5 (old index 5 to 9)
+			System.arraycopy(aObjects, 0, wNewArray, 0, aIdx);
+			System.arraycopy(aObjectsToInsert, 0, wNewArray, aIdx, wInsertedLen);
+			System.arraycopy(aObjects, aIdx, wNewArray, aIdx + wInsertedLen,
+					wPreviousLen - aIdx);
+
+		}
+		return wNewArray;
+
 	}
 
 	/**
@@ -171,15 +250,18 @@ public final class CXArray implements IConstants {
 		if (aIdx == 0) {
 			System.arraycopy(aObjects, 0, wNewArray, 1, wPreviousLen);
 			wNewArray[0] = aObjectToInsert;
-			// if we must remove the last object
-		} else if (aIdx == wPreviousLen) {
+
+		} else
+		// if we must remove the last object
+		if (aIdx == wPreviousLen) {
 			System.arraycopy(aObjects, 0, wNewArray, 0, wPreviousLen);
 			wNewArray[wNewLen - 1] = aObjectToInsert;
-			//
-		} else {
-			// wLen = 10 and aIdx = 5 => wNewLen = 9
+		} else
+		//
+		{
+			// wLen = 10 and aIdx = 5 => wNewLen = 11
 			// wSubLenA = aIdx = 5 (old index 0 to 4)
-			// wSubLenb = wNewMax- aIdx = 4 (old index 6 to 9)
+			// wSubLenb = wOldLen - aIdx = 5 (old index 5 to 9)
 			System.arraycopy(aObjects, 0, wNewArray, 0, aIdx);
 			System.arraycopy(aObjects, aIdx, wNewArray, aIdx + 1, wPreviousLen
 					- aIdx);
