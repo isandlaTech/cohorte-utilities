@@ -30,16 +30,26 @@ import org.psem2m.utilities.files.CXFileText;
  */
 public abstract class CAppConsoleBase extends CAppObjectBase {
 
+	public static final String ACTION_DUMP = "dump";
+	public static final String ACTION_LIST = "list";
+	public static final String ACTION_RUN = "run";
+
 	public final static String APPLICATION_PARAM_AUTO = "auto";
 
 	public final static String CMD_CLOSE = "close";
 	public final static String CMD_HELP = "help";
-	public final static String CMD_QUIT = "quit";
-	public final static String CMD_TEST = "test";
 	public final static String CMD_INFOS = "infos";
+	public final static String CMD_QUIT = "quit";
 	public final static String CMD_REDO = "redo";
 	public final static String CMD_SCRIPT = "script";
 	public final static String CMD_SLEEP = "sleep";
+	public final static String CMD_TEST = "test";
+
+	public static final String INFO_KIND_ALL = "*";
+	public static final String INFO_KIND_ARGS = "args";
+	public static final String INFO_KIND_DIRS = "dirs";
+	public static final String INFO_KIND_ENV = "env";
+	public static final String INFO_KIND_JVM = "jvm";
 
 	/**
 	 * Pattern that is capable of dealing with complex command line quoting and
@@ -64,30 +74,21 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 					"[^\\s]*\"(\\\\+\"|[^\"])*?\"|[^\\s]*'(\\\\+'|[^'])*?'|(\\\\\\s|[^\\s])+",
 					Pattern.MULTILINE);
 
+	protected final String[] pAppArgs;
+
 	// Default Options. Overrided by the extend class if needed
 	protected CAppOptionsBase pAppOptions = new CAppOptionsBase(getClass()
 			.getSimpleName());
 
-	protected final String[] pAppArgs;
+	private String pCmdeLast;
+
+	private String pCmdeLine;
 
 	// la commande courante
 	private String[] pCommandArgs = new String[0];
 
 	// les définitions des commandes acceptables
 	private final Map<String, CCommand> pCommands = new HashMap<String, CCommand>();
-
-	private String pCmdeLine;
-	private String pCmdeLast;
-
-	public static final String INFO_KIND_ALL = "*";
-	public static final String INFO_KIND_ENV = "env";
-	public static final String INFO_KIND_JVM = "jvm";
-	public static final String INFO_KIND_DIRS = "dirs";
-	public static final String INFO_KIND_ARGS = "args";
-
-	public static final String ACTION_LIST = "list";
-	public static final String ACTION_RUN = "run";
-	public static final String ACTION_DUMP = "dump";
 
 	private CXFileDir pScriptDir = CXFileDir.getUserDir();
 
