@@ -42,6 +42,13 @@ public interface IXOSRunner {
 	String getRepport();
 
 	/**
+	 * @param aParts
+	 *            an array of repport parts
+	 * @return
+	 */
+	String getRepport(final ERepportPart[] aParts);
+
+	/**
 	 * @return
 	 */
 	long getRunElapsedTime();
@@ -94,12 +101,12 @@ public interface IXOSRunner {
 	/**
 	 * @return
 	 */
-	boolean isRunTimeOutDetected();
+	boolean isRunOk();
 
 	/**
 	 * @return
 	 */
-	boolean isRunOk();
+	boolean isRunTimeOutDetected();
 
 	/**
 	 * 

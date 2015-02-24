@@ -77,7 +77,21 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 	 */
 	@Override
 	public String getRepport() {
+		return getRepport(ERepportPart.ALL_PARTS);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.psem2m.utilities.system.IXOSRunner#getRepport(org.psem2m.utilities
+	 * .system.EReprortPart[])
+	 */
+	@Override
+	public String getRepport(final ERepportPart[] aParts) {
+
 		StringBuilder wStopInfos = new StringBuilder(2048);
+
 		wStopInfos.append(String.format("--> LauncherPid   =[%s]\n",
 				(pXProcess != null) ? pXProcess.getPid() : -1));
 		wStopInfos.append(String.format("--> ServerState   =[%s]\n",
@@ -93,7 +107,7 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 
 		StringBuilder wRepport = new StringBuilder(2048);
 
-		wRepport.append(buildRepport(wStopInfos.toString()));
+		wRepport.append(buildRepport(aParts, wStopInfos.toString()));
 		if (pStopCommand != null) {
 			wRepport.append(pStopCommand.getRepport());
 		}

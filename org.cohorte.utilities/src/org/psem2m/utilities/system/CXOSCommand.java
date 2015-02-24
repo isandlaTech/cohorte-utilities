@@ -100,11 +100,25 @@ public class CXOSCommand extends CXOSRunner implements IXOSCommand {
 	 */
 	@Override
 	public String getRepport() {
+
+		return getRepport(ERepportPart.ALL_PARTS);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.psem2m.utilities.system.IXOSRunner#getRepport(org.psem2m.utilities
+	 * .system.EReprortPart[])
+	 */
+	@Override
+	public String getRepport(final ERepportPart[] aParts) {
+
 		StringBuilder wExitInfos = new StringBuilder(2048);
 		wExitInfos.append("--> isExitOk    =").append(isExitOk()).append('\n');
 		wExitInfos.append("--> ExitValue   =").append(getRunExitString())
 				.append('\n');
-		return shiftTextLines(buildRepport(wExitInfos.toString()),
+		return shiftTextLines(buildRepport(aParts, wExitInfos.toString()),
 				"#OSCommand > ");
 	}
 

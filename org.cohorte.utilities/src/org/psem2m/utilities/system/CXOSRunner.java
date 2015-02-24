@@ -58,57 +58,80 @@ public abstract class CXOSRunner implements IXOSRunner {
 		return aSB;
 	}
 
-	public String buildRepport(final String aExitInfos) {
-		StringBuilder wResult = new StringBuilder(2048);
-		wResult.append("---------- Command repport ----------").append('\n');
-		wResult.append("CommandLine        : ").append(getCommandLine())
-				.append('\n');
-		wResult.append("OutputEncoding     : ").append(getBuffEncoding())
-				.append(" (").append(CXOSUtils.getOsName()).append(',')
-				.append(CXOSUtils.getOsFileEncoding()).append(')').append('\n');
-		wResult.append("Launching TimeStamp : ");
-		if (isLaunched()) {
-			wResult.append(getLaunchTimeStamp()).append('\n');
-		} else {
-			wResult.append("Not launched.\n");
-		}
-		if (isLaunched()) {
-			wResult.append("--> LaunchResult=")
-					.append(CXStringUtils.boolToOkKo(isRunOk())).append('\n');
-			wResult.append("--> ElapsedTime =")
-					.append(CXTimer.nanoSecToMicroSecStr(getRunElapsedTime()))
-					.append('\n');
-			wResult.append("--> Timeout     =")
-					.append((hasRunTimeOut()) ? getRunTimeOut() : "undefined")
-					.append('\n');
-			wResult.append("--> isRunOk     =").append(isRunOk()).append('\n');
-			if (aExitInfos != null) {
-				wResult.append(aExitInfos);
-			}
-			if (hasRunException()) {
-				wResult.append("--> RunException=").append(hasRunException())
-						.append('\n');
-				wResult.append("--> Name        =")
-						.append(getRunException().getClass().getName())
-						.append('\n');
-				wResult.append("--> Message     =")
-						.append(getRunException().getMessage()).append('\n');
-				wResult.append(
-						CXStringUtils.getExceptionStack(getRunException()))
-						.append('\n');
-			}
-			if (isRunTimeOutDetected()) {
-				wResult.append("--> RunTimeOut  =")
-						.append(isRunTimeOutDetected()).append('\n');
-			}
+	/**
+	 * @param aParts
+	 *            an array of repport parts
+	 * @param aExitInfos
+	 * @return
+	 */
+	String buildRepport(final ERepportPart[] aParts, final String aExitInfos) {
 
-			if (hasRunStdOutput()) {
-				wResult.append("--> BUFFER OUTPUT\n");
-				appenTextLinesInSB(wResult, getRunStdOut());
+		StringBuilder wResult = new StringBuilder(2048);
+
+		// if GENERAL part wanted
+		if (ERepportPart.isInReportParts(aParts, ERepportPart.GENERAL)) {
+			wResult.append("---------- Command repport ----------")
+					.append('\n');
+			wResult.append("CommandLine        : ").append(getCommandLine())
+					.append('\n');
+			wResult.append("OutputEncoding     : ").append(getBuffEncoding())
+					.append(" (").append(CXOSUtils.getOsName()).append(',')
+					.append(CXOSUtils.getOsFileEncoding()).append(')')
+					.append('\n');
+			wResult.append("Launching TimeStamp : ");
+			if (isLaunched()) {
+				wResult.append(getLaunchTimeStamp()).append('\n');
+			} else {
+				wResult.append("Not launched.\n");
 			}
-			if (hasRunStdOutputErr()) {
-				wResult.append("--> BUFFER ERROR\n");
-				appenTextLinesInSB(wResult, getRunStdErr());
+			if (isLaunched()) {
+				wResult.append("--> LaunchResult=")
+						.append(CXStringUtils.boolToOkKo(isRunOk()))
+						.append('\n');
+				wResult.append("--> ElapsedTime =")
+						.append(CXTimer
+								.nanoSecToMicroSecStr(getRunElapsedTime()))
+						.append('\n');
+				wResult.append("--> Timeout     =")
+						.append((hasRunTimeOut()) ? getRunTimeOut()
+								: "undefined").append('\n');
+				wResult.append("--> isRunOk     =").append(isRunOk())
+						.append('\n');
+				if (aExitInfos != null) {
+					wResult.append(aExitInfos);
+				}
+				if (hasRunException()) {
+					wResult.append("--> RunException=")
+							.append(hasRunException()).append('\n');
+					wResult.append("--> Name        =")
+							.append(getRunException().getClass().getName())
+							.append('\n');
+					wResult.append("--> Message     =")
+							.append(getRunException().getMessage())
+							.append('\n');
+					wResult.append(
+							CXStringUtils.getExceptionStack(getRunException()))
+							.append('\n');
+				}
+				if (isRunTimeOutDetected()) {
+					wResult.append("--> RunTimeOut  =")
+							.append(isRunTimeOutDetected()).append('\n');
+				}
+			}
+			// if STDOUT part wanted
+			if (ERepportPart.isInReportParts(aParts, ERepportPart.STDOUT)) {
+				if (hasRunStdOutput()) {
+					wResult.append("--> BUFFER OUTPUT\n");
+					appenTextLinesInSB(wResult, getRunStdOut());
+				}
+			}
+			// if STDIN part wanted
+			if (ERepportPart.isInReportParts(aParts, ERepportPart.STDERR)) {
+
+				if (hasRunStdOutputErr()) {
+					wResult.append("--> BUFFER ERROR\n");
+					appenTextLinesInSB(wResult, getRunStdErr());
+				}
 			}
 		}
 		return wResult.toString();
