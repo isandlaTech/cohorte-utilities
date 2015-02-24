@@ -847,32 +847,74 @@ public final class CXStringUtils implements IConstants {
 	}
 
 	/**
-	 * @param aValues
+	 * @param aStringTable
+	 *            a table of strings
 	 * @return
 	 */
-	public static String stringTableToString(final String[] aValues) {
+	public static String stringTableToString(final String[] aStringTable) {
 
-		return stringTableToString(aValues, ",");
+		return stringTableToString(aStringTable, ",");
 	}
 
 	/**
-	 * @param strings
-	 * @param sep
+	 * @param aStringTable
+	 *            a table of strings
+	 * @param aSeparator
 	 * @return
 	 */
-	public static String stringTableToString(final String[] aValues,
+	/**
+	 * @param aStringTable
+	 * @param aSeparator
+	 * @return
+	 */
+	public static String stringTableToString(final String[] aStringTable,
 			final String aSeparator) {
 
-		if (aValues == null || aValues.length == 0) {
+		return stringTableToString(aStringTable, aSeparator, 0, -1);
+	}
+
+	/**
+	 * @param aStringTable
+	 * @param aSeparator
+	 * @param aBeginIndex
+	 * @return
+	 */
+	public static String stringTableToString(final String[] aStringTable,
+			final String aSeparator, final int aBeginIndex) {
+
+		return stringTableToString(aStringTable, aSeparator, aBeginIndex, -1);
+	}
+
+	/**
+	 * @param aStringTable
+	 * @param aSeparator
+	 * @param aBeginIndex
+	 * @param aStopIndex
+	 * @return
+	 */
+	public static String stringTableToString(final String[] aStringTable,
+			final String aSeparator, final int aBeginIndex, final int aStopIndex) {
+
+		if (aStringTable == null || aStringTable.length == 0) {
 			return EMPTY;
 		}
 		final StringBuilder wSB = new StringBuilder(256);
-		final int wMax = aValues.length;
-		for (int wI = 0; wI < wMax; wI++) {
-			if (wI > 0) {
+		int wMax = aStringTable.length;
+		int wStart = 0;
+		if (aStopIndex > 0 && aStopIndex < wMax) {
+			wMax = aStopIndex;
+		}
+		if (aBeginIndex > 0) {
+			wStart = aBeginIndex;
+		}
+		if (wStart > wMax) {
+			wStart = wMax;
+		}
+		for (int wI = wStart; wI < wMax; wI++) {
+			if (wSB.length() > 0) {
 				wSB.append(aSeparator);
 			}
-			wSB.append(aValues[wI]);
+			wSB.append(aStringTable[wI]);
 		}
 		return wSB.toString();
 	}
