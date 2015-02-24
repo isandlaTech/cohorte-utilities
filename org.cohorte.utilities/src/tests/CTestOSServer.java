@@ -7,12 +7,16 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import org.cohorte.utilities.tests.CAppConsoleBase;
+import org.psem2m.utilities.CXBytesUtils;
+import org.psem2m.utilities.CXJvmUtils;
 import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.system.CXOSCommand;
 import org.psem2m.utilities.system.CXOSServer;
 import org.psem2m.utilities.system.CXProcess;
 
 /**
+ * test "CXOSServer" class
+ * 
  * @author ogattaz
  * 
  */
@@ -20,8 +24,18 @@ public class CTestOSServer extends CAppConsoleBase {
 
 	public final static String CMD_SERVER_GETPID = "pid";
 	public final static String CMD_SERVER_KILL = "kill";
+	public final static String CMD_SERVER_SEND = "send";
 	public final static String CMD_SERVER_START = "start";
+	public final static String CMD_SERVER_STATE = "state";
 	public final static String CMD_SERVER_STOP = "stop";
+
+	public static final String TEST_SERVER_RETURN_TEXT_START = "*** TEST SERVER STARTED";
+	public static final String TEST_SERVER_RETURN_TEXT_STATE = "*** TEST SERVER STATE";
+	public static final String TEST_SERVER_RETURN_TEXT_STOP = "*** TEST SERVER STOPPED";
+
+	private static final int TEST_SERVER_WAIT_TIMEOUT = 5000;
+
+	private static final boolean WITH_SUDO = true;
 
 	/**
 	 * @param args
@@ -43,6 +57,7 @@ public class CTestOSServer extends CAppConsoleBase {
 	}
 
 	CXOSServer pCXOSServer = null;
+
 	int pServerPid = -1;
 
 	/**
@@ -53,26 +68,50 @@ public class CTestOSServer extends CAppConsoleBase {
 
 		addOneCommand(CMD_SERVER_START, new String[] { "Start the server" });
 		addOneCommand(CMD_SERVER_STOP, new String[] { "Stop the server" });
+		addOneCommand(CMD_SERVER_STATE,
+				new String[] { "Get the state of the server" });
+		addOneCommand(CMD_SERVER_SEND,
+				new String[] { "Send a 'command line' to the server" });
+		addOneCommand(CMD_SERVER_STOP, new String[] { "Stop the server" });
 		addOneCommand(CMD_SERVER_KILL, "k", new String[] { "Stop the server" });
 		addOneCommand(CMD_SERVER_GETPID, "p",
 				new String[] { "get the pid of the server" });
 
-		pLogger.setLevel(Level.FINE);
+		pLogger.setLevel(Level.ALL);
 
 		pLogger.logInfo(this, "<init>", "instanciated");
 	}
 
 	/**
+	 * Bash option :
+	 * 
+	 * -c string => If the -c option is present, then commands are read from
+	 * string. If there are arguments after the string, they are assigned to the
+	 * positional parameters, starting with $0.
+	 * 
 	 * <pre>
-	 * /bin/bash -c echo pwd=[$PWD];echo "myPass" | sudo -S -k -p "" "./bin/startup.sh";
+	 * return buildCommandBash(!WITH_SUDO, "/bin/bash","i");
+	 * 
+	 * ==>/bin/bash -c /bin/bash -i;
 	 * </pre>
 	 * 
 	 * <pre>
-	 * /bin/bash -c echo pwd=[$PWD];echo "myPass" | sudo -S -k -p "" "./bin/shutdown.sh" -u admin - p root;
+	 * return buildCommandBash(WITH_SUDO, "./bin/startup.sh");
+	 * 
+	 * ==>/bin/bash -c echo pwd=[$PWD];echo "myPass" | sudo -S -k -p "" "./bin/startup.sh";
+	 * </pre>
+	 * 
+	 * 
+	 * <pre>
+	 * return buildCommandBash(WITH_SUDO, "./bin/shutdown.sh", "-u", "admin","-p", "root");
+	 * 
+	 * ==> /bin/bash -c echo pwd=[$PWD];echo "myPass" | sudo -S -k -p "" "./bin/shutdown.sh" -u admin - p root;
 	 * </pre>
 	 * 
 	 * <pre>
-	 * /bin/bash -c echo pwd=[$PWD];echo "myPass" | sudo -S -k -p "" lsof -n -i4TCP:8080
+	 * return buildCommandBash(WITH_SUDO, "lsof", "-n", String.format("-i4TCP:%d", aPort));
+	 * 
+	 * ==>/bin/bash -c echo pwd=[$PWD];echo "myPass" | sudo -S -k -p "" lsof -n -i4TCP:8080
 	 * </pre>
 	 * 
 	 * The sudo prompt is sent in stdErr ! => the value "" for the prompt
@@ -87,49 +126,47 @@ public class CTestOSServer extends CAppConsoleBase {
 	 * @param aCommandArgs
 	 * @return
 	 */
-	private String[] buildCommandBash(final String aCommand,
-			final String... aCommandArgs) {
+	private String[] buildCommandBash(final boolean aWithSudo,
+			final String aCommand, final String... aCommandArgs) {
 
 		ArrayList<String> wCmdLineArgs = new ArrayList<String>();
 
-		wCmdLineArgs.add("/bin/bash");
-		wCmdLineArgs.add("-c");
+		if (aWithSudo) {
 
-		StringBuilder wBashCommands = new StringBuilder();
+			wCmdLineArgs.add("/bin/bash");
+			wCmdLineArgs.add("-c");
 
-		// print user directory in stdIn of the sudo command
-		wBashCommands.append("echo pwd=[$PWD];");
+			StringBuilder wBashCommands = new StringBuilder();
 
-		// the sudo prompt is sent in stdErr ! => the value "" for the prompt
-		// argument -p "" remove it
-		wBashCommands
-				.append(String.format("echo \"%s\" | sudo -S -k -p \"\" %s",
-						getSudoPass(), aCommand));
+			// print user directory in stdIn of the sudo command
+			wBashCommands.append("echo pwd=[$PWD];");
 
-		if (aCommandArgs != null && aCommandArgs.length > 0) {
-			for (String wArg : aCommandArgs) {
-				wBashCommands.append(String.format(" %s", wArg));
+			// the sudo prompt is sent in stdErr ! => the value "" for the
+			// prompt
+			// argument -p "" remove it
+			wBashCommands.append(String.format(
+					"echo \"%s\" | sudo -S -k -p \"\" %s", getSudoPass(),
+					aCommand));
+			if (aCommandArgs != null && aCommandArgs.length > 0) {
+				for (String wArg : aCommandArgs) {
+					wBashCommands.append(String.format(" %s", wArg));
+				}
+			}
+			wBashCommands.append(';');
+			wCmdLineArgs.add(wBashCommands.toString());
+		}
+		// whithout sudo
+		else {
+			wCmdLineArgs.add(String.format("%s", aCommand));
+
+			if (aCommandArgs != null && aCommandArgs.length > 0) {
+				for (String wArg : aCommandArgs) {
+					wCmdLineArgs.add(String.format(" \"%s\"", wArg));
+				}
 			}
 		}
-		wBashCommands.append(';');
 
-		wCmdLineArgs.add(wBashCommands.toString());
 		return wCmdLineArgs.toArray(new String[wCmdLineArgs.size()]);
-	}
-
-	/**
-	 * @return
-	 */
-	private String[] buildCommandExitdbShutdown() {
-		return buildCommandBash("./bin/shutdown.sh", "-u", "admin", "-p",
-				"root");
-	}
-
-	/**
-	 * @return
-	 */
-	private String[] buildCommandExitdbStart() {
-		return buildCommandBash("./bin/startup.sh");
 	}
 
 	/**
@@ -151,8 +188,8 @@ public class CTestOSServer extends CAppConsoleBase {
 					"Unable to build kill command, the pid is less than 0");
 		}
 
-		return buildCommandBash("kill", String.format("-%s", aSignal),
-				String.valueOf(aPid));
+		return buildCommandBash(WITH_SUDO, "kill",
+				String.format("-%s", aSignal), String.valueOf(aPid));
 	}
 
 	/**
@@ -161,7 +198,25 @@ public class CTestOSServer extends CAppConsoleBase {
 	 */
 	private String[] buildCommandLsof(final int aPort) {
 
-		return buildCommandBash("lsof", "-n", String.format("-i4TCP:%d", aPort));
+		return buildCommandBash(WITH_SUDO, "lsof", "-n",
+				String.format("-i4TCP:%d", aPort));
+	}
+
+	/**
+	 * @return
+	 */
+	private String[] buildCommandStartTestServer() {
+		return buildCommandBash(!WITH_SUDO, "./testcases/bin/startup.sh");
+		// return buildCommandBash(!WITH_SUDO, null);
+
+	}
+
+	/**
+	 * @return the command used to stop the "test server". This command is
+	 *         sentto the server using its stdin
+	 */
+	private String buildCommandStopTestServer() {
+		return "close\n";
 	}
 
 	/**
@@ -176,11 +231,7 @@ public class CTestOSServer extends CAppConsoleBase {
 	 * how to set JAVA_HOME environment variable in different operating system
 	 * including Windows (windows 7, vista, xp) and Linux (Unix).
 	 * 
-	 * @see http 
-	 *      ://javarevisited.blogspot.ch/2012/02/how-to-set-javahome-environment
-	 *      -in.html
-	 * 
-	 *      <pre>
+	 * <pre>
 	 * pb-d-128-141-252-110:bin ogattaz$ pwd
 	 * /Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/bin
 	 * 
@@ -203,28 +254,35 @@ public class CTestOSServer extends CAppConsoleBase {
 	 * drwxrwxr-x+ 97 root  wheel    3298  8 oct  2013 lib
 	 * </pre>
 	 * 
+	 * System.getProperty:
 	 * 
-	 * @return
+	 * <pre>
+	 * java.home=[/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre]
+	 * </pre>
+	 * 
+	 * @return an instance of dictionnary (Map<String, String>)
+	 * 
+	 * 
+	 * @see http 
+	 *      ://javarevisited.blogspot.ch/2012/02/how-to-set-javahome-environment
+	 *      -in.html
+	 * 
 	 */
-	private Map<String, String> buildExistdbEnv() {
+	private Map<String, String> buildEnvDictionnary() {
 		Map<String, String> wEnv = new HashMap<String, String>();
-		wEnv.put("JAVA_HOME",
-				"/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre");
-		wEnv.put("EXIST_DATA_DIR",
-				"/Users/ogattaz/workspaces/Cristal-eXist-db/webapp/WEB-INF/data");
-		wEnv.put("EXIST_PID_DIR",
-				"/Users/ogattaz/workspaces/Cristal-eXist-db/webapp/WEB-INF/data");
-
+		wEnv.put("JAVA_HOME", System.getProperty(CXJvmUtils.SYSPROP_JAVA_HOME));
 		return wEnv;
 	}
 
 	/**
+	 * <pre>
+	 * user.dir=[/Users/ogattaz/workspaces/cohorte-OpenSource-git/cohorte-utilities/org.cohorte.utilities]
+	 * </pre>
 	 * 
 	 * @return
 	 */
 	private File buildUserDirFile() {
-		return new File(
-				"/Applications/eXist-db.app/Contents/Resources/eXist-db");
+		return new File(System.getProperty(CXJvmUtils.SYSPROP_USER_DIR));
 	}
 
 	/**
@@ -235,15 +293,22 @@ public class CTestOSServer extends CAppConsoleBase {
 		pLogger.logInfo(this, "destroy", "close the logger");
 	}
 
-	/**
-	 * @throws Exception
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.cohorte.utilities.tests.CAppConsoleBase#doCommandClose()
 	 */
 	@Override
 	protected void doCommandClose() throws Exception {
 		pLogger.logInfo(this, "doCommandClose", "begin");
 
 		if (pCXOSServer != null) {
-			doCommandStop(getCmdeLine());
+			try {
+				doCommandStop(getCmdeLine());
+			} catch (Exception e) {
+				pLogger.logInfo(this, "doCommandClose", "ERROR: %s", e);
+
+			}
 		}
 
 		pLogger.logInfo(this, "doCommandClose", "end");
@@ -268,8 +333,9 @@ public class CTestOSServer extends CAppConsoleBase {
 	 * @throws Exception
 	 */
 	private void doCommandGetPid(final String aCmdeLine) throws Exception {
-		pLogger.logInfo(this, "doCommandGetPid", "begin aCmdeLine=[%s]",
-				aCmdeLine);
+
+		pLogger.logInfo(this, "doCommandGetPid", "begin Args=%s %s",
+				getCommandArgs(), dumpProcessStates());
 
 		String[] wCommandLsof = buildCommandLsof(8080);
 
@@ -313,8 +379,9 @@ public class CTestOSServer extends CAppConsoleBase {
 	 * @throws Exception
 	 */
 	private void doCommandKill(final String aCmdeLine) throws Exception {
-		pLogger.logInfo(this, "doCommandKill", "begin aCmdeLine=[%s]",
-				aCmdeLine);
+
+		pLogger.logInfo(this, "doCommandKill", "begin Args=%s %s",
+				getCommandArgs(), dumpProcessStates());
 
 		try {
 			String[] wCommandKill = buildCommandKill(pServerPid, "SIGTERM");
@@ -339,25 +406,59 @@ public class CTestOSServer extends CAppConsoleBase {
 	 * @param aCmdeLine
 	 * @throws Exception
 	 */
+	private void doCommandSend(final String aCmdeLine,
+			final String[] aCommandArgs) throws Exception {
+
+		pLogger.logInfo(this, "doCommandSend", "begin Args=%s %s",
+				getCommandArgs(), dumpProcessStates());
+
+		String wServerCommand = CXStringUtils.stringTableToString(aCommandArgs,
+				" ", 1);
+
+		if (wServerCommand.charAt(wServerCommand.length() - 1) != '\n') {
+			wServerCommand += '\n';
+		}
+
+		pLogger.logInfo(this, "doCommandSend", "begin ServerCommand=[%s]",
+				wServerCommand);
+
+		if (pCXOSServer != null) {
+
+			boolean wSent = pCXOSServer.write(wServerCommand,
+					CXBytesUtils.ENCODING_UTF_8);
+
+			pLogger.logInfo(this, "doCommandSend",
+					"Sent=[%b] ServerReport:\n%s", wSent,
+					pCXOSServer.getRepport());
+
+		} else {
+			pLogger.logSevere(this, "doCommandSend",
+					"No process server available !");
+		}
+		pLogger.logInfo(this, "doCommandSend", "end");
+	}
+
+	/**
+	 * @param aCmdeLine
+	 * @throws Exception
+	 */
 	private void doCommandStart(final String aCmdeLine) throws Exception {
 
-		pLogger.logInfo(this, "doCommandStart", "begin aCmdeLine=[%s]",
-				aCmdeLine);
+		pLogger.logInfo(this, "doCommandStart", "begin Args=[%s] %s",
+				getCommandArgs(), dumpProcessStates());
 
 		if (pCXOSServer != null) {
 			pLogger.logInfo(this, "doCommandStart",
 					"A process server is already launched !");
 		} else {
-
-			pCXOSServer = new CXOSServer(pLogger, buildCommandExitdbStart());
+			pCXOSServer = new CXOSServer(pLogger, buildCommandStartTestServer());
 
 			boolean wStarted = pCXOSServer.startAndWaitInStdOut(
-					buildUserDirFile(), buildExistdbEnv(), 15000,
-					"Server has started on ports");
+					buildUserDirFile(), buildEnvDictionnary(),
+					TEST_SERVER_WAIT_TIMEOUT, TEST_SERVER_RETURN_TEXT_START);
 
-			pLogger.logInfo(this, "doCommandStart", "Started=[%b]", wStarted);
-
-			pLogger.logInfo(this, "doCommandStart", "ServerReport:\n%s",
+			pLogger.logInfo(this, "doCommandStart",
+					"Started=[%b] ServerReport:\n%s", wStarted,
 					pCXOSServer.getRepport());
 		}
 
@@ -368,23 +469,45 @@ public class CTestOSServer extends CAppConsoleBase {
 	 * @param aCmdeLine
 	 * @throws Exception
 	 */
-	private void doCommandStop(final String aCmdeLine) throws Exception {
+	private void doCommandState(final String aCmdeLine) throws Exception {
 
-		pLogger.logInfo(this, "doCommandStop", "begin aCmdeLine=[%s]",
-				aCmdeLine);
-
-		pLogger.logInfo(this, "doCommandStop",
-				"CurrentProcessPid=[%s] CurrentProcessName=[%s]",
-				CXProcess.getCurrentProcessPid(),
-				CXProcess.getCurrentProcessName());
+		pLogger.logInfo(this, "doCommandState", "begin Args=%s %s",
+				getCommandArgs(), dumpProcessStates());
 
 		if (pCXOSServer != null) {
-			boolean wStopped = pCXOSServer.stop(buildUserDirFile(),
-					buildExistdbEnv(), 10000, buildCommandExitdbShutdown());
 
-			pLogger.logInfo(this, "doCommandStop", "Stopped=[%b]", wStopped);
+			boolean wStateGet = pCXOSServer.writeAndWaitInStdOut("state\n",
+					CXBytesUtils.ENCODING_UTF_8, TEST_SERVER_WAIT_TIMEOUT,
+					TEST_SERVER_RETURN_TEXT_STATE);
 
-			pLogger.logInfo(this, "doCommandStop", "ServerReport:\n%s",
+			pLogger.logInfo(this, "doCommandStop",
+					"State=[%b] ServerReport:\n%s", wStateGet,
+					pCXOSServer.getRepport());
+
+		} else {
+			pLogger.logSevere(this, "doCommandStop",
+					"No process server available !");
+		}
+		pLogger.logInfo(this, "doCommandStop", "end");
+	}
+
+	/**
+	 * @param aCmdeLine
+	 * @throws Exception
+	 */
+	private void doCommandStop(final String aCmdeLine) throws Exception {
+
+		pLogger.logInfo(this, "doCommandStop", "begin Args=%s %s",
+				getCommandArgs(), dumpProcessStates());
+
+		if (pCXOSServer != null) {
+
+			boolean wStopped = pCXOSServer.writeAndWaitInStdOut(
+					buildCommandStopTestServer(), CXBytesUtils.ENCODING_UTF_8,
+					TEST_SERVER_WAIT_TIMEOUT, TEST_SERVER_RETURN_TEXT_STOP);
+
+			pLogger.logInfo(this, "doCommandStop",
+					"Stopped=[%b] ServerReport:\n%s", wStopped,
 					pCXOSServer.getRepport());
 
 			pCXOSServer = null;
@@ -407,15 +530,37 @@ public class CTestOSServer extends CAppConsoleBase {
 
 		if (isCommandX(CMD_SERVER_START)) {
 			doCommandStart(aCmdeLine);
-		} else if (isCommandX(CMD_SERVER_STOP)) {
+		} else
+		//
+		if (isCommandX(CMD_SERVER_STOP)) {
 			doCommandStop(aCmdeLine);
-		} else if (isCommandX(CMD_SERVER_KILL)) {
+		} else
+		//
+		if (isCommandX(CMD_SERVER_STATE)) {
+			doCommandState(aCmdeLine);
+		} else
+		//
+		if (isCommandX(CMD_SERVER_SEND)) {
+			doCommandSend(aCmdeLine, getCommandArgs());
+		} else
+		//
+		if (isCommandX(CMD_SERVER_KILL)) {
 			doCommandKill(aCmdeLine);
-		} else if (isCommandX(CMD_SERVER_GETPID)) {
+		} else
+		//
+		if (isCommandX(CMD_SERVER_GETPID)) {
 			doCommandGetPid(aCmdeLine);
 		}
 
 		pLogger.logInfo(this, "doCommandUser", "END");
+	}
+
+	private String dumpProcessStates() {
+		return String
+				.format("OsServerPid=[%s] CurrentProcessPid=[%s] CurrentProcessName=[%s] ",
+						(pCXOSServer != null) ? pCXOSServer.getPid() : -1,
+						CXProcess.getCurrentProcessPid(),
+						CXProcess.getCurrentProcessName());
 	}
 
 	/**

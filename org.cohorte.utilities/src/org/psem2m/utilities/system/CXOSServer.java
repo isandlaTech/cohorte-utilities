@@ -1,6 +1,7 @@
 package org.psem2m.utilities.system;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.util.Map;
 
 import org.psem2m.utilities.CXTimer;
@@ -389,8 +390,11 @@ public class CXOSServer extends CXOSRunner implements IXOSServer {
 			// Returns the output stream connected to the normal input of the
 			// subprocess. Output to the stream is piped into the standard input
 			// of the process represented by this Process object.
-			pXProcess.getProcess().getOutputStream()
-					.write(aServerCommand.getBytes(aCharSet));
+			OutputStream wTargetStdIn = pXProcess.getProcess()
+					.getOutputStream();
+			byte[] wBuffer = aServerCommand.getBytes(aCharSet);
+			wTargetStdIn.write(wBuffer);
+			wTargetStdIn.flush();
 
 			// wait for the passed aStrInStdOut in the stdout of the new
 			// process
