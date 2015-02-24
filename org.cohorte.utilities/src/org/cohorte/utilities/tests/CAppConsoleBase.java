@@ -379,6 +379,15 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	}
 
 	/**
+	 * @param aCmdeLine
+	 */
+	protected void echoCommandLine(final String aCmdeLine) {
+
+		pLogger.logInfo(this, "echoCommandLine", "StdIn command line: [%s]",
+				aCmdeLine);
+	}
+
+	/**
 	 * @param aScriptNameOrIndex
 	 * @return
 	 * @throws IOException
@@ -629,21 +638,20 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 				"begin. Stdin console. Wait for a close command to stop the server.");
 
 		pLogger.logInfo(this, "waitForUserCommand", "=>");
-		Scanner wScanConsoleIn = new Scanner(System.in);
+		Scanner wScanStdIn = new Scanner(System.in);
 		boolean wWantClose = false;
 		do {
 
 			// Reads a single line from the console
-			pCmdeLine = wScanConsoleIn.nextLine();
+			pCmdeLine = wScanStdIn.nextLine();
 
-			pLogger.logInfo(this, "waitForCommand",
-					"Stdin console command line: [%s]", getCmdeLine());
+			echoCommandLine(getCmdeLine());
 
 			wWantClose = doCommandLine(getCmdeLine());
 
 		} while (!wWantClose);
 
-		wScanConsoleIn.close();
+		wScanStdIn.close();
 
 		pLogger.logInfo(this, "waitForCommand", "end");
 		return true;
