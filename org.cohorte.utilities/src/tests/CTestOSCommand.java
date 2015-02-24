@@ -90,22 +90,21 @@ public class CTestOSCommand {
 	 * Commande
 	 * 
 	 * <pre>
-	 * /bin/bash -c 'netstat -an | grep 10389'
-	 * </pre>
-	 * 
-	 * <pre>
-	 * tcp46      0      0  *.10389                *.*                    LISTEN
+	 * macbookpro112:org.cohorte.utilities ogattaz$ netstat -an | grep "*.22"
+	 * tcp4       0      0  *.22                   *.*                    LISTEN     
+	 * tcp6       0      0  *.22                   *.*                    LISTEN
 	 * </pre>
 	 * 
 	 * @return
 	 */
-	private String[] buildCommandNetstat(final int aPort) {
+	private String[] buildCommandNetstat(final String aGrepFilter) {
 
 		ArrayList<String> wCmdLineArgs = new ArrayList<String>();
 
 		wCmdLineArgs.add("/bin/bash");
 		wCmdLineArgs.add("-c");
-		wCmdLineArgs.add(String.format("netstat -an | grep %d", aPort));
+		wCmdLineArgs.add(String
+				.format("netstat -an | grep \"%s\"", aGrepFilter));
 
 		return wCmdLineArgs.toArray(new String[wCmdLineArgs.size()]);
 	}
@@ -165,7 +164,7 @@ public class CTestOSCommand {
 	 * @return
 	 */
 	private String getSudoPass() {
-		return "Olivier38";
+		return "...";
 	}
 
 	/**
@@ -216,13 +215,14 @@ public class CTestOSCommand {
 
 	/**
 	 * <pre>
-	 * macbookpro112:~ ogattaz$ /bin/bash -c 'netstat -an | grep 10389'
-	 * tcp46      0      0  *.10389                *.*                    LISTEN  	 *
+	 * macbookpro112:org.cohorte.utilities ogattaz$ netstat -an | grep "*.22"
+	 * tcp4       0      0  *.22                   *.*                    LISTEN     
+	 * tcp6       0      0  *.22                   *.*                    LISTEN
 	 * </pre>
 	 */
 	private void testNetstat() {
 		pLogger.logInfo(this, "doTest", "Exec:\n%s",
-				execOsCommand(buildCommandNetstat(10389)));
+				execOsCommand(buildCommandNetstat("*.22")));
 	}
 
 	/**
