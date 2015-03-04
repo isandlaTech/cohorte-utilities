@@ -22,6 +22,7 @@ import java.util.StringTokenizer;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -328,9 +329,9 @@ public class CXDomUtils implements ErrorHandler {
 	 * @param aElement
 	 * @return
 	 */
-	public static String dumpAttributes(Element aElement){
-		
-		return dumpAttributesInSB(new StringBuilder(),aElement).toString();
+	public static String dumpAttributes(Element aElement) {
+
+		return dumpAttributesInSB(new StringBuilder(), aElement).toString();
 	}
 
 	/**
@@ -345,11 +346,12 @@ public class CXDomUtils implements ErrorHandler {
 		NamedNodeMap wAtributes = aElement.getAttributes();
 		int wMax = wAtributes.getLength();
 		for (int wIdx = 0; wIdx < wMax; wIdx++) {
-			if (wIdx>0){
+			if (wIdx > 0) {
 				aSB.append(',');
 			}
 			Node wAttrNode = wAtributes.item(wIdx);
-			aSB.append(String.format("%s=[%s]", wAttrNode.getNodeName(),wAttrNode.getTextContent()));
+			aSB.append(String.format("%s=[%s]", wAttrNode.getNodeName(),
+					wAttrNode.getTextContent()));
 		}
 		aSB.append('}');
 		return aSB;
@@ -372,7 +374,7 @@ public class CXDomUtils implements ErrorHandler {
 
 		return wNode;
 	}
-	
+
 	/**
 	 * Renvoie la valeur de l'attribut aAttrib de aElmt sous la forme d'un
 	 * Integer Renvoie aDefValue si erreur
@@ -386,14 +388,13 @@ public class CXDomUtils implements ErrorHandler {
 					aDefValue);
 		}
 	}
-	
-	
+
 	/**
 	 * @param aElement
 	 * @return
 	 */
 	public static List<Element> getElements(Element aElement) {
-		
+
 		if (aElement == null) {
 			return null;
 		}
@@ -404,9 +405,9 @@ public class CXDomUtils implements ErrorHandler {
 				wElmts.add((Element) wList.item(wI));
 			}
 		}
-		return wElmts;		
+		return wElmts;
 	}
-	
+
 	/**
 	 * @param aNode
 	 * @param aTagName
@@ -427,7 +428,6 @@ public class CXDomUtils implements ErrorHandler {
 		}
 		return wElmts;
 	}
-
 
 	/**
 	 * @param aNode
@@ -839,15 +839,22 @@ public class CXDomUtils implements ErrorHandler {
 	}
 
 	/**
+	 * MOD_OG
+	 * 
+	 * Replace the content of the existing text node
 	 * 
 	 * @param aNode
 	 * @param aValue
 	 */
 	public static void setTextValue(Node aNode, String aValue) {
-
-		Document wDocument = aNode.getOwnerDocument();
-		Text wText = wDocument.createTextNode(aValue);
-		aNode.appendChild(wText);
+		Node wNode = CXDomUtils.findTextNode(aNode);
+		if (wNode != null) {
+			wNode.setTextContent(aValue);
+		} else {
+			Document wDocument = aNode.getOwnerDocument();
+			Text wText = wDocument.createTextNode(aValue);
+			aNode.appendChild(wText);
+		}
 	}
 
 	/**
@@ -857,10 +864,56 @@ public class CXDomUtils implements ErrorHandler {
 	 */
 	public static String toXml(Node aNode) throws Exception {
 
+		return toXml(aNode, 0, false);
+	}
+
+	/**
+	 * @param aNode
+	 * @param aOmitXmlDeclaration
+	 * @return
+	 * @throws Exception
+	 */
+	public static String toXml(final Node aNode,
+			final boolean aOmitXmlDeclaration) throws Exception {
+		return toXml(aNode, 0, aOmitXmlDeclaration);
+	}
+
+	/**
+	 * @param aNode
+	 * @param aIndentAmount
+	 * @return
+	 * @throws Exception
+	 */
+	public static String toXml(final Node aNode, final int aIndentAmount)
+			throws Exception {
+		return toXml(aNode, aIndentAmount, false);
+	}
+
+	/**
+	 * @param aNode
+	 * @param aIndentAmount
+	 * @param aOmitXmlDeclaration
+	 * @return
+	 * @throws Exception
+	 */
+	public static String toXml(Node aNode, int aIndentAmount,
+			final boolean aOmitXmlDeclaration) throws Exception {
+
 		if (aNode == null) {
 			return CXStringUtils.EMPTY;
 		}
 		Transformer wProcessor = pTransformerFactory.newTransformer();
+
+		if (aOmitXmlDeclaration) {
+			wProcessor.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, YES);
+		}
+
+		if (aIndentAmount > 0 && aIndentAmount < 8) {
+			wProcessor.setOutputProperty(OutputKeys.INDENT, YES);
+			wProcessor.setOutputProperty(
+					"{http://xml.apache.org/xslt}indent-amount",
+					String.valueOf(aIndentAmount));
+		}
 		StreamResult wResult = new StreamResult(new StringWriter());
 		wProcessor.transform(new DOMSource(aNode), wResult);
 		return wResult.getWriter().toString();
@@ -1025,7 +1078,7 @@ public class CXDomUtils implements ErrorHandler {
 
 		return getFirstChildElmtByTag(this.getRootElmt(), aTagName);
 	}
-	
+
 	/**
 	 * @param aTagName
 	 * @return
@@ -1189,7 +1242,36 @@ public class CXDomUtils implements ErrorHandler {
 	 */
 	public String toXml() throws Exception {
 
-		return toXml(getRootElmt());
+		return toXml(getRootElmt(), 0, false);
+	}
+
+	/**
+	 * @param aOmitXmlDeclaration
+	 * @return
+	 * @throws Exception
+	 */
+	public String toXml(final boolean aOmitXmlDeclaration) throws Exception {
+		return toXml(getRootElmt(), 0, aOmitXmlDeclaration);
+	}
+
+	/**
+	 * @param aIndentAmount
+	 * @return
+	 * @throws Exception
+	 */
+	public String toXml(final int aIndentAmount) throws Exception {
+		return toXml(getRootElmt(), aIndentAmount, false);
+	}
+
+	/**
+	 * @param aIndentAmount
+	 * @param aOmitXmlDeclaration
+	 * @return
+	 * @throws Exception
+	 */
+	public String toXml(int aIndentAmount, final boolean aOmitXmlDeclaration)
+			throws Exception {
+		return toXml(getRootElmt(), aIndentAmount, aOmitXmlDeclaration);
 	}
 
 	/*
