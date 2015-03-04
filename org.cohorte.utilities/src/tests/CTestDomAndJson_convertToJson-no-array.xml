@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<root>
+	<Request>
+		<Url>http://localhost:10000/converter/docToPdf/</Url>
+		<Method>POST</Method>
+		<HeadersToSend>
+			<Accept>text/json</Accept>
+			<Accept-Charset>utf-8</Accept-Charset>
+			<Accept-Encoding>gzip, deflate</Accept-Encoding>
+			<Accept-Language>en-US</Accept-Language>
+			<Accept-Datetime>Thu, 31 May 2007 20:35:00 GMT</Accept-Datetime>
+			<Authorization>Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==</Authorization>
+			<Cache-Control>no-cache</Cache-Control>
+			<Connection>keep-alive</Connection>
+			<Cookie>$Version=1; Skin=new;</Cookie>
+			<Content-Length>348</Content-Length>
+			<User-Agent>Mozilla/5.0 (X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/21.0</User-Agent>
+			<Warning>199 Miscellaneous warning</Warning>
+		</HeadersToSend>
+		<DataToSend>
+			<source-url>file:///C:/temp/mysource.docx</source-url>
+			<target-name>myconvertedfile.pdf</target-name>
+			<target-url>file:///C:/mypdfresults</target-url>
+		</DataToSend>
+	</Request>
+	<Response>
+		<ResponseHeaders />
+		<ResponseData>
+			<Creation-Date></Creation-Date>
+			<Job-UUID></Job-UUID>
+			<Job-Progress></Job-Progress>
+		</ResponseData>
+	</Response>
+</root>

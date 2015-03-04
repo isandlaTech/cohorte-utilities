@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<root>
+	<Request>
+		<Url>http://localhost:10000/converter/docToPdf/</Url>
+		<Method>POST</Method>
+		<HeadersToSend>
+			<header>
+				<id>h1</id>
+				<value>V1</value>
+			</header>
+			<header>
+				<id>h2</id>
+				<value>V2</value>
+			</header>
+		</HeadersToSend>
+		<DataToSend>
+			<source-url>file:///C:/temp/mysource.docx</source-url>
+			<target-name>myconvertedfile.pdf</target-name>
+			<target-url>file:///C:/mypdfresults</target-url>
+		</DataToSend>
+	</Request>
+	<Response>
+		<ResponseHeaders />
+		<ResponseData>
+			<Creation-Date></Creation-Date>
+			<Job-UUID></Job-UUID>
+			<Job-Progress></Job-Progress>
+		</ResponseData>
+	</Response>
+</root>

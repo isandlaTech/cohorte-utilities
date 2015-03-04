@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<root>
+	<Request />
+	<Response>
+		<HttpReturnCode />
+		<HttpReason />
+		<ResponseHeaders />
+		<ResponseData>
+			<Creation-Date></Creation-Date>
+			<Job-UUID></Job-UUID>
+			<Job-Progress></Job-Progress>
+		</ResponseData>
+	</Response>
+	<Status></Status>
+	<Reason></Reason>
+	<Duration></Duration>
+</root>
