@@ -33,7 +33,7 @@ public abstract class CXProcess {
 
 	/**
 	 * @param aProcess
-	 * @return an instance of CXProcess according the king of the passed
+	 * @return an instance of CXProcess according the kind of the passed
 	 *         java.lang.Process
 	 */
 	static CXProcess newCXProcess(final Process aProcess)
@@ -46,12 +46,15 @@ public abstract class CXProcess {
 
 		if (CXProcessUnix.isProcessUnix(aProcess)) {
 			return new CXProcessUnix(aProcess);
-		} else if (CXProcessWin32.isProcessWin32(aProcess)) {
+		}
+		//
+		else if (CXProcessWin32.isProcessWin32(aProcess)) {
 			return new CXProcessWin32(aProcess);
 		}
+
 		throw new IllegalArgumentException(
 				String.format(
-						"Unable to instanciate a CXProcess with a unknonw kind of java.lang.Process",
+						"Unable to instanciate a CXProcess with a unknonw kind of java.lang.Process. Implementation class=[%s]",
 						aProcess.getClass().getName()));
 	}
 
