@@ -5,30 +5,67 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * 
+ * @see Java How to get the PID from a process?
+ *      http://www.golesny.de/p/code/javagetpid
+ * 
  * @author ogattaz
  * 
  */
 public abstract class CXProcess {
 
 	/**
-	 * @return
+	 * @return the name of the current process using the format "pid@name"
 	 */
 	public static String getCurrentProcessName() {
 		return ManagementFactory.getRuntimeMXBean().getName();
 	}
 
 	/**
-	 * @return
+	 * @return the pid of the current process
 	 */
 	public static int getCurrentProcessPid() {
-		return tryPattern1(getCurrentProcessName());
+		return getProcessPid(getCurrentProcessName());
 	}
 
 	/**
-	 * @return
+	 * @return the up time of the current process
 	 */
 	public static long getCurrentProcessUpTime() {
 		return ManagementFactory.getRuntimeMXBean().getUptime();
+	}
+
+	/**
+	 * 
+	 * tested with the jvm :
+	 * <ul>
+	 * <li>windows xp sp 2, java 1.5.0_13
+	 * <li>mac os x 10.4.10, java 1.5.0
+	 * <li>debian linux, java 1.5.0_13
+	 * </ul>
+	 * 
+	 * all return pid@host, e.g 2204@antonius
+	 * 
+	 * @url 
+	 *      https://github.com/wangscu/jessica/blob/master/src/main/java/com/mogujie
+	 *      /storeage/bitcask/OS.java
+	 * 
+	 * 
+	 * @param processName
+	 *            the name of the process return by the RuntimeMXBean. The
+	 *            format must be "pid@host"
+	 * @return the pid
+	 */
+	private static Integer getProcessPid(final String processName) {
+		Integer wPid = null;
+
+		Pattern wPattern = Pattern.compile("^([0-9]+)@.+$",
+				Pattern.CASE_INSENSITIVE);
+		Matcher matcher = wPattern.matcher(processName);
+		if (matcher.matches()) {
+			wPid = new Integer(Integer.parseInt(matcher.group(1)));
+		}
+		return wPid;
 	}
 
 	/**
@@ -58,28 +95,6 @@ public abstract class CXProcess {
 						aProcess.getClass().getName()));
 	}
 
-	/**
-	 * @param processName
-	 * @return
-	 */
-	private static Integer tryPattern1(final String processName) {
-		Integer result = null;
-
-		/* tested on: */
-		/* - windows xp sp 2, java 1.5.0_13 */
-		/* - mac os x 10.4.10, java 1.5.0 */
-		/* - debian linux, java 1.5.0_13 */
-		/* all return pid@host, e.g 2204@antonius */
-
-		Pattern pattern = Pattern.compile("^([0-9]+)@.+$",
-				Pattern.CASE_INSENSITIVE);
-		Matcher matcher = pattern.matcher(processName);
-		if (matcher.matches()) {
-			result = new Integer(Integer.parseInt(matcher.group(1)));
-		}
-		return result;
-	}
-
 	private final Process pProcess;
 
 	/**
@@ -87,27 +102,30 @@ public abstract class CXProcess {
 	 */
 	CXProcess(final Process aProcess) throws IllegalArgumentException {
 		super();
+
 		if (aProcess == null) {
 			throw new IllegalArgumentException(
 					"Unable to instanciate a CXProcess with a null java.lang.Process");
 		}
+
 		pProcess = aProcess;
 	}
 
 	/**
-	 * @return the PID of the process
+	 * @return the PID of the instance of Process
 	 */
 	public abstract int getPid();
 
 	/**
-	 * 
+	 * @return the instance of Process
 	 */
 	Process getProcess() {
 		return pProcess;
 	}
 
 	/**
-	 * @return
+	 * @return the simple name of the process instance as kind => "ProcessImpl"
+	 *         or "UNIXProcess"
 	 */
 	String getProcessKind() {
 		return getProcess().getClass().getSimpleName();

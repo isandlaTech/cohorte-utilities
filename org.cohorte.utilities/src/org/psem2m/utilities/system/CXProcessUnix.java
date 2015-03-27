@@ -3,6 +3,12 @@ package org.psem2m.utilities.system;
 import java.lang.reflect.Field;
 
 /**
+ * @see http://hg.openjdk.java.net/jdk8/jdk8/jdk/file/687fd7c7986d/src/solaris/
+ *      classes/java/lang/UNIXProcess.java.linux
+ * 
+ * @see Java How to get the PID from a process?
+ *      http://www.golesny.de/p/code/javagetpid
+ * 
  * @author ogattaz
  * 
  */
@@ -13,7 +19,10 @@ public class CXProcessUnix extends CXProcess {
 	 * @return
 	 */
 	public static boolean isProcessUnix(final Process aProcess) {
-		return aProcess.getClass().getName().equals("java.lang.UNIXProcess");
+
+		return aProcess != null
+				&& aProcess.getClass().getName()
+						.equals("java.lang.UNIXProcess");
 	}
 
 	/**
