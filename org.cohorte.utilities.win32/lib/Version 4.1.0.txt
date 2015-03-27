@@ -1,0 +1,10 @@
+
+
+JNA
+
+https://github.com/twall/jna
+
+Version 4.1.0
+
+jna.jar                https://maven.java.net/content/repositories/releases/net/java/dev/jna/jna/4.1.0/jna-4.1.0.jar
+jna-platform.jar       https://maven.java.net/content/repositories/releases/net/java/dev/jna/jna-platform/4.1.0/jna-platform-4.1.0.jar
