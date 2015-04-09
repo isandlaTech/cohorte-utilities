@@ -188,8 +188,9 @@ public final class CXJvmUtils {
 		Class<?> wClass = aClass;
 		int wLevel = 0;
 		while (wClass != null) {
+			// MOD_OG_20150409 use getClassLoaderInfos
 			aRepport.append(String.format("\nClass(%2d)=[%75s from %s]",
-					wLevel, wClass.getName(), wClass.getClassLoader()));
+					wLevel, wClass.getName(), getClassLoaderInfos(wClass)));
 
 			appendInterfaceInfosInSB(aRepport, wClass, 1);
 
@@ -215,10 +216,11 @@ public final class CXJvmUtils {
 			for (int wInterfaceIdx = 0; wInterfaceIdx < wNbInterfaces; wInterfaceIdx++) {
 				wInterface = wInterfaces[wInterfaceIdx];
 
+				// MOD_OG_20150409 use getClassLoaderInfos
 				aRepport.append(String.format(
 						"\n  Interface(%d.%d)=[%68s from %s]", aInterfaceLevel,
 						wInterfaceIdx, wInterface.getName(),
-						wInterface.getClassLoader()));
+						getClassLoaderInfos(wInterface)));
 
 				appendInterfaceInfosInSB(aRepport, wInterface,
 						(aInterfaceLevel + 1));
@@ -491,25 +493,25 @@ public final class CXJvmUtils {
 	 * <pre>
 	 * Class( 0)=[                                         com.ibm.mq.jms.MQConnectionFactory from o.e.o.i.b.DefaultClassLoader@2cd84149[com.ibm.msg.client.osgi.wmq:8.0.0.0(id=47)]]
 	 * Class( 1)=[                  com.ibm.msg.client.jms.admin.JmsJndiConnectionFactoryImpl from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
-	 *   Interface(1.0)=[                                          javax.naming.Referenceable from null]
-	 *   Interface(1.1)=[                                                java.io.Serializable from null]
+	 *   Interface(1.0)=[                                          javax.naming.Referenceable from bootstrap class loader]
+	 *   Interface(1.1)=[                                                java.io.Serializable from bootstrap class loader]
 	 * Class( 2)=[                      com.ibm.msg.client.jms.admin.JmsConnectionFactoryImpl from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
 	 *   Interface(1.0)=[                         com.ibm.msg.client.jms.JmsConnectionFactory from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
 	 *   Interface(2.0)=[                           com.ibm.msg.client.jms.JmsPropertyContext from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
 	 *   Interface(3.0)=[                   com.ibm.msg.client.jms.JmsReadablePropertyContext from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
-	 *   Interface(4.0)=[                                                java.io.Serializable from null]
-	 *   Interface(3.1)=[                                                       java.util.Map from null]
+	 *   Interface(4.0)=[                                                java.io.Serializable from bootstrap class loader]
+	 *   Interface(3.1)=[                                                       java.util.Map from bootstrap class loader]
 	 *   Interface(2.1)=[                                         javax.jms.ConnectionFactory from o.e.o.i.b.DefaultClassLoader@1d2ac818[com.ibm.msg.client.osgi.jms.prereq:8.0.0.0(id=6)]]
 	 * Class( 3)=[                     com.ibm.msg.client.jms.internal.JmsPropertyContextImpl from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
 	 *   Interface(1.0)=[                           com.ibm.msg.client.jms.JmsPropertyContext from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
 	 *   Interface(2.0)=[                   com.ibm.msg.client.jms.JmsReadablePropertyContext from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
-	 *   Interface(3.0)=[                                                java.io.Serializable from null]
-	 *   Interface(2.1)=[                                                       java.util.Map from null]
+	 *   Interface(3.0)=[                                                java.io.Serializable from bootstrap class loader]
+	 *   Interface(2.1)=[                                                       java.util.Map from bootstrap class loader]
 	 *   Interface(1.1)=[         com.ibm.msg.client.provider.ProviderPropertyContextCallback from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
 	 * Class( 4)=[             com.ibm.msg.client.jms.internal.JmsReadablePropertyContextImpl from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
 	 *   Interface(1.0)=[                   com.ibm.msg.client.jms.JmsReadablePropertyContext from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
-	 *   Interface(2.0)=[                                                java.io.Serializable from null]
-	 * Class( 5)=[                                                           java.lang.Object from null]
+	 *   Interface(2.0)=[                                                java.io.Serializable from bootstrap class loader]
+	 * Class( 5)=[                                                           java.lang.Object from bootstrap class loader]
 	 * </pre>
 	 * 
 	 * @param aClass
@@ -521,12 +523,31 @@ public final class CXJvmUtils {
 	}
 
 	/**
+	 * MOD_OG_20150409 create method
+	 * 
+	 * @return
+	 */
+	public static String getClassLoaderInfos(final Class<?> aClass) {
+
+		if (aClass == null) {
+			return "class null";
+		}
+
+		// Some implementations may use null to represent the bootstrap class
+		// loader
+		ClassLoader wClassLoader = aClass.getClassLoader();
+
+		return (wClassLoader != null) ? wClassLoader.toString()
+				: "bootstrap class loader";
+	}
+
+	/**
 	 * <pre>
 	 *   Interface(1.0)=[                         com.ibm.msg.client.jms.JmsConnectionFactory from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
 	 *   Interface(2.0)=[                           com.ibm.msg.client.jms.JmsPropertyContext from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
 	 *   Interface(3.0)=[                   com.ibm.msg.client.jms.JmsReadablePropertyContext from o.e.o.i.b.DefaultClassLoader@77084cb5[com.ibm.msg.client.osgi.jms:8.0.0.0(id=18)]]
-	 *   Interface(4.0)=[                                                java.io.Serializable from null]
-	 *   Interface(3.1)=[                                                       java.util.Map from null]
+	 *   Interface(4.0)=[                                                java.io.Serializable from bootstrap class loader]
+	 *   Interface(3.1)=[                                                       java.util.Map from bootstrap class loader]
 	 *   Interface(2.1)=[                                         javax.jms.ConnectionFactory from o.e.o.i.b.DefaultClassLoader@1d2ac818[com.ibm.msg.client.osgi.jms.prereq:8.0.0.0(id=6)]]
 	 * </pre>
 	 * 

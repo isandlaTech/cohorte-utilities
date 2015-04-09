@@ -2,7 +2,9 @@
 1.0.1.XXXXXXXXXXXX (suivante)
 ==================
 
-MOD_OG_XXXX : ....
+MOD_OG_20150409 : 
+  - create org.psem2m.utilities.CXJvmUtils.getClassLoaderInfos(Class<?>)
+  - use this new method in the methods : "appendClassInfosInSB()", "appendInterfaceInfosInSB()"
 
 1.0.0.201501211743 (actual)
 ==================
