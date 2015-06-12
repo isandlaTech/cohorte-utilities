@@ -22,9 +22,9 @@ import org.psem2m.utilities.CXStringUtils;
 
 /**
  * Classe de gestion de repertoies !! MonoThread
- * 
+ *
  * @author ogattaz
- * 
+ *
  */
 public class CXFileDir extends CXFileBase implements IXFilesContainer {
 
@@ -40,30 +40,63 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	public static final boolean WITH_TEXTFILE = true;
 
 	/**
-	 * 
-	 * @param aPath
+	 * MOD_OG_20150611 CXFileDir constructors accept array of subdirs
+	 *
+	 * @param aSubDirs
 	 * @return
 	 */
-	public static String checkPath(String aPath) {
+	private static String buildSubdir(final String... aSubDirs) {
 
-		if (aPath == null) {
-			return null;
-		}
-		if (aPath.length() == 0) {
-			return aPath;
-		}
-		aPath = checkSeparator(aPath);
-		int wIdxLastChar = aPath.length() - 1;
+		final StringBuilder wSB = new StringBuilder();
 
-		if (aPath.charAt(wIdxLastChar) == separatorChar) {
-			aPath = aPath.substring(0, wIdxLastChar);
-		}
+		if (aSubDirs != null && aSubDirs.length > 0) {
+			for (String wSubDir : aSubDirs) {
+				if (wSubDir != null && !wSubDir.isEmpty()) {
 
-		return aPath;
+					if (wSB.length() > 0) {
+						wSB.append(separatorChar);
+					}
+					wSubDir = cleanPath(wSubDir);
+				}
+			}
+		}
+		return wSB.toString();
 	}
 
 	/**
-	 * 
+	 * MOD_OG_20150611 CXFileDir constructors accept array of subdirs
+	 *
+	 * @param aPath
+	 * @return
+	 */
+	public static String checkPath(final String aPath) {
+
+		if (aPath == null || aPath.isEmpty()) {
+			return aPath;
+		} else {
+			return cleanPath(aPath);
+		}
+	}
+
+	/**
+	 * MOD_OG_20150611 CXFileDir constructors accept array of subdirs
+	 *
+	 * @param aPath
+	 * @return
+	 */
+	private static String cleanPath(final String aPath) {
+
+		String wPath = checkSeparator(aPath);
+		final int wIdxLastChar = wPath.length() - 1;
+
+		if (wPath.charAt(wIdxLastChar) == separatorChar) {
+			wPath = wPath.substring(0, wIdxLastChar);
+		}
+		return wPath;
+	}
+
+	/**
+	 *
 	 * @param aListExt
 	 * @return
 	 */
@@ -73,7 +106,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aListExt
 	 * @param aSubFileFilter
 	 * @return
@@ -86,7 +119,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aListRegExp
 	 * @return
 	 */
@@ -96,7 +129,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aListRegExp
 	 * @param aSubFileFilter
 	 * @return
@@ -109,8 +142,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @param aListSubPath
 	 * @return
 	 */
@@ -120,8 +153,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @param aListSubPath
 	 * @param aSubFileFilter
 	 * @return
@@ -134,7 +167,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public static FileFilter getExcluderSvn() {
@@ -161,7 +194,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aListExt
 	 * @param aSubFileFilter
 	 * @return
@@ -174,7 +207,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aListRegExp
 	 * @return
 	 */
@@ -184,7 +217,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aListRegExp
 	 * @param aSubFileFilter
 	 * @return
@@ -197,8 +230,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @param aListSubPath
 	 * @return
 	 */
@@ -208,7 +241,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aListSubPath
 	 * @param aSubFileFilter
 	 * @return
@@ -244,10 +277,10 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 
 		String wPath = null;
 		try {
-			File wTempFile = File.createTempFile("tmp", "txt");
+			final File wTempFile = File.createTempFile("tmp", "txt");
 			wPath = wTempFile.getParent();
 			wTempFile.delete();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			System.out.println(e.getMessage());
 		}
 		return wPath;
@@ -262,7 +295,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public static CXFileDir getUserDir() {
@@ -278,13 +311,13 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	public static CXFileDir newInstance(final CXFileDir aRoot, Object... aArgs) {
 
 		aArgs = aArgs == null || aArgs.length == 0 ? null : aArgs;
-		StringBuilder wSB = new StringBuilder();
+		final StringBuilder wSB = new StringBuilder();
 		if (aArgs != null && aArgs.length != 0) {
-			for (Object xObj : aArgs) {
-				String wPath = CXStringUtils.strFullTrim(xObj != null ? xObj
-						.toString() : null);
+			for (final Object xObj : aArgs) {
+				final String wPath = CXStringUtils
+						.strFullTrim(xObj != null ? xObj.toString() : null);
 				if (wPath != null && !wPath.isEmpty()) {
-					char wFirst = wPath.charAt(0);
+					final char wFirst = wPath.charAt(0);
 					if (wFirst != '/' && wFirst != '\\') {
 						wSB.append(separatorChar);
 					}
@@ -307,15 +340,15 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 
 	/**
 	 * JAVA EXCEPTION : Impossible de creer le repertoire
-	 * 
+	 *
 	 * Waits for NFS to propagate a file creation, imposing a timeout.
-	 * 
+	 *
 	 * @param file
 	 *            The file
 	 * @param seconds
 	 *            The maximum time in seconds to wait.
 	 * @return True if file exists.
-	 * 
+	 *
 	 *         Needs a clearer javadoc to see its real purpose for someone
 	 *         without NFS-knowledge.
 	 */
@@ -332,8 +365,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 			}
 			try {
 				Thread.sleep(100);
-			} catch (InterruptedException ignore) {
-			} catch (Exception ex) {
+			} catch (final InterruptedException ignore) {
+			} catch (final Exception ex) {
 				break;
 			}
 		}
@@ -360,6 +393,16 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
+	 * MOD_OG_20150611 CXFileDir constructors accept array of subdirs
+	 *
+	 * @param aDir
+	 * @param aSubDirs
+	 */
+	public CXFileDir(final File aDir, final String... aSubDirs) {
+		super(aDir, buildSubdir(aSubDirs));
+	}
+
+	/**
 	 * @param aFullPath
 	 */
 	public CXFileDir(final String aFullPath) {
@@ -377,9 +420,20 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 * MOD_OG_20150611 CXFileDir constructors accept array of subdirs
+	 *
+	 * @param aParentDir
+	 * @param aSubDirs
+	 */
+	public CXFileDir(final String aParentDir, final String... aSubDirs) {
+
+		super(checkPath(aParentDir), buildSubdir(aSubDirs));
+	}
+
+	/**
+	 *
 	 * Supprime seulement le contenu du repertoire - Recursif
-	 * 
+	 *
 	 * @return
 	 * @throws IOException
 	 */
@@ -389,8 +443,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @param aFileFilter
 	 * @return
 	 * @throws IOException
@@ -402,7 +456,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 
 	/**
 	 * Copie tous le contenu du repertoire courant --> aDstDir - Recursif
-	 * 
+	 *
 	 * @param aDstDir
 	 *            le dossier de destination : le cree s'il n'existe pas, le
 	 *            supprime s'il existe
@@ -416,9 +470,9 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * Copie le contenu du repertoire courant --> aDstDir - Recursif
-	 * 
+	 *
 	 * @param aDstDir
 	 *            le dossier de destination : le cree s'il n'existe pas,
 	 * @param aDeleteExinstingContent
@@ -437,11 +491,11 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 
 	/**
 	 * Copie le contenu du repertoire courant --> aDstDir - Recursif
-	 * 
+	 *
 	 * @param aDstDir
 	 *            le dossier de destination : le cree s'il n'existe pas, le
 	 *            supprime s'il existe
-	 * 
+	 *
 	 * @param aFilter
 	 *            --> Filtre sur les fichiers a copier - "ext,ext,..."
 	 * @return
@@ -457,7 +511,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	/**
 	 * Copie du contenu du repertoire courant --> aDstDir - Recursif Ne cree pas
 	 * les repertoires vides
-	 * 
+	 *
 	 * @param aFilter
 	 *            --> Filtre sur les fichiers a copier - "ext,ext,..."
 	 * @param aFilter
@@ -486,9 +540,9 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 		}
 
 		int wRes = 0;
-		Iterator<File> wIt = getMyFiles(aFilter, true).iterator();
+		final Iterator<File> wIt = getMyFiles(aFilter, true).iterator();
 		while (wIt.hasNext()) {
-			File wFile = wIt.next();
+			final File wFile = wIt.next();
 			if (wFile.isFile()) {
 				((CXFile) wFile).copyTo(aDstDir, wFile.getName(),
 						aDeleteExinstingFiles);
@@ -509,7 +563,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 
 	/**
 	 * Cree le repertoire et son arborescence
-	 * 
+	 *
 	 * @return true si un repertoire a ete cree false si il existait deja ou non
 	 *         cree
 	 * @throws IOException
@@ -541,7 +595,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 
 	/**
 	 * utilisation de la constante WITH_TEXTFILE
-	 * 
+	 *
 	 * @param aFilter
 	 * @param aWithDirs
 	 * @return
@@ -575,13 +629,13 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 		} else {
 			wList = this.listFiles(aFilter);
 		}
-		ArrayList<File> wResult = new ArrayList<File>(wList.length);
+		final ArrayList<File> wResult = new ArrayList<File>(wList.length);
 
 		for (int wI = 0; wI < wList.length; wI++) {
-			File wFile = wList[wI];
+			final File wFile = wList[wI];
 
 			if (wFile.isFile()) {
-				CXFileBase wNewFile = newFile(wFile.getAbsolutePath(),
+				final CXFileBase wNewFile = newFile(wFile.getAbsolutePath(),
 						aInstanciateTxtFiles);
 				if (hasScanListener()) {
 					getScanListener().listenOneFile(getScanLevel(),
@@ -589,7 +643,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 				}
 				wResult.add(wNewFile);
 			} else if (aWithDirs && wFile.isDirectory()) {
-				CXFileBase wNewFileDir = newFileDir(wFile.getAbsolutePath());
+				final CXFileBase wNewFileDir = newFileDir(wFile
+						.getAbsolutePath());
 				if (hasScanListener()) {
 					getScanListener().listenOneFile(getScanLevel(),
 							wResult.size(), wNewFileDir);
@@ -604,7 +659,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 
 	/**
 	 * renvoi la liste des fichiers dans l'orde aphabetique
-	 * 
+	 *
 	 * @param aFilter
 	 * @param aWithDirs
 	 * @return
@@ -613,18 +668,18 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	public ArrayList<File> getMySortedFiles(final FileFilter aFilter,
 			final boolean aWithDirs) throws IOException {
 
-		ArrayList<File> wList = getMySortedFiles(aFilter, aWithDirs,
+		final ArrayList<File> wList = getMySortedFiles(aFilter, aWithDirs,
 				!WITH_TEXTFILE);
 
 		return wList;
 	}
 
 	/**
-	 * 
+	 *
 	 * Renvoie la liste des Fichier et dossiers dans l'ordre alphabetique- Non
 	 * recursif
-	 * 
-	 * 
+	 *
+	 *
 	 * @param aFilter
 	 *            Filtre sur les fichiers
 	 * @param aWithDirs
@@ -649,12 +704,12 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 
 		Arrays.sort(wListSorted);
 
-		ArrayList<File> wResult = new ArrayList<File>(wListSorted.length);
+		final ArrayList<File> wResult = new ArrayList<File>(wListSorted.length);
 
 		for (int wI = 0; wI < wListSorted.length; wI++) {
-			File wFile = wListSorted[wI];
+			final File wFile = wListSorted[wI];
 			if (wFile.isFile()) {
-				CXFileBase wNewFile = newFile(wFile.getAbsolutePath(),
+				final CXFileBase wNewFile = newFile(wFile.getAbsolutePath(),
 						aInstanciateTxtFiles);
 				if (hasScanListener()) {
 					getScanListener().listenOneFile(getScanLevel(),
@@ -662,7 +717,8 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 				}
 				wResult.add(wNewFile);
 			} else if (aWithDirs && wFile.isDirectory()) {
-				CXFileBase wNewFileDir = newFileDir(wFile.getAbsolutePath());
+				final CXFileBase wNewFileDir = newFileDir(wFile
+						.getAbsolutePath());
 				if (hasScanListener()) {
 					getScanListener().listenOneFile(getScanLevel(),
 							wResult.size(), wNewFileDir);
@@ -692,7 +748,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 */
 	public String getPath(final boolean aEndWithSep) {
 
-		String wTemp = super.getAbsolutePath();
+		final String wTemp = super.getAbsolutePath();
 		if (wTemp.endsWith(separator)) {
 			if (aEndWithSep) {
 				return wTemp;
@@ -758,7 +814,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 
 	/**
 	 * Supprime aDstDir Deplace le repertoire courant --> aDstDir - Recursif
-	 * 
+	 *
 	 * @param aDstDir
 	 * @return
 	 * @throws IOException
@@ -771,7 +827,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 
 	/**
 	 * Supprime aDstDir Deplace le repertoire courant --> aDstDir - Recursif
-	 * 
+	 *
 	 * @param aDstDir
 	 * @param aFilter
 	 *            Filtre sur les fichiers a copier - "ext,ext,..."
@@ -794,7 +850,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	/**
 	 * Deplacement du repertoire courant --> aDstDir - Recursif Ne cree pas les
 	 * repertoires vides
-	 * 
+	 *
 	 * @param aFilter
 	 *            --> Filtre sur les fichiers a copier - "ext,ext,..."
 	 * @param aFilter
@@ -823,10 +879,10 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 		}
 
 		int wRes = 0;
-		ArrayList<File> wMyFiles = getMyFiles(aFilter, true);
-		Iterator<File> wIt = wMyFiles.iterator();
+		final ArrayList<File> wMyFiles = getMyFiles(aFilter, true);
+		final Iterator<File> wIt = wMyFiles.iterator();
 		while (wIt.hasNext()) {
-			File wFile = wIt.next();
+			final File wFile = wIt.next();
 			if (wFile.isFile()) {
 				((CXFile) wFile).moveTo(aDstDir, wFile.getName(),
 						aDeleteExinstingFiles);
@@ -866,7 +922,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 
 	/**
 	 * Instancie un objet repertoire - CAdminFileDir et classes derivees
-	 * 
+	 *
 	 * @param aPath
 	 * @return
 	 */
@@ -876,7 +932,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aXFileProcessor
 	 * @return
 	 * @throws IOException
@@ -888,7 +944,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aList
 	 * @param aFilter
 	 * @param aWithSubDirs
@@ -902,10 +958,10 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 
 		boolean wContinue = true;
 
-		Iterator<File> wIt = getMyFiles(aFilter, WITH_DIRS, !WITH_TEXTFILE)
-				.iterator();
+		final Iterator<File> wIt = getMyFiles(aFilter, WITH_DIRS,
+				!WITH_TEXTFILE).iterator();
 		while (wContinue && wIt.hasNext()) {
-			File wFile = wIt.next();
+			final File wFile = wIt.next();
 
 			wContinue = aXFileProcessor.processFile(wFile);
 			if (wFile.isDirectory() && aWithSubDirs) {
@@ -917,9 +973,9 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * Supprime le repertoire (et son contenu) - Recursif
-	 * 
+	 *
 	 * @return
 	 * @throws IOException
 	 */
@@ -929,7 +985,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aRemoveMe
 	 * @return
 	 * @throws IOException
@@ -939,9 +995,10 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 
 		int wNbFile = 0;
 		if (exists()) {
-			Iterator<File> wIt = getMyFiles(aFileFilter, WITH_DIRS).iterator();
+			final Iterator<File> wIt = getMyFiles(aFileFilter, WITH_DIRS)
+					.iterator();
 			while (wIt.hasNext()) {
-				File wFile = wIt.next();
+				final File wFile = wIt.next();
 				if (wFile.isFile()) {
 					if (aFileFilter == null || aFileFilter.accept(wFile)) {
 						((CXFile) wFile).delete();
@@ -952,7 +1009,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 				}
 			}
 			if (aRemoveMe) {
-				boolean wDeleted = this.delete();
+				final boolean wDeleted = this.delete();
 				if (!wDeleted) {
 					throw new IOException(
 							String.format(
@@ -966,7 +1023,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 * @throws Exception
 	 */
@@ -976,7 +1033,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aList
 	 * @param aFilter
 	 * @param aSubDirs
@@ -992,10 +1049,10 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 		if (aList == null) {
 			aList = new CXSortListFiles();
 		}
-		Iterator<File> wIt = getMyFiles(aFilter, true, aInstanciateTxtFiles)
-				.iterator();
+		final Iterator<File> wIt = getMyFiles(aFilter, true,
+				aInstanciateTxtFiles).iterator();
 		while (wIt.hasNext()) {
-			File wFile = wIt.next();
+			final File wFile = wIt.next();
 
 			aList.add(wFile);
 			if (wFile.isDirectory() && aSubDirs) {
@@ -1008,7 +1065,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aFilter
 	 * @param aSubDirs
 	 * @return
@@ -1030,7 +1087,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aSubDirs
 	 * @return
 	 * @throws IOException
@@ -1042,7 +1099,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aList
 	 * @param aSubDirs
 	 * @return
@@ -1055,7 +1112,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aList
 	 * @param aFilter
 	 * @param aSubDirs
@@ -1071,10 +1128,10 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 		if (aList == null) {
 			aList = new CXSortListFiles();
 		}
-		Iterator<File> wIt = getMyFiles(aFilter, true, aInstanciateTxtFiles)
-				.iterator();
+		final Iterator<File> wIt = getMyFiles(aFilter, true,
+				aInstanciateTxtFiles).iterator();
 		while (wIt.hasNext()) {
-			File wFile = wIt.next();
+			final File wFile = wIt.next();
 			if (wFile.isDirectory()) {
 				aList.add(wFile);
 				if (aSubDirs) {
@@ -1087,7 +1144,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aFilter
 	 * @param aSubDirs
 	 * @return
@@ -1102,7 +1159,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	/**
 	 * Renvoie la liste de tous les Fichiers (CAdminFile) et dossiers - Recursif
 	 * Utilise si pas de lecture/ecriture sur les fichiers
-	 * 
+	 *
 	 * @return
 	 * @throws Exception
 	 */
@@ -1112,7 +1169,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aWithSubDirs
 	 *            si False --> Ne prend pas en compte les sous-repertoires
 	 * @return
@@ -1146,10 +1203,10 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 			aList = new CXSortListFiles();
 		}
 
-		Iterator<File> wIt = getMyFiles(aFilter, true, aInstanciateTxtFiles)
-				.iterator();
+		final Iterator<File> wIt = getMyFiles(aFilter, true,
+				aInstanciateTxtFiles).iterator();
 		while (wIt.hasNext()) {
-			File wFile = wIt.next();
+			final File wFile = wIt.next();
 			if (wFile.isFile()) {
 				aList.add(wFile);
 			} else if (wFile.isDirectory() && aSubDirs) {
@@ -1169,11 +1226,11 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 
 	/**
 	 * Renvoie la liste des Fichier (CAdminFile) et dossiers -
-	 * 
+	 *
 	 * Recursif Utilise si pas de lecture/ecriture sur les fichiers aFilter -->
 	 * Filtre sur les fichiers - null authorise aSubDirs --> False --> Ne prend
 	 * pas en compte les sous-repertoires
-	 * 
+	 *
 	 * @param aFilter
 	 * @param aSubDirs
 	 * @return
@@ -1187,12 +1244,12 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 
 	/**
 	 * Renvoie la liste des Fichier (CAdminFile) et dossiers -
-	 * 
+	 *
 	 * Recursif Utilise si pas de lecture/ecriture sur les fichiers
 	 * aListeExtensions --> Liste des extension separees par ';' - null
 	 * authorise aSubDirs --> False --> Ne prend pas en compte les
 	 * sous-repertoires
-	 * 
+	 *
 	 * @param aListeExtensions
 	 * @param aSubDirs
 	 * @return
@@ -1211,7 +1268,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	/**
 	 * Renvoie la liste de tous les Fichiers (CAdminFileText) et dossiers -
 	 * Recursif Utilise si lecture/ecriture sur les fichiers
-	 * 
+	 *
 	 * @return
 	 * @throws Exception
 	 */
@@ -1225,7 +1282,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * Utilise si lecture/ecriture sur les fichiers aFilter --> Filtre sur les
 	 * fichiers - null authorise aSubDirs --> False --> Ne prend pas en compte
 	 * les sous-repertoires
-	 * 
+	 *
 	 * @param aFilter
 	 * @param aSubDirs
 	 * @return
@@ -1242,7 +1299,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * Utilise si pas de lecture/ecriture sur les fichiers aListeExtensions -->
 	 * Liste des extension separees par ';' - null authorise aSubDirs --> False
 	 * --> Ne prend pas en compte les sous-repertoires
-	 * 
+	 *
 	 * @param aListeExtensions
 	 * @param aSubDirs
 	 * @return
