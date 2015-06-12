@@ -14,10 +14,14 @@ import org.psem2m.utilities.json.JSONObject;
 import org.w3c.dom.Element;
 
 /**
- * @author ogattaz
+ * MOD_OG_20150521 TestDomAndJson enhancements
  * 
+ * @author ogattaz
+ *
  */
 public class CTestDomAndJson extends CAppConsoleBase {
+
+	public final static String CMD_FORMAT = "format";
 
 	/**
 	 * @param args
@@ -25,10 +29,10 @@ public class CTestDomAndJson extends CAppConsoleBase {
 	public static void main(final String[] args) {
 
 		try {
-			CTestDomAndJson wTest = new CTestDomAndJson(args);
+			final CTestDomAndJson wTest = new CTestDomAndJson(args);
 			wTest.runApp();
 			wTest.destroy();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -39,17 +43,37 @@ public class CTestDomAndJson extends CAppConsoleBase {
 	public CTestDomAndJson(final String[] args) {
 		super(args);
 		addOneCommand(CMD_TEST, new String[] { "test the array tools" });
+		
+		//MOD_OG_20150521 TestDomAndJson enhancements
+		addOneCommand(CMD_FORMAT, new String[] { "format" });
+		
 		pLogger.logInfo(this, "<init>", "instanciated");
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.cohorte.utilities.tests.CAppConsoleBase#destroy()
 	 */
 	@Override
 	protected void destroy() {
 		super.destroy();
+	}
+
+	/**
+	 * MOD_OG_20150521 TestDomAndJson enhancements
+	 * 
+	 * @param aCmdeLine
+	 * @throws Exception
+	 */
+	private void doCommandFormat(final String aCmdeLine) throws Exception {
+		pLogger.logInfo(this, "doCommandFormat", "begin");
+
+		final JSONObject wJsonObject = getJsonResource("updateXmlFromJson-spfilemeta");
+
+		pLogger.logInfo(this, "doCommandFormat", "%s", wJsonObject.toString(2));
+
+		pLogger.logInfo(this, "doCommandFormat", "end");
 	}
 
 	/**
@@ -72,7 +96,7 @@ public class CTestDomAndJson extends CAppConsoleBase {
 	private void doCommandTestConvert() throws Exception {
 		pLogger.logInfo(this, "doCommandTestConvert", "begin -------------");
 
-		CXDomUtils wDomUtils = getXmlResource("convertToJson");
+		final CXDomUtils wDomUtils = getXmlResource("convertToJson");
 
 		CXTimer wTimer = CXTimer.newStartedTimer();
 		JSONObject wJsonObject = new CXDomAndJson().convertXmlToJson(wDomUtils
@@ -118,18 +142,18 @@ public class CTestDomAndJson extends CAppConsoleBase {
 		pLogger.logInfo(this, "doCommandTestConvertNoArray",
 				"begin -------------");
 
-		CXDomUtils wDomUtils = getXmlResource("convertToJson-no-array");
+		final CXDomUtils wDomUtils = getXmlResource("convertToJson-no-array");
 
-		CXTimer wTimer = CXTimer.newStartedTimer();
+		final CXTimer wTimer = CXTimer.newStartedTimer();
 
-		JSONObject wJsonObject = new CXDomAndJson().convertXmlToJson(wDomUtils
-				.getRootElmt());
+		final JSONObject wJsonObject = new CXDomAndJson()
+				.convertXmlToJson(wDomUtils.getRootElmt());
 
 		pLogger.logInfo(this, "doCommandTestConvert",
 				"wJsonObject1: duration=[%s]\n%s",
 				wTimer.getDurationStrMicroSec(), wJsonObject.toString(2));
 
-		Map<String, String> wMap = new CXDomAndJson()
+		final Map<String, String> wMap = new CXDomAndJson()
 				.convertElementToMap(wDomUtils
 						.getFirstDescElmtByTag("HeadersToSend"));
 
@@ -148,13 +172,13 @@ public class CTestDomAndJson extends CAppConsoleBase {
 	private void doCommandTestUpdateFull() throws Exception {
 		pLogger.logInfo(this, "doCommandTestUpdateFull", "begin -------------");
 
-		CXDomUtils wDomUtils = getXmlResource("updateXmlFromJson");
+		final CXDomUtils wDomUtils = getXmlResource("updateXmlFromJson");
 
-		JSONObject wJsonObject = getJsonResource("updateXmlFromJson-full");
+		final JSONObject wJsonObject = getJsonResource("updateXmlFromJson-full");
 
-		CXTimer wTimer = CXTimer.newStartedTimer();
+		final CXTimer wTimer = CXTimer.newStartedTimer();
 
-		boolean wUpdated = new CXDomAndJson().updateXmlFromJson(
+		final boolean wUpdated = new CXDomAndJson().updateXmlFromJson(
 				wDomUtils.getRootElmt(), wJsonObject);
 
 		pLogger.logInfo(this, "doCommandTest",
@@ -171,15 +195,15 @@ public class CTestDomAndJson extends CAppConsoleBase {
 		pLogger.logInfo(this, "doCommandTestUpdatePartial",
 				"begin -------------");
 
-		CXDomUtils wDomUtils = getXmlResource("updateXmlFromJson");
-		Element wResponseDataElmt = wDomUtils
+		final CXDomUtils wDomUtils = getXmlResource("updateXmlFromJson");
+		final Element wResponseDataElmt = wDomUtils
 				.getFirstDescElmtByTag("ResponseData");
 
-		JSONObject wJsonObject = getJsonResource("updateXmlFromJson-partial");
+		final JSONObject wJsonObject = getJsonResource("updateXmlFromJson-partial");
 
-		CXTimer wTimer = CXTimer.newStartedTimer();
+		final CXTimer wTimer = CXTimer.newStartedTimer();
 
-		boolean wUpdated = new CXDomAndJson().updateXmlFromJson(
+		final boolean wUpdated = new CXDomAndJson().updateXmlFromJson(
 				wResponseDataElmt, wJsonObject);
 
 		pLogger.logInfo(this, "doCommandTest",
@@ -192,7 +216,7 @@ public class CTestDomAndJson extends CAppConsoleBase {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.cohorte.utilities.tests.CAppConsoleBase#doCommandUser(java.lang.String
 	 * )
@@ -201,6 +225,10 @@ public class CTestDomAndJson extends CAppConsoleBase {
 	protected void doCommandUser(String aCmdeLine) throws Exception {
 		if (isCommandX(CMD_TEST)) {
 			doCommandTest(aCmdeLine);
+		} 
+		// MOD_OG_20150521 TestDomAndJson enhancements
+		else if (isCommandX(CMD_FORMAT)) {
+			doCommandFormat(aCmdeLine);
 		} else {
 			wrongCommandUser(aCmdeLine);
 		}
@@ -214,7 +242,7 @@ public class CTestDomAndJson extends CAppConsoleBase {
 	private JSONObject getJsonResource(final String aResourceId)
 			throws Exception {
 
-		String wJsonResource = getResourceData(aResourceId, "json");
+		final String wJsonResource = getResourceData(aResourceId, "json");
 
 		pLogger.logInfo(this, "getJsonResource", "wJsonResource:\n%s",
 				wJsonResource);
@@ -230,13 +258,14 @@ public class CTestDomAndJson extends CAppConsoleBase {
 	private String getResourceData(final String aResourceId,
 			final String aResourceExtension) throws Exception {
 
-		String wResourcePath = getResourcePath(aResourceId, aResourceExtension);
+		final String wResourcePath = getResourcePath(aResourceId,
+				aResourceExtension);
 
 		pLogger.logInfo(this, "getResourceData", "wResourcePath=[%s]",
 				wResourcePath);
 
-		InputStream wIS = getClass().getClassLoader().getResourceAsStream(
-				wResourcePath);
+		final InputStream wIS = getClass().getClassLoader()
+				.getResourceAsStream(wResourcePath);
 
 		pLogger.logInfo(this, "getResourceData", "wIS=[%s] available=[%s]",
 				wIS, wIS.available());
@@ -264,7 +293,7 @@ public class CTestDomAndJson extends CAppConsoleBase {
 	private CXDomUtils getXmlResource(final String aResourceId)
 			throws Exception {
 
-		String wXmlresource = getResourceData(aResourceId, "xml");
+		final String wXmlresource = getResourceData(aResourceId, "xml");
 
 		pLogger.logInfo(this, "getXmlResource", "wXmlresource:\n%s",
 				wXmlresource);
@@ -274,7 +303,7 @@ public class CTestDomAndJson extends CAppConsoleBase {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.cohorte.utilities.tests.CAppConsoleBase#runApp()
 	 */
 	@Override
