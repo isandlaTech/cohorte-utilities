@@ -2,6 +2,12 @@
 1.0.1.XXXXXXXXXXXX (suivante)
 ==================
 
+MOD_OG_20150611 
+  - CXFileDir constructors accept array of subdirs
+  
+MOD_OG_20150521 
+  - TestDomAndJson enhancements. new command "format"
+
 MOD_OG_20150409 : 
   - create org.psem2m.utilities.CXJvmUtils.getClassLoaderInfos(Class<?>)
   - use this new method in the methods : "appendClassInfosInSB()", "appendInterfaceInfosInSB()"

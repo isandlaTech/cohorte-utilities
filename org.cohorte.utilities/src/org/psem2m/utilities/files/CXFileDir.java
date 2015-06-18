@@ -56,7 +56,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 					if (wSB.length() > 0) {
 						wSB.append(separatorChar);
 					}
-					wSubDir = cleanPath(wSubDir);
+					wSB.append(cleanPath(wSubDir));
 				}
 			}
 		}
@@ -609,9 +609,9 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 
 	/*
 	 * Renvoie la liste des Fichier et dossiers - Non recursif
-	 * 
+	 *
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.files.IXFilesContainer#getMyFiles(java.io.FileFilter
 	 * , boolean, boolean)
@@ -1189,7 +1189,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 */
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.files.IXFilesContainer#scanAllFiles(org.psem2m.utilities
 	 * .files.CXSortListFiles, java.io.FileFilter, boolean, boolean)
