@@ -1,18 +1,17 @@
+from 1.0.1.20150409 to 1.0.2.20150618
+-------------------------------------
 
-1.0.1.XXXXXXXXXXXX (suivante)
-==================
+	MOD_OG_20150611  
+	  - CXFileDir constructors accept array of subdirs
+	  - Correct the new "buildSubdir()" private method
+	  
+	MOD_OG_20150521 
+	  - TestDomAndJson enhancements. new command "format"
 
-MOD_OG_20150611 
-  - CXFileDir constructors accept array of subdirs
-  
-MOD_OG_20150521 
-  - TestDomAndJson enhancements. new command "format"
+from 1.0.0.201501211743 to 1.0.1.20150409
+-----------------------------------------
 
-MOD_OG_20150409 : 
-  - create org.psem2m.utilities.CXJvmUtils.getClassLoaderInfos(Class<?>)
-  - use this new method in the methods : "appendClassInfosInSB()", "appendInterfaceInfosInSB()"
+	MOD_OG_20150409 : 
+	  - create org.psem2m.utilities.CXJvmUtils.getClassLoaderInfos(Class<?>)
+	  - use this new method in the methods : "appendClassInfosInSB()", "appendInterfaceInfosInSB()"
 
-1.0.0.201501211743 (actual)
-==================
-
-MOD_OG_XXXX : ....
