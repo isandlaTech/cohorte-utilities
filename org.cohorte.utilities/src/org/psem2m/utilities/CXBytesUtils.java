@@ -15,7 +15,7 @@ import java.io.UnsupportedEncodingException;
 
 /**
  * @author isandlatech (www.isandlatech.com) - ogattaz
- * 
+ *
  */
 public final class CXBytesUtils {
 
@@ -93,7 +93,7 @@ public final class CXBytesUtils {
 
 	/**
 	 * ajoute la representation HEXA d'un octet dans un StringBuilder
-	 * 
+	 *
 	 * @param aSB
 	 * @param mybyte
 	 * @return
@@ -108,7 +108,7 @@ public final class CXBytesUtils {
 
 	/**
 	 * ajoute la representation HEXA d'un octet dans un CStringBuilder
-	 * 
+	 *
 	 * @param aCSB
 	 * @param mybyte
 	 * @return
@@ -124,7 +124,7 @@ public final class CXBytesUtils {
 
 	/**
 	 * ajoute la representation HEXA d'un octet dans un StringBuilder
-	 * 
+	 *
 	 * @param aSB
 	 * @param mybyte
 	 * @return
@@ -140,7 +140,7 @@ public final class CXBytesUtils {
 
 	/**
 	 * Ajoute un "byte" (1) octets au buffer.
-	 * 
+	 *
 	 * @param aBuffer
 	 * @param aPos
 	 * @param aValue
@@ -161,7 +161,7 @@ public final class CXBytesUtils {
 
 	/**
 	 * Ajoute un "short" 2 octets au buffer
-	 * 
+	 *
 	 * @param aBuffer
 	 * @param aPos
 	 * @param aInfo
@@ -177,7 +177,7 @@ public final class CXBytesUtils {
 
 	/**
 	 * Ajoute un "entier" 4 octets au buffer.
-	 * 
+	 *
 	 * @param aBuffer
 	 * @param aPos
 	 * @param aValue
@@ -198,7 +198,7 @@ public final class CXBytesUtils {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aDestBuffer
 	 * @param aDestPos
 	 * @param aAddedBuffer
@@ -215,7 +215,7 @@ public final class CXBytesUtils {
 	/**
 	 * Ajoute aAddedLen octets du aAddedBuffer a partir de aAddedOffset dans le
 	 * buffer "extensible" aDestBuffer en position aDestPos
-	 * 
+	 *
 	 * @param aDestBuffer
 	 * @param aDestPos
 	 * @param aAddedBuffer
@@ -243,7 +243,7 @@ public final class CXBytesUtils {
 
 	/**
 	 * Ajoute un "entier" 4 octets au buffer.
-	 * 
+	 *
 	 * @return la nouvelle position
 	 * @param aBuffer
 	 * @param aPos
@@ -266,7 +266,7 @@ public final class CXBytesUtils {
 
 	/**
 	 * Ajoute un "long" 8 octets au buffer.
-	 * 
+	 *
 	 * @param aBuffer
 	 * @param aPos
 	 * @param aValue
@@ -288,7 +288,7 @@ public final class CXBytesUtils {
 
 	/**
 	 * Ajoute un n octets contenant la valeur "aValue" au buffer.
-	 * 
+	 *
 	 * @param aBuffer
 	 * @param aPos
 	 * @param aValue
@@ -313,7 +313,7 @@ public final class CXBytesUtils {
 
 	/**
 	 * Ajoute un "short" 2 octets au buffer
-	 * 
+	 *
 	 * @param aBuffer
 	 * @param aPos
 	 * @param aValue
@@ -376,7 +376,7 @@ public final class CXBytesUtils {
 
 	/**
 	 * dump d'un buffer sous forme d'une chaine Decimale : .d001.d255 ...
-	 * 
+	 *
 	 * @param aBuffer
 	 * @param aOffset
 	 * @param aLong
@@ -392,7 +392,7 @@ public final class CXBytesUtils {
 
 	/**
 	 * dump d'un buffer sous forme d'une chaine Hexa : .xFF.xFE ...
-	 * 
+	 *
 	 * @param aBuffer
 	 * @return
 	 * @deprecated
@@ -404,7 +404,7 @@ public final class CXBytesUtils {
 
 	/**
 	 * dump d'un buffer sous forme d'une chaine Hexa : .xFF.xFE ...
-	 * 
+	 *
 	 * @param aBuffer
 	 * @param aOffset
 	 * @param aLong
@@ -419,7 +419,7 @@ public final class CXBytesUtils {
 
 	/**
 	 * dump d'un buffer sous forme d'une chaine Decimale : .d001.d255 ...
-	 * 
+	 *
 	 * @param aBuffer
 	 * @return
 	 */
@@ -429,7 +429,7 @@ public final class CXBytesUtils {
 
 	/**
 	 * dump d'un buffer sous forme d'une chaine Decimale : .d001.d255 ...
-	 * 
+	 *
 	 * @param aBuffer
 	 * @param aOffset
 	 * @param aLong
@@ -464,7 +464,7 @@ public final class CXBytesUtils {
 
 	/**
 	 * dump d'un buffer sous forme d'une chaine Hexa : .xFF.xFE ...
-	 * 
+	 *
 	 * @param aBuffer
 	 * @return
 	 */
@@ -474,7 +474,7 @@ public final class CXBytesUtils {
 
 	/**
 	 * dump d'un buffer sous forme d'une chaine Hexa : .xFF.xFE ...
-	 * 
+	 *
 	 * @param aBuffer
 	 * @param aOffset
 	 * @param aLong
@@ -629,7 +629,7 @@ public final class CXBytesUtils {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aBuffer
 	 * @param aBomRef
 	 * @return
@@ -646,7 +646,7 @@ public final class CXBytesUtils {
 	/**
 	 * Computes the failure function using a boot-strapping process, where the
 	 * pattern is matched against itself.
-	 * 
+	 *
 	 * @param pattern
 	 * @return
 	 */
@@ -739,13 +739,13 @@ public final class CXBytesUtils {
 	}
 
 	/**
-	 * 
+	 *
 	 * The Java I/O classes will read and write Unicode data in the
 	 * "default character encoding" by default. The default encoding depends on
 	 * some combination of the JVM, the underlying OS, and the OS-level locale
 	 * settings. For example, on my Windows 2000 computer, the default encoding
 	 * is CP-1252, a Microsoft-specific variant of Latin-1.
-	 * 
+	 *
 	 * @param aBuffer
 	 * @return
 	 */
@@ -867,7 +867,7 @@ public final class CXBytesUtils {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aHexaBuffer
 	 * @return
 	 * @throws IllegalArgumentException
@@ -888,7 +888,7 @@ public final class CXBytesUtils {
 
 	/**
 	 * One byte oo Int
-	 * 
+	 *
 	 * @param aBuffer
 	 * @return
 	 * @throws IllegalArgumentException
@@ -899,26 +899,43 @@ public final class CXBytesUtils {
 	}
 
 	/**
+	 * MOD_OG_20150620
+	 *
 	 * @param aInputStream
 	 * @return
 	 * @throws Exception
 	 */
-	public static byte[] readAllBytes(InputStream aInputStream)
+	public static byte[] readAllBytes(final InputStream aInputStream)
 			throws Exception {
-		return readBytes(aInputStream, aInputStream.available());
+		return readBytesImpl(aInputStream, aInputStream.available());
 	}
 
 	/**
+	 * MOD_OG_20150620
+	 *
 	 * @param aInputStream
 	 * @param aSize
 	 * @return
 	 * @throws Exception
 	 */
-	public static byte[] readBytes(InputStream aInputStream, int aSize)
-			throws Exception {
+	public static byte[] readBytes(final InputStream aInputStream,
+			final int aSize) throws Exception {
 
-		int wMax = Math.min(aSize, aInputStream.available());
-		byte[] wData = new byte[wMax];
+		return readBytesImpl(aInputStream,
+				Math.min(aSize, aInputStream.available()));
+	}
+
+	/**
+	 * MOD_OG_20150620
+	 *
+	 * @param aInputStream
+	 * @param aSize
+	 * @return
+	 * @throws Exception
+	 */
+	private static byte[] readBytesImpl(final InputStream aInputStream,
+			final int aSize) throws Exception {
+		byte[] wData = new byte[aSize];
 		aInputStream.read(wData);
 		aInputStream.close();
 		return wData;
@@ -984,7 +1001,7 @@ public final class CXBytesUtils {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aHexaBuffer
 	 * @param aThrowingException
 	 * @return
@@ -1013,7 +1030,7 @@ public final class CXBytesUtils {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aHexaBuffer
 	 * @param aThrowingException
 	 * @return true si la chaine est de la forme ".x00.x01.xE5 etc..."

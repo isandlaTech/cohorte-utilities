@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.psem2m.utilities;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Locale;
@@ -18,20 +19,24 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 /**
+ *
+ *
+ *
+ *
  * @author isandlaTech - ogattaz
- * 
+ *
  */
 public class CXResources implements IXDescriber {
 
 	private static final String MESS_ERR_CCL = "Can't get caller of package [%s]. \nException:\n%s";
+	// MOD_OG_20150620
+	public static final String MESS_UNABLE_FIND_STREAM = "Unable to find resource stream [%s]";
 	private static final String NBSP = "&nbsp;";
 	private static final String NOT_LOAD_RES = "can't get key [%s] in the not loaded resource [%s]. Cause:[%s].";
-
 	public static final String RES_COMMAND_PREFIX = "command.";
 	public static final String RES_LABEL_PREFIX = "label.";
 	public static final String RES_MENU_PREFIX = "menu.";
 	public static final String RES_MESSAGE_PREFIX = "message.";
-
 	private static final String RES_SUFFIX = "Resources";
 
 	static final String RES_TITLE_PREFIX = "title.";
@@ -54,7 +59,7 @@ public class CXResources implements IXDescriber {
 	 * @param aResourceId
 	 * @return
 	 */
-	protected static String extractPackageId(String aResourceId) {
+	protected static String extractPackageId(final String aResourceId) {
 
 		int wPos = aResourceId.lastIndexOf('.');
 		return (wPos != -1) ? aResourceId.substring(0, wPos) : aResourceId;
@@ -63,14 +68,15 @@ public class CXResources implements IXDescriber {
 	/**
 	 * Extrait l'id d'une ressource du nom d'une classe en supprimant le suffixe
 	 * "Resources"
-	 * 
+	 *
 	 * Example "CMySubjectResources
-	 * 
+	 *
 	 * @param aCurrentClass
 	 *            le nom de la classe origine
 	 * @return l'id de la resource
 	 */
-	protected static String extractResIdFromClassName(Class<?> aCurrentClass) {
+	protected static String extractResIdFromClassName(
+			final Class<?> aCurrentClass) {
 
 		String wResId = aCurrentClass.getName();
 		if (wResId.endsWith(RES_SUFFIX)) {
@@ -87,13 +93,15 @@ public class CXResources implements IXDescriber {
 	 * @param args
 	 * @return
 	 */
-	protected static String formatResourceString(String format, Object... args) {
+	protected static String formatResourceString(final String format,
+			final Object... args) {
 
 		try {
 			return String.format(format, args);
 		} catch (Exception e) {
 			StringBuilder wSB = new StringBuilder();
-			wSB.append("Error formating resources string [").append(format).append(']');
+			wSB.append("Error formating resources string [").append(format)
+					.append(']');
 			if (args == null) {
 				wSB.append(" without arguments (null).");
 
@@ -127,7 +135,7 @@ public class CXResources implements IXDescriber {
 	 *            com.isandlatech.mytexts_fr).
 	 * @return the classLoader which manages the package of the resource.
 	 */
-	protected static ClassLoader getCallerClassLoader(String aResourceId) {
+	protected static ClassLoader getCallerClassLoader(final String aResourceId) {
 
 		try {
 			String wPackageId = extractPackageId(aResourceId);
@@ -136,7 +144,8 @@ public class CXResources implements IXDescriber {
 
 			return wCallerClass.getClassLoader();
 		} catch (Exception e) {
-			String wMess = formatResourceString(MESS_ERR_CCL, aResourceId, CXException.eInString(e));
+			String wMess = formatResourceString(MESS_ERR_CCL, aResourceId,
+					CXException.eInString(e));
 			System.out.println(wMess);
 			return null;
 		}
@@ -144,13 +153,13 @@ public class CXResources implements IXDescriber {
 
 	/**
 	 * Gestion automatique de la recherche du classLoader
-	 * 
+	 *
 	 * @param aResourceId
 	 *            the full qualified id of the resource (eg:
 	 *            com.isandlatech.mytexts_fr).
 	 * @return the classLoader which manages the package of the resource.
 	 */
-	protected static ClassLoader getClassLoader(String aResourceId) {
+	protected static ClassLoader getClassLoader(final String aResourceId) {
 
 		if (isOsgiEnv()) {
 			return getCallerClassLoader(aResourceId);
@@ -163,7 +172,7 @@ public class CXResources implements IXDescriber {
 	/**
 	 * The context ClassLoader is provided by the creator of the thread for use
 	 * by code running in this thread when loading classes and resources.
-	 * 
+	 *
 	 * @return Returns the context ClassLoader of the current Thread.
 	 */
 	protected static ClassLoader getTreadClassLoader() {
@@ -176,11 +185,12 @@ public class CXResources implements IXDescriber {
 	 */
 	protected static boolean isFrenchDefaultlanguage() {
 
-		return Locale.getDefault().getLanguage().equals(Locale.FRENCH.getLanguage());
+		return Locale.getDefault().getLanguage()
+				.equals(Locale.FRENCH.getLanguage());
 	}
 
 	/**
-	 * 
+	 *
 	 * @return true if one key of the system properties starts whith the prefix
 	 *         "osgi."
 	 */
@@ -189,7 +199,8 @@ public class CXResources implements IXDescriber {
 		String wOsgiPrefix = "osgi.";
 		Set<Object> wKeys = System.getProperties().keySet();
 		for (Object wKey : wKeys) {
-			if (wKey instanceof String && ((String) wKey).toLowerCase().startsWith(wOsgiPrefix)) {
+			if (wKey instanceof String
+					&& ((String) wKey).toLowerCase().startsWith(wOsgiPrefix)) {
 				return true;
 			}
 		}
@@ -206,12 +217,13 @@ public class CXResources implements IXDescriber {
 	protected String pId;
 	protected CXResources pLinkedResources = null;
 	protected ArrayList<Exception> pLoadExceptions = null;
+
 	protected ResourceBundle pResourceBundle = null;
 
 	protected String pWhy = null;
 
 	/**
-	 * 
+	 *
 	 */
 	protected CXResources() {
 
@@ -219,26 +231,26 @@ public class CXResources implements IXDescriber {
 	}
 
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @param aId
 	 *            identifiant du "ResourceBundle"
 	 */
-	public CXResources(String aId) {
+	public CXResources(final String aId) {
 
 		this(aId, Locale.getDefault());
 	}
 
 	/**
 	 * Gestion automatique de la recherche du classLoader
-	 * 
+	 *
 	 * @param aId
 	 *            the full qualified id of the resource (eg:
 	 *            com.isandlatech.mytexts_fr).
 	 * @param aLocale
 	 *            "locale" de fonctionnement: fr_FR, ...
 	 */
-	public CXResources(String aId, Locale aLocale) {
+	public CXResources(final String aId, final Locale aLocale) {
 
 		this(aId, aLocale, getClassLoader(aId));
 	}
@@ -251,7 +263,8 @@ public class CXResources implements IXDescriber {
 	 *            "locale" de fonctionnement: fr_FR, ...
 	 * @param aClassLoader
 	 */
-	public CXResources(String aId, Locale aLocale, ClassLoader aClassLoader) {
+	public CXResources(final String aId, final Locale aLocale,
+			final ClassLoader aClassLoader) {
 
 		this();
 		pId = aId;
@@ -274,7 +287,8 @@ public class CXResources implements IXDescriber {
 	 * @param aResourceBundle
 	 *            le resource bundle deja lu (cf. pour J# )
 	 */
-	protected CXResources(String aId, Locale aLocale, ResourceBundle aResourceBundle) {
+	protected CXResources(final String aId, final Locale aLocale,
+			final ResourceBundle aResourceBundle) {
 
 		this();
 		pId = aId;
@@ -294,10 +308,11 @@ public class CXResources implements IXDescriber {
 	 * )
 	 */
 	@Override
-	public Appendable addDescriptionInBuffer(Appendable aBuffer) {
+	public Appendable addDescriptionInBuffer(final Appendable aBuffer) {
 
 		CXStringUtils.appendKeyValInBuff(aBuffer, "Id", pId);
-		CXStringUtils.appendKeyValInBuff(aBuffer, "Locale", pCurrentLocale.toString());
+		CXStringUtils.appendKeyValInBuff(aBuffer, "Locale",
+				pCurrentLocale.toString());
 		CXStringUtils.appendKeyValInBuff(aBuffer, "Loaded", isLoaded());
 		if (!isLoaded()) {
 			CXStringUtils.appendKeyValInBuff(aBuffer, "Why", pWhy);
@@ -308,27 +323,119 @@ public class CXResources implements IXDescriber {
 			while (wKeys.hasMoreElements()) {
 				wKey = wKeys.nextElement();
 				CXStringUtils.appendFormatStrInBuff(aBuffer, " (%d)", wI);
-				CXStringUtils.appendKeyValInBuff(aBuffer, wKey, getResourceString(wKey));
+				CXStringUtils.appendKeyValInBuff(aBuffer, wKey,
+						getResourceString(wKey));
 				wI++;
 			}
 		}
 		return aBuffer;
 	}
 
+	/**
+	 * MOD_OG_20150620
+	 *
+	 * @param aFullId
+	 *            a full resource Id. eg. org/psem2m/utilities/myResource_fr.txt
+	 * @return a message like
+	 *         "Unable to find resource stream [org/psem2m/utilities/myResource_fr.txt]"
+	 */
+	protected String buildErrMessUFRS(final String aFullId) {
+		return String.format(MESS_UNABLE_FIND_STREAM, aFullId);
+	}
+
+	/**
+	 * MOD_OG_20150620
+	 *
+	 * @param aId
+	 *            eg. org.psem2m.utilities.myResource
+	 * @param aLang
+	 *            eg. "fr_FR" or "fr" or "en_GB" or "en_US" or "en"
+	 * @param aExtension
+	 *            eg. txt
+	 * @return a full resource Id. eg. org/psem2m/utilities/myResource_fr.txt
+	 */
+	protected String buildFullId(final String aId, final String aLang,
+			final String aExtension) {
+		StringBuilder wSB = new StringBuilder();
+		if (aId != null && !aId.isEmpty()) {
+			wSB.append(aId.replace('.', '/'));
+		}
+		if (aLang != null && !aLang.isEmpty()) {
+			wSB.append('_').append(aLang);
+		}
+		if (aExtension != null && !aExtension.isEmpty()) {
+			wSB.append('.').append(aExtension);
+		}
+		return wSB.toString();
+	}
+
+	/**
+	 * @return
+	 */
 	public int calcDescriptionLength() {
 
 		return 128;
 	}
 
 	/**
-	 * 
+	 * MOD_OG_20150620
+	 *
+	 * @param aId
+	 *            eg. org.psem2m.utilities.myResource
+	 * @param aLocale
+	 *            eg. Locale.EN_GB
+	 * @param aExtension
+	 *            eg. "txt"
+	 * @return the stream of the resource
+	 * @throws Exception
+	 */
+	protected InputStream findResourceStream(final String aId,
+			final Locale aLocale, final String aExtension) throws Exception {
+		ClassLoader wClassLoader = getClassLoader(aId);
+		String wFullId;
+		// err report
+		StringBuilder wErrReport = new StringBuilder();
+
+		wFullId = buildFullId(aId, (aLocale != null) ? aLocale.toString()
+				: null, aExtension);
+		InputStream wResourceStream = wClassLoader.getResourceAsStream(wFullId);
+
+		// if no stream => mess in error report
+		if (wResourceStream == null) {
+			wErrReport.append(buildErrMessUFRS(wFullId));
+
+			// if the locale (eg. "fr_FR") contains more than the languauge (eg.
+			// "fr") => try only with the language
+			if (!aLocale.getLanguage().equals(aLocale.toString())) {
+
+				wFullId = buildFullId(aId,
+						(aLocale != null) ? aLocale.getLanguage() : null,
+						aExtension);
+				wResourceStream = wClassLoader.getResourceAsStream(wFullId);
+
+				if (wResourceStream == null) {
+					wErrReport.append('\n').append(buildErrMessUFRS(wFullId));
+				}
+			}
+		}
+		// if no stream => Exception
+		if (wResourceStream == null) {
+			throw new Exception(wErrReport.toString());
+		}
+
+		return wResourceStream;
+	}
+
+	/**
+	 *
 	 * @param aKey
 	 * @param aValues
 	 * @return
 	 */
-	public String formatMessage(String aKey, Object... aValues) {
+	public String formatMessage(final String aKey, final Object... aValues) {
 
-		return formatResourceString(getResourceString(RES_MESSAGE_PREFIX.concat(aKey)), aValues);
+		return formatResourceString(
+				getResourceString(RES_MESSAGE_PREFIX.concat(aKey)), aValues);
 	}
 
 	/**
@@ -343,7 +450,7 @@ public class CXResources implements IXDescriber {
 	 * @param aKey
 	 * @return
 	 */
-	public String getCommand(String aKey) {
+	public String getCommand(final String aKey) {
 
 		return getResourceString(RES_COMMAND_PREFIX.concat(aKey));
 	}
@@ -364,10 +471,11 @@ public class CXResources implements IXDescriber {
 		return pDefaultLocale;
 	}
 
-	private String getDefaultNoValue(String aKey) {
+	private String getDefaultNoValue(final String aKey) {
 
 		if (pDefaultNoValue == null) {
-			pDefaultNoValue = String.format(NOT_LOAD_RES, aKey, pId, getShortWhy());
+			pDefaultNoValue = String.format(NOT_LOAD_RES, aKey, pId,
+					getShortWhy());
 		}
 		return pDefaultNoValue;
 	}
@@ -393,7 +501,7 @@ public class CXResources implements IXDescriber {
 	 * @param aKey
 	 * @return
 	 */
-	public String getLabel(String aKey) {
+	public String getLabel(final String aKey) {
 
 		return getResourceString(RES_LABEL_PREFIX.concat(aKey));
 	}
@@ -403,17 +511,17 @@ public class CXResources implements IXDescriber {
 	 * @param aValues
 	 * @return
 	 */
-	public String getLabel(String aKey, Object... aValues) {
+	public String getLabel(final String aKey, final Object... aValues) {
 
 		return formatResourceString(getLabel(aKey), aValues);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aKey
 	 * @return
 	 */
-	public String getLabelNoWrap(String aKey) {
+	public String getLabelNoWrap(final String aKey) {
 
 		return CXStringUtils.strReplaceAll(getLabel(aKey), SPACE, NBSP);
 	}
@@ -423,9 +531,10 @@ public class CXResources implements IXDescriber {
 	 * @param aValues
 	 * @return
 	 */
-	public String getLabelNoWrap(String aKey, Object... aValues) {
+	public String getLabelNoWrap(final String aKey, final Object... aValues) {
 
-		return CXStringUtils.strReplaceAll(getLabel(aKey, aValues), SPACE, NBSP);
+		return CXStringUtils
+				.strReplaceAll(getLabel(aKey, aValues), SPACE, NBSP);
 	}
 
 	/**
@@ -446,12 +555,12 @@ public class CXResources implements IXDescriber {
 	 * @param aKey
 	 * @return
 	 */
-	public String getMenuLabel(String aKey) {
+	public String getMenuLabel(final String aKey) {
 
 		return getResourceString(RES_MENU_PREFIX.concat(aKey));
 	}
 
-	public String getMenuLabel(String aKey, Object... aValues) {
+	public String getMenuLabel(final String aKey, final Object... aValues) {
 
 		return formatResourceString(getMenuLabel(aKey), aValues);
 	}
@@ -460,7 +569,7 @@ public class CXResources implements IXDescriber {
 	 * @param aKey
 	 * @return
 	 */
-	public String getMessage(String aKey) {
+	public String getMessage(final String aKey) {
 
 		return getResourceString(RES_MESSAGE_PREFIX.concat(aKey));
 	}
@@ -470,14 +579,14 @@ public class CXResources implements IXDescriber {
 	 * @param aValues
 	 * @return
 	 */
-	public String getMessage(String aKey, Object... aValues) {
+	public String getMessage(final String aKey, final Object... aValues) {
 
 		return formatResourceString(getMessage((aKey)), aValues);
 	}
 
 	/**
 	 * 14w_006 - Bug 31739 - gestion tableau protection "hasResources()"
-	 * 
+	 *
 	 * @return
 	 */
 	public int getNbKeys() {
@@ -505,7 +614,7 @@ public class CXResources implements IXDescriber {
 	 * @param aKey
 	 * @return
 	 */
-	protected String getResourceString(String aKey) {
+	protected String getResourceString(final String aKey) {
 
 		return getResourceString(aKey, getDefaultNoValue(aKey));
 	}
@@ -516,7 +625,7 @@ public class CXResources implements IXDescriber {
 	 *            est la valeur si key non trouvee
 	 * @return
 	 */
-	protected String getResourceString(String aKey, String aNoValue) {
+	protected String getResourceString(final String aKey, final String aNoValue) {
 
 		if (pResourceBundle == null) {
 			return aNoValue;
@@ -550,7 +659,7 @@ public class CXResources implements IXDescriber {
 	 * @param aKey
 	 * @return
 	 */
-	public String getStringWithFullKey(String aKey) {
+	public String getStringWithFullKey(final String aKey) {
 
 		return getResourceString(aKey);
 	}
@@ -559,7 +668,7 @@ public class CXResources implements IXDescriber {
 	 * @param aKey
 	 * @return
 	 */
-	public String getTitle(String aKey) {
+	public String getTitle(final String aKey) {
 
 		return getResourceString(RES_TITLE_PREFIX.concat(aKey));
 	}
@@ -569,17 +678,17 @@ public class CXResources implements IXDescriber {
 	 * @param aValues
 	 * @return
 	 */
-	public String getTitle(String aKey, Object... aValues) {
+	public String getTitle(final String aKey, final Object... aValues) {
 
 		return formatResourceString(getTitle(aKey), aValues);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aKey
 	 * @return
 	 */
-	public String getTitleNoWrap(String aKey) {
+	public String getTitleNoWrap(final String aKey) {
 
 		return CXStringUtils.strReplaceAll(getTitle(aKey), SPACE, NBSP);
 	}
@@ -589,9 +698,10 @@ public class CXResources implements IXDescriber {
 	 * @param aValues
 	 * @return
 	 */
-	public String getTitleNoWrap(String aKey, Object... aValues) {
+	public String getTitleNoWrap(final String aKey, final Object... aValues) {
 
-		return CXStringUtils.strReplaceAll(getTitle(aKey, aValues), SPACE, NBSP);
+		return CXStringUtils
+				.strReplaceAll(getTitle(aKey, aValues), SPACE, NBSP);
 	}
 
 	/**
@@ -630,7 +740,7 @@ public class CXResources implements IXDescriber {
 	 * @param aLocale
 	 * @return
 	 */
-	public boolean isAskedLocaleEquals(Locale aLocale) {
+	public boolean isAskedLocaleEquals(final Locale aLocale) {
 
 		return (getAskedLocale().equals(aLocale));
 	}
@@ -647,7 +757,7 @@ public class CXResources implements IXDescriber {
 	 * @param aLocale
 	 * @return
 	 */
-	public boolean isCurrentLocaleEquals(Locale aLocale) {
+	public boolean isCurrentLocaleEquals(final Locale aLocale) {
 
 		return (getCurrentLocale().equals(aLocale));
 	}
@@ -663,14 +773,14 @@ public class CXResources implements IXDescriber {
 	/**
 	 * Comme le load est appele dans le constructeur cette methode doit
 	 * seulement renvoyer un ResourceBundle
-	 * 
+	 *
 	 * @param aId
 	 * @param aLocale
 	 * @param aClassLoader
 	 * @return
 	 */
-	protected ResourceBundle loadResourceGetBundle(String aId, Locale aLocale,
-			ClassLoader aClassLoader) {
+	protected ResourceBundle loadResourceGetBundle(final String aId,
+			final Locale aLocale, final ClassLoader aClassLoader) {
 
 		return ResourceBundle.getBundle(aId, aLocale, aClassLoader);
 	}
@@ -681,7 +791,8 @@ public class CXResources implements IXDescriber {
 	 * @param aClassLoader
 	 * @return
 	 */
-	private boolean loadResources(String aId, Locale aLocale, ClassLoader aClassLoader) {
+	private boolean loadResources(final String aId, final Locale aLocale,
+			final ClassLoader aClassLoader) {
 
 		try {
 			// Pour surcharge du bundle (xml)
@@ -699,7 +810,8 @@ public class CXResources implements IXDescriber {
 			}
 			wSB.append(e.getLocalizedMessage());
 			if (e instanceof MissingResourceException) {
-				wSB.append(WHY_INFO_SEPARATOR).append(" Locale:").append(aLocale.toString());
+				wSB.append(WHY_INFO_SEPARATOR).append(" Locale:")
+						.append(aLocale.toString());
 				wSB.append(WHY_INFO_SEPARATOR).append(" ClassName:")
 						.append(((MissingResourceException) e).getClassName());
 			}
@@ -717,7 +829,7 @@ public class CXResources implements IXDescriber {
 	/**
 	 * @param aLocale
 	 */
-	protected void setAskedLocale(Locale aLocale) {
+	protected void setAskedLocale(final Locale aLocale) {
 
 		pAskedLocale = aLocale;
 
@@ -727,7 +839,7 @@ public class CXResources implements IXDescriber {
 	/**
 	 * @param aLocale
 	 */
-	protected void setCurrentLocale(Locale aLocale) {
+	protected void setCurrentLocale(final Locale aLocale) {
 
 		pCurrentLocale = aLocale;
 	}
@@ -735,7 +847,7 @@ public class CXResources implements IXDescriber {
 	/**
 	 * retourne la liste des Locales supportees
 	 */
-	public void setLinkedResources(CXResources aResources) {
+	public void setLinkedResources(final CXResources aResources) {
 
 		pLinkedResources = aResources;
 	}
@@ -743,7 +855,7 @@ public class CXResources implements IXDescriber {
 	/**
 	 * @param aWhy
 	 */
-	protected void setWhy(String aWhy) {
+	protected void setWhy(final String aWhy) {
 
 		pWhy = aWhy;
 	}
@@ -751,6 +863,7 @@ public class CXResources implements IXDescriber {
 	@Override
 	public String toDescription() {
 
-		return addDescriptionInBuffer(new StringBuilder(calcDescriptionLength())).toString();
+		return addDescriptionInBuffer(
+				new StringBuilder(calcDescriptionLength())).toString();
 	}
 }
