@@ -28,13 +28,13 @@ import org.psem2m.utilities.CXStringUtils;
  */
 public class CXFileDir extends CXFileBase implements IXFilesContainer {
 
-	private static final CXFileDir DIR_TMP = new CXFileDir(
-			getTempAbsolutePath());
-
-	private static final CXFileDir DIR_USER = new CXFileDir(
-			System.getProperty(CXJvmUtils.SYSPROP_USER_DIR));
-
 	private static final long serialVersionUID = 3257562910606570550L;
+
+	private static final CXFileDir sTempDir = new CXFileDir(
+			getTempDirAbsolutePath());
+
+	private static final CXFileDir sUserDir = new CXFileDir(
+			getUserDirAbsolutePath());
 
 	public static final boolean WITH_DIR = true;
 	public static final boolean WITH_TEXTFILE = true;
@@ -273,25 +273,60 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	/**
 	 * @return
 	 */
-	private static String getTempAbsolutePath() {
+	public static CXFileDir getTempDir() {
 
-		String wPath = null;
-		try {
-			final File wTempFile = File.createTempFile("tmp", "txt");
-			wPath = wTempFile.getParent();
-			wTempFile.delete();
-		} catch (final Exception e) {
-			System.out.println(e.getMessage());
-		}
-		return wPath;
+		return sTempDir;
 	}
 
 	/**
 	 * @return
 	 */
-	public static CXFileDir getTempDir() {
+	private static String getTempDirAbsolutePath() {
 
-		return DIR_TMP;
+		String wTempPath = System.getProperty("java.io.tmpdir");
+
+		// Windows 2008 - java.io.tmpdir could be empty
+		if (wTempPath == null || wTempPath.isEmpty()) {
+			wTempPath = System.getProperty("user.dir");
+			System.out
+					.println(String
+							.format("WARNING: The temporary folder \"java.io.tmpdir\" is not set. Uses \"user.dir\" as temp dir [%s]",
+									wTempPath));
+			System.setProperty("java.io.tmpdir", wTempPath);
+		}
+
+		try {
+			CXFileDir wTempDir = new CXFileDir(wTempPath);
+			if (!wTempDir.exists()) {
+				if (wTempDir.createHierarchy()) {
+					System.out.println(String
+							.format("WARNING: Creates temporary folder [%s]",
+									wTempPath));
+				}
+			}
+
+		} catch (Exception e1) {
+			Exception wEx = new Exception(String.format(
+					"Unable to create the temporary folder [%s]", wTempPath));
+			wEx.printStackTrace();
+			// default
+			return System.getProperty("user.dir");
+		}
+
+		try {
+			File wTempFile = File.createTempFile("tmp", "txt");
+			String wPath = wTempFile.getParent();
+			wTempFile.delete();
+			return wPath;
+		} catch (Exception e) {
+			Exception wEx = new Exception(
+					String.format(
+							"Unable to create a temporary file in the folder java.io.tmpdir=[%s] using the method File:createTempFile(...) ",
+							System.getProperty("java.io.tmpdir")), e);
+			wEx.printStackTrace();
+			// default
+			return System.getProperty("user.dir");
+		}
 	}
 
 	/**
@@ -300,7 +335,15 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 */
 	public static CXFileDir getUserDir() {
 
-		return DIR_USER;
+		return sUserDir;
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	private static String getUserDirAbsolutePath() {
+		return System.getProperty(CXJvmUtils.SYSPROP_USER_DIR);
 	}
 
 	/**
@@ -609,9 +652,9 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 
 	/*
 	 * Renvoie la liste des Fichier et dossiers - Non recursif
-	 *
+	 * 
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * org.psem2m.utilities.files.IXFilesContainer#getMyFiles(java.io.FileFilter
 	 * , boolean, boolean)
@@ -1189,7 +1232,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 */
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * org.psem2m.utilities.files.IXFilesContainer#scanAllFiles(org.psem2m.utilities
 	 * .files.CXSortListFiles, java.io.FileFilter, boolean, boolean)
