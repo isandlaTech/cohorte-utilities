@@ -29,8 +29,10 @@ import sun.security.x509.X509CertImpl;
 import sun.security.x509.X509CertInfo;
 
 /**
+ * Generates Certificate, KeyPair or RsaKeyContext
+ *
  * @author ogattaz
- * 
+ *
  */
 public class CRsaGenerator {
 
@@ -53,14 +55,33 @@ public class CRsaGenerator {
 
 	private final String pDistinguishedName;
 
+	private final int pKeySize;
+
 	private final IActivityLogger pLogger;
 
 	/**
 	 * @param aLogger
+	 * @param aDistinguishedName
 	 * @throws NoSuchAlgorithmException
 	 */
 	public CRsaGenerator(final IActivityLogger aLogger,
 			final String aDistinguishedName) throws NoSuchAlgorithmException {
+
+		this(aLogger, aDistinguishedName, ALGORITHM_GENERATE_SIZE);
+	}
+
+	/**
+	 * MOD_OG_20150717 new signature accepting a key size
+	 *
+	 * @param aLogger
+	 * @param aDistinguishedName
+	 * @param aKeySize
+	 * @throws NoSuchAlgorithmException
+	 */
+	public CRsaGenerator(final IActivityLogger aLogger,
+			final String aDistinguishedName, final int aKeySize)
+			throws NoSuchAlgorithmException {
+
 		super();
 		pLogger = (aLogger != null) ? aLogger : CActivityLoggerNull
 				.getInstance();
@@ -68,8 +89,11 @@ public class CRsaGenerator {
 		pDistinguishedName = (aDistinguishedName != null && !aDistinguishedName
 				.isEmpty()) ? aDistinguishedName : DISTINGUISEDNAME;
 
+		pKeySize = (aKeySize == 1024 || aKeySize == 2048) ? aKeySize
+				: ALGORITHM_GENERATE_SIZE;
+
 		keyGen = KeyPairGenerator.getInstance(ALGORITHM_GENERATE);
-		keyGen.initialize(ALGORITHM_GENERATE_SIZE);
+		keyGen.initialize(pKeySize);
 
 		if (pLogger.isLogDebugOn()) {
 			pLogger.logDebug(this, "<init>", "keyGen=[%s] Algo=[%s] Size=[%s]",
@@ -78,7 +102,8 @@ public class CRsaGenerator {
 	}
 
 	/**
-	 * 
+	 * @param aDistinguishedName
+	 * @throws NoSuchAlgorithmException
 	 */
 	public CRsaGenerator(final String aDistinguishedName)
 			throws NoSuchAlgorithmException {
@@ -87,7 +112,7 @@ public class CRsaGenerator {
 
 	/**
 	 * @return a X509 certificate containing a new RSA keypair for "CN=Sage"
-	 * 
+	 *
 	 * @throws GeneralSecurityException
 	 * @throws IOException
 	 * @throws NoSuchAlgorithmException
@@ -106,7 +131,7 @@ public class CRsaGenerator {
 	 * @param aNbDays
 	 *            how many days from now the Certificate is valid for
 	 * @return
-	 * 
+	 *
 	 * @throws GeneralSecurityException
 	 * @throws IOException
 	 * @throws NoSuchAlgorithmException
@@ -121,7 +146,7 @@ public class CRsaGenerator {
 
 	/**
 	 * Create a self-signed X.509 Certificate
-	 * 
+	 *
 	 * @param aDistinguishedName
 	 *            the X.509 Distinguished Name, eg "CN=Test, L=London, C=GB"
 	 * @param aKeyPair
@@ -130,7 +155,7 @@ public class CRsaGenerator {
 	 *            how many days from now the Certificate is valid for
 	 * @param aX509SignAlgorithm
 	 *            the signing algorithm, eg "SHA1withRSA"
-	 * @see http 
+	 * @see http
 	 *      ://stackoverflow.com/questions/1615871/creating-an-x509-certificate
 	 *      -in-java-without-bouncycastle
 	 */
@@ -146,23 +171,36 @@ public class CRsaGenerator {
 					aDistinguishedName, aNbDays, aX509SignAlgorithm, aKeyPair);
 		}
 
-		PrivateKey privkey = aKeyPair.getPrivate();
+		final PrivateKey privkey = aKeyPair.getPrivate();
 
-		X509CertInfo wX509CertInfo = new X509CertInfo();
+		final X509CertInfo wX509CertInfo = new X509CertInfo();
 
-		Date from = new Date();
-		Date to = new Date(from.getTime() + aNbDays * NB_MILLI_IN_DAY);
-		CertificateValidity interval = new CertificateValidity(from, to);
-		BigInteger wSerialNumber = new BigInteger(64, new SecureRandom());
-		X500Name aOwner = new X500Name(aDistinguishedName);
+		final Date from = new Date();
+		final Date to = new Date(from.getTime() + aNbDays * NB_MILLI_IN_DAY);
+		final CertificateValidity interval = new CertificateValidity(from, to);
+		final BigInteger wSerialNumber = new BigInteger(64, new SecureRandom());
+		final X500Name aOwner = new X500Name(aDistinguishedName);
 
 		wX509CertInfo.set(X509CertInfo.VALIDITY, interval);
 		wX509CertInfo.set(X509CertInfo.SERIAL_NUMBER,
 				new CertificateSerialNumber(wSerialNumber));
-		wX509CertInfo.set(X509CertInfo.SUBJECT, new CertificateSubjectName(
-				aOwner));
-		wX509CertInfo.set(X509CertInfo.ISSUER,
-				new CertificateIssuerName(aOwner));
+
+		// Change of behaviour in JDK8:
+		// https://bugs.openjdk.java.net/browse/JDK-8040820
+		// https://bugs.openjdk.java.net/browse/JDK-7198416
+		final String version = System.getProperty("java.version");
+		if (version == null || version.matches("^(1\\.)?[7].*")) {
+			// Java 7 code. To remove with Java 8 migration
+			wX509CertInfo.set(X509CertInfo.SUBJECT, new CertificateSubjectName(
+					aOwner));
+			wX509CertInfo.set(X509CertInfo.ISSUER, new CertificateIssuerName(
+					aOwner));
+		} else {
+			// Java 8 and later code
+			wX509CertInfo.set(X509CertInfo.SUBJECT, aOwner);
+			wX509CertInfo.set(X509CertInfo.ISSUER, aOwner);
+		}
+
 		wX509CertInfo.set(X509CertInfo.KEY,
 				new CertificateX509Key(aKeyPair.getPublic()));
 		wX509CertInfo.set(X509CertInfo.VERSION, new CertificateVersion(
@@ -196,9 +234,9 @@ public class CRsaGenerator {
 	 */
 	public KeyPair generateKeyPair() throws NoSuchAlgorithmException {
 
-		CXTimer wTimer = CXTimer.newStartedTimer();
+		final CXTimer wTimer = CXTimer.newStartedTimer();
 
-		KeyPair wKeyPair = keyGen.generateKeyPair();
+		final KeyPair wKeyPair = keyGen.generateKeyPair();
 		wTimer.stop();
 		if (pLogger.isLogDebugOn()) {
 			pLogger.logDebug(this, "generateKeyPair",
@@ -221,17 +259,17 @@ public class CRsaGenerator {
 			throws NoSuchAlgorithmException, GeneralSecurityException,
 			IOException {
 
-		CXTimer wKeyTimer = CXTimer.newStartedTimer();
-		KeyPair wKeyPair = keyGen.generateKeyPair();
+		final CXTimer wKeyTimer = CXTimer.newStartedTimer();
+		final KeyPair wKeyPair = keyGen.generateKeyPair();
 		wKeyTimer.stop();
 
-		CXTimer wCertificatTimer = CXTimer.newStartedTimer();
-		X509Certificate wX509Certificate = generateCertificate(
+		final CXTimer wCertificatTimer = CXTimer.newStartedTimer();
+		final X509Certificate wX509Certificate = generateCertificate(
 				DISTINGUISEDNAME, wKeyPair, NB_DAYS_IN_YEAR, ALGORITHM_SIGN);
 		wCertificatTimer.stop();
 
 		// creates the context
-		CRsaKeyContext wCRsaKeyContext = new CRsaKeyContext(wKeyPair,
+		final CRsaKeyContext wCRsaKeyContext = new CRsaKeyContext(wKeyPair,
 				wKeyTimer, wX509Certificate, wCertificatTimer);
 
 		if (pLogger.isLogDebugOn()) {
@@ -255,6 +293,13 @@ public class CRsaGenerator {
 	 */
 	public String getDistinguishedName() {
 		return pDistinguishedName;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getKeySize() {
+		return pKeySize;
 	}
 
 	/**
