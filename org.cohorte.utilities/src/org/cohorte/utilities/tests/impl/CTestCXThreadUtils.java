@@ -1,4 +1,4 @@
-package tests;
+package org.cohorte.utilities.tests.impl;
 
 import static org.psem2m.utilities.CXThreadUtils.sleep;
 

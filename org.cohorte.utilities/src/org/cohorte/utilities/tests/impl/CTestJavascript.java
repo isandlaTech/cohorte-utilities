@@ -1,4 +1,4 @@
-package tests;
+package org.cohorte.utilities.tests.impl;
 
 import java.nio.charset.Charset;
 
