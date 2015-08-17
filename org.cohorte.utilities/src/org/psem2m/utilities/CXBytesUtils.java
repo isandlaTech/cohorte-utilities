@@ -91,6 +91,9 @@ public final class CXBytesUtils {
 
 	private static final String MESS_NOT_ENOUGH_LARGE = "The byte array is not enough large. It should have at least [%s] bytes to accept an [%s]";
 
+	// MOD_OG_20150817
+	public static final boolean WANT_CLOSE = true;
+
 	/**
 	 * ajoute la representation HEXA d'un octet dans un StringBuilder
 	 *
@@ -907,7 +910,8 @@ public final class CXBytesUtils {
 	 */
 	public static byte[] readAllBytes(final InputStream aInputStream)
 			throws Exception {
-		return readBytesImpl(aInputStream, aInputStream.available());
+		// MOD_OG_20150817
+		return readBytesImpl(aInputStream, aInputStream.available(), WANT_CLOSE);
 	}
 
 	/**
@@ -920,9 +924,25 @@ public final class CXBytesUtils {
 	 */
 	public static byte[] readBytes(final InputStream aInputStream,
 			final int aSize) throws Exception {
+		// MOD_OG_20150817
+
+		return readBytes(aInputStream, aSize, WANT_CLOSE);
+	}
+
+	/**
+	 * MOD_OG_20150817
+	 *
+	 * @param aInputStream
+	 * @param aSize
+	 * @param aWantCloseAfter
+	 * @return
+	 * @throws Exception
+	 */
+	public static byte[] readBytes(final InputStream aInputStream,
+			final int aSize, final boolean aWantCloseAfter) throws Exception {
 
 		return readBytesImpl(aInputStream,
-				Math.min(aSize, aInputStream.available()));
+				Math.min(aSize, aInputStream.available()), aWantCloseAfter);
 	}
 
 	/**
@@ -934,10 +954,18 @@ public final class CXBytesUtils {
 	 * @throws Exception
 	 */
 	private static byte[] readBytesImpl(final InputStream aInputStream,
-			final int aSize) throws Exception {
+			final int aSize, final boolean aWantCloseAfter) throws Exception {
 		byte[] wData = new byte[aSize];
-		aInputStream.read(wData);
-		aInputStream.close();
+		int wRead = 0;
+		int wRemain = aSize;
+		while (wRead < aSize) {
+			int wCount = aInputStream.read(wData, wRead, wRemain);
+			wRead += wCount;
+			wRemain -= wCount;
+		}
+		if (aWantCloseAfter) {
+			aInputStream.close();
+		}
 		return wData;
 	}
 
