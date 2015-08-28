@@ -1,9 +1,11 @@
 
 
-1.0.4
+from 1.0.3  to 1.0.4 (master)
+-------------------------------------
 
 - MOD_OG_20150817
-  - Correction of the method "readBytesImpl" to read the waited bytes using more than one read.
+
+  - BUG: Correction of the method "readBytesImpl" to read the waited bytes using more than one read.
   - Add the capability to let the inputstream opened after the reading
   - Change the version of the bundle
 
