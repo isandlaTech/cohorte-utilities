@@ -13,11 +13,12 @@
 	<version>1.0.4</version>   <!-- ATTENSION : doit être le même que celui du MANIFEST -->
 
 	<packaging>eclipse-plugin</packaging>
-
+	
+	<!--
 	<properties>
 		<eclipse-p2-repo.url>http://download.eclipse.org/releases/luna</eclipse-p2-repo.url>
 	</properties>
-
+	
 	<repositories>
 		<repository>
 			<id>eclipse-p2-repo</id>
@@ -25,7 +26,7 @@
 			<layout>p2</layout>
 		</repository>
 	</repositories>
-
+	-->
 	<build>
 		<plugins>
 			<!-- Generates sources jar -->
@@ -41,6 +42,10 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-ipojo-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>

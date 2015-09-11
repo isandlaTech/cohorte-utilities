@@ -16,11 +16,29 @@
 	<properties>
 		<tycho-version>0.22.0</tycho-version>
 		<osgi-version>5.0.0</osgi-version>		
+		<ipojo-version>1.12.1</ipojo-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>		
-		<eclipse-p2-repo.url>http://download.eclipse.org/releases/luna</eclipse-p2-repo.url>	
+		<!--<eclipse-p2-repo.url>http://download.eclipse.org/releases/luna</eclipse-p2-repo.url>-->
 	</properties>
 
 	<dependencies>
+		<!-- MOD_BD_20150911 Avoid using p2 repositories to compile bundles.
+			 Conceder using maven dependencies instead. -->
+		<!-- OSGi API -->
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<version>${osgi-version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- iPOJO Annotations -->
+		<dependency>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.ipojo.annotations</artifactId>
+			<version>${ipojo-version}</version>
+			<scope>compile</scope>
+		</dependency>
 	
 	</dependencies>
 
@@ -30,7 +48,8 @@
 		<module>org.cohorte.utilities.installer</module>
 		<module>org.cohorte.utilities.crypto</module>
 	</modules>
-
+	<!--
+		MOD_BD_20150911 Avoid using p2 repositories to compile bundles
 	<repositories>
 		<repository>
             <id>eclipse-p2-repo</id>
@@ -38,8 +57,72 @@
             <layout>p2</layout>
         </repository>
 	</repositories>
-
+	-->
 	<build>
+		<pluginManagement>		
+			<!-- Generates sources jar -->
+			<plugins>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-source-plugin</artifactId>
+					<version>${tycho-version}</version>
+					<executions>
+						<execution>
+							<id>plugin-source</id>
+							<goals>
+								<goal>plugin-source</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>	
+				<!-- consider pom dependencies -->
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>target-platform-configuration</artifactId>
+					<version>${tycho-version}</version>
+					<configuration>
+						<pomDependencies>consider</pomDependencies>
+					</configuration>
+				</plugin>
+				<!-- Add iPOJO annotations to class path -->
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-compiler-plugin</artifactId>
+					<version>${tycho-version}</version>
+					<configuration>
+						<source>1.7</source>
+						<target>1.7</target>
+						<extraClasspathElements>
+							<!-- iPOJO Annotations are not in a bundle -->
+							<extraClasspathElement>
+								<groupId>org.apache.felix</groupId>
+								<artifactId>org.apache.felix.ipojo.annotations</artifactId>
+								<version>${ipojo-version}</version>
+							</extraClasspathElement>
+						</extraClasspathElements>
+					</configuration>
+				</plugin>				
+				<!-- iPOJO manipulation -->
+				<plugin>
+					<groupId>org.apache.felix</groupId>
+					<artifactId>maven-ipojo-plugin</artifactId>
+					<version>${ipojo-version}</version>
+					<configuration>
+						<!-- Add support for Tycho packaging -->
+						<m_supportedProjectTypes>
+							<type>eclipse-plugin</type>
+						</m_supportedProjectTypes>
+					</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>ipojo-bundle</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>				
+			</plugins>
+		</pluginManagement>
 		<plugins>
 			<!-- tyco plugin -->
 			<plugin>
