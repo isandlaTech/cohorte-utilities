@@ -9,7 +9,9 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>org.cohorte.utilities.installer</artifactId>
-	<version>1.0.0.201501211743</version>
+	<!-- MOD_BD_20150911 -->
+	<version>1.0.0</version>
+	<!--<version>1.0.0.201501211743</version>-->
 	<packaging>jar</packaging>
 
 	<dependencies>
