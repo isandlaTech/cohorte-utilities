@@ -116,9 +116,8 @@ public class CLogLineTextBuilder {
 	}
 
 	/**
-	 * @param aWho
-	 * @param aLevel
-	 * @param aWhat
+	 * MOG_OG_20151120 - Protect the logging tool against user error !
+	 * 
 	 * @param aObjects
 	 * @return
 	 */
