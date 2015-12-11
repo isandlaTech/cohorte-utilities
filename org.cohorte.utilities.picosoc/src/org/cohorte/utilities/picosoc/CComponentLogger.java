@@ -1,5 +1,6 @@
 package org.cohorte.utilities.picosoc;
 
+import java.util.Enumeration;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -12,6 +13,7 @@ import java.util.logging.SimpleFormatter;
 import org.psem2m.utilities.CXJavaRunContext;
 import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.logging.CActivityFormaterBasic;
+import org.psem2m.utilities.logging.CActivityLoggerBasicConsole;
 import org.psem2m.utilities.logging.CLogLineTextBuilder;
 import org.psem2m.utilities.logging.CLogToolsException;
 import org.psem2m.utilities.logging.IActivityFormater;
@@ -22,21 +24,18 @@ import org.psem2m.utilities.logging.IActivityRequester;
  * @author ogattaz
  * 
  */
-abstract class CComponentLogger extends CAbstractComponentBase implements
-		IActivityLogger {
+public abstract class CComponentLogger extends CAbstractComponentBase implements IActivityLogger {
 
 	public static final String PROP_MAINLOGGER_LEVEL = "mainlogger.level";
 
 	protected static final IActivityFormater sActivityFormater = CActivityFormaterBasic
 			.getInstance(IActivityFormater.LINE_SIMPLEFORMATER);
 
-	protected static final CLogLineTextBuilder sLogLineTextBuilder = CLogLineTextBuilder
-			.getInstance();
+	protected static final CLogLineTextBuilder sLogLineTextBuilder = CLogLineTextBuilder.getInstance();
 
 	protected static SimpleFormatter sSimpleFormatter = new SimpleFormatter();
 
-	protected static final CLogToolsException sToolsException = CLogToolsException
-			.getInstance();
+	protected static final CLogToolsException sToolsException = CLogToolsException.getInstance();
 
 	static {
 		sActivityFormater.acceptMultiline(IActivityFormater.MULTILINES_TEXT);
@@ -50,6 +49,84 @@ abstract class CComponentLogger extends CAbstractComponentBase implements
 	 */
 	public static boolean doLog(Level aLevel) {
 		return true;
+	}
+	
+	/**
+	 * MOD_OG_20151201 Logger improvment
+	 * 
+	 * @return
+	 */
+	public static String dumpCatalinaLoggers() {
+		return dumpJvmLoggers("org.apache.catalina.core.ContainerBase");
+	}
+
+	/**
+	 * MOD_OG_20151201 Logger improvment
+	 * 
+	 * <pre>
+	 * (  8) LoggerName=[org.apache.catalina.core.ContainerBase.[Catalina].[localhost].[/AgiliumSAML].[default] (len:86)]
+	 * ( 38) LoggerName=[org.apache.catalina.core.ContainerBase.[Catalina].[localhost].[/AgiliumWeb].[jsp] (len:81)]
+	 * ( 73) LoggerName=[org.apache.catalina.core.ContainerBase.[Catalina].[localhost].[/].[default] (len:75)]
+	 * ( 84) LoggerName=[org.apache.catalina.core.ContainerBase.[Catalina].[localhost].[/] (len:65)]
+	 * ( 85) LoggerName=[org.apache.catalina.core.ContainerBase (len:38)]
+	 * ( 98) LoggerName=[org.apache.catalina.core.ContainerBase.[Catalina].[localhost].[/AgiliumWeb].[default] (len:85)]
+	 * (131) LoggerName=[org.apache.catalina.core.ContainerBase.[Catalina].[localhost].[/AgiliumSAML].[jsp] (len:82)]
+	 * (151) LoggerName=[org.apache.catalina.core.ContainerBase.[Catalina].[localhost].[/AgiliumWeb] (len:75)]
+	 * (153) LoggerName=[org.apache.catalina.core.ContainerBase.[Catalina].[localhost].[/AgiliumSAML] (len:76)]
+	 * (161) LoggerName=[org.apache.catalina.core.ContainerBase.[Catalina] (len:49)]
+	 * (178) LoggerName=[org.apache.catalina.core.ContainerBase.[Catalina].[localhost] (len:61)]
+	 * (180) LoggerName=[org.apache.catalina.core.ContainerBase.[Catalina].[localhost].[/].[jsp] (len:71)]
+	 * (186) LoggerName=[no name (len:0)]
+	 * 	- Level=[ALL]
+	 * 	- Handler=[           ConsoleHandler] Formatter=[SimpleFormatter_1150284041]
+	 * 	- Handler=[       CTomcatFilehandler] Formatter=[SimpleFormatter_1150284041]
+	 * </pre>
+	 * 
+	 * @return
+	 */
+	public static String dumpJvmLoggers(final String aLoggernamePrefix) {
+
+		LogManager wLogManager = getLogManager();
+		Enumeration<String> wNames = wLogManager.getLoggerNames();
+
+		StringBuilder wSB = new StringBuilder();
+		int wLoggerIdx = 0;
+		while (wNames.hasMoreElements()) {
+			String wLoggerName = wNames.nextElement();
+
+			if (wLoggerName == null) {
+				wSB.append(String.format("(%3d) LoggerName is null.\n", wLoggerIdx));
+			}
+			//
+			else if ((aLoggernamePrefix != null && wLoggerName.startsWith(aLoggernamePrefix))
+					|| wLoggerName.isEmpty()) {
+
+				int wLoggerNameSize = wLoggerName.length();
+				wSB.append(String.format("(%3d) LoggerName=[%s (len:%d)]\n", wLoggerIdx,
+						(wLoggerNameSize > 0) ? wLoggerName : "no name", wLoggerNameSize));
+				Logger wLogger = wLogManager.getLogger(wLoggerName);
+				if (wLogger == null) {
+					wSB.append("\t- logger is null.\n");
+				} else {
+					if (wLogger.getLevel() != null) {
+						wSB.append(String.format("\t- Level=[%s]\n", wLogger.getLevel().getName()));
+					}
+
+					Handler[] wHandlers = wLogger.getHandlers();
+					for (Handler wHandler : wHandlers) {
+						if (wHandler == null) {
+							wSB.append("\t- Handler is null.\n");
+						} else {
+							wSB.append(String.format("\t- Handler=[%25s] Formatter=[%s_%5d]\n", wHandler
+									.getClass().getSimpleName(), wHandler.getFormatter().getClass()
+									.getSimpleName(), wHandler.getFormatter().hashCode()));
+						}
+					}
+				}
+			}
+			wLoggerIdx++;
+		}
+		return wSB.toString();
 	}
 
 	/**
@@ -136,8 +213,7 @@ abstract class CComponentLogger extends CAbstractComponentBase implements
 				}
 			} catch (Exception e) {
 				Exception wEx = new Exception(String.format(
-						"Unable to set the formater of the main logger [%s]",
-						wMainLogger.getName()), e);
+						"Unable to set the formater of the main logger [%s]", wMainLogger.getName()), e);
 				System.err.println(sToolsException.eInString(wEx));
 			}
 
@@ -148,8 +224,7 @@ abstract class CComponentLogger extends CAbstractComponentBase implements
 				CComponentLogger.class,
 				"initJvmLoggers",
 				"hasMainLogger=[%b] MainLoggerLevel=[%s] ConsoleHandlerConfigured=[%b] FileHandlerConfigured=[%b]",
-				wHasMainLogger, wMainLoggerLevel, wConsoleHandlerConfigured,
-				wFileHandlerConfigured);
+				wHasMainLogger, wMainLoggerLevel, wConsoleHandlerConfigured, wFileHandlerConfigured);
 
 	}
 
@@ -179,8 +254,7 @@ abstract class CComponentLogger extends CAbstractComponentBase implements
 	 * @param aWhat
 	 * @param aInfos
 	 */
-	public static void logInMain(Level aLevel, final Object aWho,
-			CharSequence aWhat, Object... aInfos) {
+	public static void logInMain(Level aLevel, final Object aWho, CharSequence aWhat, Object... aInfos) {
 
 		Logger wMainLogger = getMainLogger();
 
@@ -199,19 +273,16 @@ abstract class CComponentLogger extends CAbstractComponentBase implements
 		String wLogWho = sLogLineTextBuilder.buildWhoObjectId(aWho);
 		// System.out.println("wLogWho="+((wLogWho!=null)?wLogWho:"null"));
 
-		String wLogWhat = (aWhat != null) ? aWhat.toString() : CXJavaRunContext
-				.getPreCallingMethod();
+		String wLogWhat = (aWhat != null) ? aWhat.toString() : CXJavaRunContext.getPreCallingMethod();
 		// System.out.println("wLogWhat="+((wLogWhat!=null)?wLogWhat:"null"));
 
-		String wLine = sActivityFormater.format(System.currentTimeMillis(),
-				aLevel, wLogWho, wLogWhat, wLogText,
-				!IActivityFormater.WITH_END_LINE);
+		String wLine = sActivityFormater.format(System.currentTimeMillis(), aLevel, wLogWho, wLogWhat,
+				wLogText, !IActivityFormater.WITH_END_LINE);
 
 		try {
 			wMainLogger.log(aLevel, wLine);
 		} catch (Throwable e) {
-			System.out.print(sSimpleFormatter.format(new LogRecord(aLevel,
-					wLine)));
+			System.out.print(sSimpleFormatter.format(new LogRecord(aLevel, wLine)));
 		}
 	}
 
@@ -222,16 +293,30 @@ abstract class CComponentLogger extends CAbstractComponentBase implements
 
 		Logger wMainLogger = getMainLogger();
 
-		// si on ne doit pas logger !
+		// if it's possible to log !
 		if (wMainLogger != null) {
 			Level wMainLevel = wMainLogger.getLevel();
-			// si pas de level sur le main logger ou si le level du main logger
-			// est supérieur au level de la demande de log => no log
-			if (wMainLevel == null
-					|| record.getLevel().intValue() < wMainLevel.intValue())
-				return;
+			// if the main jogger has a level and this level is greter than that
+			// of the log request
+
+			if (wMainLevel != null && !(record.getLevel().intValue() < wMainLevel.intValue())) {
+				wMainLogger.log(record);
+			}
 		}
-		wMainLogger.log(record);
+	}
+
+	/**
+	 * @param aComponent
+	 * @return
+	 */
+	public static IActivityLogger retreiveSvcLogger(final Object aComponent) {
+		try {
+			return CServicesRegistry.getRegistry().getServiceRef(IActivityLogger.class).getService();
+		} catch (Exception e) {
+			CComponentLogger.logInMain(Level.SEVERE, aComponent, "<init>",
+					"unable to retreive the service IActivityLogger: %s", e);
+			return CActivityLoggerBasicConsole.getInstance();
+		}
 	}
 
 	/**
@@ -251,15 +336,13 @@ abstract class CComponentLogger extends CAbstractComponentBase implements
 			Handler[] wHandlers = wMainLogger.getHandlers();
 			for (Handler wHandler : wHandlers) {
 				wHandler.setLevel(aLevel);
-				logInMain(Level.INFO, CComponentLogger.class,
-						"setMainLoggerLevel", "level=[%s] handler: %s", aLevel,
-						wHandler);
+				logInMain(Level.INFO, CComponentLogger.class, "setMainLoggerLevel", "level=[%s] handler: %s",
+						aLevel, wHandler);
 			}
 		} catch (Exception e) {
-			Exception wEx = new Exception(
-					String.format(
-							"TomcatLogger.setMainLoggerLevel(): unable to set the level of the main logger to  [%s]",
-							aLevel), e);
+			Exception wEx = new Exception(String.format(
+					"TomcatLogger.setMainLoggerLevel(): unable to set the level of the main logger to  [%s]",
+					aLevel), e);
 			System.err.println(sToolsException.eInString(wEx));
 		}
 	}
@@ -270,8 +353,7 @@ abstract class CComponentLogger extends CAbstractComponentBase implements
 	 */
 	public static void setMainLoggerLevel(String aLevelName) {
 		logInMain(Level.INFO, CComponentLogger.class, "setMainLoggerLevel",
-				" Set the level of the main logger with level name [%s]",
-				aLevelName);
+				" Set the level of the main logger with level name [%s]", aLevelName);
 
 		try {
 			setMainLoggerLevel(Level.parse(aLevelName));
@@ -307,8 +389,8 @@ abstract class CComponentLogger extends CAbstractComponentBase implements
 	 */
 	@Override
 	public Appendable addDescriptionInBuffer(final Appendable aBuffer) {
-		return CXStringUtils.appendStringsInBuff(aBuffer, getClass()
-				.getSimpleName(), String.valueOf(hashCode()));
+		return CXStringUtils.appendStringsInBuff(aBuffer, getClass().getSimpleName(),
+				String.valueOf(hashCode()));
 	}
 
 	/**
@@ -422,8 +504,7 @@ abstract class CComponentLogger extends CAbstractComponentBase implements
 	 * java.lang.Object, java.lang.CharSequence, java.lang.Object[])
 	 */
 	@Override
-	public void log(final Level aLevel, final Object aWho,
-			final CharSequence aWhat, final Object... aInfos) {
+	public void log(final Level aLevel, final Object aWho, final CharSequence aWhat, final Object... aInfos) {
 
 		if (!isLoggable(aLevel))
 			return;
@@ -452,8 +533,7 @@ abstract class CComponentLogger extends CAbstractComponentBase implements
 	 * java.lang.CharSequence, java.lang.Object[])
 	 */
 	@Override
-	public void logDebug(final Object aWho, final CharSequence aWhat,
-			final Object... aInfos) {
+	public void logDebug(final Object aWho, final CharSequence aWhat, final Object... aInfos) {
 		log(Level.FINE, aWho, aWhat, aInfos);
 
 	}
@@ -466,8 +546,7 @@ abstract class CComponentLogger extends CAbstractComponentBase implements
 	 * java.lang.CharSequence, java.lang.Object[])
 	 */
 	@Override
-	public void logInfo(final Object aWho, final CharSequence aWhat,
-			final Object... aInfos) {
+	public void logInfo(final Object aWho, final CharSequence aWhat, final Object... aInfos) {
 		log(Level.INFO, aWho, aWhat, aInfos);
 	}
 
@@ -479,8 +558,7 @@ abstract class CComponentLogger extends CAbstractComponentBase implements
 	 * java.lang.CharSequence, java.lang.Object[])
 	 */
 	@Override
-	public void logSevere(final Object aWho, final CharSequence aWhat,
-			final Object... aInfos) {
+	public void logSevere(final Object aWho, final CharSequence aWhat, final Object... aInfos) {
 		log(Level.SEVERE, aWho, aWhat, aInfos);
 	}
 
@@ -492,8 +570,7 @@ abstract class CComponentLogger extends CAbstractComponentBase implements
 	 * java.lang.CharSequence, java.lang.Object[])
 	 */
 	@Override
-	public void logWarn(final Object aWho, final CharSequence aWhat,
-			final Object... aInfos) {
+	public void logWarn(final Object aWho, final CharSequence aWhat, final Object... aInfos) {
 		log(Level.WARNING, aWho, aWhat, aInfos);
 	}
 
@@ -527,7 +604,6 @@ abstract class CComponentLogger extends CAbstractComponentBase implements
 	 */
 	@Override
 	public String toDescription() {
-		return addDescriptionInBuffer(
-				new StringBuilder(calcDescriptionLength())).toString();
+		return addDescriptionInBuffer(new StringBuilder(calcDescriptionLength())).toString();
 	}
 }

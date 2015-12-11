@@ -1,8 +1,13 @@
 
-1.0.1.XXXXXXXXXXXX (suivante)
+1.0.0 to 1.0.1 (master)
 ==================
 
-MOD_OG_XXXX : ....
+- MOD_OG_20151201 
+  - Logger improvment in
+    - org.cohorte.utilities.picosoc.CComponentLogger
+    - org.cohorte.utilities.picosoc.CComponentLoggerConsole
+ 
+ 
 
 1.0.0.201501211743 (actual)
 ==================

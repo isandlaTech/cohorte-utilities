@@ -14,12 +14,61 @@ public class CComponentLoggerConsole extends CComponentLogger {
 
 	private static final IActivityLogger pLogger = CActivityLoggerBasicConsole
 			.getInstance();
+	private static CComponentLoggerConsole sMe;
+
+	/**
+	 * MOD_OG_20151201 Logger improvment
+	 * 
+	 * @param aLevel
+	 * @return
+	 */
+	public static boolean doLog(Level aLevel) {
+		if (sMe != null) {
+			return sMe.isLoggable(aLevel);
+
+		}
+		return CComponentLogger.doLog(aLevel);
+	}
+
+	/**
+	 * MOD_OG_20151201 Logger improvment
+	 * 
+	 * @param aLevel
+	 * @param aWho
+	 * @param aWhat
+	 * @param aInfos
+	 */
+	public static void logInMain(Level aLevel, final Object aWho,
+			CharSequence aWhat, Object... aInfos) {
+
+		if (sMe != null ) {
+			sMe.log(aLevel, aWho, aWhat, aInfos);
+			return;
+		}
+		CComponentLogger.logInMain(aLevel, aWho, aWhat, aInfos);
+	}
+
+	/**
+	 * MOD_OG_20151201 Logger improvment
+	 * 
+	 * @param record
+	 */
+	public static void logInMain(final LogRecord record) {
+
+		if (sMe != null) {
+			sMe.log(record);
+			return;
+		}
+		CComponentLogger.logInMain(record);
+	}
 
 	/**
 	 * @throws Exception
 	 */
 	public CComponentLoggerConsole() throws Exception {
 		super();
+		//MOD_OG_20151201 Logger improvment
+		sMe=this;
 	}
 
 	/*
