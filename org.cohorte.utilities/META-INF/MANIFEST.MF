@@ -6,6 +6,8 @@ Bundle-Version: 1.0.4
 Bundle-Vendor: isandlaTech.com
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: javax.script,
+ org.cohorte.utilities,
+ org.cohorte.utilities.encode,
  org.cohorte.utilities.tests,
  org.psem2m.utilities,
  org.psem2m.utilities.files,

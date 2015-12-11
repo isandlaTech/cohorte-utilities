@@ -1,5 +1,15 @@
 
 
+from 1.0.4  to 1.0.5 (master)
+-------------------------------------
+
+- MOD_OG_20151201
+  - Addition of the IXResourceLocator
+  - Addition of the package encode
+  
+- MOG_OG_20151120 
+  - IMPROVEMENT : Protect the logging tool against user error in org.psem2m.utilities.logging.CLogLineTextBuilder.buildLogLine(Object...)
+
 from 1.0.3  to 1.0.4 (master)
 -------------------------------------
 
