@@ -555,7 +555,7 @@ public class JSONObject {
 	 *            A map object that can be used to initialize the contents of
 	 *            the JSONObject.
 	 */
-	public JSONObject(final Map<String, Object> map) {
+	public JSONObject(final Map<String,? extends Object> map) {
 		this.myHashMap = (map == null) ? new HashMap<String, Object>()
 				: new HashMap<String, Object>(map);
 	}
@@ -1205,7 +1205,7 @@ public class JSONObject {
 	 * @return this.
 	 * @throws JSONException
 	 */
-	public JSONObject put(final String key, final Map<String, Object> value) throws JSONException {
+	public JSONObject put(final String key, final Map<String, ? extends Object> value) throws JSONException {
 		put(key, new JSONObject(value));
 		return this;
 	}
