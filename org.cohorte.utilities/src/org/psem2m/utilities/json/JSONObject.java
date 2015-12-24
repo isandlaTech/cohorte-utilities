@@ -447,12 +447,10 @@ public class JSONObject {
 			return ((JSONArray) value).toString(indentFactor, indent, aSorted);
 		}
 		if (value instanceof Map) {
-			return new JSONObject((Map<String, Object>) value).toString(indentFactor, indent,
-					aSorted);
+			return new JSONObject((Map<String, Object>) value).toString(indentFactor, indent, aSorted);
 		}
 		if (value instanceof Collection) {
-			return new JSONArray((Collection<Object>) value)
-					.toString(indentFactor, indent, aSorted);
+			return new JSONArray((Collection<Object>) value).toString(indentFactor, indent, aSorted);
 		}
 		if (value.getClass().isArray()) {
 			return new JSONArray(value).toString(indentFactor, indent, aSorted);
@@ -555,9 +553,8 @@ public class JSONObject {
 	 *            A map object that can be used to initialize the contents of
 	 *            the JSONObject.
 	 */
-	public JSONObject(final Map<String,? extends Object> map) {
-		this.myHashMap = (map == null) ? new HashMap<String, Object>()
-				: new HashMap<String, Object>(map);
+	public JSONObject(final Map<String, ? extends Object> map) {
+		this.myHashMap = (map == null) ? new HashMap<String, Object>() : new HashMap<String, Object>(map);
 	}
 
 	/**
@@ -744,11 +741,9 @@ public class JSONObject {
 	 */
 	public boolean getBoolean(final String key) throws JSONException {
 		Object o = get(key);
-		if (o.equals(Boolean.FALSE)
-				|| (o instanceof String && ((String) o).equalsIgnoreCase("false"))) {
+		if (o.equals(Boolean.FALSE) || (o instanceof String && ((String) o).equalsIgnoreCase("false"))) {
 			return false;
-		} else if (o.equals(Boolean.TRUE)
-				|| (o instanceof String && ((String) o).equalsIgnoreCase("true"))) {
+		} else if (o.equals(Boolean.TRUE) || (o instanceof String && ((String) o).equalsIgnoreCase("true"))) {
 			return true;
 		}
 		throw new JSONException("JSONObject[" + quote(key) + "] is not a Boolean.");
@@ -989,8 +984,7 @@ public class JSONObject {
 	public double optDouble(final String key, final double defaultValue) {
 		try {
 			Object o = opt(key);
-			return o instanceof Number ? ((Number) o).doubleValue() : new Double((String) o)
-					.doubleValue();
+			return o instanceof Number ? ((Number) o).doubleValue() : new Double((String) o).doubleValue();
 		} catch (Exception e) {
 			return defaultValue;
 		}
@@ -1198,6 +1192,10 @@ public class JSONObject {
 	 * Put a key/value pair in the JSONObject, where the value will be a
 	 * JSONObject which is produced from a Map.
 	 * 
+	 * MOD_OG_20151224 BUG: Correction of the method
+	 * org.psem2m.utilities.json.JSONObject.put(String, Map<String, ? extends
+	 * Object>) to accept map of enxtended Objects
+	 * 
 	 * @param key
 	 *            A key string.
 	 * @param value
@@ -1230,6 +1228,26 @@ public class JSONObject {
 		}
 		if (value != null) {
 			testValidity(value);
+			this.myHashMap.put(key, value);
+		} else {
+			remove(key);
+		}
+		return this;
+	}
+
+	/**
+	 * MOD_OG_20151224 BUG: Addition of the method
+	 * org.psem2m.utilities.json.JSONObject.put(String,String)
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public JSONObject put(final String key, final String value) throws RuntimeException {
+		if (key == null) {
+			throw new RuntimeException("Null key.");
+		}
+		if (value != null) {
 			this.myHashMap.put(key, value);
 		} else {
 			remove(key);
@@ -1375,8 +1393,7 @@ public class JSONObject {
 	 */
 	// FDB - Add Sorted - Pas très performant mais utile pour l'affichage dasn
 	// le testeur de web services
-	String toString(final int indentFactor, final int indent, final boolean aSorted)
-			throws JSONException {
+	String toString(final int indentFactor, final int indent, final boolean aSorted) throws JSONException {
 		int i;
 		int n = length();
 		if (n == 0) {
