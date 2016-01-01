@@ -27,7 +27,6 @@ public interface ISvcWebAppPaths {
 	public final static String PARAM_JVM_CATALINA_BASE = "catalina.base";
 	public final static String PARAM_JVM_CATALINA_HOME = "catalina.home";
 	public final static String PARAM_JVM_DATAROOT = "org.cohorte.utilities.webapp.install.dataroot";
-
 	public final static String PARAM_JVM_TOOLROOT = "org.cohorte.utilities.webapp.install.toolroot";
 
 	/**
@@ -51,11 +50,19 @@ public interface ISvcWebAppPaths {
 	File getDirCatalinaHome() throws Exception;
 
 	/**
-	 * @return the File instance of the "CONFIG" dir ex:
-	 *         C:\SAGEX3\WEBV60\WebToolsTOOLS\ADXADMIN\CONFIG
+	 * @return the File instance of the config dir ex: ${CcatalinaBase}/conf or
+	 *         ${org.cohorte.utilities.webapp.install.dataroot}/conf if it
+	 *         defined
 	 * @throws Exception
 	 */
 	File getDirConfig() throws Exception;
+	
+	/**
+	 * @param aSubPath
+	 * @return
+	 * @throws Exception
+	 */
+	File getDirConfig(final String aSubPath) throws Exception;
 
 	/**
 	 * @return
@@ -64,33 +71,35 @@ public interface ISvcWebAppPaths {
 	File getDirCustomers() throws Exception;
 
 	/**
-	 * @return the File instance of the "WebData" dir ex:
-	 *         C:\SAGEX3\WEBV60\WebData
+	 * @return a File instance representing the data dir : ${catalina.base} or
+	 *         ${org.cohorte.utilities.webapp.install.dataroot} if it defined
 	 *
-	 * @see PARAM_JVM_DATAROOT : "-Dadonix.x3web.install.approot" =
-	 *      "all.host.installdatapath" => ex: C:\SAGEX3\WEBV60\WebData
 	 *
 	 * @throws Exception
 	 */
 	File getDirDataRoot() throws Exception;
 
 	/**
-	 * @return the File instance of the temp dir ex:
-	 *         C:\SAGEX3\WEBV60\WebData\SERVERSLOGS
+	 * @return a File instance representing the log dir : ${catalina.base}/logs
+	 *         or ${org.cohorte.utilities.webapp.install.dataroot}/logs
+	 *
 	 * @throws Exception
 	 */
 	File getDirLogs() throws Exception;
 
 	/**
-	 * @return the File instance of the temp dir ex:
-	 *         C:\SAGEX3\WEBV60\WebData\SERVERSLOGS\WAWEBSERVER
-	 * @throws Exception
+	 * @param aSubPath
+	 * @return a File instance representing the webapp log dir :
+	 *         ${catalina.base}/logs/webapp or
+	 *         ${org.cohorte.utilities.webapp.install.dataroot}/logs/webapp if
+	 *         it defined	 * @throws Exception
 	 */
-	File getDirLogs(String aWebAppName) throws Exception;
+	File getDirLogs(final String aSubPath) throws Exception;
 
 	/**
-	 * @return the File instance of the Logs dir of tomcat ex:
-	 *         C:\SAGEX3\WEBV60\WebData\SERVERSLOGS\TOMCAT
+	 * @return a File instance representing the tomcat log dir :
+	 *         ${catalina.base}/logs/tomcat
+	 *
 	 * @throws Exception
 	 */
 	File getDirLogsTomcat() throws Exception;

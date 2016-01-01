@@ -1,9 +1,12 @@
 package org.cohorte.utilities.picosoc.webapp;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -18,21 +21,22 @@ import javax.servlet.http.HttpSession;
 
 import org.cohorte.utilities.picosoc.CAbstractComponentWithLogger;
 import org.psem2m.utilities.CXDateTime;
+import org.psem2m.utilities.CXException;
 import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.CXTimer;
+import org.psem2m.utilities.json.JSONObject;
 
 /**
  * <pre>
- *
- *  	<filter>
+ * 	<filter>
  * 		<filter-name>RequestTracer</filter-name>
  * 		<filter-class>org.cohorte.utilities.picosoc.webapp.CFilterRequestTracer</filter-class>
  * 		<init-param>
- * 			<param-name>Included_Url_Pattern</param-name>
- * 			<param-value>.*\.jsp</param-value>
+ * 			<param-name>filter.request.tracer.included.uri.suffixes</param-name>
+ * 			<param-value>jsp;srvl</param-value>
  * 		</init-param>
  * 		<init-param>
- * 			<param-name>Log_Debug_Forced</param-name>
+ * 			<param-name>filter.request.tracer.Log.debug.forced</param-name>
  * 			<param-value>true</param-value>
  * 		</init-param>
  * 	</filter>
@@ -40,7 +44,6 @@ import org.psem2m.utilities.CXTimer;
  * 		<filter-name>RequestTracer</filter-name>
  * 		<url-pattern>/*</url-pattern>
  * 	</filter-mapping>
- *
  * </pre>
  *
  * Result
@@ -78,8 +81,7 @@ import org.psem2m.utilities.CXTimer;
  * @author ogattaz
  *
  */
-public class CFilterRequestTracer extends CAbstractComponentWithLogger
-		implements Filter {
+public class CFilterRequestTracer extends CAbstractComponentWithLogger implements Filter {
 
 	/**
 	 * @author ogattaz
@@ -88,17 +90,23 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger
 	interface IValueGetter {
 
 		public Object getValue(final String aName);
-
 	}
 
 	public final static String FMT_SECONDS = "%6.3f";
-	private static final String PARAM_ID_IUP = "Included_Url_Pattern";
-	private static final String PARAM_ID_LDF = "Log_Debug_Forced";
-	private static final double THOUSAND = 1000;
 
-	private String pIncludedUrlPattern = null;
+	public static final String PARAM_LOG_DEBUG_FORCED = "filter.request.tracer.Log.debug.forced";
+	public static final String PARAM_MAPPING = "filter.request.tracer.mapping";
+	public static final String PARAM_URI_SUFFIXES = "filter.request.tracer.included.uri.suffixes";
+	public static final String PARAM_TARGET_CONTEXT = "filter.request.tracer.target.context";
+
+	private static final double THOUSAND = 1000;
+	public final static String UNKNOWN = "unknowwn";
+
+	private String[] pIncludedUriSuffixes = new String[0];
 	private boolean pLogDebugForced = false;
-	private String pName = "unknowwn";
+	private String pMapping = UNKNOWN;
+	private String pName = UNKNOWN;
+	private String pContextPath = UNKNOWN;
 
 	/**
 	 *
@@ -128,26 +136,33 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger
 	 * javax.servlet.ServletResponse, javax.servlet.FilterChain)
 	 */
 	@Override
-	public void doFilter(ServletRequest aRequest, ServletResponse aResponse,
-			FilterChain aFilterChain) throws IOException, ServletException {
+	public void doFilter(ServletRequest aRequest, ServletResponse aResponse, FilterChain aFilterChain)
+			throws IOException, ServletException {
 
 		try {
-			HttpServletRequest wRequest = (HttpServletRequest) aRequest;
-			HttpServletResponse wResponse = (HttpServletResponse) aResponse;
+			HttpServletRequest wHttpRequest = (HttpServletRequest) aRequest;
+			HttpServletResponse wHttpResponse = (HttpServletResponse) aResponse;
 
-			CXTimer wTimer = CXTimer.newStartedTimer();
-			StringBuilder wSB = new StringBuilder();
+			CXTimer wTimer = null;
+			StringBuilder wSB = null;
 
-			wSB = dumpRequest(wSB, wRequest);
+			if (execFiltering(wHttpRequest)) {
+
+				wTimer = CXTimer.newStartedTimer();
+				wSB = new StringBuilder();
+
+				wSB = dumpRequest(wSB, wHttpRequest);
+			}
 
 			aFilterChain.doFilter(aRequest, aResponse);
+			if (execFiltering(wHttpRequest)) {
 
-			wSB = dumpResponse(wSB, wResponse);
+				wSB = dumpResponse(wSB, wHttpResponse);
 
-			wSB.append(String.format(" Duration=[%s ms]",
-					wTimer.getDurationStrMicroSec()));
+				wSB.append(String.format(" Duration=[%s ms]", wTimer.getDurationStrMicroSec()));
 
-			getLogger().logInfo(this, "doFilter", wSB.toString());
+				getLogger().logInfo(this, "doFilter", wSB.toString());
+			}
 
 		} catch (Exception e) {
 			getLogger().logSevere(this, "doFilter", "ERROR:\n%s", e);
@@ -161,8 +176,7 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger
 	 * @param aValue
 	 * @return
 	 */
-	private StringBuilder dumpOneInfoInSB(StringBuilder wSB, String aInfoId,
-			Object... aValues) {
+	private StringBuilder dumpOneInfoInSB(StringBuilder wSB, String aInfoId, Object... aValues) {
 		if (aValues.length > 0) {
 			wSB.append(String.format("\n%30s=[%s]", aInfoId, aValues[0]));
 			if (aValues.length > 1) {
@@ -177,26 +191,23 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger
 	/**
 	 * @param wRequest
 	 */
-	protected StringBuilder dumpRequest(final StringBuilder wSB,
-			final HttpServletRequest wRequest) {
+	protected StringBuilder dumpRequest(final StringBuilder wSB, final HttpServletRequest wRequest) {
 
 		try {
 			CXTimer wTimer = CXTimer.newStartedTimer();
 
-			if (pLogDebugForced || getLogger().isLogDebugOn()) {
+			if (isLogDebugForced() || getLogger().isLogDebugOn()) {
 				dumpRequestInfosInSB(wSB, wRequest);
 				dumpRequestHeadersInSB(wSB, wRequest);
 				dumpRequestgetCookiesInSB(wSB, wRequest);
 				dumpRequestParametersInSB(wSB, wRequest);
 				dumpRequestAttributesInSB(wSB, wRequest);
-				wSB.append(String.format(
-						"\n------------ Request trace duration=[%s ms] -----",
+				wSB.append(String.format("\n------------ Request trace duration=[%s ms] -----",
 						wTimer.getDurationStrMicroSec()));
 			} else {
 				if (getLogger().isLogInfoOn()) {
 					dumpRequestInfosMiniInSB(wSB, wRequest);
-					wSB.append(String.format(" RequestTraceDuration=[%s ms]",
-							wTimer.getDurationStrMicroSec()));
+					wSB.append(String.format(" RequestTraceDuration=[%s ms]", wTimer.getDurationStrMicroSec()));
 				}
 			}
 
@@ -211,8 +222,7 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger
 	 * @param aRequest
 	 * @return
 	 */
-	private StringBuilder dumpRequestAttributesInSB(StringBuilder aSB,final 
-			HttpServletRequest aRequest) {
+	private StringBuilder dumpRequestAttributesInSB(StringBuilder aSB, final HttpServletRequest aRequest) {
 
 		Enumeration<String> wNames = aRequest.getAttributeNames();
 
@@ -231,18 +241,16 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger
 	 * @param aRequest
 	 * @return
 	 */
-	private StringBuilder dumpRequestgetCookiesInSB(StringBuilder wSB,
-			HttpServletRequest aRequest) {
+	private StringBuilder dumpRequestgetCookiesInSB(StringBuilder wSB, HttpServletRequest aRequest) {
 		Cookie[] wCookies = aRequest.getCookies();
 		int wMax = (wCookies != null) ? wCookies.length : 0;
 		dumpOneInfoInSB(wSB, "CookieArraySize", wMax);
 		for (int wIdx = 0; wIdx < wMax; wIdx++) {
 			Cookie wCookie = wCookies[wIdx];
-			wSB.append(String
-					.format("\nCookie(%2d)%30s={domain:[%s] vers:[%s] secure:[%s] path:[%s] val:[%s]}",
-							wIdx, wCookie.getName(), wCookie.getDomain(),
-							wCookie.getVersion(), wCookie.getSecure(),
-							wCookie.getPath(), wCookie.getValue()));
+			wSB.append(String.format(
+					"\nCookie(%2d)%30s={domain:[%s] vers:[%s] secure:[%s] path:[%s] val:[%s]}", wIdx,
+					wCookie.getName(), wCookie.getDomain(), wCookie.getVersion(), wCookie.getSecure(),
+					wCookie.getPath(), wCookie.getValue()));
 		}
 		return wSB;
 	}
@@ -252,8 +260,7 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger
 	 * @param aRequest
 	 * @return
 	 */
-	private StringBuilder dumpRequestHeadersInSB(StringBuilder aSB,final 
-			HttpServletRequest aRequest) {
+	private StringBuilder dumpRequestHeadersInSB(StringBuilder aSB, final HttpServletRequest aRequest) {
 
 		Enumeration<String> wNames = aRequest.getHeaderNames();
 
@@ -272,34 +279,27 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger
 	 * @param aRequest
 	 * @return
 	 */
-	private StringBuilder dumpRequestInfosInSB(StringBuilder wSB,
-			HttpServletRequest aRequest) {
+	private StringBuilder dumpRequestInfosInSB(StringBuilder wSB, HttpServletRequest aRequest) {
 
 		HttpSession wSession = aRequest.getSession();
 		long wCreationTime = wSession.getCreationTime();
 		dumpOneInfoInSB(wSB, "SessionID/CreateTime/Duration", wSession.getId(),
-				CXDateTime.getIso8601TimeStamp(wCreationTime),
-				nbSecondsFrom(wCreationTime));
+				CXDateTime.getIso8601TimeStamp(wCreationTime), nbSecondsFrom(wCreationTime));
 
-		dumpOneInfoInSB(wSB, "Method/URL", aRequest.getMethod(),
-				aRequest.getRequestURL());
+		dumpOneInfoInSB(wSB, "Method/URL", aRequest.getMethod(), aRequest.getRequestURL());
 
 		dumpOneInfoInSB(wSB, "AuthType", aRequest.getAuthType());
 
-		dumpOneInfoInSB(wSB, "LocalAddr/Port", aRequest.getLocalAddr(),
-				aRequest.getLocalPort());
+		dumpOneInfoInSB(wSB, "LocalAddr/Port", aRequest.getLocalAddr(), aRequest.getLocalPort());
 
-		dumpOneInfoInSB(wSB, "getProtocol/Sheme", aRequest.getProtocol(),
-				aRequest.getScheme());
+		dumpOneInfoInSB(wSB, "getProtocol/Sheme", aRequest.getProtocol(), aRequest.getScheme());
 
-		dumpOneInfoInSB(wSB, "getServerName/port", aRequest.getServerName(),
-				aRequest.getServerPort());
+		dumpOneInfoInSB(wSB, "getServerName/port", aRequest.getServerName(), aRequest.getServerPort());
 
-		dumpOneInfoInSB(wSB, "RemoteHost/Addr/port", aRequest.getRemoteHost(),
-				aRequest.getRemoteAddr(), aRequest.getRemotePort());
+		dumpOneInfoInSB(wSB, "RemoteHost/Addr/port", aRequest.getRemoteHost(), aRequest.getRemoteAddr(),
+				aRequest.getRemotePort());
 
-		dumpOneInfoInSB(wSB, "ContentLength/Type", aRequest.getContentLength(),
-				aRequest.getContentType());
+		dumpOneInfoInSB(wSB, "ContentLength/Type", aRequest.getContentLength(), aRequest.getContentType());
 
 		return wSB;
 	}
@@ -309,13 +309,12 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger
 	 * @param aRequest
 	 * @return
 	 */
-	private StringBuilder dumpRequestInfosMiniInSB(StringBuilder wSB,
-			HttpServletRequest aRequest) {
+	private StringBuilder dumpRequestInfosMiniInSB(StringBuilder wSB, HttpServletRequest aRequest) {
 
 		HttpSession wSession = aRequest.getSession();
 
-		return wSB.append(String.format("%s [%s] [%s]", wSession.getId(),
-				aRequest.getMethod(), aRequest.getRequestURL()));
+		return wSB.append(String.format("%s [%s] [%s]", wSession.getId(), aRequest.getMethod(),
+				aRequest.getRequestURL()));
 	}
 
 	/**
@@ -323,8 +322,7 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger
 	 * @param aRequest
 	 * @return
 	 */
-	private StringBuilder dumpRequestParametersInSB(StringBuilder wSB,
-			HttpServletRequest aRequest) {
+	private StringBuilder dumpRequestParametersInSB(StringBuilder wSB, HttpServletRequest aRequest) {
 
 		Map<String, String[]> wParameterMap = aRequest.getParameterMap();
 
@@ -333,11 +331,9 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger
 			dumpOneInfoInSB(wSB, "ParameterMapSize", wSize);
 			if (wSize > 0) {
 				int wIdxP = 0;
-				for (Map.Entry<String, String[]> wEntry : wParameterMap
-						.entrySet()) {
-					wSB.append(String.format("\nParameter(%2d)%30s=[%s]",
-							wIdxP, wEntry.getKey(), CXStringUtils
-									.stringTableToString(wEntry.getValue())));
+				for (Map.Entry<String, String[]> wEntry : wParameterMap.entrySet()) {
+					wSB.append(String.format("\nParameter(%2d)%30s=[%s]", wIdxP, wEntry.getKey(),
+							CXStringUtils.stringTableToString(wEntry.getValue())));
 					wIdxP++;
 				}
 			}
@@ -352,17 +348,16 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger
 	 * @param aValueGetter
 	 * @return
 	 */
-	private StringBuilder dumpRequestValuesInSB(StringBuilder aSB,
-			String wValueKind, Enumeration<String> aNames,
-			IValueGetter aValueGetter) {
+	private StringBuilder dumpRequestValuesInSB(StringBuilder aSB, String wValueKind,
+			Enumeration<String> aNames, IValueGetter aValueGetter) {
 		// an other buffer to be able to trace the size before the attributes
 		StringBuilder wSB = new StringBuilder();
 		int wIdxA = 0;
 		while (aNames.hasMoreElements()) {
 			String wAtributesName = aNames.nextElement();
 			Object wAtributesValue = aValueGetter.getValue(wAtributesName);
-			wSB.append(String.format("\n%s(%2d)%30s=[%s]", wValueKind, wIdxA,
-					wAtributesName, wAtributesValue));
+			wSB.append(String
+					.format("\n%s(%2d)%30s=[%s]", wValueKind, wIdxA, wAtributesName, wAtributesValue));
 			wIdxA++;
 		}
 		dumpOneInfoInSB(aSB, wValueKind + "sSize", wIdxA);
@@ -375,8 +370,7 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger
 	 * @param wResponse
 	 * @return
 	 */
-	protected StringBuilder dumpResponse(final StringBuilder wSB,
-			final HttpServletResponse wResponse) {
+	protected StringBuilder dumpResponse(final StringBuilder wSB, final HttpServletResponse wResponse) {
 
 		try {
 			CXTimer wTimer = CXTimer.newStartedTimer();
@@ -384,8 +378,8 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger
 			if (pLogDebugForced || getLogger().isLogDebugOn()) {
 				dumpResponseInfosInSB(wSB, wResponse);
 				dumpResponseHeadersInSB(wSB, wResponse);
-				wSB.append(String.format(
-						"\n------------ Response trace duration=[%s ms] -----",
+				dumpResponseDataInSB(wSB, wResponse);
+				wSB.append(String.format("\n------------ Response trace duration=[%s ms] -----",
 						wTimer.getDurationStrMicroSec()));
 			} else {
 				if (getLogger().isLogInfoOn()) {
@@ -403,22 +397,28 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger
 
 	/**
 	 * @param aSB
+	 * @param wResponse
+	 * @return
+	 */
+	private StringBuilder dumpResponseDataInSB(StringBuilder aSB, final HttpServletResponse wResponse) {
+		return aSB;
+	}
+
+	/**
+	 * @param aSB
 	 * @param aRequest
 	 * @return
 	 */
-	private StringBuilder dumpResponseHeadersInSB(StringBuilder aSB,final 
-			HttpServletResponse wResponse) {
+	private StringBuilder dumpResponseHeadersInSB(StringBuilder aSB, final HttpServletResponse wResponse) {
 
-		Enumeration<String> wNames = Collections.enumeration(wResponse
-				.getHeaderNames());
+		Enumeration<String> wNames = Collections.enumeration(wResponse.getHeaderNames());
 
-		dumpRequestValuesInSB(aSB, "ResponseHeader", wNames,
-				new IValueGetter() {
-					@Override
-					public Object getValue(final String aName) {
-						return wResponse.getHeader(aName);
-					}
-				});
+		dumpRequestValuesInSB(aSB, "ResponseHeader", wNames, new IValueGetter() {
+			@Override
+			public Object getValue(final String aName) {
+				return wResponse.getHeader(aName);
+			}
+		});
 
 		return aSB;
 	}
@@ -428,13 +428,11 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger
 	 * @param aResponse
 	 * @return
 	 */
-	private StringBuilder dumpResponseInfosInSB(StringBuilder wSB,
-			HttpServletResponse aResponse) {
+	private StringBuilder dumpResponseInfosInSB(StringBuilder wSB, HttpServletResponse aResponse) {
 
 		dumpOneInfoInSB(wSB, "Status", aResponse.getStatus());
 		dumpOneInfoInSB(wSB, "Locale", aResponse.getLocale());
-		dumpOneInfoInSB(wSB, "BufferSize/Type", aResponse.getBufferSize(),
-				aResponse.getContentType());
+		dumpOneInfoInSB(wSB, "BufferSize/Type", aResponse.getBufferSize(), aResponse.getContentType());
 
 		return wSB;
 	}
@@ -444,19 +442,59 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger
 	 * @param aRequest
 	 * @return
 	 */
-	private StringBuilder dumpResponseInfosMiniInSB(StringBuilder wSB,
-			HttpServletResponse aResponse) {
+	private StringBuilder dumpResponseInfosMiniInSB(StringBuilder wSB, HttpServletResponse aResponse) {
 
-		return wSB.append(String.format(" [%s] [%s] [%s]",
-				aResponse.getStatus(), aResponse.getLocale(),
+		return wSB.append(String.format(" [%s] [%s] [%s]", aResponse.getStatus(), aResponse.getLocale(),
 				aResponse.getContentType()));
 	}
 
 	/**
+	 * @param aRequest
 	 * @return
 	 */
-	String getIncludedUrlPattern() {
-		return pIncludedUrlPattern;
+	private boolean execFiltering(final HttpServletRequest aRequest) {
+
+		if (!hasUriSuffixes()) {
+			return false;
+		}
+		boolean wExec = false;
+
+		// eg.
+		// http://localhost:8080/AgiliumWeb/auth.srvl?RelayState=main.jsp%3Fpage%3DDashboard
+		String wRequestURI = aRequest.getRequestURI();
+		int wPos = wRequestURI.indexOf('?');
+		if (wPos > -1) {
+			wRequestURI = wRequestURI.substring(0, wPos);
+		}
+
+		for (String wExtension : pIncludedUriSuffixes) {
+			if (wExtension != null && !wExtension.isEmpty() && wRequestURI.endsWith(wExtension)) {
+				wExec = true;
+				break;
+			}
+		}
+		if (getLogger().isLoggable(Level.FINER)){
+			getLogger().log(Level.FINER,this, "execFiltering", "RequestURI=[%s] execFiltering=[%s] Suffixes=[%s]",
+					wRequestURI, wExec, pIncludedUriSuffixes);
+		}
+		return wExec;
+	}
+
+	/**
+	 * @param aInfo
+	 * @return
+	 */
+	protected String getFilterInfo() {
+
+		// ATTENTION : parameters's ID used in other WeApps !
+		JSONObject wObj = new JSONObject();
+		wObj.put("class", getClass().getSimpleName());
+		wObj.put("logdebugforced", String.valueOf(pLogDebugForced));
+		wObj.put("name", String.valueOf(pName));
+		wObj.put("mapping", String.valueOf(pMapping));
+		wObj.put("targetcontext", String.valueOf(pContextPath));
+		wObj.put("suffixes", getUriSuffixesList());
+		return wObj.toString();
 	}
 
 	/**
@@ -464,6 +502,31 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger
 	 */
 	public String getName() {
 		return pName;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getNbUriSuffixes() {
+		return (hasUriSuffixes()) ? pIncludedUriSuffixes.length : -1;
+	}
+
+	/**
+	 * @return
+	 */
+	protected String[] getUriSuffixes() {
+		return pIncludedUriSuffixes;
+	}
+	
+	protected String getUriSuffixesList() {
+		return CXStringUtils.stringTableToString(getUriSuffixes(),";");
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean hasUriSuffixes() {
+		return pIncludedUriSuffixes != null && pIncludedUriSuffixes.length > 0;
 	}
 
 	/**
@@ -486,34 +549,61 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger
 		pName = aConfig.getFilterName();
 
 		StringBuilder wSB = new StringBuilder();
-		Enumeration<String> wParameterNames = aConfig.getInitParameterNames();
-		int wIdx = 0;
-		while (wParameterNames.hasMoreElements()) {
-			String wParameterName = wParameterNames.nextElement();
-			String wParameterValue = aConfig.getInitParameter(wParameterName);
-			boolean wUsed = false;
+		try {
+			Enumeration<String> wParameterNames = aConfig.getInitParameterNames();
+			int wIdx = 0;
+			while (wParameterNames.hasMoreElements()) {
+				String wParameterName = wParameterNames.nextElement();
+				String wParameterValue = aConfig.getInitParameter(wParameterName);
+				boolean wUsed = false;
 
-			// Included_Url_Pattern
-			if (PARAM_ID_IUP.equalsIgnoreCase(wParameterName)) {
-				wUsed = true;
-				pIncludedUrlPattern = wParameterValue;
-			} else
-			// Log_Debug_Forced
-			if (PARAM_ID_LDF.equalsIgnoreCase(wParameterName)) {
-				wUsed = true;
-				// true if the string argument is not null and is equal,
-				// ignoring case, to the string "true".
-				pLogDebugForced = Boolean.parseBoolean(wParameterValue);
+				//"filter.request.tracer.included.uri.suffixes";
+				if (PARAM_URI_SUFFIXES.equalsIgnoreCase(wParameterName)) {
+					wUsed = true;
+					if (wParameterValue != null && !wParameterValue.isEmpty()) {
+						setUriSuffixes(wParameterValue);
+					}
+				} else
+					//"filter.request.tracer.Log.debug.forced";
+				if (PARAM_LOG_DEBUG_FORCED.equalsIgnoreCase(wParameterName)) {
+					wUsed = true;
+					// true if the string argument is not null and is equal,
+					// ignoring case, to the string "true".
+					pLogDebugForced = Boolean.parseBoolean(wParameterValue);
+				}
+				//"filter.request.tracer.mapping";
+				if (PARAM_MAPPING.equalsIgnoreCase(wParameterName)) {
+					wUsed = true;
+					if (wParameterValue != null && !wParameterValue.isEmpty()) {
+						pMapping = wParameterValue;
+					}
+				}				
+				//"filter.request.tracer.context.path";
+				if (PARAM_TARGET_CONTEXT.equalsIgnoreCase(wParameterName)) {
+					wUsed = true;
+					if (wParameterValue != null && !wParameterValue.isEmpty()) {
+						pContextPath = wParameterValue;
+					}
+				}
+
+				wSB.append(String.format("\n(%2d) %30s=[%s] used=[%b]", wIdx, wParameterName,
+						wParameterValue, wUsed));
+				wIdx++;
 			}
-
-			wSB.append(String.format("\n(%2d) %30s=[%s] used=[%b]", wIdx,
-					wParameterName, wParameterValue, wUsed));
-			wIdx++;
+		} catch (Exception e) {
+			getLogger().logSevere(this, "init", "ERROR:\n%s", e);
+			wSB.append(String.format("ERROR:\n%s", CXException.eMiniInString(e)));
 		}
 
-		getLogger().logInfo(this, "init", "initialized name=[%s] Config:%s",
-				getName(), wSB.toString());
+		getLogger().logInfo(this, "init", "initialized name=[%s] Config:%s", getName(), wSB.toString());
 
+	}
+
+	/**
+	 * @return
+	 */
+	protected boolean isLogDebugForced() {
+		return pLogDebugForced;
 	}
 
 	/**
@@ -527,16 +617,58 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger
 		return String.format(FMT_SECONDS, wDbl);
 	}
 
+	/**
+	 * @param aLogDebugForced
+	 */
+	protected void setLogDebugForced(final boolean aLogDebugForced) {
+		pLogDebugForced = aLogDebugForced;
+	}
+
+	/**
+	 * @param aUriSuffixesList
+	 */
+	protected void setUriSuffixes(final String aUriSuffixesList) {
+
+		List<String> wUriSuffixesList = new ArrayList<String>();
+
+		if (aUriSuffixesList != null && !aUriSuffixesList.isEmpty()) {
+			if (aUriSuffixesList.contains(";")) {
+				String[] wSuffixes = aUriSuffixesList.split(";");
+				for (String wSuffix : wSuffixes) {
+
+					if (wSuffix != null && !wSuffix.isEmpty()) {
+						wUriSuffixesList.add(wSuffix);
+					}
+					//
+					else {
+						getLogger().logWarn(this, "setIncludedUriSuffixes",
+								"Attention the suffixes array definition has empty member");
+					}
+				}
+
+			}
+		}
+		getLogger().logWarn(this, "setIncludedUriSuffixes", "Suffixes=%s",
+				CXStringUtils.stringListToString(wUriSuffixesList));
+
+		setUriSuffixes(wUriSuffixesList.toArray(new String[0]));
+	}
+
+	/**
+	 * @param aUriSuffixes
+	 */
+	protected void setUriSuffixes(final String[] aUriSuffixes) {
+		pIncludedUriSuffixes = aUriSuffixes;
+	}
+
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 
-		return String.format("FilterClass=[%s] FilterName=[%s]", getClass()
-				.getSimpleName(), getName());
+		return getFilterInfo();
 	}
-
 }

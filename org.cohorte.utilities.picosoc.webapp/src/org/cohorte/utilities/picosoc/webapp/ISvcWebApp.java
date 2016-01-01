@@ -1,12 +1,11 @@
 package org.cohorte.utilities.picosoc.webapp;
 
-import java.util.Properties;
-
+import org.cohorte.utilities.picosoc.config.ISvcWebAppProperties;
 import org.psem2m.utilities.files.CXFileDir;
 
 /**
  * @author ogattaz
- * 
+ *
  */
 public interface ISvcWebApp {
 
@@ -43,57 +42,7 @@ public interface ISvcWebApp {
 	/**
 	 * @return
 	 */
-	Properties getWebAppProperties();
-
-	/**
-	 * @param aPropertyName
-	 * @return
-	 */
-	String getWebAppProperty(final String aPropertyName);
-
-	/**
-	 * @param aPropertyName
-	 * @param aDefault
-	 * @return
-	 */
-	String getWebAppProperty(final String aPropertyName, final String aDefault);
-
-	/**
-	 * @param aPropertyName
-	 * @return
-	 */
-	boolean getWebAppPropertyBool(final String aPropertyName);
-
-	/**
-	 * @param aPropertyName
-	 * @param aDefault
-	 * @return
-	 */
-	boolean getWebAppPropertyBool(final String aPropertyName,
-			final String aDefault);
-
-	/**
-	 * @param aPropertyName
-	 * @return
-	 */
-	int getWebAppPropertyInt(final String aPropertyName);
-
-	/**
-	 * @param aPropertyName
-	 * @param aDefault
-	 * @return
-	 */
-	int getWebAppPropertyInt(final String aPropertyName, final String aDefault);
-
-	/**
-	 * @return
-	 */
-	boolean hasProperties();
-	
-	/**
-	 * @return
-	 */
-	boolean hasPropertiesXmlFile();
+	ISvcWebAppProperties getWebAppProperties();
 
 	/**
 	 * @return
