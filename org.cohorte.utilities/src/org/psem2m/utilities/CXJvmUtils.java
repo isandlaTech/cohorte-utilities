@@ -13,6 +13,7 @@ package org.psem2m.utilities;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
@@ -63,26 +64,23 @@ public final class CXJvmUtils {
 	public static final String SYSPROP_USER_REGION = "user.region";
 	public static final String SYSPROP_USER_TIMEZONE = "user.timezone";
 
-	public static final String[] SYSPROPS = { SYSPROP_DEFAULT_CHARSET,
-			SYSPROP_JAVA_CLASS_PATH, SYSPROP_JAVA_CLASS_VERS,
-			SYSPROP_JAVA_ENDORSED_DIR, SYSPROP_JAVA_EXT_DIR, SYSPROP_JAVA_HOME,
-			SYSPROP_JAVA_IO_TMPDIR, SYSPROP_JAVA_RUN_NAME,
-			SYSPROP_JAVA_RUN_VERS, SYSPROP_JAVA_VENDOR, SYSPROP_JAVA_VERS,
-			SYSPROP_JAVA_VM_INFO, SYSPROP_JAVA_VM_NAME, SYSPROP_JAVA_VM_VENDOR,
-			SYSPROP_JAVA_VM_VERSION, SYSPROP_LIB_PATH, SYSPROP_OS_ARCH,
-			SYSPROP_OS_NAME, SYSPROP_OS_VERS, SYSPROP_JAVA_SPEC_VERS,
-			SYSPROP_SUPPORTED_ENCODING, SYSPROP_USER_DIR, SYSPROP_USER_HOME,
-			SYSPROP_USER_LANG, SYSPROP_USER_NAME, SYSPROP_USER_COUNTRY,
-			SYSPROP_USER_REGION, SYSPROP_USER_TIMEZONE, SYSPROP_JAVA_VENDOR_URL };
+	public static final String[] SYSPROPS = { SYSPROP_DEFAULT_CHARSET, SYSPROP_JAVA_CLASS_PATH,
+			SYSPROP_JAVA_CLASS_VERS, SYSPROP_JAVA_ENDORSED_DIR, SYSPROP_JAVA_EXT_DIR, SYSPROP_JAVA_HOME,
+			SYSPROP_JAVA_IO_TMPDIR, SYSPROP_JAVA_RUN_NAME, SYSPROP_JAVA_RUN_VERS, SYSPROP_JAVA_VENDOR,
+			SYSPROP_JAVA_VERS, SYSPROP_JAVA_VM_INFO, SYSPROP_JAVA_VM_NAME, SYSPROP_JAVA_VM_VENDOR,
+			SYSPROP_JAVA_VM_VERSION, SYSPROP_LIB_PATH, SYSPROP_OS_ARCH, SYSPROP_OS_NAME, SYSPROP_OS_VERS,
+			SYSPROP_JAVA_SPEC_VERS, SYSPROP_SUPPORTED_ENCODING, SYSPROP_USER_DIR, SYSPROP_USER_HOME,
+			SYSPROP_USER_LANG, SYSPROP_USER_NAME, SYSPROP_USER_COUNTRY, SYSPROP_USER_REGION,
+			SYSPROP_USER_TIMEZONE, SYSPROP_JAVA_VENDOR_URL };
 
 	public static final boolean VALUE_MULTI_LINE = true;
 	public static final boolean VALUE_ONE_LINE = false;
 
-	public static final int VECTOR_FULL_INFOS = MASK_INFOS_JAVA + MASK_INFOS_OS
-			+ MASK_INFOS_USER + MASK_INFOS_PATHS + MASK_OTHER_PROPS;
+	public static final int VECTOR_FULL_INFOS = MASK_INFOS_JAVA + MASK_INFOS_OS + MASK_INFOS_USER
+			+ MASK_INFOS_PATHS + MASK_OTHER_PROPS;
 
-	public static final int VECTOR_INFOS_LESS_PATHS = MASK_INFOS_JAVA
-			+ MASK_INFOS_OS + MASK_INFOS_USER + MASK_OTHER_PROPS;
+	public static final int VECTOR_INFOS_LESS_PATHS = MASK_INFOS_JAVA + MASK_INFOS_OS + MASK_INFOS_USER
+			+ MASK_OTHER_PROPS;
 
 	/**
 	 * @param aSB
@@ -94,9 +92,8 @@ public final class CXJvmUtils {
 	 *            a endline character (eg ':' in a list of paths )
 	 * @return
 	 */
-	public static StringBuilder addDescrAlignInSB(final StringBuilder aSB,
-			final String aId, final int aIdSize, final String aValue,
-			final int aValueSize, final char aEndLine) {
+	public static StringBuilder addDescrAlignInSB(final StringBuilder aSB, final String aId,
+			final int aIdSize, final String aValue, final int aValueSize, final char aEndLine) {
 
 		aSB.append(CXStringUtils.strAdjustRight(aId, aIdSize, ' '));
 		aSB.append('=');
@@ -110,8 +107,7 @@ public final class CXJvmUtils {
 			int wValueSize;
 			while (wPos < wMax) {
 				if (wPos > 0) {
-					aSB.append('\n').append(
-							CXStringUtils.strFromChar(' ', aIdSize + 2));
+					aSB.append('\n').append(CXStringUtils.strFromChar(' ', aIdSize + 2));
 				}
 				wValueSize = calcValueSize(aValue, wPos, aEndLine, aValueSize);
 				if (wPos + wValueSize < wMax) {
@@ -131,8 +127,7 @@ public final class CXJvmUtils {
 	 * @param aId
 	 * @return
 	 */
-	private static StringBuilder addJavaInfoDescrInSB(final StringBuilder aSB,
-			final String aId) {
+	private static StringBuilder addJavaInfoDescrInSB(final StringBuilder aSB, final String aId) {
 
 		return addJavaInfoDescrInSB(aSB, aId, System.getProperty(aId), SEP_NUL);
 	}
@@ -143,8 +138,8 @@ public final class CXJvmUtils {
 	 * @param aEndLine
 	 * @return
 	 */
-	private static StringBuilder addJavaInfoDescrInSB(final StringBuilder aSB,
-			final String aId, final char aEndLine) {
+	private static StringBuilder addJavaInfoDescrInSB(final StringBuilder aSB, final String aId,
+			final char aEndLine) {
 
 		return addJavaInfoDescrInSB(aSB, aId, System.getProperty(aId), aEndLine);
 	}
@@ -155,11 +150,10 @@ public final class CXJvmUtils {
 	 * @param aValue
 	 * @return
 	 */
-	private static StringBuilder addJavaInfoDescrInSB(final StringBuilder aSB,
-			final String aId, final String aValue, final char aEndLine) {
+	private static StringBuilder addJavaInfoDescrInSB(final StringBuilder aSB, final String aId,
+			final String aValue, final char aEndLine) {
 
-		return addDescrAlignInSB(aSB, aId, ID_WITDH, aValue, LINE_WITDH
-				- ID_WITDH, aEndLine);
+		return addDescrAlignInSB(aSB, aId, ID_WITDH, aValue, LINE_WITDH - ID_WITDH, aEndLine);
 	}
 
 	/**
@@ -169,8 +163,7 @@ public final class CXJvmUtils {
 	 * @param aSep
 	 * @return
 	 */
-	static StringBuilder addSeparatorInSB(final StringBuilder aSB,
-			final char aSep) {
+	static StringBuilder addSeparatorInSB(final StringBuilder aSB, final char aSep) {
 
 		if (aSep != SEP_NUL) {
 			aSB.append(aSep);
@@ -183,14 +176,13 @@ public final class CXJvmUtils {
 	 * @param aClass
 	 * @param aTargetCastClass
 	 */
-	public static StringBuilder appendClassInfosInSB(
-			final StringBuilder aRepport, final Class<?> aClass) {
+	public static StringBuilder appendClassInfosInSB(final StringBuilder aRepport, final Class<?> aClass) {
 		Class<?> wClass = aClass;
 		int wLevel = 0;
 		while (wClass != null) {
 			// MOD_OG_20150409 use getClassLoaderInfos
-			aRepport.append(String.format("\nClass(%2d)=[%75s from %s]",
-					wLevel, wClass.getName(), getClassLoaderInfos(wClass)));
+			aRepport.append(String.format("\nClass(%2d)=[%75s from %s]", wLevel, wClass.getName(),
+					getClassLoaderInfos(wClass)));
 
 			appendInterfaceInfosInSB(aRepport, wClass, 1);
 
@@ -205,9 +197,8 @@ public final class CXJvmUtils {
 	 * @param aClass
 	 * @param aInterfaceLevel
 	 */
-	private static StringBuilder appendInterfaceInfosInSB(
-			final StringBuilder aRepport, final Class<?> aClass,
-			final int aInterfaceLevel) {
+	private static StringBuilder appendInterfaceInfosInSB(final StringBuilder aRepport,
+			final Class<?> aClass, final int aInterfaceLevel) {
 
 		Class<?>[] wInterfaces = aClass.getInterfaces();
 		if (wInterfaces != null && wInterfaces.length > 0) {
@@ -217,13 +208,10 @@ public final class CXJvmUtils {
 				wInterface = wInterfaces[wInterfaceIdx];
 
 				// MOD_OG_20150409 use getClassLoaderInfos
-				aRepport.append(String.format(
-						"\n  Interface(%d.%d)=[%68s from %s]", aInterfaceLevel,
-						wInterfaceIdx, wInterface.getName(),
-						getClassLoaderInfos(wInterface)));
+				aRepport.append(String.format("\n  Interface(%d.%d)=[%68s from %s]", aInterfaceLevel,
+						wInterfaceIdx, wInterface.getName(), getClassLoaderInfos(wInterface)));
 
-				appendInterfaceInfosInSB(aRepport, wInterface,
-						(aInterfaceLevel + 1));
+				appendInterfaceInfosInSB(aRepport, wInterface, (aInterfaceLevel + 1));
 			}
 
 		}
@@ -238,8 +226,7 @@ public final class CXJvmUtils {
 	 */
 	public static StringBuilder appendJavaContextInSB(final StringBuilder aSB) {
 
-		return appendJavaContextInSB(aSB, '\n', VECTOR_FULL_INFOS,
-				VALUE_MULTI_LINE);
+		return appendJavaContextInSB(aSB, '\n', VECTOR_FULL_INFOS, VALUE_MULTI_LINE);
 	}
 
 	/**
@@ -256,9 +243,8 @@ public final class CXJvmUtils {
 	 * @return the description of the context of the JVM as a name-value pairs
 	 *         list separated by the separator
 	 */
-	private static StringBuilder appendJavaContextInSB(final StringBuilder aSB,
-			final char aSeparator, final int aInformationMask,
-			final boolean aValueMultiLine) {
+	private static StringBuilder appendJavaContextInSB(final StringBuilder aSB, final char aSeparator,
+			final int aInformationMask, final boolean aValueMultiLine) {
 
 		if (aValueMultiLine) {
 			addSeparatorInSB(aSB, aSeparator);
@@ -331,22 +317,18 @@ public final class CXJvmUtils {
 				addSeparatorInSB(aSB, aSeparator);
 			}
 			appendSepLineInSB(aSB, aSeparator);
-			addJavaInfoDescrInSB(aSB, SYSPROP_JAVA_CLASS_PATH,
-					aValueMultiLine ? File.pathSeparatorChar : SEP_NUL);
+			addJavaInfoDescrInSB(aSB, SYSPROP_JAVA_CLASS_PATH, aValueMultiLine ? File.pathSeparatorChar
+					: SEP_NUL);
 			addSeparatorInSB(aSB, aSeparator);
-			addJavaInfoDescrInSB(aSB, SYSPROP_LIB_PATH,
-					aValueMultiLine ? File.pathSeparatorChar : SEP_NUL);
-			addSeparatorInSB(aSB, aSeparator);
-
-			addJavaInfoDescrInSB(aSB, SYSPROP_DEFAULT_CHARSET, Charset
-					.defaultCharset().displayName(), SEP_NUL);
+			addJavaInfoDescrInSB(aSB, SYSPROP_LIB_PATH, aValueMultiLine ? File.pathSeparatorChar : SEP_NUL);
 			addSeparatorInSB(aSB, aSeparator);
 
-			addJavaInfoDescrInSB(
-					aSB,
-					SYSPROP_SUPPORTED_ENCODING,
-					formatEncodings(aValueMultiLine,
-							CXOSUtils.dumpSupportedEncodings()),
+			addJavaInfoDescrInSB(aSB, SYSPROP_DEFAULT_CHARSET, Charset.defaultCharset().displayName(),
+					SEP_NUL);
+			addSeparatorInSB(aSB, aSeparator);
+
+			addJavaInfoDescrInSB(aSB, SYSPROP_SUPPORTED_ENCODING,
+					formatEncodings(aValueMultiLine, CXOSUtils.dumpSupportedEncodings()),
 					aValueMultiLine ? ';' : SEP_NUL);
 		}
 
@@ -366,11 +348,9 @@ public final class CXJvmUtils {
 	 * @param aSB
 	 * @return
 	 */
-	private static StringBuilder appendOtherPropsInSB(final StringBuilder aSB,
-			final char aSeparator) {
+	private static StringBuilder appendOtherPropsInSB(final StringBuilder aSB, final char aSeparator) {
 
-		CXSortListProperties wProps = new CXSortListProperties(
-				System.getProperties(), CXSortList.ASCENDING);
+		CXSortListProperties wProps = new CXSortListProperties(System.getProperties(), CXSortList.ASCENDING);
 		TreeSet<Entry<Object, Object>> wEntries = wProps.getTreeSet();
 		String wPropId;
 		int wI = 0;
@@ -392,8 +372,7 @@ public final class CXJvmUtils {
 	 * @param aSeparator
 	 * @return
 	 */
-	static StringBuilder appendSepLineInSB(final StringBuilder aSB,
-			final char aSeparator) {
+	static StringBuilder appendSepLineInSB(final StringBuilder aSB, final char aSeparator) {
 
 		aSB.append(CXStringUtils.strFromChar('-', LINE_WITDH));
 		addSeparatorInSB(aSB, aSeparator);
@@ -407,8 +386,8 @@ public final class CXJvmUtils {
 	 * @param aDefaultSize
 	 * @return
 	 */
-	private static int calcValueSize(final String aValue, final int aPos,
-			final char aEndLine, final int aDefaultSize) {
+	private static int calcValueSize(final String aValue, final int aPos, final char aEndLine,
+			final int aDefaultSize) {
 
 		if (aEndLine == SEP_NUL) {
 			return aDefaultSize;
@@ -431,13 +410,12 @@ public final class CXJvmUtils {
 	 * @param aClass
 	 * @param aTargetCastClass
 	 */
-	public static void dumpClassInfosInSB(final StringBuilder aRepport,
-			final Class<?> aClass) {
+	public static void dumpClassInfosInSB(final StringBuilder aRepport, final Class<?> aClass) {
 		Class<?> wClass = aClass;
 		int wLevel = 0;
 		while (wClass != null) {
-			aRepport.append(String.format("\nClass(%2d)=[%70s from %s]",
-					wLevel, wClass.getName(), wClass.getClassLoader()));
+			aRepport.append(String.format("\nClass(%2d)=[%70s from %s]", wLevel, wClass.getName(),
+					wClass.getClassLoader()));
 
 			Class<?>[] wInterfaces = wClass.getInterfaces();
 			if (wInterfaces != null && wInterfaces.length > 0) {
@@ -447,10 +425,8 @@ public final class CXJvmUtils {
 					wInterface = wInterfaces[wInterfaceIdx];
 					int wInterfaceLevel = 0;
 					while (wInterface != null) {
-						aRepport.append(String.format(
-								"\n     Interface(%d.%d)=[%70s from %s]",
-								wInterfaceIdx, wInterfaceLevel,
-								wInterface.getName(),
+						aRepport.append(String.format("\n     Interface(%d.%d)=[%70s from %s]",
+								wInterfaceIdx, wInterfaceLevel, wInterface.getName(),
 								wInterface.getClassLoader()));
 						wInterfaceLevel++;
 						wInterface = wInterface.getSuperclass();
@@ -467,8 +443,7 @@ public final class CXJvmUtils {
 	 * @param adumpSupportedEncodings
 	 * @return
 	 */
-	private static String formatEncodings(final boolean aValueMultiLine,
-			final String aDumpSupportedEncodings) {
+	private static String formatEncodings(final boolean aValueMultiLine, final String aDumpSupportedEncodings) {
 
 		if (!aValueMultiLine) {
 			return aDumpSupportedEncodings;
@@ -537,8 +512,18 @@ public final class CXJvmUtils {
 		// loader
 		ClassLoader wClassLoader = aClass.getClassLoader();
 
-		return (wClassLoader != null) ? wClassLoader.toString()
-				: "bootstrap class loader";
+		return (wClassLoader != null) ? wClassLoader.toString() : "bootstrap class loader";
+	}
+
+	/**
+	 * @return
+	 */
+	public static String getCurrentThreadInfos() {
+
+		Thread wCurrentThread = Thread.currentThread();
+		return String.format("Thread=[%s] isDaemon=[%s] ThreadGroup=[%s] ContextClassLoader=[%s]",
+				wCurrentThread.getName(), wCurrentThread.isDaemon(), wCurrentThread.getThreadGroup(),
+				wCurrentThread.getContextClassLoader());
 	}
 
 	/**
@@ -556,8 +541,7 @@ public final class CXJvmUtils {
 	 */
 	public static String getInterfaceInfos(final Class<?> aInterface) {
 
-		return appendInterfaceInfosInSB(new StringBuilder(256), aInterface, 1)
-				.toString();
+		return appendInterfaceInfosInSB(new StringBuilder(256), aInterface, 1).toString();
 	}
 
 	/**
@@ -588,11 +572,11 @@ public final class CXJvmUtils {
 	 * 
 	 * @see getJavaContext()
 	 */
-	public static String getJavaContext(final char aSeparator,
-			final int aInformationMask, final boolean aValueMultiLineLine) {
+	public static String getJavaContext(final char aSeparator, final int aInformationMask,
+			final boolean aValueMultiLineLine) {
 
-		return appendJavaContextInSB(new StringBuilder(512), aSeparator,
-				aInformationMask, aValueMultiLineLine).toString();
+		return appendJavaContextInSB(new StringBuilder(512), aSeparator, aInformationMask,
+				aValueMultiLineLine).toString();
 	}
 
 	/**
@@ -607,8 +591,7 @@ public final class CXJvmUtils {
 	 * 
 	 * @see getJavaContext()
 	 */
-	public static String getJavaContext(final int aInformationMask,
-			final boolean aValueMultiLineLine) {
+	public static String getJavaContext(final int aInformationMask, final boolean aValueMultiLineLine) {
 
 		return getJavaContext('\n', aInformationMask, aValueMultiLineLine);
 	}

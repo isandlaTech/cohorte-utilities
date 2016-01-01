@@ -6,7 +6,8 @@ from 1.0.4  to 1.0.5 (master)
 - MOD_OG_20151224
   - BUG: Correction of the method org.psem2m.utilities.json.JSONObject.put(String, Map<String, ? extends Object>) to accept map of enxtended Objects
   - Addition of the method org.psem2m.utilities.json.JSONObject.put(String,String)
-
+  - Addition of the method org.psem2m.utilities.CXJvmUtils.getCurrentThreadInfos()
+  
 - MOD_OG_20151201
   - Addition of the IXResourceLocator
   - Addition of the package encode
