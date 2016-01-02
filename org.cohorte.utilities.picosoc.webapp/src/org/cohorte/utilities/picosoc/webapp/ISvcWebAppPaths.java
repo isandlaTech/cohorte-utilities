@@ -58,11 +58,11 @@ public interface ISvcWebAppPaths {
 	File getDirConfig() throws Exception;
 	
 	/**
-	 * @param aSubPath
+	 * @param aSubPaths an array of 
 	 * @return
 	 * @throws Exception
 	 */
-	File getDirConfig(final String aSubPath) throws Exception;
+	File getDirConfig(final String... aSubPaths) throws Exception;
 
 	/**
 	 * @return
@@ -88,13 +88,13 @@ public interface ISvcWebAppPaths {
 	File getDirLogs() throws Exception;
 
 	/**
-	 * @param aSubPath
+	 * @param aSubPaths
 	 * @return a File instance representing the webapp log dir :
 	 *         ${catalina.base}/logs/webapp or
 	 *         ${org.cohorte.utilities.webapp.install.dataroot}/logs/webapp if
 	 *         it defined	 * @throws Exception
 	 */
-	File getDirLogs(final String aSubPath) throws Exception;
+	File getDirLogs(final String... aSubPaths) throws Exception;
 
 	/**
 	 * @return a File instance representing the tomcat log dir :

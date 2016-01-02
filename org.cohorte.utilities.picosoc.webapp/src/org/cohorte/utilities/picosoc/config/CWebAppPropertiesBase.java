@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map.Entry;
@@ -39,6 +40,7 @@ public abstract class CWebAppPropertiesBase extends
 
 	private final CXFileDir pConfigDir;
 	private final String pConfigName;
+	private final String pConfigResourceName;
 	private final Properties pProperties = new Properties();
 	private final ClassLoader pResourceLoader;
 	private final String pResourcePath;
@@ -54,21 +56,22 @@ public abstract class CWebAppPropertiesBase extends
 	 * @throws IOException
 	 */
 	public CWebAppPropertiesBase(final File aConfigDir,
-			final String aConfigName, final IXResourceLocator aResourceLocator)
+			final String aConfigName, final String aConfigResourceName,final IXResourceLocator aResourceLocator)
 			throws IOException {
 		super();
 
 		pConfigDir = new CXFileDir(aConfigDir);
 		pConfigName = aConfigName;
+		pConfigResourceName = aConfigResourceName;
 		pResourcePath = aResourceLocator.getResourcePackage().getName()
 				.replace('.', '/');
 		pResourceLoader = aResourceLocator.getResourceLoader();
 
-		init();
-
 		registerMeAsService(ISvcWebAppProperties.class);
 
-		getLogger().logInfo(this, "<init>", "instanciated %s", this);
+		getLogger().logInfo(this, "<init>", "instanciated. %s", this);
+		
+		init();
 	}
 
 	/**
@@ -76,7 +79,10 @@ public abstract class CWebAppPropertiesBase extends
 	 * @return
 	 */
 	protected StringBuilder addDescriptionInSB(final StringBuilder aSB) {
-
+		aSB.append(String.format("ConfigName=[%s]",pConfigName));
+		aSB.append(String.format(" ConfigDir=[%s]",pConfigDir));
+		aSB.append(String.format(" ConfigResourceName=[%s]",pConfigResourceName));
+		aSB.append(String.format(" ResourcePath=[%s]",pResourcePath));
 		return aSB;
 	}
 
@@ -176,7 +182,7 @@ public abstract class CWebAppPropertiesBase extends
 	 * @return
 	 */
 	protected String getConfigBaseResourcePath() {
-		return String.format("%s/%s", pResourcePath, getConfigBaseFileName());
+		return String.format("%s/%s%s", pResourcePath, pConfigResourceName,PROPERTIES_BASE_XML);
 	}
 
 	/*
@@ -231,7 +237,7 @@ public abstract class CWebAppPropertiesBase extends
 	 * @return
 	 */
 	protected String getConfigResourcePath() {
-		return String.format("%s/%s", pResourcePath, getConfigFileName());
+		return String.format("%s/%s%s", pResourcePath, pConfigResourceName,PROPERTIES_XML);
 	}
 
 	/**
@@ -239,8 +245,16 @@ public abstract class CWebAppPropertiesBase extends
 	 * @return
 	 */
 	protected File getFileFromResource(final String aResourcePath) {
-		return new File(pResourceLoader.getResource(aResourcePath)
-				.getFile());
+		
+		URL wResourceURL =null;
+		try {
+			wResourceURL = pResourceLoader.getResource(aResourcePath);
+			return new File(wResourceURL.getFile());
+		} catch (Exception e) {
+			getLogger().logSevere(this, "getFileFromResource",
+					"ERROR: ResourcePath=[%s] ResourceURL=[%s]\n%s",aResourcePath,wResourceURL, e);
+			return null;
+		}
 	}
 
 	/*

@@ -40,7 +40,7 @@ public abstract class CWebAppBase extends CAbstractComponentBase implements ISvc
 
 	private String pContextPath = null;
 
-	private final String pDefaultName;
+	private final String pWebAppName;
 
 	private String pWebAppFilePath = null;
 
@@ -49,7 +49,7 @@ public abstract class CWebAppBase extends CAbstractComponentBase implements ISvc
 	 */
 	protected CWebAppBase(String aDefaultName) {
 		super();
-		pDefaultName = retreiveWebAppName(aDefaultName);
+		pWebAppName = retreiveWebAppName(aDefaultName);
 	}
 
 	/*
@@ -91,7 +91,7 @@ public abstract class CWebAppBase extends CAbstractComponentBase implements ISvc
 	@Override
 	public String getWebAppDirName() {
 
-		return (hasWebAppFilePath()) ? getWebAppDir().getName() : pDefaultName;
+		return (hasWebAppFilePath()) ? getWebAppDir().getName() : pWebAppName;
 	}
 
 	/*
@@ -111,7 +111,7 @@ public abstract class CWebAppBase extends CAbstractComponentBase implements ISvc
 	 */
 	@Override
 	public String getWebAppName() {
-		return (hasWebAppFilePath()) ? getWebAppDirName() : pDefaultName;
+		return  pWebAppName;
 	}
 
 	/*

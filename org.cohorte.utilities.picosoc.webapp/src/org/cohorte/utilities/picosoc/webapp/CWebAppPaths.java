@@ -121,9 +121,42 @@ public class CWebAppPaths extends CAbstractComponentBase implements
 	 * @see org.cohorte.utilities.picosoc.webapp.ISvcWebAppPaths#getDirConfig(java.lang.String)
 	 */
 	@Override
-	public File getDirConfig(String aSubPath) throws Exception {
+	public File getDirConfig(String... aSubPaths) throws Exception {
 		
-		return new File(getDirConfig(), aSubPath);
+		File wDir = getSubDir(getDirConfig(),aSubPaths);
+		
+		if (!wDir.exists()) {
+			final boolean wDirCreated = wDir.mkdirs();
+			CComponentLoggerFile.logInMain(Level.INFO, CWebAppPaths.class,
+					"getDirConfig", "Dir=[%s] Created=[%b]",
+					wDir.getAbsolutePath(), wDirCreated);
+		}
+		return wDir;
+	}
+	
+	/**
+	 * @param aDir
+	 * @param aSubPaths
+	 * @return
+	 * @throws Exception
+	 */
+	private File getSubDir(File aDir, final String... aSubPaths) throws Exception {
+
+		
+		if (!aDir.isDirectory()) {
+			throw new Exception (String.format("The passed dir isn't a directory", aDir));
+		}
+		
+		File wFile = aDir;
+
+		if (aSubPaths != null) {
+			for (String wSubPath : aSubPaths) {
+				if (wSubPath != null && !wSubPath.isEmpty()) {
+					wFile = new File(wFile, wSubPath);
+				}
+			}
+		}
+		return wFile;
 	}
 
 	/* (non-Javadoc)
@@ -189,8 +222,8 @@ public class CWebAppPaths extends CAbstractComponentBase implements
 	 * String)
 	 */
 	@Override
-	public File getDirLogs(String aWebAppName) throws Exception {
-		final File wDir = new File(getDirLogs(), aWebAppName);
+	public File getDirLogs(String... aSubPaths) throws Exception {
+		final File wDir = getSubDir(getDirLogs(), aSubPaths);
 
 		if (!wDir.exists()) {
 			final boolean wDirCreated = wDir.mkdirs();
