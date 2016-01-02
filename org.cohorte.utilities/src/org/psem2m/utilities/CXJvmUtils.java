@@ -13,7 +13,6 @@ package org.psem2m.utilities;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
@@ -25,15 +24,21 @@ public final class CXJvmUtils {
 
 	private static final int ID_WITDH = 40;
 
+	public static Double JAVA_VERSION_6 = new Double(1.6);
+	public static Double JAVA_VERSION_7 = new Double(1.7);
+	public static Double JAVA_VERSION_8 = new Double(1.8);
+	
 	private static final int LINE_WITDH = 140;
-
 	public static final int MASK_INFOS_JAVA = 1;
 	public static final int MASK_INFOS_OS = 2;
 	public static final int MASK_INFOS_PATHS = 8;
+
 	public static final int MASK_INFOS_USER = 4;
 	public static final int MASK_OTHER_PROPS = 16;
 	public static final char SEP_NUL = (char) 255;
-
+	
+	private static Double sJavaVersion = retreiveVersion ();
+	
 	public static final String SYSPROP_DEFAULT_CHARSET = "defaultCharset";
 	public static final String SYSPROP_JAVA_CLASS_PATH = "java.class.path";
 	public static final String SYSPROP_JAVA_CLASS_VERS = "java.class.version";
@@ -59,9 +64,12 @@ public final class CXJvmUtils {
 	public static final String SYSPROP_USER_COUNTRY = "user.country";
 	public static final String SYSPROP_USER_DIR = "user.dir";
 	public static final String SYSPROP_USER_HOME = "user.home";
+
 	public static final String SYSPROP_USER_LANG = "user.language";
+
 	public static final String SYSPROP_USER_NAME = "user.name";
 	public static final String SYSPROP_USER_REGION = "user.region";
+
 	public static final String SYSPROP_USER_TIMEZONE = "user.timezone";
 
 	public static final String[] SYSPROPS = { SYSPROP_DEFAULT_CHARSET, SYSPROP_JAVA_CLASS_PATH,
@@ -72,13 +80,13 @@ public final class CXJvmUtils {
 			SYSPROP_JAVA_SPEC_VERS, SYSPROP_SUPPORTED_ENCODING, SYSPROP_USER_DIR, SYSPROP_USER_HOME,
 			SYSPROP_USER_LANG, SYSPROP_USER_NAME, SYSPROP_USER_COUNTRY, SYSPROP_USER_REGION,
 			SYSPROP_USER_TIMEZONE, SYSPROP_JAVA_VENDOR_URL };
-
+	
 	public static final boolean VALUE_MULTI_LINE = true;
 	public static final boolean VALUE_ONE_LINE = false;
-
 	public static final int VECTOR_FULL_INFOS = MASK_INFOS_JAVA + MASK_INFOS_OS + MASK_INFOS_USER
 			+ MASK_INFOS_PATHS + MASK_OTHER_PROPS;
-
+	
+	
 	public static final int VECTOR_INFOS_LESS_PATHS = MASK_INFOS_JAVA + MASK_INFOS_OS + MASK_INFOS_USER
 			+ MASK_OTHER_PROPS;
 
@@ -121,7 +129,7 @@ public final class CXJvmUtils {
 		aSB.append(']');
 		return aSB;
 	}
-
+	
 	/**
 	 * @param aSB
 	 * @param aId
@@ -131,7 +139,7 @@ public final class CXJvmUtils {
 
 		return addJavaInfoDescrInSB(aSB, aId, System.getProperty(aId), SEP_NUL);
 	}
-
+	
 	/**
 	 * @param aSB
 	 * @param aId
@@ -143,7 +151,6 @@ public final class CXJvmUtils {
 
 		return addJavaInfoDescrInSB(aSB, aId, System.getProperty(aId), aEndLine);
 	}
-
 	/**
 	 * @param aSB
 	 * @param aId
@@ -155,7 +162,6 @@ public final class CXJvmUtils {
 
 		return addDescrAlignInSB(aSB, aId, ID_WITDH, aValue, LINE_WITDH - ID_WITDH, aEndLine);
 	}
-
 	/**
 	 * requete de test du service d'administration
 	 * 
@@ -274,6 +280,9 @@ public final class CXJvmUtils {
 			addSeparatorInSB(aSB, aSeparator);
 			addJavaInfoDescrInSB(aSB, SYSPROP_JAVA_VERS);
 			addSeparatorInSB(aSB, aSeparator);
+			String wVersInfos = String.format(" JavaVersion=[%s] isJava7=[%s] isJava8=[%s] isLessThanJava8=[%s]", getJavaVersion(),isJava7(),isJava8(),isLessThanJava8());
+			addDescrAlignInSB(aSB, "version infos", ID_WITDH, wVersInfos, LINE_WITDH - ID_WITDH, SEP_NUL);
+			addSeparatorInSB(aSB, aSeparator);
 			addJavaInfoDescrInSB(aSB, SYSPROP_JAVA_VM_INFO);
 			addSeparatorInSB(aSB, aSeparator);
 			addJavaInfoDescrInSB(aSB, SYSPROP_JAVA_VM_NAME);
@@ -281,6 +290,7 @@ public final class CXJvmUtils {
 			addJavaInfoDescrInSB(aSB, SYSPROP_JAVA_VM_VENDOR);
 			addSeparatorInSB(aSB, aSeparator);
 			addJavaInfoDescrInSB(aSB, SYSPROP_JAVA_VM_VERSION);
+			
 		}
 		if ((aInformationMask & MASK_INFOS_OS) > 0) {
 			if (aSB.length() > 0) {
@@ -597,6 +607,34 @@ public final class CXJvmUtils {
 	}
 
 	/**
+	 * @return the version of the current Jvm
+	 */
+	public static Double getJavaVersion () {
+		return sJavaVersion;
+	}
+
+	/**
+	 * @return true if the version of the current Jvm is Java 7
+	 */
+	public static boolean isJava7(){
+		return JAVA_VERSION_7.equals(getJavaVersion ());
+	}
+
+	/**
+	 * @return true if the version of the current Jvm is Java 8
+	 */
+	public static boolean isJava8(){
+		return JAVA_VERSION_8.equals( getJavaVersion ());
+	}
+
+	/**
+	 * @return true if the version of the current Jvm is less than Java 8
+	 */
+	public static boolean isLessThanJava8(){
+		return JAVA_VERSION_8 > getJavaVersion ();
+	}
+
+	/**
 	 * @param aId
 	 * @return
 	 */
@@ -611,6 +649,18 @@ public final class CXJvmUtils {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * java.version=[1.7.0_45]
+	 * 
+	 * @return
+	 */
+	private static Double retreiveVersion () {
+	    String version = System.getProperty("java.version");
+	    int pos = version.indexOf('.');
+	    pos = version.indexOf('.', pos+1);
+	    return Double.parseDouble (version.substring (0, pos));
 	}
 
 	/**
