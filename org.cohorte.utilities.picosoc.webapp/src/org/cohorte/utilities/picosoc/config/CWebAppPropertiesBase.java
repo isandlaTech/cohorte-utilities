@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map.Entry;
@@ -249,7 +250,12 @@ public abstract class CWebAppPropertiesBase extends
 		URL wResourceURL =null;
 		try {
 			wResourceURL = pResourceLoader.getResource(aResourcePath);
-			return new File(wResourceURL.getFile());
+			String wPath = wResourceURL.getFile();
+			if (wPath.indexOf('%')>-1){
+				wPath = URLDecoder.decode(wPath,"UTF-8");
+				getLogger().logInfo(this, "getFileFromResource","ResourcePath contains '%' character : must be 'URL decoded'");
+			}
+			return new File(wPath);
 		} catch (Exception e) {
 			getLogger().logSevere(this, "getFileFromResource",
 					"ERROR: ResourcePath=[%s] ResourceURL=[%s]\n%s",aResourcePath,wResourceURL, e);
@@ -428,20 +434,26 @@ public abstract class CWebAppPropertiesBase extends
 		
 		final File wConfigBaseFile = getConfigBaseFile();
 		
-		// Delete BASE config file if it doesn't exist
+		getLogger()
+		.logInfo(
+				this,
+				"init","ConfigBaseFile exists=[%s] path=[%s]",wConfigBaseFile.exists(),wConfigBaseFile);
+		
+		
+		// Delete BASE config file if it exists
 
 		if (wConfigBaseFile.exists()) {
 			boolean wDeleted =wConfigBaseFile.delete();
 			getLogger()
 			.logInfo(
 					this,
-					"init","Force delete BASE config file. deleted=[%s]",wDeleted);
+					"init","Force delete ConfigBaseFile. deleted=[%s]",wDeleted);
 		}
 		
 		// Create BASE config file if it doesn't exist
 		if (!wConfigBaseFile.exists()) {
 			getLogger().logInfo(this, "init",
-					"MUST create BASE    config file from resource [%s]",
+					"ConfigBaseFile doesn't exist. inMUST create BASE config file from resource [%s]",
 					getConfigBaseResourceFile());
 
 			final Path wConfigBasePath = wConfigBaseFile.toPath();
@@ -457,9 +469,14 @@ public abstract class CWebAppPropertiesBase extends
 
 		// Create CURRENT config file if it doesn't exist
 		final File wConfigFile = getConfigFile();
+		getLogger()
+		.logInfo(
+				this,
+				"init","ConfigFile exists=[%s] path=[%s]",wConfigFile.exists(),wConfigFile);
+		
 		if (!wConfigFile.exists()) {
 			getLogger().logInfo(this, "init",
-					"MUST create CURRENT config file from resource [%s]",
+					"ConfigFile doesn't exist. MUST create CURRENT config file from resource [%s]",
 					getConfigResourceFile());
 			final Path wConfigPath = wConfigFile.toPath();
 			Files.copy(getConfigResourceFile().toPath(), wConfigPath);
