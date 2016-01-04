@@ -106,7 +106,9 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger implement
 	private boolean pLogDebugForced = false;
 	private String pMapping = UNKNOWN;
 	private String pName = UNKNOWN;
+	// context of the configuration
 	private String pContextPath = UNKNOWN;
+	private String pTargetContext = UNKNOWN;
 
 	/**
 	 *
@@ -145,22 +147,20 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger implement
 
 			CXTimer wTimer = null;
 			StringBuilder wSB = null;
+			
+			boolean wDoFiltering = testIfFiltering(wHttpRequest);
 
-			if (execFiltering(wHttpRequest)) {
-
+			if (wDoFiltering) {
 				wTimer = CXTimer.newStartedTimer();
 				wSB = new StringBuilder();
-
 				wSB = dumpRequest(wSB, wHttpRequest);
 			}
 
 			aFilterChain.doFilter(aRequest, aResponse);
-			if (execFiltering(wHttpRequest)) {
-
+			
+			if (wDoFiltering) {
 				wSB = dumpResponse(wSB, wHttpResponse);
-
 				wSB.append(String.format(" Duration=[%s ms]", wTimer.getDurationStrMicroSec()));
-
 				getLogger().logInfo(this, "doFilter", wSB.toString());
 			}
 
@@ -452,33 +452,49 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger implement
 	 * @param aRequest
 	 * @return
 	 */
-	private boolean execFiltering(final HttpServletRequest aRequest) {
+	private boolean testIfFiltering(final HttpServletRequest aRequest) {
+		
+		return testIfFiltering(aRequest.getRequestURI());
+	}
+		
+	/**
+	 * eg.
+	 * 
+	 * <pre>
+	 * http://localhost:8080/AgiliumWeb/auth.srvl?RelayState=main.jsp%3Fpage%3DDashboard
+	 * </pre>
+	 * 
+	 * @param aRequestURI
+	 * @return
+	 */
+	private boolean testIfFiltering(final String  aRequestURI) {
 
 		if (!hasUriSuffixes()) {
 			return false;
 		}
-		boolean wExec = false;
+		boolean wDoFiltering = false;
 
-		// eg.
-		// http://localhost:8080/AgiliumWeb/auth.srvl?RelayState=main.jsp%3Fpage%3DDashboard
-		String wRequestURI = aRequest.getRequestURI();
+		String wRequestURI = aRequestURI;
 		int wPos = wRequestURI.indexOf('?');
 		if (wPos > -1) {
 			wRequestURI = wRequestURI.substring(0, wPos);
 		}
 
-		for (String wExtension : pIncludedUriSuffixes) {
-			if (wExtension != null && !wExtension.isEmpty() && wRequestURI.endsWith(wExtension)) {
-				wExec = true;
+		String wFoundSuffix = null;
+		for (String wSuffix : pIncludedUriSuffixes) {
+			if (wSuffix != null && !wSuffix.isEmpty() && wRequestURI.endsWith(wSuffix)) {
+				wDoFiltering = true;
+				wFoundSuffix = wSuffix;
 				break;
 			}
 		}
-		if (getLogger().isLoggable(Level.FINER)) {
-			getLogger().log(Level.FINER, this, "execFiltering",
-					"RequestURI=[%s] execFiltering=[%s] Suffixes=[%s]", wRequestURI, wExec,
+		if (pLogDebugForced || getLogger().isLoggable(Level.FINER)) {
+			Level wLevel = (pLogDebugForced)?Level.ALL:Level.FINER;
+			getLogger().log(wLevel,this, "execFiltering",
+					"RequestURI=[%s] execFiltering=[%s] FoundSuffix=[%s] Suffixes=[%s]", wRequestURI, wDoFiltering,wFoundSuffix,
 					pIncludedUriSuffixes);
 		}
-		return wExec;
+		return wDoFiltering;
 	}
 
 	/**
@@ -490,10 +506,11 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger implement
 		// ATTENTION : parameters's ID used in other WeApps !
 		JSONObject wObj = new JSONObject();
 		wObj.put("class", getClass().getSimpleName());
+		wObj.put("hashcode", String.valueOf(hashCode()));
 		wObj.put("logdebugforced", String.valueOf(pLogDebugForced));
 		wObj.put("name", String.valueOf(pName));
 		wObj.put("mapping", String.valueOf(pMapping));
-		wObj.put("targetcontext", String.valueOf(pContextPath));
+		wObj.put("targetcontext", String.valueOf(pTargetContext));
 		wObj.put("suffixes", getUriSuffixesList());
 		return wObj.toString();
 	}
@@ -548,6 +565,7 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger implement
 	public void init(FilterConfig aConfig) throws ServletException {
 
 		pName = aConfig.getFilterName();
+		pContextPath = aConfig.getServletContext().getContextPath();
 
 		StringBuilder wSB = new StringBuilder();
 		try {
@@ -583,7 +601,7 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger implement
 				if (PARAM_TARGET_CONTEXT.equalsIgnoreCase(wParameterName)) {
 					wUsed = true;
 					if (wParameterValue != null && !wParameterValue.isEmpty()) {
-						pContextPath = wParameterValue;
+						pTargetContext = wParameterValue;
 					}
 				}
 
@@ -597,7 +615,11 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger implement
 		}
 
 		getLogger().logInfo(this, "init", "initialized name=[%s] Config:%s", getName(), wSB.toString());
-
+		
+		
+		String wTestURI = "https://myServer%s/auth.srvl?RelayState=main.jsp%%3Fpage%%3DDashboard";
+		wTestURI = String.format(wTestURI, pContextPath);
+		getLogger().logInfo(this, "init", "TestIfFiltering=[%s] TestURI=[%s]", testIfFiltering(wTestURI),wTestURI);
 	}
 
 	/**
