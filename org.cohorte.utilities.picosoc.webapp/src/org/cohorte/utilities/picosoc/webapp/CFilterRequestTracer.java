@@ -473,9 +473,10 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger implement
 				break;
 			}
 		}
-		if (getLogger().isLoggable(Level.FINER)){
-			getLogger().log(Level.FINER,this, "execFiltering", "RequestURI=[%s] execFiltering=[%s] Suffixes=[%s]",
-					wRequestURI, wExec, pIncludedUriSuffixes);
+		if (getLogger().isLoggable(Level.FINER)) {
+			getLogger().log(Level.FINER, this, "execFiltering",
+					"RequestURI=[%s] execFiltering=[%s] Suffixes=[%s]", wRequestURI, wExec,
+					pIncludedUriSuffixes);
 		}
 		return wExec;
 	}
@@ -517,9 +518,9 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger implement
 	protected String[] getUriSuffixes() {
 		return pIncludedUriSuffixes;
 	}
-	
+
 	protected String getUriSuffixesList() {
-		return CXStringUtils.stringTableToString(getUriSuffixes(),";");
+		return CXStringUtils.stringTableToString(getUriSuffixes(), ";");
 	}
 
 	/**
@@ -557,28 +558,28 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger implement
 				String wParameterValue = aConfig.getInitParameter(wParameterName);
 				boolean wUsed = false;
 
-				//"filter.request.tracer.included.uri.suffixes";
+				// "filter.request.tracer.included.uri.suffixes";
 				if (PARAM_URI_SUFFIXES.equalsIgnoreCase(wParameterName)) {
 					wUsed = true;
 					if (wParameterValue != null && !wParameterValue.isEmpty()) {
 						setUriSuffixes(wParameterValue);
 					}
 				} else
-					//"filter.request.tracer.Log.debug.forced";
+				// "filter.request.tracer.Log.debug.forced";
 				if (PARAM_LOG_DEBUG_FORCED.equalsIgnoreCase(wParameterName)) {
 					wUsed = true;
 					// true if the string argument is not null and is equal,
 					// ignoring case, to the string "true".
 					pLogDebugForced = Boolean.parseBoolean(wParameterValue);
 				}
-				//"filter.request.tracer.mapping";
+				// "filter.request.tracer.mapping";
 				if (PARAM_MAPPING.equalsIgnoreCase(wParameterName)) {
 					wUsed = true;
 					if (wParameterValue != null && !wParameterValue.isEmpty()) {
 						pMapping = wParameterValue;
 					}
-				}				
-				//"filter.request.tracer.context.path";
+				}
+				// "filter.request.tracer.context.path";
 				if (PARAM_TARGET_CONTEXT.equalsIgnoreCase(wParameterName)) {
 					wUsed = true;
 					if (wParameterValue != null && !wParameterValue.isEmpty()) {
@@ -641,17 +642,24 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger implement
 					}
 					//
 					else {
-						getLogger().logWarn(this, "setIncludedUriSuffixes",
+						getLogger().logWarn(this, "setUriSuffixes",
 								"Attention the suffixes array definition has empty member");
 					}
 				}
-
+			}
+			//
+			else {
+				wUriSuffixesList.add(aUriSuffixesList);
 			}
 		}
-		getLogger().logWarn(this, "setIncludedUriSuffixes", "Suffixes=%s",
+		getLogger().logWarn(this, "setUriSuffixes", "Suffixes=%s",
 				CXStringUtils.stringListToString(wUriSuffixesList));
 
-		setUriSuffixes(wUriSuffixesList.toArray(new String[0]));
+		if (wUriSuffixesList.size() == 0) {
+			getLogger().logWarn(this, "setUriSuffixes", "Attention the suffixes array is empty ");
+		}
+
+		setUriSuffixes(wUriSuffixesList.toArray(new String[wUriSuffixesList.size()]));
 	}
 
 	/**
