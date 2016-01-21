@@ -65,6 +65,23 @@ public interface ISvcWebAppProperties {
 
 	/**
 	 * @param aPropertyName
+	 * @param aSeparator
+	 * @return
+	 */
+	String[] getPropertyArray(final String aPropertyName,
+			final String aSeparator);
+
+	/**
+	 * @param aPropertyName
+	 * @param aSeparator
+	 * @param aDefault
+	 * @return
+	 */
+	String[] getPropertyArray(final String aPropertyName,
+			final String aSeparator, final String[] aDefault);
+
+	/**
+	 * @param aPropertyName
 	 * @return
 	 */
 	String getPropertyB64(final String aPropertyName);
@@ -104,20 +121,17 @@ public interface ISvcWebAppProperties {
 
 	/**
 	 * @param aPropertyName
-	 * @param aSeparator
-	 * @return
+	 * @param aValue
+	 * @return the old value if it exists
 	 */
-	String[] getPropertyArray(final String aPropertyName,
-			final String aSeparator);
+	String setProperty(final String aPropertyName, final String aValue);
 
 	/**
 	 * @param aPropertyName
-	 * @param aSeparator
-	 * @param aDefault
-	 * @return
+	 * @param aValue
+	 * @return the old value if it exists
 	 */
-	String[] getPropertyArray(final String aPropertyName,
-			final String aSeparator, final String[] aDefault);
+	String setPropertyB64(final String aPropertyName, final String aValue);
 
 	/**
 	 * @return

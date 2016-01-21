@@ -12,9 +12,10 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.cohorte.utilities.IXResourceLocator;
-import org.cohorte.utilities.picosoc.CAbstractComponentWithLogger;
 import org.cohorte.utilities.encode.CBase64Decoder;
+import org.cohorte.utilities.encode.CBase64Encoder;
 import org.cohorte.utilities.encode.IBase64;
+import org.cohorte.utilities.picosoc.CAbstractComponentWithLogger;
 import org.psem2m.utilities.CXBytesUtils;
 import org.psem2m.utilities.files.CXFileDir;
 
@@ -57,8 +58,8 @@ public abstract class CWebAppPropertiesBase extends
 	 * @throws IOException
 	 */
 	public CWebAppPropertiesBase(final File aConfigDir,
-			final String aConfigName, final String aConfigResourceName,final IXResourceLocator aResourceLocator)
-			throws IOException {
+			final String aConfigName, final String aConfigResourceName,
+			final IXResourceLocator aResourceLocator) throws IOException {
 		super();
 
 		pConfigDir = new CXFileDir(aConfigDir);
@@ -71,7 +72,7 @@ public abstract class CWebAppPropertiesBase extends
 		registerMeAsService(ISvcWebAppProperties.class);
 
 		getLogger().logInfo(this, "<init>", "instanciated. %s", this);
-		
+
 		init();
 	}
 
@@ -80,10 +81,11 @@ public abstract class CWebAppPropertiesBase extends
 	 * @return
 	 */
 	protected StringBuilder addDescriptionInSB(final StringBuilder aSB) {
-		aSB.append(String.format("ConfigName=[%s]",pConfigName));
-		aSB.append(String.format(" ConfigDir=[%s]",pConfigDir));
-		aSB.append(String.format(" ConfigResourceName=[%s]",pConfigResourceName));
-		aSB.append(String.format(" ResourcePath=[%s]",pResourcePath));
+		aSB.append(String.format("ConfigName=[%s]", pConfigName));
+		aSB.append(String.format(" ConfigDir=[%s]", pConfigDir));
+		aSB.append(String.format(" ConfigResourceName=[%s]",
+				pConfigResourceName));
+		aSB.append(String.format(" ResourcePath=[%s]", pResourcePath));
 		return aSB;
 	}
 
@@ -149,6 +151,19 @@ public abstract class CWebAppPropertiesBase extends
 		return wSB.toString();
 	}
 
+	/**
+	 * @param aValue
+	 * @return
+	 */
+	private String encodeB64Value(final String aValue) {
+
+		if (aValue == null) {
+			return null;
+		}
+		final CBase64Encoder wCBase64Encoder = new CBase64Encoder(aValue);
+		return wCBase64Encoder.getPrefixedString();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -183,7 +198,8 @@ public abstract class CWebAppPropertiesBase extends
 	 * @return
 	 */
 	protected String getConfigBaseResourcePath() {
-		return String.format("%s/%s%s", pResourcePath, pConfigResourceName,PROPERTIES_BASE_XML);
+		return String.format("%s/%s%s", pResourcePath, pConfigResourceName,
+				PROPERTIES_BASE_XML);
 	}
 
 	/*
@@ -238,7 +254,8 @@ public abstract class CWebAppPropertiesBase extends
 	 * @return
 	 */
 	protected String getConfigResourcePath() {
-		return String.format("%s/%s%s", pResourcePath, pConfigResourceName,PROPERTIES_XML);
+		return String.format("%s/%s%s", pResourcePath, pConfigResourceName,
+				PROPERTIES_XML);
 	}
 
 	/**
@@ -246,19 +263,22 @@ public abstract class CWebAppPropertiesBase extends
 	 * @return
 	 */
 	protected File getFileFromResource(final String aResourcePath) {
-		
-		URL wResourceURL =null;
+
+		URL wResourceURL = null;
 		try {
 			wResourceURL = pResourceLoader.getResource(aResourcePath);
 			String wPath = wResourceURL.getFile();
-			if (wPath.indexOf('%')>-1){
-				wPath = URLDecoder.decode(wPath,"UTF-8");
-				getLogger().logInfo(this, "getFileFromResource","ResourcePath contains '%' character : must be 'URL decoded'");
+			if (wPath.indexOf('%') > -1) {
+				wPath = URLDecoder.decode(wPath, "UTF-8");
+				getLogger()
+						.logInfo(this, "getFileFromResource",
+								"ResourcePath contains '%' character : must be 'URL decoded'");
 			}
 			return new File(wPath);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			getLogger().logSevere(this, "getFileFromResource",
-					"ERROR: ResourcePath=[%s] ResourceURL=[%s]\n%s",aResourcePath,wResourceURL, e);
+					"ERROR: ResourcePath=[%s] ResourceURL=[%s]\n%s",
+					aResourcePath, wResourceURL, e);
 			return null;
 		}
 	}
@@ -431,30 +451,28 @@ public abstract class CWebAppPropertiesBase extends
 	 */
 	private void init() throws IOException {
 
-		
 		final File wConfigBaseFile = getConfigBaseFile();
-		
-		getLogger()
-		.logInfo(
-				this,
-				"init","ConfigBaseFile exists=[%s] path=[%s]",wConfigBaseFile.exists(),wConfigBaseFile);
-		
-		
+
+		getLogger().logInfo(this, "init",
+				"ConfigBaseFile exists=[%s] path=[%s]",
+				wConfigBaseFile.exists(), wConfigBaseFile);
+
 		// Delete BASE config file if it exists
 
 		if (wConfigBaseFile.exists()) {
-			boolean wDeleted =wConfigBaseFile.delete();
-			getLogger()
-			.logInfo(
-					this,
-					"init","Force delete ConfigBaseFile. deleted=[%s]",wDeleted);
+			final boolean wDeleted = wConfigBaseFile.delete();
+			getLogger().logInfo(this, "init",
+					"Force delete ConfigBaseFile. deleted=[%s]", wDeleted);
 		}
-		
+
 		// Create BASE config file if it doesn't exist
 		if (!wConfigBaseFile.exists()) {
-			getLogger().logInfo(this, "init",
-					"ConfigBaseFile doesn't exist. inMUST create BASE config file from resource [%s]",
-					getConfigBaseResourceFile());
+			getLogger()
+					.logInfo(
+							this,
+							"init",
+							"ConfigBaseFile doesn't exist. inMUST create BASE config file from resource [%s]",
+							getConfigBaseResourceFile());
 
 			final Path wConfigBasePath = wConfigBaseFile.toPath();
 			Files.copy(getConfigBaseResourceFile().toPath(), wConfigBasePath);
@@ -469,15 +487,16 @@ public abstract class CWebAppPropertiesBase extends
 
 		// Create CURRENT config file if it doesn't exist
 		final File wConfigFile = getConfigFile();
-		getLogger()
-		.logInfo(
-				this,
-				"init","ConfigFile exists=[%s] path=[%s]",wConfigFile.exists(),wConfigFile);
-		
+		getLogger().logInfo(this, "init", "ConfigFile exists=[%s] path=[%s]",
+				wConfigFile.exists(), wConfigFile);
+
 		if (!wConfigFile.exists()) {
-			getLogger().logInfo(this, "init",
-					"ConfigFile doesn't exist. MUST create CURRENT config file from resource [%s]",
-					getConfigResourceFile());
+			getLogger()
+					.logInfo(
+							this,
+							"init",
+							"ConfigFile doesn't exist. MUST create CURRENT config file from resource [%s]",
+							getConfigResourceFile());
 			final Path wConfigPath = wConfigFile.toPath();
 			Files.copy(getConfigResourceFile().toPath(), wConfigPath);
 			getLogger()
@@ -541,6 +560,32 @@ public abstract class CWebAppPropertiesBase extends
 			getLogger().logSevere(this, "readPropertiesXmlFile", "ERROR %s", e);
 		}
 		return null;
+	}
+
+	/**
+	 * @param aPropertyName
+	 * @param aValue
+	 * @return
+	 */
+	@Override
+	public String setProperty(String aPropertyName, String aValue) {
+
+		final Object wOldValue = pProperties.put(aPropertyName, aValue);
+
+		return String.valueOf(wOldValue);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.cohorte.utilities.picosoc.config.ISvcWebAppProperties#setPropertyB64
+	 * (java.lang.String, java.lang.String)
+	 */
+	@Override
+	public String setPropertyB64(String aPropertyName, String aValue) {
+
+		return setProperty(aPropertyName, encodeB64Value(aValue));
 	}
 
 	/*

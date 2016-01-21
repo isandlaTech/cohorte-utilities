@@ -1,0 +1,10 @@
+
+1.0.0  (master)
+==================
+
+- MOD_OG_20160126
+  - Enhancement of ISvcWebAppProperties to allow property setting
+
+
+ 
+
