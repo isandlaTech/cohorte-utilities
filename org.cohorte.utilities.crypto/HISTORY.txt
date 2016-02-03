@@ -2,6 +2,10 @@
 1.0.1.XXXXXXXXXXXX (next)
 ==================
 
+
+- MOD_OG_20151224
+  - Addition of the class "Steganography" 
+
 - MOD_OG_20151224
   - Addition of keystore managment
 
