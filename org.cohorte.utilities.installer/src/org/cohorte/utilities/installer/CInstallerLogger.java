@@ -125,7 +125,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 				sActivityFormater.getLineDefInString());
 	}
 
-	@Override
+	//@Override
 	public Appendable addDescriptionInBuffer(Appendable aBuffer) {
 		return CXStringUtils.appendStringsInBuff(aBuffer, getClass()
 				.getSimpleName(), String.valueOf(hashCode()));
@@ -151,7 +151,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * 
 	 * @see org.psem2m.utilities.logging.IActivityLogger#close()
 	 */
-	@Override
+	//@Override
 	public void close() {
 		logInfo(this, "close", "hasFileLogger=[%s]", (sFileLogger != null));
 
@@ -239,7 +239,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * 
 	 * @see org.psem2m.utilities.logging.IActivityLoggerBase#getLevel()
 	 */
-	@Override
+	//@Override
 	public Level getLevel() {
 		return (sFileLogger != null) ? sFileLogger.getLevel() : Level.OFF;
 	}
@@ -249,7 +249,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * 
 	 * @see org.psem2m.utilities.logging.IActivityLogger#getRequester()
 	 */
-	@Override
+	//@Override
 	public IActivityRequester getRequester() {
 		return null;
 	}
@@ -289,7 +289,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * 
 	 * @see org.psem2m.utilities.logging.IActivityLoggerBase#isLogDebugOn()
 	 */
-	@Override
+	//@Override
 	public boolean isLogDebugOn() {
 		return isLoggable(Level.FINE);
 	}
@@ -301,7 +301,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * org.psem2m.utilities.logging.IActivityLoggerBase#isLoggable(java.util
 	 * .logging.Level)
 	 */
-	@Override
+	//@Override
 	public boolean isLoggable(final Level aLevel) {
 		return isLogOn(aLevel);
 	}
@@ -311,7 +311,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * 
 	 * @see org.psem2m.utilities.logging.IActivityLoggerBase#isLogInfoOn()
 	 */
-	@Override
+	//@Override
 	public boolean isLogInfoOn() {
 		return isLoggable(Level.INFO);
 	}
@@ -321,7 +321,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * 
 	 * @see org.psem2m.utilities.logging.IActivityLoggerBase#isLogSevereOn()
 	 */
-	@Override
+	//@Override
 	public boolean isLogSevereOn() {
 		return isLoggable(Level.SEVERE);
 	}
@@ -331,7 +331,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * 
 	 * @see org.psem2m.utilities.logging.IActivityLoggerBase#isLogWarningOn()
 	 */
-	@Override
+	//@Override
 	public boolean isLogWarningOn() {
 		return true;
 	}
@@ -350,7 +350,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * org.psem2m.utilities.logging.IActivityLogger#log(java.util.logging.Level,
 	 * java.lang.Object, java.lang.CharSequence, java.lang.Object[])
 	 */
-	@Override
+	//@Override
 	public void log(final Level aLevel, final Object aWho,
 			final CharSequence aWhat, final Object... aInfos) {
 
@@ -367,7 +367,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * org.psem2m.utilities.logging.IActivityLoggerBase#log(java.util.logging
 	 * .LogRecord)
 	 */
-	@Override
+	//@Override
 	public void log(final LogRecord record) {
 		logInFile(record);
 	}
@@ -379,7 +379,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * org.psem2m.utilities.logging.IActivityLogger#logDebug(java.lang.Object,
 	 * java.lang.CharSequence, java.lang.Object[])
 	 */
-	@Override
+	//@Override
 	public void logDebug(final Object aWho, final CharSequence aWhat,
 			final Object... aInfos) {
 		log(Level.FINE, aWho, aWhat, aInfos);
@@ -393,7 +393,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * org.psem2m.utilities.logging.IActivityLogger#logInfo(java.lang.Object,
 	 * java.lang.CharSequence, java.lang.Object[])
 	 */
-	@Override
+	//@Override
 	public void logInfo(final Object aWho, final CharSequence aWhat,
 			final Object... aInfos) {
 		log(Level.INFO, aWho, aWhat, aInfos);
@@ -406,7 +406,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * org.psem2m.utilities.logging.IActivityLogger#logSevere(java.lang.Object,
 	 * java.lang.CharSequence, java.lang.Object[])
 	 */
-	@Override
+	//@Override
 	public void logSevere(final Object aWho, final CharSequence aWhat,
 			final Object... aInfos) {
 		log(Level.SEVERE, aWho, aWhat, aInfos);
@@ -419,7 +419,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * org.psem2m.utilities.logging.IActivityLogger#logWarn(java.lang.Object,
 	 * java.lang.CharSequence, java.lang.Object[])
 	 */
-	@Override
+	//@Override
 	public void logWarn(final Object aWho, final CharSequence aWhat,
 			final Object... aInfos) {
 		log(Level.WARNING, aWho, aWhat, aInfos);
@@ -432,7 +432,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * org.psem2m.utilities.logging.IActivityLogger#setLevel(java.util.logging
 	 * .Level)
 	 */
-	@Override
+	//@Override
 	public void setLevel(Level aLevel) {
 		if (sFileLogger != null) {
 			sFileLogger.setLevel(aLevel);
@@ -445,7 +445,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * @see
 	 * org.psem2m.utilities.logging.IActivityLogger#setLevel(java.lang.String)
 	 */
-	@Override
+	//@Override
 	public void setLevel(String aLevelName) {
 		if (sFileLogger != null) {
 			sFileLogger.setLevel(aLevelName);
@@ -457,7 +457,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * 
 	 * @see org.psem2m.utilities.IXDescriber#toDescription()
 	 */
-	@Override
+	//@Override
 	public String toDescription() {
 		return addDescriptionInBuffer(new StringBuilder(128)).toString();
 	}

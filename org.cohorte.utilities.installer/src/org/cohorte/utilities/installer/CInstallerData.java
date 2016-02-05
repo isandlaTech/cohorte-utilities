@@ -57,7 +57,7 @@ public class CInstallerData extends HashMap<String, Object> implements
 	 * com.isandlatech.x3.addins.cyptedechange.panels.IInstallerData#getData
 	 * (java.lang.String)
 	 */
-	@Override
+	//@Override
 	public Object getData(String aId) {
 		Object wValue = get(aId);
 		pLogger.logInfo(this, "get", "id=[%s] value=[%s]",
@@ -72,7 +72,7 @@ public class CInstallerData extends HashMap<String, Object> implements
 	 * com.isandlatech.x3.addins.cyptedechange.panels.IInstallerData#getDataBoolean
 	 * (java.lang.String)
 	 */
-	@Override
+	//@Override
 	public boolean getDataBoolean(String aId) {
 		return Boolean.parseBoolean(getDataString(aId));
 
@@ -85,7 +85,7 @@ public class CInstallerData extends HashMap<String, Object> implements
 	 * com.isandlatech.x3.addins.cyptedechange.panels.IInstallerData#getDataString
 	 * (java.lang.String)
 	 */
-	@Override
+	//@Override
 	public String getDataString(String aId) {
 		return String.valueOf(getData(aId));
 	}
@@ -93,7 +93,7 @@ public class CInstallerData extends HashMap<String, Object> implements
 	/* (non-Javadoc)
 	 * @see com.isandlatech.x3.addins.cyptedechange.panels.IInstallerData#putAll(java.util.Properties)
 	 */
-	@Override
+	//@Override
 	public void putAll(Properties aProperties) {
 		CXSortListProperties wSortProperties = new CXSortListProperties(aProperties,CXSortListProperties.ASCENDING);
 
@@ -113,7 +113,7 @@ public class CInstallerData extends HashMap<String, Object> implements
 	 * com.isandlatech.x3.addins.cyptedechange.panels.IInstallerData#putData
 	 * (java.lang.String, java.lang.Object)
 	 */
-	@Override
+	//@Override
 	public void putData(String aId, Object aValue) {
 		put(aId, aValue);
 	}

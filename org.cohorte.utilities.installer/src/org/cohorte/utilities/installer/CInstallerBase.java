@@ -27,7 +27,7 @@ public abstract class CInstallerBase extends CAbstractComponentBase implements
 			pLogger.logInfo(this, "<init>", "instanciated");
 		}
 
-		@Override
+		//@Override
 		public void run() {
 			pLogger.logInfo(this, "run", "Exit hook !");
 
@@ -88,7 +88,7 @@ public abstract class CInstallerBase extends CAbstractComponentBase implements
 	 * @see org.cohorte.utilities.installer.IInstaller#finishInstallation
 	 *      (com.izforge.izpack.installer.data.GUIInstallData)
 	 */
-	@Override
+	//@Override
 	public void finish() {
 
 		pSvcServicesRegistry.clear();

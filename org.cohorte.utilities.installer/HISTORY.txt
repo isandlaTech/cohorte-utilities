@@ -1,8 +1,8 @@
 
-1.0.1.XXXXXXXXXXXX (suivante)
-==================
+1.1.0 (actual)
+=====
 
-MOD_OG_XXXX : ....
+MOD_BD_20160205 : Adding izpack base classes (listeners, panels, jobs, etc.)
 
 1.0.0.201501211743 (actual)
 ==================
