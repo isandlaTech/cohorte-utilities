@@ -2,6 +2,10 @@
 1.0.0 to 1.0.1 (master)
 ==================
 
+- MOD_OG_20151224 
+  - Dump format enhancement in org.cohorte.utilities.picosoc.CServicesRegistry.dump()
+
+
 - MOD_OG_20151201 
   - Logger improvment in
     - org.cohorte.utilities.picosoc.CComponentLogger

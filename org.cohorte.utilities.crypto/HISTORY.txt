@@ -1,9 +1,18 @@
 
-1.0.1.XXXXXXXXXXXX (suivante)
+1.0.1.XXXXXXXXXXXX (next)
 ==================
 
-MOD_OG_20150717 : Add a sample application to demonstrate the usage of the RSA classes of the crypto package
 
-1.0.0.201501211743 (actual)
+- MOD_OG_20151224
+  - Addition of the class "Steganography" 
+
+- MOD_OG_20151224
+  - Addition of keystore managment
+
+- MOD_OG_20150717 : 
+  - Add a sample application to demonstrate the usage of the RSA classes of the crypto package
+
+
+1.0.0.201501211743 (current)
 ==================
 

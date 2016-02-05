@@ -26,6 +26,8 @@ import org.psem2m.utilities.logging.IActivityRequester;
  */
 public abstract class CComponentLogger extends CAbstractComponentBase implements IActivityLogger {
 
+	private static final int BANNER_WIDTH = 140;
+
 	public static final String PROP_MAINLOGGER_LEVEL = "mainlogger.level";
 
 	protected static final IActivityFormater sActivityFormater = CActivityFormaterBasic
@@ -42,6 +44,30 @@ public abstract class CComponentLogger extends CAbstractComponentBase implements
 
 		initJvmLoggers();
 	}
+	
+	/**
+	 * @param aText
+	 * @return
+	 */
+	public static String buildBanner(final String aText) {
+		StringBuilder wSB = new StringBuilder();
+		wSB.append('\n');
+		wSB.append('\n').append(CXStringUtils.strFromChar('#', BANNER_WIDTH));
+		wSB.append("\n#");
+		if (aText != null) {
+			if (aText.indexOf('\n')<0) {
+				wSB.append("\n# ").append(aText);
+			} else {
+				for (String wLine : aText.split("\n")) {
+					wSB.append("\n#\n# ").append(wLine);
+				}
+			}
+		}
+		wSB.append("\n#");
+		wSB.append('\n').append(CXStringUtils.strFromChar('#', BANNER_WIDTH));
+		wSB.append('\n');
+		return wSB.toString();
+	}
 
 	/**
 	 * @param aLevel
@@ -50,7 +76,7 @@ public abstract class CComponentLogger extends CAbstractComponentBase implements
 	public static boolean doLog(Level aLevel) {
 		return true;
 	}
-	
+
 	/**
 	 * MOD_OG_20151201 Logger improvment
 	 * 
@@ -135,14 +161,13 @@ public abstract class CComponentLogger extends CAbstractComponentBase implements
 	public static LogManager getLogManager() {
 		return LogManager.getLogManager();
 	}
-
+	
 	/**
 	 * @return
 	 */
 	public static Logger getMainLogger() {
 		return getLogManager().getLogger("");
 	}
-
 	/**
 	 * 
 	 * 

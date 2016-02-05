@@ -79,6 +79,7 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	}
 
 	/**
+	 * MOD_OG_20151224 Dump format enhancement 
 	 * @return
 	 */
 	@Override
@@ -91,7 +92,7 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 			if (wIdx > 0) {
 				wSB.append('\n');
 			}
-			wSB.append(String.format("(%d)%80s ==> %s", wIdx, wEntry.getKey()
+			wSB.append(String.format("(%3d)%80s ==> %s", wIdx, wEntry.getKey()
 					.toString(), wEntry.getValue().getService()));
 			wIdx++;
 		}

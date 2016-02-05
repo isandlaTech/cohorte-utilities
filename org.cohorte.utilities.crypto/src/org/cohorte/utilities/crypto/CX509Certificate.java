@@ -1,9 +1,18 @@
 package org.cohorte.utilities.crypto;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
+import static org.cohorte.utilities.crypto.CConstants.CERTIFICATE_BEGIN;
+import static org.cohorte.utilities.crypto.CConstants.CERTIFICATE_END;
+
 import javax.xml.bind.DatatypeConverter;
+
+import org.psem2m.utilities.logging.CActivityLoggerNull;
+import org.psem2m.utilities.logging.IActivityLogger;
 
 /**
  * X509Certificate extensions
@@ -12,10 +21,6 @@ import javax.xml.bind.DatatypeConverter;
  * 
  */
 public class CX509Certificate {
-
-	public final static String CERTIFICATE_BEGIN = "-----BEGIN CERTIFICATE-----";
-
-	public final static String CERTIFICATE_END = "-----END CERTIFICATE-----";
 
 	/*
 	 * .pem – (Privacy-enhanced Electronic Mail) Base64 encoded DER certificate,
@@ -34,6 +39,29 @@ public class CX509Certificate {
 
 	/* the original X509 certificate */
 	private final X509Certificate pX509Certificate;
+	
+
+	/**
+	 * @param aX509DerFile
+	 * @throws CertificateException
+	 * @throws IOException
+	 */
+	public CX509Certificate(final File aX509DerFile)
+			throws CertificateException, IOException {
+
+		this(CX509CertificateUtils.convertDerToX509Certificate(aX509DerFile));
+	}
+
+	/**
+	 * @param aX509DerString
+	 * @throws CertificateException
+	 * @throws IOException
+	 */
+	public CX509Certificate(final String aX509DerString)
+			throws CertificateException, IOException {
+
+		this(CX509CertificateUtils.convertDerToX509Certificate(aX509DerString));
+	}
 
 	/**
 	 * @param aX509Certificate
@@ -52,6 +80,19 @@ public class CX509Certificate {
 
 		// gets the DER encoded form of this certificate.
 		pCertificateStream = getCertificate().getEncoded();
+	}
+
+	/**
+	 * @param aSB
+	 * @return
+	 */
+	public StringBuilder addDescriptionInSB(final StringBuilder aSB) {
+
+		aSB.append(String.format(" IssuerDN=[%s]", getCertificate()
+				.getIssuerDN()));
+		aSB.append(String.format(" SigAlgName=[%s]", getCertificate()
+				.getSigAlgName()));
+		return aSB;
 	}
 
 	/**
@@ -88,21 +129,11 @@ public class CX509Certificate {
 	 *      Extensions_informing_a_specific_usage_of_a_certificate
 	 */
 	public String getCertificatePemBase64() {
+
 		if (pCertificatePemBase64 == null) {
 			StringBuilder wSB = new StringBuilder();
 			wSB.append(CERTIFICATE_BEGIN);
-			String wCSB64 = getCertificateStreamBase64();
-			int wMax = wCSB64.length();
-			int wEnd;
-			for (int wStart = 0; wStart < wMax; wStart += 76) {
-				wEnd = wStart + 76;
-				if (wEnd > wMax) {
-					wEnd = wMax;
-				}
-				wSB.append('\n');
-				wSB.append(wCSB64.substring(wStart, wEnd));
-			}
-			wSB.append('\n');
+			addCertificateStreamBase64FormatedInSB(wSB);
 			wSB.append(CERTIFICATE_END);
 			pCertificatePemBase64 = wSB.toString();
 		}
@@ -115,6 +146,7 @@ public class CX509Certificate {
 	 * 
 	 */
 	public int getCertificatePemBase64Size() {
+
 		return getCertificatePemBase64().length();
 	}
 
@@ -124,8 +156,42 @@ public class CX509Certificate {
 	 * @see http
 	 *      ://java-performance.info/base64-encoding-and-decoding-performance/
 	 */
-	String getCertificateStreamBase64() {
+	public String getCertificateStreamBase64() {
+
 		return DatatypeConverter.printBase64Binary(getCertificateStreamDer());
+	}
+
+	/**
+	 * @return a formated stream (76 char) + the last carriage return
+	 */
+	public String getCertificateStreamBase64Formated() {
+
+		return addCertificateStreamBase64FormatedInSB(new StringBuilder(512))
+				.toString();
+	}
+
+	/**
+	 * @param wSB
+	 *            the target stringbuilder
+	 * @return a formated stream (76 char) + the last carriage return
+	 */
+	public StringBuilder addCertificateStreamBase64FormatedInSB(
+			final StringBuilder wSB) {
+
+		String wCSB64 = getCertificateStreamBase64();
+		int wMax = wCSB64.length();
+		int wEnd;
+		for (int wStart = 0; wStart < wMax; wStart += 76) {
+			wEnd = wStart + 76;
+			if (wEnd > wMax) {
+				wEnd = wMax;
+			}
+			wSB.append('\n');
+			wSB.append(wCSB64.substring(wStart, wEnd));
+		}
+		wSB.append('\n');
+
+		return wSB;
 	}
 
 	/**
@@ -135,6 +201,7 @@ public class CX509Certificate {
 	 *      ://en.wikipedia.org/wiki/Distinguished_Encoding_Rules#DER_encoding
 	 */
 	public byte[] getCertificateStreamDer() {
+
 		return pCertificateStream;
 	}
 
@@ -142,7 +209,25 @@ public class CX509Certificate {
 	 * @return the size of the DER encoded form of this certificate.
 	 */
 	public int getCertificateStreamDerSize() {
+
 		return getCertificateStreamDer().length;
+	}
+
+	/**
+	 * @return
+	 */
+	protected IActivityLogger getLogger() {
+		return CActivityLoggerNull.getInstance();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return addDescriptionInSB(new StringBuilder(128)).toString();
 	}
 
 }
