@@ -10,11 +10,17 @@ import com.izforge.izpack.api.installer.DataValidator;
 
 public abstract class CUpdateCheckerBase implements DataValidator, IConstants {
 
-	
+		
 	/**
 	 * Logger
 	 */
 	protected final IActivityLogger pLogger;
+	
+	/**
+	 * Install Data
+	 */
+	private InstallData pInstallData;
+	
 	
 	public CUpdateCheckerBase() {
 		// retreive the 'logger' service asking the service registry
@@ -65,13 +71,14 @@ public abstract class CUpdateCheckerBase implements DataValidator, IConstants {
 		//  - set INSTALLER__IS_ALREADY_INSTALLED variable to true if an old version is installed
 		//  - update installData with values of the old installation if already installed
 		//  - always returns Status.OK.
-		if (check(aInstallData) == true) {
+		this.pInstallData = aInstallData;
+		if (check() == true) {
 			aInstallData.setVariable(INSTALLER__IS_ALREADY_INSTALLED, "true");
-			if (!canUpdate(aInstallData)) {
+			if (!canUpdate()) {
 				return Status.ERROR;
 			}
 			// update installData variables
-			updateInstallData(aInstallData);
+			updateInstallData();
 			// update INSTALLER__ALREADY_INSTALLED_VERSION
 			aInstallData.setVariable(INSTALLER__ALREADY_INSTALLED_VERSION, getInstalledVersion());
 		} else {
@@ -80,27 +87,30 @@ public abstract class CUpdateCheckerBase implements DataValidator, IConstants {
 		return Status.OK;
 	}
 	
+	protected InstallData getInstallData() {
+		return pInstallData;
+	}
+	
 	/**
 	 * Checks if an old version is already installed.
-	 * 
-	 * @param aInstallData
+	 * Use getInstallData() to obtain installer data.
 	 * @return
 	 */
-	protected abstract boolean check(InstallData aInstallData);
+	protected abstract boolean check();
 	
 	/**
 	 * Returns true if we can update the software.
-	 * @param aInstallData
+	 * Use getInstallData() to obtain installer data.
 	 * @return
 	 */
-	protected abstract boolean canUpdate(InstallData aInstallData);
+	protected abstract boolean canUpdate();
 	
 	/**
 	 * If an old version is already installed, tries to retrieve installer variables
 	 * and set them in this current installation.
-	 * @param aInstallData
+	 * Use getInstallData() to obtain installer data.
 	 */
-	protected abstract void updateInstallData(InstallData aInstallData);
+	protected abstract void updateInstallData();
 	
 	/**
 	 * Gets the installed version of the software.
