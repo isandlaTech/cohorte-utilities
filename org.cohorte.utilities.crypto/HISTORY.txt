@@ -1,6 +1,8 @@
 
-1.0.1.XXXXXXXXXXXX (next)
-==================
+1.0.1
+=====
+
+MOD_BD_20160216 : Adding MD5Utils class.
 
 
 - MOD_OG_20151224
