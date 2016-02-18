@@ -26,6 +26,11 @@
 			<version>[1.0.0,)</version>
 		</dependency>
 		<dependency>
+			<groupId>org.cohorte.utilities</groupId>
+			<artifactId>org.cohorte.utilities.crypto</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+		<dependency>
 			<groupId>org.codehaus.izpack</groupId>
 			<artifactId>izpack-api</artifactId>
 			<version>5.0.6</version>

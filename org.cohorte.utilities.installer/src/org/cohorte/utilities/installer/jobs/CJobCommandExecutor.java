@@ -4,13 +4,13 @@ import static org.cohorte.utilities.installer.CInstallerTools.getServiceLogger;
 
 import java.util.Map;
 
+import org.cohorte.utilities.installer.system.CXOSInstallerCommand;
 import org.psem2m.utilities.files.CXFileDir;
 import org.psem2m.utilities.logging.IActivityLogger;
-import org.psem2m.utilities.system.CXOSCommand;
 
 import com.izforge.izpack.panels.process.AbstractUIProcessHandler;
 
-public class CJobComandExecutor {
+public class CJobCommandExecutor {
 
 	/**
 	 * Logger
@@ -19,7 +19,7 @@ public class CJobComandExecutor {
 
 	private long CMD_TIME_OUT = 300000;
 
-	public CJobComandExecutor() {
+	public CJobCommandExecutor() {
 		// first - retreive the 'logger' service asking the service registry
 		pLogger = getServiceLogger();
 		// log
@@ -73,8 +73,9 @@ public class CJobComandExecutor {
 			final Map<String, String> aEnv, final CXFileDir aUserDir,
 			final String... aCmdLineArgs) {
 		
-		CXOSCommand wCommand = new CXOSCommand(pLogger, aCmdLineArgs);
+		CXOSInstallerCommand wCommand = new CXOSInstallerCommand(pLogger, handler, aCmdLineArgs);
 		boolean wOk = wCommand.run(aTimeOut, aUserDir);
+		
 		pLogger.logDebug(this, "run", wCommand.getRepport());
 		if (wOk) {
 			// all is ok
