@@ -3,6 +3,7 @@ package org.cohorte.utilities.installer.panels;
 import static org.cohorte.utilities.installer.CInstallerTools.getServiceLogger;
 
 import org.psem2m.utilities.logging.IActivityLogger;
+import org.psem2m.utilities.logging.IActivityLoggerBase;
 
 import com.izforge.izpack.api.data.Panel;
 import com.izforge.izpack.api.factory.ObjectFactory;
@@ -70,5 +71,13 @@ public class CPanelUserInput extends UserInputPanel {
 		
 	}
 	
+	/**
+	 * Gets the Logger
+	 * @return
+	 */
+	protected IActivityLoggerBase getLogger() {
+		// TODO Auto-generated method stub
+		return pLogger;
+	}
 	
 }
