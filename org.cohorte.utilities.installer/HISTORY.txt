@@ -2,9 +2,15 @@
 1.1.0 (actual)
 =====
 
+MOD_BD_20160219 :
+	- Disable previous button of CPanelUpdate.
+	- Rename "org.cohorte.utilities.installer.update" to "org.cohorte.utilities.installer.validators".
+	
 MOD_BD_20160205 : Adding izpack base classes (listeners, panels, jobs, etc.)
 
-1.0.0.201501211743 (actual)
+
+
+1.0.0.201501211743 
 ==================
 
 MOD_OG_XXXX : ....

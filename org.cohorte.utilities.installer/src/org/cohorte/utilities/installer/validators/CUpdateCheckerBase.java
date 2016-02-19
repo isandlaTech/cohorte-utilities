@@ -1,4 +1,4 @@
-package org.cohorte.utilities.installer.updater;
+package org.cohorte.utilities.installer.validators;
 
 import static org.cohorte.utilities.installer.CInstallerTools.getServiceLogger;
 

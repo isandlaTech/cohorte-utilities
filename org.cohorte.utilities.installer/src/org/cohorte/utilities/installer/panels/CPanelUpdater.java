@@ -146,7 +146,7 @@ public class CPanelUpdater extends IzPanel implements IConstants {
 	    pInstalledVersionLabel.setText("<html>"+getString("installer.updater.installedVersionLabel") + "<font color='red'>"+pInstalledVersion + "</font></html>");
         pNewVersionLabel.setText("<html>"+getString("installer.updater.newVersionLabel") + "<font color='green'>"+pNewVersion+"</font></html>");
         selectUpdate();
-        
+        this.parent.lockPrevButton();
 	}
 
 	private void selectUpdate() {
