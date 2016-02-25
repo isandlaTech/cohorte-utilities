@@ -12,8 +12,8 @@ import java.io.Writer;
 import java.util.Map;
 
 import org.psem2m.utilities.files.CXFile;
-import org.psem2m.utilities.files.CXFileText;
 import org.psem2m.utilities.files.CXFileUtf8;
+import org.psem2m.utilities.files.CXFileUtf8WithoutBom;
 import org.psem2m.utilities.logging.IActivityLogger;
 
 import com.izforge.izpack.panels.process.AbstractUIProcessHandler;
@@ -65,7 +65,7 @@ public class CJobFileTextCreator {
 			String wSaveOldFile = args[3];
 			
 			// chck if saveOldFile is true
-			CXFileUtf8 wFile = new CXFileUtf8(wPathToFileToCreate);
+			CXFileUtf8WithoutBom wFile = new CXFileUtf8WithoutBom(wPathToFileToCreate);
 			//CXFileText wFile = new CXFileText(wPathToFileToCreate);
 			if (wFile.exists() && wSaveOldFile.equalsIgnoreCase("true")) {
 				CXFile wOldFile = new CXFile(wPathToFileToCreate + ".old");
@@ -78,6 +78,7 @@ public class CJobFileTextCreator {
 					wFile.close();
 				}
 			}
+			
 			// write new file 
 			// HINT: CXFileXXX classes generate UTF-8-BOM encoded files.
 			//       we avoid to use them to write new file as Agilium is sensible for that.
