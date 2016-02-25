@@ -2,6 +2,10 @@
 1.1.0 (actual)
 =====
 
+MOD_BD_20160225 :
+
+	- Create UTF8 files without Bom using CJobTextFileCreator. 
+
 MOD_BD_20160219 :
 	- Disable previous button of CPanelUpdate.
 	- Rename "org.cohorte.utilities.installer.update" to "org.cohorte.utilities.installer.validators".
