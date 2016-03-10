@@ -26,31 +26,39 @@ import org.psem2m.utilities.logging.IActivityLogger;
  */
 public class CSteganography {
 
-	private static final String IMAGE_FORMAT_DEFAULT = "png";
+	public static final String IMAGE_FORMAT_DEFAULT = "png";
+
+	private final int LENGTH_SIZE_BASE = 32;
+
 	private final String pImageFormat;
+	private final int pLengthSize;
 	private final IActivityLogger pLogger;
+	private final int pSalt;
 
 	/**
 	 * @param aImageFormat
 	 */
-	public CSteganography() {
-		this(IMAGE_FORMAT_DEFAULT, CActivityLoggerNull.getInstance());
+	public CSteganography(final int aSalt) {
+		this(aSalt, IMAGE_FORMAT_DEFAULT, CActivityLoggerNull.getInstance());
 	}
 
 	/**
 	 * @param aImageFormat
 	 */
-	public CSteganography(final String aImageFormat) {
-		this(aImageFormat, CActivityLoggerNull.getInstance());
+	public CSteganography(final int aSalt, final String aImageFormat) {
+		this(aSalt, aImageFormat, CActivityLoggerNull.getInstance());
 	}
 
 	/**
 	 * @param aImageFormat
 	 * @param aLogger
 	 */
-	public CSteganography(final String aImageFormat,
+	public CSteganography(final int aSalt, final String aImageFormat,
 			final IActivityLogger aLogger) {
+
 		super();
+		pSalt = aSalt;
+		pLengthSize = pSalt * LENGTH_SIZE_BASE;
 		pImageFormat = aImageFormat;
 		pLogger = (aLogger != null) ? aLogger : CActivityLoggerBasicConsole
 				.getInstance();
@@ -76,8 +84,9 @@ public class CSteganography {
 		try {
 			// 0 first positiong
 			encode_text(img, len, 0);
-			// 4 bytes of space for length: 4bytes*8bit = 32 bits
-			encode_text(img, msg, 32);
+			// length is int => 4bytes*8bit = 32 bits => 1 bit per
+			// image byte => 32 bytes
+			encode_text(img, msg, pLengthSize);
 
 		} catch (final Exception e) {
 			getLogger().logSevere(this, "add_text",
@@ -96,17 +105,13 @@ public class CSteganography {
 	 *         bytes
 	 */
 	private byte[] bit_conversion(int i) {
-		// originally integers (ints) cast into bytes
-		// byte byte7 = (byte)((i & 0xFF00000000000000L) >>> 56);
-		// byte byte6 = (byte)((i & 0x00FF000000000000L) >>> 48);
-		// byte byte5 = (byte)((i & 0x0000FF0000000000L) >>> 40);
-		// byte byte4 = (byte)((i & 0x000000FF00000000L) >>> 32);
 
 		// only using 4 bytes
 		final byte byte3 = (byte) ((i & 0xFF000000) >>> 24); // 0
 		final byte byte2 = (byte) ((i & 0x00FF0000) >>> 16); // 0
 		final byte byte1 = (byte) ((i & 0x0000FF00) >>> 8); // 0
 		final byte byte0 = (byte) ((i & 0x000000FF));
+
 		// {0,0,0,byte0} is equivalent, since all shifts >=8 will be 0
 		return (new byte[] { byte3, byte2, byte1, byte0 });
 	}
@@ -169,27 +174,36 @@ public class CSteganography {
 	private byte[] decode_text(byte[] image) {
 
 		int length = 0;
-		int offset = 32;
 
-		// loop through 32 bytes of data to determine text length
-		// i=24 will also work, as only the 4th byte contains real data
-		for (int i = 0; i < 32; ++i) {
+		// loop through x bytes of data to determine text length
+		for (int i = 0; i < pLengthSize; i = i + pSalt) {
+
 			length = (length << 1) | (image[i] & 1);
 		}
 
+		pLogger.logInfo(this, "decode_text",
+				"salt=[%s] LengthSize=[%s] length=[%s]", pSalt, pLengthSize,
+				length);
+
 		final byte[] wBuffer = new byte[length];
+		int offset = pLengthSize;
 
 		// loop through each byte of text
 		for (int b = 0; b < wBuffer.length; ++b) {
 
 			// loop through each bit within a byte of text
-			for (int i = 0; i < 8; ++i, ++offset) {
+			for (int i = 0; i < 8; ++i) {
 
 				// assign bit: [(new byte value) << 1] OR [(text byte) AND 1]
 				wBuffer[b] = (byte) ((wBuffer[b] << 1) | (image[offset] & 1));
 
+				// increment with the salt
+				offset += pSalt;
 			}
 		}
+
+		pLogger.logInfo(this, "decode_text", "salt=[%s] offsetEnd=[%s]", pSalt,
+				offset);
 		return wBuffer;
 	}
 
@@ -286,7 +300,7 @@ public class CSteganography {
 	private byte[] encode_text(byte[] aImage, byte[] aBuffer, int offset) {
 
 		// check that the data + offset will fit in the image
-		if (aBuffer.length + offset > aImage.length) {
+		if ((aBuffer.length * pSalt) + offset > aImage.length) {
 			throw new IllegalArgumentException("File not long enough!");
 		}
 
@@ -297,17 +311,23 @@ public class CSteganography {
 			final int add = aBuffer[i];
 
 			// ensure the new offset value carries on through both loops
-			for (int bit = 7; bit >= 0; --bit, ++offset) {
-				// assign an integer to b, shifted by bit spaces AND 1
-				// a single bit of the current byte
+			for (int bit = 7; bit >= 0; --bit) {
+
+				// assign an integer to b, shifted by bit spaces AND 1 a single
+				// bit of the current byte
 				final int b = (add >>> bit) & 1;
+
 				// assign the bit by taking: [(previous byte value) AND 0xfe] OR
-				// bit to add
-				// changes the last bit of the byte in the image to be the bit
-				// of addition
+				// bit to add changes the last bit of the byte in the image to
+				// be the bit of addition
 				aImage[offset] = (byte) ((aImage[offset] & 0xFE) | b);
+
+				offset += pSalt;
 			}
 		}
+		pLogger.logInfo(this, "encode_text",
+				"salt=[%s] offsetEnd=[%s] aBuffer.length=[%s]=>[%s]", pSalt,
+				offset, aBuffer.length, aBuffer.length * 8);
 		return aImage;
 	}
 
