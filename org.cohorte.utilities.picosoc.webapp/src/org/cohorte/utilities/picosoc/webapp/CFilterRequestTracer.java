@@ -166,7 +166,7 @@ public class CFilterRequestTracer extends CAbstractComponentWithLogger implement
 
 		} catch (Exception e) {
 			getLogger().logSevere(this, "doFilter", "ERROR:\n%s", e);
-			throw e;
+			throw new ServletException(String.format("Filtering error %s",CXException.eCauseMessagesInString(e)),e);
 		}
 	}
 
