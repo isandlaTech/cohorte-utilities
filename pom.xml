@@ -45,6 +45,7 @@
 	<modules>		
 		<module>org.cohorte.utilities</module>
 		<module>org.cohorte.utilities.picosoc</module>
+		<module>org.cohorte.utilities.picosoc.webapp</module>
 		<module>org.cohorte.utilities.installer</module>
 		<module>org.cohorte.utilities.crypto</module>
 	</modules>
