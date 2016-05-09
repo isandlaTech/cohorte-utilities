@@ -48,6 +48,7 @@
 		<module>org.cohorte.utilities.picosoc.webapp</module>
 		<module>org.cohorte.utilities.installer</module>
 		<module>org.cohorte.utilities.crypto</module>
+		<module>org.cohorte.utilities.test</module>
 	</modules>
 	<!--
 		MOD_BD_20150911 Avoid using p2 repositories to compile bundles
