@@ -20,7 +20,6 @@ import org.apache.felix.ipojo.annotations.Component;
 import org.apache.felix.ipojo.annotations.Provides;
 import org.apache.felix.ipojo.annotations.Requires;
 import org.apache.felix.ipojo.annotations.ServiceProperty;
-import org.cohorte.remote.IRemoteServicesConstants;
 import org.cohorte.utilities.test.IShellCommand;
 import org.cohorte.utilities.test.ITestExecuter;
 import org.osgi.framework.BundleContext;
@@ -29,6 +28,8 @@ import org.psem2m.isolates.base.IIsolateLoggerSvc;
 @Component(name = "Cohorte-CCpntTestCommand-factory")
 @Provides(specifications = { IShellCommand.class })
 public class CCpntTestCommand implements IShellCommand {
+
+	private static final String PROP_EXPORT_REJECT = "pelix.remote.export.reject";
 
 	/** OSGi Bundle Context */
 	private BundleContext pBundleContext;
@@ -49,7 +50,7 @@ public class CCpntTestCommand implements IShellCommand {
 	 * The "pelix.remote.export.reject" property limits the remote export of the
 	 * service
 	 */
-	@ServiceProperty(name = IRemoteServicesConstants.PROP_EXPORT_REJECT, immutable = true)
+	@ServiceProperty(name = PROP_EXPORT_REJECT, immutable = true)
 	private final String pRejectExport = IShellCommand.class.getName();
 
 	/** The Gogo commands scope */

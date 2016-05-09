@@ -25,7 +25,6 @@ import org.apache.felix.ipojo.annotations.Component;
 import org.apache.felix.ipojo.annotations.Provides;
 import org.apache.felix.ipojo.annotations.Requires;
 import org.apache.felix.ipojo.annotations.ServiceProperty;
-import org.cohorte.remote.IRemoteServicesConstants;
 import org.psem2m.isolates.base.IIsolateLoggerSvc;
 
 /**
@@ -40,6 +39,8 @@ import org.psem2m.isolates.base.IIsolateLoggerSvc;
 @Provides(specifications = { TestListener.class })
 public class CCpntLoggerTestListener implements TestListener {
 
+	private static final String PROP_EXPORT_REJECT = "pelix.remote.export.reject";
+
 	/** Cohorte Isolate logger, injected by iPOJO */
 	@Requires
 	private IIsolateLoggerSvc pLogger;
@@ -48,7 +49,7 @@ public class CCpntLoggerTestListener implements TestListener {
 	 * The "pelix.remote.export.reject" property limits the remote export of the
 	 * service
 	 */
-	@ServiceProperty(name = IRemoteServicesConstants.PROP_EXPORT_REJECT, immutable = true)
+	@ServiceProperty(name = PROP_EXPORT_REJECT, immutable = true)
 	private final String pRejectExport = TestListener.class.getName();
 
 	@Override

@@ -7,13 +7,26 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.cohorte.utilities.test
 Bundle-Version: 1.0.0
 Created-By: iPOJO 1.12.1
-Export-Package: org.cohorte.utilities.test
-Import-Package: junit.framework;version=3.8.2, junit.runner;version=3.
- 8.2, org.apache.felix.ipojo;version="[1.12.1,2.0.0)", org.apache.feli
- x.ipojo.architecture;version="[1.12.1,2.0.0)", org.cohorte.remote, or
- g.osgi.framework;version=1.3.0, org.osgi.service.cm;version=1.2, org.
- osgi.service.log;version=1.3, org.psem2m.isolates.base, org.psem2m.ut
- ilities, org.psem2m.utilities.files, org.psem2m.utilities.logging
+Export-Package: junit.extensions,junit.framework,junit.runner,junit.te
+ xtui,org.cohorte.utilities.test,org.cohorte.utilities.test.executers,
+ org.cohorte.utilities.test.listeners,org.cohorte.utilities.test.shell
+ ,org.hamcrest,org.hamcrest.core,org.hamcrest.internal,org.junit,org.j
+ unit.experimental,org.junit.experimental.categories,org.junit.experim
+ ental.max,org.junit.experimental.results,org.junit.experimental.runne
+ rs,org.junit.experimental.theories,org.junit.experimental.theories.in
+ ternal,org.junit.experimental.theories.suppliers,org.junit.internal,o
+ rg.junit.internal.builders,org.junit.internal.matchers,org.junit.inte
+ rnal.requests,org.junit.internal.runners,org.junit.internal.runners.m
+ odel,org.junit.internal.runners.rules,org.junit.internal.runners.stat
+ ements,org.junit.matchers,org.junit.rules,org.junit.runner,org.junit.
+ runner.manipulation,org.junit.runner.notification,org.junit.runners,o
+ rg.junit.runners.model,org.junit.runners.parameterized,org.junit.vali
+ dator
+Import-Package: org.apache.felix.ipojo;version="[1.12.1,2.0.0)", org.a
+ pache.felix.ipojo.architecture;version="[1.12.1,2.0.0)", org.osgi.fra
+ mework;version=1.3.0, org.osgi.service.cm;version=1.2, org.osgi.servi
+ ce.log;version=1.3, org.psem2m.isolates.base, org.psem2m.utilities, o
+ rg.psem2m.utilities.files, org.psem2m.utilities.logging
 iPOJO-Components: component { $name="Cohorte-CCpntDefaultTestExecuter-
  factory" $classname="org.cohorte.utilities.test.executers.CCpntDefaul
  tTestExecuter" provides { $specifications="{org.cohorte.utilities.tes
