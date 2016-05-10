@@ -85,4 +85,7 @@ iPOJO-Components: component { $name="Cohorte-CCpntDefaultTestExecuter-
  d { $name="pLogger" $type="org.psem2m.isolates.base.IIsolateLoggerSvc
  " }field { $name="pRejectExport" $type="java.lang.String" }field { $n
  ame="pScope" $type="java.lang.String" }method { $name="test" }}}
+Bundle-ClassPath: lib/junit-4.12.jar,
+ lib/hamcrest-core-1.3.jar,
+ .
 
