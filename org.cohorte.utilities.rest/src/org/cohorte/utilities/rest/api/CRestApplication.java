@@ -9,8 +9,8 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 import org.cohorte.utilities.rest.providers.CExceptionMapper;
 import org.cohorte.utilities.rest.providers.CRestLogFilter;
-import org.cohorte.utilities.rest.serializers.CGedJAXBMessageBodyHandler;
-import org.cohorte.utilities.rest.serializers.CGedJacksonMessageBodyHandler;
+import org.cohorte.utilities.rest.serializers.CJAXBMessageBodyHandler;
+import org.cohorte.utilities.rest.serializers.CJacksonMessageBodyHandler;
 
 /**
  * Generic REST application abstract component.
@@ -45,8 +45,8 @@ public abstract class CRestApplication
 			result.add(MultiPartFeature.class);;
 		}
 		result.add(CRestLogFilter.class);
-		result.add(CGedJacksonMessageBodyHandler.class);
-		result.add(CGedJAXBMessageBodyHandler.class);
+		result.add(CJacksonMessageBodyHandler.class);
+		result.add(CJAXBMessageBodyHandler.class);
 		result.add(CExceptionMapper.class);
 		return result;
 	}
