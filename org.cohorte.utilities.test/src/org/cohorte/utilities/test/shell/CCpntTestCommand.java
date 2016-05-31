@@ -23,7 +23,7 @@ import org.apache.felix.ipojo.annotations.ServiceProperty;
 import org.cohorte.utilities.test.IShellCommand;
 import org.cohorte.utilities.test.ITestExecuter;
 import org.osgi.framework.BundleContext;
-import org.psem2m.isolates.base.IIsolateLoggerSvc;
+import org.psem2m.utilities.logging.IActivityLogger;
 
 @Component(name = "Cohorte-CCpntTestCommand-factory")
 @Provides(specifications = { IShellCommand.class })
@@ -44,7 +44,7 @@ public class CCpntTestCommand implements IShellCommand {
 
 	/** Cohorte Logger service */
 	@Requires
-	private IIsolateLoggerSvc pLogger;
+	private IActivityLogger pLogger;
 
 	/**
 	 * The "pelix.remote.export.reject" property limits the remote export of the

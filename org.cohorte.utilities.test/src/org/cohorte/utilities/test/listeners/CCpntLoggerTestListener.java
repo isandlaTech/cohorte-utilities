@@ -25,7 +25,7 @@ import org.apache.felix.ipojo.annotations.Component;
 import org.apache.felix.ipojo.annotations.Provides;
 import org.apache.felix.ipojo.annotations.Requires;
 import org.apache.felix.ipojo.annotations.ServiceProperty;
-import org.psem2m.isolates.base.IIsolateLoggerSvc;
+import org.psem2m.utilities.logging.IActivityLogger;
 
 /**
  * Logger Test listener.
@@ -43,7 +43,7 @@ public class CCpntLoggerTestListener implements TestListener {
 
 	/** Cohorte Isolate logger, injected by iPOJO */
 	@Requires
-	private IIsolateLoggerSvc pLogger;
+	private IActivityLogger pLogger;
 
 	/**
 	 * The "pelix.remote.export.reject" property limits the remote export of the
