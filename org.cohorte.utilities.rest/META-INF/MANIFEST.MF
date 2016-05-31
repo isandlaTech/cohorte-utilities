@@ -5,9 +5,10 @@ Bundle-Name: Cohorte REST
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.cohorte.utilities.rest
 Bundle-Vendor: isandlaTech
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.0
 Created-By: iPOJO 1.12.1
-Export-Package: org.cohorte.utilities.rest.api
+Export-Package: org.cohorte.utilities.rest.api,org.cohorte.utilities.r
+ est.objects,org.cohorte.utilities.rest.serializers
 Import-Package: com.fasterxml.jackson.core;version=2.7.4, com.fasterxm
  l.jackson.databind;version=2.7.4, com.fasterxml.jackson.module.jaxb;v
  ersion=2.7.4, javax.servlet, javax.servlet.http, javax.ws.rs;version=

@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.cohorte.utilities.rest</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <name>Cohorte REST</name>
   
   <parent>
@@ -11,8 +11,25 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
   
+  <properties>
+    <ipojo.version>1.12.1</ipojo.version>
+  </properties>
+  
 
 <dependencies>
+
+<dependency>
+  <groupId>org.cohorte.utilities</groupId>
+  <artifactId>org.cohorte.utilities</artifactId>
+  <version>1.0.4</version>
+</dependency>
+
+<!-- http://mvnrepository.com/artifact/org.osgi/org.osgi.compendium -->
+<dependency>
+    <groupId>org.osgi</groupId>
+    <artifactId>org.osgi.compendium</artifactId>
+    <version>5.0.0</version>
+</dependency>
 
 <!-- http://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
 <dependency>
@@ -63,6 +80,19 @@
     <version>3.1.0</version>
 </dependency>
 
+
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.ipojo.annotations</artifactId>
+      <version>${ipojo.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.ipojo</artifactId>
+      <version>${ipojo.version}</version>
+    </dependency>
+
 </dependencies>
   
   <build>
@@ -94,4 +124,5 @@
       
     </plugins>
   </build>
+  <packaging>eclipse-plugin</packaging>
 </project>

@@ -7,6 +7,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -16,10 +18,13 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
+
+import org.cohorte.utilities.rest.objects.CCalendar;
 
 /**
  * JSON message writer/reader.
@@ -33,14 +38,24 @@ import javax.xml.bind.Unmarshaller;
  *
  */
 @Provider
-@Produces(MediaType.TEXT_XML)
-@Consumes(MediaType.TEXT_XML)
-public final class CGedJAXBMessageBodyHandler
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public final class CJacksonMessageBodyHandler
 	implements MessageBodyWriter<Object>, MessageBodyReader<Object> {
 
 	private static final String UTF_8 = "UTF-8";
 
-
+	private ObjectMapper getMapper() {
+		ObjectMapper mapper = new ObjectMapper();
+		AnnotationIntrospector introspector = 
+				new JaxbAnnotationIntrospector(mapper.getTypeFactory());
+		mapper.setAnnotationIntrospector(introspector);
+		DateFormat df = new SimpleDateFormat(CCalendar.DATE_FORMAT);
+		mapper.setDateFormat(df);
+		mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+		return mapper;
+	}
+	
 	@Override
 	public boolean isReadable(
 			Class<?> type,
@@ -60,15 +75,7 @@ public final class CGedJAXBMessageBodyHandler
 			InputStream entityStream) throws IOException {
 		InputStreamReader streamReader = new InputStreamReader(entityStream, UTF_8);
 		try {
-
-			JAXBContext context = JAXBContext.newInstance(type);
-
-			Unmarshaller unmarshaller = context.createUnmarshaller();
-			return unmarshaller.unmarshal(streamReader);
-
-		} catch (JAXBException e) {
-			e.printStackTrace();
-			return null;
+			return getMapper().readValue(streamReader, type);
 		} catch (Throwable e) {
 			e.printStackTrace();
 			throw e;
@@ -108,16 +115,7 @@ public final class CGedJAXBMessageBodyHandler
 		) throws IOException, WebApplicationException {
 		OutputStreamWriter writer = new OutputStreamWriter(entityStream, UTF_8);
 		try {
-			JAXBContext context = JAXBContext.newInstance(type);
-			Marshaller marshaller = context.createMarshaller();
-
-			// output pretty printed
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-			marshaller.marshal(object, writer);
-
-		} catch (JAXBException e) {
-			e.printStackTrace();
+			getMapper().writeValue(writer, object);
 		} catch (Throwable e) {
 			e.printStackTrace();
 			throw e;
