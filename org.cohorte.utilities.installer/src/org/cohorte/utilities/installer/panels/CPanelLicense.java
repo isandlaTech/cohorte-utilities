@@ -24,12 +24,11 @@ public class CPanelLicense extends HTMLLicencePanel implements ConsolePanel {
 	 */
 	private static final long serialVersionUID = 2735989402646225915L;
 
-	
 	/**
 	 * Logger
 	 */
 	private final IActivityLogger pLogger;
-	
+
 	/**
 	 * Constructor of Welcome Panel.
 	 *
@@ -52,9 +51,21 @@ public class CPanelLicense extends HTMLLicencePanel implements ConsolePanel {
 				"LicencePanel");
 	}
 
+	// @Override
+	public boolean generateProperties(final InstallData arg0,
+			final PrintWriter arg1) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean handlePanelValidationResult(final boolean arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.izforge.izpack.installer.gui.IzPanel#panelActivate()
 	 */
 	@Override
@@ -64,9 +75,11 @@ public class CPanelLicense extends HTMLLicencePanel implements ConsolePanel {
 		pLogger.logInfo(this, "panelActivate", "Activated");
 	}
 
+	// ----------------- ConsolePanel methods ---------------------------- //
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.izforge.izpack.installer.gui.IzPanel#panelDeactivate()
 	 */
 	@Override
@@ -75,23 +88,14 @@ public class CPanelLicense extends HTMLLicencePanel implements ConsolePanel {
 		super.panelDeactivate();
 		pLogger.logInfo(this, "panelDeactivate", "Deactivated");
 	}
-	
-	//@Override
-	public boolean generateProperties(final InstallData arg0,
-			final PrintWriter arg1) {
-		// TODO Auto-generated method stub
-		return false;
-	}
 
-	// ----------------- ConsolePanel methods ---------------------------- //
-
-	//@Override
+	// @Override
 	public boolean run(final InstallData arg0, final Console arg1) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	//@Override
+	// @Override
 	public boolean run(final InstallData arg0, final Properties arg1) {
 		// TODO Auto-generated method stub
 		return false;

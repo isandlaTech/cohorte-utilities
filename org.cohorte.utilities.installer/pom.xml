@@ -9,10 +9,15 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>org.cohorte.utilities.installer</artifactId>
-	<!-- MOD_BD_20150911 -->
-	<version>1.1.0</version>
-	<!--<version>1.0.0.201501211743</version>-->
+	
+	<version>1.2.0</version>
+		
 	<packaging>jar</packaging>
+
+	<properties>
+		<!-- MOD_BD_20150701 -->
+		<izpack.version>5.0.8</izpack.version>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -34,17 +39,17 @@
 		<dependency>
 			<groupId>org.codehaus.izpack</groupId>
 			<artifactId>izpack-api</artifactId>
-			<version>5.0.6</version>
+			<version>${izpack.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.izpack</groupId>
 			<artifactId>izpack-installer</artifactId>
-			<version>5.0.6</version>
+			<version>${izpack.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.izpack</groupId>
 			<artifactId>izpack-panel</artifactId>
-			<version>5.0.6</version>
+			<version>${izpack.version}</version>
 		</dependency>
 	</dependencies>
 

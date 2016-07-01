@@ -2,6 +2,7 @@ package org.cohorte.utilities.installer.panels;
 
 import static org.cohorte.utilities.installer.CInstallerTools.getService;
 import static org.cohorte.utilities.installer.CInstallerTools.getServiceLogger;
+
 import java.io.PrintWriter;
 import java.util.Properties;
 
@@ -48,11 +49,10 @@ public class CPanelWelcome extends HTMLHelloPanel implements ConsolePanel {
 		pLogger = getServiceLogger();
 
 		try {
-			
+
 			// set the installData object of our installer service
 			getService(IInstaller.class).setIzPackInstallData(this.installData);
-						
-			
+
 		} catch (Exception e) {
 			pLogger.logSevere(this, "<init>", "ERROR: %s", e);
 		}
@@ -61,8 +61,7 @@ public class CPanelWelcome extends HTMLHelloPanel implements ConsolePanel {
 				panelResourceNameStr);
 	}
 
-
-	//@Override
+	// @Override
 	public boolean generateProperties(final InstallData arg0,
 			final PrintWriter arg1) {
 		// TODO Auto-generated method stub
@@ -71,13 +70,18 @@ public class CPanelWelcome extends HTMLHelloPanel implements ConsolePanel {
 
 	// ----------------- ConsolePanel methods ---------------------------- //
 
-	//@Override
+	public boolean handlePanelValidationResult(final boolean arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	// @Override
 	public boolean run(final InstallData arg0, final Console arg1) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	//@Override
+	// @Override
 	public boolean run(final InstallData arg0, final Properties arg1) {
 		// TODO Auto-generated method stub
 		return false;

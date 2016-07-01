@@ -41,8 +41,8 @@ public class CPanelTreePacks extends TreePacksPanel implements ConsolePanel {
 	 */
 	public CPanelTreePacks(final Panel panel, final InstallerFrame parent,
 			final GUIInstallData installData, final Resources resources,
-			final Locales locals, RulesEngine rules) {
-		
+			final Locales locals, final RulesEngine rules) {
+
 		super(panel, parent, installData, resources, locals, rules);
 
 		// get logger service (using static class CInstallerTools)
@@ -60,7 +60,7 @@ public class CPanelTreePacks extends TreePacksPanel implements ConsolePanel {
 				"TreePacksPanel");
 	}
 
-	//@Override
+	// @Override
 	public boolean generateProperties(final InstallData arg0,
 			final PrintWriter arg1) {
 		// TODO Auto-generated method stub
@@ -69,13 +69,18 @@ public class CPanelTreePacks extends TreePacksPanel implements ConsolePanel {
 
 	// ----------------- ConsolePanel methods ---------------------------- //
 
-	//@Override
+	public boolean handlePanelValidationResult(final boolean arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	// @Override
 	public boolean run(final InstallData arg0, final Console arg1) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	//@Override
+	// @Override
 	public boolean run(final InstallData arg0, final Properties arg1) {
 		// TODO Auto-generated method stub
 		return false;
