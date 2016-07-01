@@ -23,11 +23,14 @@ Export-Package: junit.extensions,junit.framework,junit.runner,junit.te
  runner.manipulation,org.junit.runner.notification,org.junit.runners,o
  rg.junit.runners.model,org.junit.runners.parameterized,org.junit.vali
  dator
-Import-Package: org.apache.felix.ipojo;version="[1.12.1,2.0.0)", org.a
- pache.felix.ipojo.architecture;version="[1.12.1,2.0.0)", org.osgi.fra
- mework;version=1.3.0, org.osgi.service.cm;version=1.2, org.osgi.servi
- ce.log;version=1.3, org.psem2m.isolates.base, org.psem2m.utilities, o
- rg.psem2m.utilities.files, org.psem2m.utilities.logging
+Import-Package: org.apache.felix.ipojo;version="[1.12.1,2.0.0)",
+ org.apache.felix.ipojo.architecture;version="[1.12.1,2.0.0)",
+ org.osgi.framework;version="1.3.0",
+ org.osgi.service.cm;version="1.2",
+ org.osgi.service.log;version="1.3",
+ org.psem2m.utilities,
+ org.psem2m.utilities.files,
+ org.psem2m.utilities.logging
 iPOJO-Components: component { $name="Cohorte-CCpntDefaultTestExecuter-
  factory" $classname="org.cohorte.utilities.test.executers.CCpntDefaul
  tTestExecuter" provides { $specifications="{org.cohorte.utilities.tes
@@ -37,53 +40,54 @@ iPOJO-Components: component { $name="Cohorte-CCpntDefaultTestExecuter-
  anipulation { $classname="org.cohorte.utilities.test.executers.CCpntD
  efaultTestExecuter" interface { $name="org.cohorte.utilities.test.ITe
  stExecuter" }field { $name="pBundleTests" $type="org.cohorte.utilitie
- s.test.IBundleTest[]" }field { $name="pLogger" $type="org.psem2m.isol
- ates.base.IIsolateLoggerSvc" }field { $name="pRejectExport" $type="ja
- va.lang.String" }field { $name="pTestListeners" $type="junit.framewor
- k.TestListener[]" }method { $name="run" }inner { $name="1" method { $
- name="compare" $return="int" $arguments="{org.cohorte.utilities.test.
- IBundleTest,org.cohorte.utilities.test.IBundleTest}" $names="{}" }met
- hod { $name="compare" $return="int" $arguments="{java.lang.Object,jav
- a.lang.Object}" $names="{}" }}}}component { $name="Cohorte-CCpntConso
- leTestListener-factory" $classname="org.cohorte.utilities.test.listen
- ers.CCpntConsoleTestListener" provides { $specifications="{junit.fram
- ework.TestListener}" property { $name="pelix.remote.export.reject" $f
- ield="pRejectExport" $immutable="true" }}manipulation { $classname="o
- rg.cohorte.utilities.test.listeners.CCpntConsoleTestListener" interfa
- ce { $name="junit.framework.TestListener" }field { $name="pRejectExpo
- rt" $type="java.lang.String" }method { $name="addError" $arguments="{
- junit.framework.Test,java.lang.Throwable}" $names="{test,e}" }method 
- { $name="addFailure" $arguments="{junit.framework.Test,junit.framewor
- k.AssertionFailedError}" $names="{test,e}" }method { $name="endTest" 
- $arguments="{junit.framework.Test}" $names="{test}" }method { $name="
- startTest" $arguments="{junit.framework.Test}" $names="{test}" }}}com
- ponent { $name="Cohorte-CCpntLoggerTestListener-factory" $classname="
- org.cohorte.utilities.test.listeners.CCpntLoggerTestListener" provide
- s { $specifications="{junit.framework.TestListener}" property { $name
- ="pelix.remote.export.reject" $field="pRejectExport" $immutable="true
- " }}requires { $field="pLogger" }manipulation { $classname="org.cohor
- te.utilities.test.listeners.CCpntLoggerTestListener" interface { $nam
- e="junit.framework.TestListener" }field { $name="pLogger" $type="org.
- psem2m.isolates.base.IIsolateLoggerSvc" }field { $name="pRejectExport
- " $type="java.lang.String" }method { $name="addError" $arguments="{ju
- nit.framework.Test,java.lang.Throwable}" $names="{test,e}" }method { 
- $name="addFailure" $arguments="{junit.framework.Test,junit.framework.
- AssertionFailedError}" $names="{test,e}" }method { $name="endTest" $a
- rguments="{junit.framework.Test}" $names="{test}" }method { $name="st
- artTest" $arguments="{junit.framework.Test}" $names="{test}" }}}compo
- nent { $name="Cohorte-CCpntTestCommand-factory" $classname="org.cohor
- te.utilities.test.shell.CCpntTestCommand" provides { $specifications=
- "{org.cohorte.utilities.test.IShellCommand}" property { $name="osgi.c
- ommand.function" $field="pCommands" $value="{test}" }property { $name
- ="pelix.remote.export.reject" $field="pRejectExport" $immutable="true
- " }property { $name="osgi.command.scope" $field="pScope" $value="coho
- rte" }}requires { $field="pExecuter" }requires { $field="pLogger" }ma
- nipulation { $classname="org.cohorte.utilities.test.shell.CCpntTestCo
- mmand" interface { $name="org.cohorte.utilities.test.IShellCommand" }
- field { $name="pBundleContext" $type="org.osgi.framework.BundleContex
- t" }field { $name="pCommands" $type="java.lang.String[]" }field { $na
- me="pExecuter" $type="org.cohorte.utilities.test.ITestExecuter" }fiel
- d { $name="pLogger" $type="org.psem2m.isolates.base.IIsolateLoggerSvc
- " }field { $name="pRejectExport" $type="java.lang.String" }field { $n
- ame="pScope" $type="java.lang.String" }method { $name="test" }}}
+ s.test.IBundleTest[]" }field { $name="pLogger" $type="org.psem2m.util
+ ities.logging.IActivityLogger" }field { $name="pRejectExport" $type="
+ java.lang.String" }field { $name="pTestListeners" $type="junit.framew
+ ork.TestListener[]" }method { $name="run" }inner { $name="1" method {
+  $name="compare" $return="int" $arguments="{org.cohorte.utilities.tes
+ t.IBundleTest,org.cohorte.utilities.test.IBundleTest}" $names="{}" }m
+ ethod { $name="compare" $return="int" $arguments="{java.lang.Object,j
+ ava.lang.Object}" $names="{}" }}}}component { $name="Cohorte-CCpntCon
+ soleTestListener-factory" $classname="org.cohorte.utilities.test.list
+ eners.CCpntConsoleTestListener" provides { $specifications="{junit.fr
+ amework.TestListener}" property { $name="pelix.remote.export.reject" 
+ $field="pRejectExport" $immutable="true" }}manipulation { $classname=
+ "org.cohorte.utilities.test.listeners.CCpntConsoleTestListener" inter
+ face { $name="junit.framework.TestListener" }field { $name="pRejectEx
+ port" $type="java.lang.String" }method { $name="addError" $arguments=
+ "{junit.framework.Test,java.lang.Throwable}" $names="{test,e}" }metho
+ d { $name="addFailure" $arguments="{junit.framework.Test,junit.framew
+ ork.AssertionFailedError}" $names="{test,e}" }method { $name="endTest
+ " $arguments="{junit.framework.Test}" $names="{test}" }method { $name
+ ="startTest" $arguments="{junit.framework.Test}" $names="{test}" }}}c
+ omponent { $name="Cohorte-CCpntLoggerTestListener-factory" $classname
+ ="org.cohorte.utilities.test.listeners.CCpntLoggerTestListener" provi
+ des { $specifications="{junit.framework.TestListener}" property { $na
+ me="pelix.remote.export.reject" $field="pRejectExport" $immutable="tr
+ ue" }}requires { $field="pLogger" }manipulation { $classname="org.coh
+ orte.utilities.test.listeners.CCpntLoggerTestListener" interface { $n
+ ame="junit.framework.TestListener" }field { $name="pLogger" $type="or
+ g.psem2m.utilities.logging.IActivityLogger" }field { $name="pRejectEx
+ port" $type="java.lang.String" }method { $name="addError" $arguments=
+ "{junit.framework.Test,java.lang.Throwable}" $names="{test,e}" }metho
+ d { $name="addFailure" $arguments="{junit.framework.Test,junit.framew
+ ork.AssertionFailedError}" $names="{test,e}" }method { $name="endTest
+ " $arguments="{junit.framework.Test}" $names="{test}" }method { $name
+ ="startTest" $arguments="{junit.framework.Test}" $names="{test}" }}}c
+ omponent { $name="Cohorte-CCpntTestCommand-factory" $classname="org.c
+ ohorte.utilities.test.shell.CCpntTestCommand" provides { $specificati
+ ons="{org.cohorte.utilities.test.IShellCommand}" property { $name="os
+ gi.command.function" $field="pCommands" $value="{test}" }property { $
+ name="pelix.remote.export.reject" $field="pRejectExport" $immutable="
+ true" }property { $name="osgi.command.scope" $field="pScope" $value="
+ cohorte" }}requires { $field="pExecuter" }requires { $field="pLogger"
+  }manipulation { $classname="org.cohorte.utilities.test.shell.CCpntTe
+ stCommand" interface { $name="org.cohorte.utilities.test.IShellComman
+ d" }field { $name="pBundleContext" $type="org.osgi.framework.BundleCo
+ ntext" }field { $name="pCommands" $type="java.lang.String[]" }field {
+  $name="pExecuter" $type="org.cohorte.utilities.test.ITestExecuter" }
+ field { $name="pLogger" $type="org.psem2m.utilities.logging.IActivity
+ Logger" }field { $name="pRejectExport" $type="java.lang.String" }fiel
+ d { $name="pScope" $type="java.lang.String" }method { $name="test" }}
+ }
 
