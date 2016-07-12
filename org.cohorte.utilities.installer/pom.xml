@@ -10,7 +10,7 @@
 	</parent>
 	<artifactId>org.cohorte.utilities.installer</artifactId>
 	<!-- MOD_BD_20150911 -->
-	<version>1.1.0</version>
+	<version>1.1.1</version>
 	<!--<version>1.0.0.201501211743</version>-->
 	<packaging>jar</packaging>
 

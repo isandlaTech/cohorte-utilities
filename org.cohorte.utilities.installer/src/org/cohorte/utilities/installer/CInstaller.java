@@ -123,7 +123,9 @@ public class CInstaller extends CInstallerBase implements IInstaller,
 	 */
 	@Override
 	public String getInstalledAppName() {
-		return pIzPackInstallData.getInfo().getAppName();
+		
+		//MOD_OG_20160712  Protection against null pointer exception during exit hook
+		return (pIzPackInstallData!=null)?pIzPackInstallData.getInfo().getAppName():null;
 	}
 
 	/*
@@ -134,7 +136,9 @@ public class CInstaller extends CInstallerBase implements IInstaller,
 	 */
 	@Override
 	public String getIzPackInstallPath() {
-		return pIzPackInstallData.getInstallPath();
+		
+		//MOD_OG_20160712  Protection against null pointer exception during exit hook
+		return (pIzPackInstallData!=null)?pIzPackInstallData.getInstallPath():null;
 	}
 
 	/*
