@@ -10,7 +10,7 @@
 	</parent>
 	<artifactId>org.cohorte.utilities.installer</artifactId>
 	<!-- MOD_BD_20150911 -->
-	<version>1.1.1</version>
+	<version>1.2.0</version>
 	<!--<version>1.0.0.201501211743</version>-->
 	<packaging>jar</packaging>
 
@@ -34,17 +34,20 @@
 		<dependency>
 			<groupId>org.codehaus.izpack</groupId>
 			<artifactId>izpack-api</artifactId>
-			<version>5.0.6</version>
+			<!-- MOD_OG_20170713 adopt 5.0.9 -->
+			<version>5.0.9</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.izpack</groupId>
 			<artifactId>izpack-installer</artifactId>
-			<version>5.0.6</version>
+			<!-- MOD_OG_20170713 adopt 5.0.9 -->
+			<version>5.0.9</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.izpack</groupId>
 			<artifactId>izpack-panel</artifactId>
-			<version>5.0.6</version>
+			<!-- MOD_OG_20170713 adopt 5.0.9 -->
+			<version>5.0.9</version>
 		</dependency>
 	</dependencies>
 

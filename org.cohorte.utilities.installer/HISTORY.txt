@@ -1,16 +1,20 @@
 
-1.1.1(actual)
+1.2.0 (actual)
 =====
 
+MOD_OG_20160715 
+	- console mode
+	
+MOD_OG_20160713
+	- migrate to use izPack 5.0.9
+	
 MOD_OG_20160712 
-
 	- Protection against null pointer exception during exit hook
 
 1.1.0 
 =====
 
 MOD_BD_20160225 :
-
 	- Create UTF8 files without Bom using CJobTextFileCreator. 
 
 MOD_BD_20160219 :
