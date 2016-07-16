@@ -1,19 +1,14 @@
-package org.cohorte.utilities.installer.panels;
+package org.cohorte.utilities.installer.panels.treepacks;
 
 import static org.cohorte.utilities.installer.CInstallerTools.getServiceLogger;
 
 import org.psem2m.utilities.logging.IActivityLogger;
 
 import com.izforge.izpack.api.data.InstallData;
-import com.izforge.izpack.api.factory.ObjectFactory;
 import com.izforge.izpack.api.handler.Prompt;
-import com.izforge.izpack.api.resource.Resources;
-import com.izforge.izpack.api.rules.RulesEngine;
 import com.izforge.izpack.installer.console.ConsolePanel;
 import com.izforge.izpack.installer.panel.PanelView;
-import com.izforge.izpack.panels.userinput.UserInputConsolePanel;
-import com.izforge.izpack.util.Console;
-import com.izforge.izpack.util.PlatformModelMatcher;
+import com.izforge.izpack.panels.treepacks.TreePacksConsolePanel;
 
 /**
  * MOD_OG_20160715 console mode
@@ -31,7 +26,7 @@ import com.izforge.izpack.util.PlatformModelMatcher;
  * @author ogattaz
  *
  */
-public class CUserInputConsolePanel extends UserInputConsolePanel {
+public class CTreePacksConsolePanel extends TreePacksConsolePanel {
 
 	/**
 	 * Logger
@@ -39,20 +34,12 @@ public class CUserInputConsolePanel extends UserInputConsolePanel {
 	private final IActivityLogger pLogger;
 
 	/**
-	 * @param resources
-	 * @param factory
-	 * @param rules
-	 * @param matcher
-	 * @param console
-	 * @param prompt
-	 * @param panelView
+	 * @param panel
 	 * @param installData
+	 * @param prompt
 	 */
-	public CUserInputConsolePanel(Resources resources, ObjectFactory factory, RulesEngine rules,
-			PlatformModelMatcher matcher, Console console, Prompt prompt, PanelView<ConsolePanel> panelView,
-			InstallData installData) {
-
-		super(resources, factory, rules, matcher, console, prompt, panelView, installData);
+	public CTreePacksConsolePanel(PanelView<ConsolePanel> panel, InstallData installData, Prompt prompt) {
+		super(panel, installData, prompt);
 
 		// get logger service (using static class CInstallerTools)
 		pLogger = getServiceLogger();

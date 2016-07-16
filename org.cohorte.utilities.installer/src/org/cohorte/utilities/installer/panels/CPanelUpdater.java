@@ -2,6 +2,8 @@ package org.cohorte.utilities.installer.panels;
 
 import java.awt.LayoutManager2;
 
+import org.cohorte.utilities.installer.panels.updater.CUpdaterPanel;
+
 import com.izforge.izpack.api.data.Panel;
 import com.izforge.izpack.api.resource.Resources;
 import com.izforge.izpack.gui.IzPanelLayout;

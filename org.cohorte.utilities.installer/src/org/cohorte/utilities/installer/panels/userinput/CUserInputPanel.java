@@ -1,9 +1,8 @@
-package org.cohorte.utilities.installer.panels;
+package org.cohorte.utilities.installer.panels.userinput;
 
 import static org.cohorte.utilities.installer.CInstallerTools.getServiceLogger;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.psem2m.utilities.logging.IActivityLogger;
@@ -18,8 +17,7 @@ import com.izforge.izpack.api.rules.RulesEngine;
 import com.izforge.izpack.installer.data.GUIInstallData;
 import com.izforge.izpack.installer.gui.InstallerFrame;
 import com.izforge.izpack.panels.userinput.UserInputPanel;
-import com.izforge.izpack.panels.userinput.UserInputPanelAutomationHelper;
-import com.izforge.izpack.panels.userinput.gui.GUIField;
+import com.izforge.izpack.panels.userinput.field.AbstractFieldView;
 import com.izforge.izpack.util.PlatformModelMatcher;
 
 /**
@@ -50,7 +48,7 @@ public class CUserInputPanel extends UserInputPanel {
 	 * 
 	 * the list of the AbstractFieldView of the UserInputPanel
 	 */
-	private List<GUIField> pGUIFields = new ArrayList<GUIField>();
+	private List<AbstractFieldView> pFields;
 
 	/**
 	 * Logger
@@ -80,7 +78,14 @@ public class CUserInputPanel extends UserInputPanel {
 		// log
 		pLogger.logInfo(this, "<init>", "instanciated panelClass=[%s]", getClass().getName());
 
-		pGUIFields = retreiveGUIFields();
+		pFields = retreiveFields();
+	}
+	
+	/**
+	 * @return
+	 */
+	protected List<AbstractFieldView> getFields(){
+		return pFields;
 	}
 
 	/*
@@ -92,7 +97,7 @@ public class CUserInputPanel extends UserInputPanel {
 	 */
 	@Override
 	public void createInstallationRecord(IXMLElement rootElement) {
-		new CUserInputPanelAutomation(pGUIFields).createInstallationRecord(installData, rootElement);
+		new CUserInputPanelAutomation(getFields()).createInstallationRecord(installData, rootElement);
 	}
 
 	/**
@@ -142,21 +147,22 @@ public class CUserInputPanel extends UserInputPanel {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private List<GUIField> retreiveGUIFields() {
+	protected List<AbstractFieldView> retreiveFields() {
 
-		List<GUIField> wGUIFields = null;
+		List<AbstractFieldView> wFields = null;
 
 		try {
-			Field wFieldView = UserInputPanel.class.getDeclaredField("views");
-			wFieldView.setAccessible(true);
-			wGUIFields = (List<GUIField>) wFieldView.get(this);
+			//private List<GUIField> views = new ArrayList<GUIField>();
+			Field wFieldViews = UserInputPanel.class.getDeclaredField("views");
+			wFieldViews.setAccessible(true);
+			wFields = (List<AbstractFieldView>) wFieldViews.get(this);
 
-			pLogger.logInfo(this, "retreiveGUIFields", "GUIFields=[%s]", wGUIFields);
+			pLogger.logInfo(this, "retreiveFields", "Fields=[%s]", wFields);
 
 		} catch (Exception e) {
-			pLogger.logSevere(this, "retreiveGUIFields", "ERROR: %s", e);
+			pLogger.logSevere(this, "retreiveFields", "ERROR: %s", e);
 		}
-		return wGUIFields;
+		return wFields;
 	}
 
 }

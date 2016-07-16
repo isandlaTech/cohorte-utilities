@@ -1,4 +1,4 @@
-package org.cohorte.utilities.installer.panels;
+package org.cohorte.utilities.installer.panels.process;
 
 import static org.cohorte.utilities.installer.CInstallerTools.getServiceLogger;
 

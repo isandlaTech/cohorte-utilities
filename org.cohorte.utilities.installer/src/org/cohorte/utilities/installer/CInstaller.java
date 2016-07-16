@@ -28,6 +28,7 @@ public class CInstaller extends CInstallerBase implements IInstaller,
 	/**
 	 * Constructor.
 	 *
+	 * @param aProductName
 	 * @throws Exception
 	 */
 	public CInstaller(String aProductName) throws Exception {		
@@ -35,6 +36,13 @@ public class CInstaller extends CInstallerBase implements IInstaller,
 				CInstaller.class.getSimpleName()));
 	}
 	
+	/**
+	 * Constructor.
+	 * 
+	 * @param aProductName
+	 * @param aLoggerName
+	 * @throws Exception
+	 */
 	public CInstaller(String aProductName, String aLoggerName) throws Exception {		
 		super(aLoggerName);
 		if (aProductName != null) {

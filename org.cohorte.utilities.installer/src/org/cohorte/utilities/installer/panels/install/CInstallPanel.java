@@ -1,18 +1,15 @@
-package org.cohorte.utilities.installer.panels;
+package org.cohorte.utilities.installer.panels.install;
 
-import static org.cohorte.utilities.installer.CInstallerTools.getService;
 import static org.cohorte.utilities.installer.CInstallerTools.getServiceLogger;
 
-import org.cohorte.utilities.installer.IInstallerData;
 import org.psem2m.utilities.logging.IActivityLogger;
 
-import com.izforge.izpack.api.adaptator.IXMLElement;
 import com.izforge.izpack.api.data.Panel;
 import com.izforge.izpack.api.resource.Resources;
 import com.izforge.izpack.gui.log.Log;
 import com.izforge.izpack.installer.data.GUIInstallData;
 import com.izforge.izpack.installer.gui.InstallerFrame;
-import com.izforge.izpack.panels.target.TargetPanel;
+import com.izforge.izpack.panels.install.InstallPanel;
 
 /**
  * MOD_OG_20160715 console mode
@@ -30,12 +27,12 @@ import com.izforge.izpack.panels.target.TargetPanel;
  * @author ogattaz
  *
  */
-public class CTargetPanel extends TargetPanel {
+public class CInstallPanel extends InstallPanel {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 2517292832246022856L;
+	private static final long serialVersionUID = -2753159166991682257L;
 
 	/**
 	 * Logger
@@ -43,35 +40,21 @@ public class CTargetPanel extends TargetPanel {
 	private final IActivityLogger pLogger;
 
 	/**
-	 * Constructor of Welcome Panel.
-	 *
 	 * @param panel
 	 * @param parent
 	 * @param installData
 	 * @param resources
 	 * @param log
 	 */
-	public CTargetPanel(final Panel panel, final InstallerFrame parent, final GUIInstallData installData,
-			final Resources resources, final Log log) {
+	public CInstallPanel(Panel panel, InstallerFrame parent, GUIInstallData installData, Resources resources,
+			Log log) {
 
 		super(panel, parent, installData, resources, log);
 
-		// first - retreive the 'logger' service asking the service registry
+		// get logger service (using static class CInstallerTools)
 		pLogger = getServiceLogger();
 		// log
 		pLogger.logInfo(this, "<init>", "instanciated panelClass=[%s]", getClass().getName());
-	}
-
-	/*
-	 * MOD_OG_20160715 automation
-	 * 
-	 * @see
-	 * com.izforge.izpack.panels.target.TargetPanel#createInstallationRecord
-	 * (com.izforge.izpack.api.adaptator.IXMLElement)
-	 */
-	@Override
-	public void createInstallationRecord(IXMLElement rootElement) {
-		new CTargetPanelAutomation().createInstallationRecord(installData, rootElement);
 	}
 
 	/*
@@ -95,18 +78,6 @@ public class CTargetPanel extends TargetPanel {
 	public void panelDeactivate() {
 		pLogger.logInfo(this, "panelDeactivate", "Deactivating");
 		super.panelDeactivate();
-		// normalize paths
-		String wInstallPath = this.installData.getVariable("INSTALL_PATH");
-		pLogger.logInfo(this, "panelDeactivate", "normalize windows path : %s", wInstallPath);
-		this.installData.setVariable("INSTALL_PATH", wInstallPath.replace("\\", "/"));
-
-		try {
-			getService(IInstallerData.class).putData("INSTALL_DIR", installData.getInstallPath());
-		} catch (Exception e) {
-			pLogger.logSevere(this, "panelDeactivate",
-					"ERROR, cannot write INSTALL_DIR to IInstallerData service reference!\n%s",
-					e.getMessage());
-		}
 		pLogger.logInfo(this, "panelDeactivate", "Deactivated");
 	}
 

@@ -1,18 +1,16 @@
-package org.cohorte.utilities.installer.panels;
+package org.cohorte.utilities.installer.panels.simplefinish;
 
 import static org.cohorte.utilities.installer.CInstallerTools.getServiceLogger;
 
-import java.io.PrintWriter;
-
 import org.psem2m.utilities.logging.IActivityLogger;
 
-import com.izforge.izpack.api.data.InstallData;
 import com.izforge.izpack.api.data.Panel;
 import com.izforge.izpack.api.resource.Resources;
 import com.izforge.izpack.gui.log.Log;
 import com.izforge.izpack.installer.data.GUIInstallData;
+import com.izforge.izpack.installer.data.UninstallDataWriter;
 import com.izforge.izpack.installer.gui.InstallerFrame;
-import com.izforge.izpack.panels.htmllicence.HTMLLicencePanel;
+import com.izforge.izpack.panels.simplefinish.SimpleFinishPanel;
 
 /**
  * MOD_OG_20160715 console mode
@@ -30,35 +28,25 @@ import com.izforge.izpack.panels.htmllicence.HTMLLicencePanel;
  * @author ogattaz
  *
  */
-public class CLicensePanel extends HTMLLicencePanel  {
+public class CSimpleFinishPanel extends SimpleFinishPanel {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -1177309516936524712L;
-	
+	private static final long serialVersionUID = -4491635706731948175L;
+
 	/**
 	 * Logger
 	 */
 	private final IActivityLogger pLogger;
-	
-	/**
-	 * Constructor of Welcome Panel.
-	 *
-	 * @param panel
-	 * @param parent
-	 * @param installData
-	 * @param resources
-	 * @param log
-	 */
-	public CLicensePanel(final Panel panel, final InstallerFrame parent,
-			final GUIInstallData installData, final Resources resources,
-			final Log log) {
-		super(panel, parent, installData, resources, log);
 
-		// get logger service (using static class CInstallerTools)
+	public CSimpleFinishPanel(Panel panel, InstallerFrame parent, GUIInstallData installData,
+			Resources resources, UninstallDataWriter uninstallDataWriter, Log log) {
+
+		super(panel, parent, installData, resources, uninstallDataWriter, log);
+
+		// first - retreive the 'logger' service asking the service registry
 		pLogger = getServiceLogger();
-
 		// log
 		pLogger.logInfo(this, "<init>", "instanciated panelClass=[%s]",
 				getClass().getName());
@@ -87,11 +75,5 @@ public class CLicensePanel extends HTMLLicencePanel  {
 		super.panelDeactivate();
 		pLogger.logInfo(this, "panelDeactivate", "Deactivated");
 	}
-	
-	//@Override
-	public boolean generateProperties(final InstallData arg0,
-			final PrintWriter arg1) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+
 }

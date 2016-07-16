@@ -2,25 +2,83 @@ package org.cohorte.utilities.installer;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.SimpleFormatter;
 
 import org.cohorte.utilities.picosoc.CAbstractComponentBase;
 import org.psem2m.utilities.CXDateTime;
+import org.psem2m.utilities.CXException;
 import org.psem2m.utilities.CXJavaRunContext;
 import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.files.CXFile;
 import org.psem2m.utilities.files.CXFileDir;
+import org.psem2m.utilities.logging.CActivityFileHandler;
 import org.psem2m.utilities.logging.CActivityFormaterBasic;
 import org.psem2m.utilities.logging.CActivityLoggerBasic;
+import org.psem2m.utilities.logging.CActivityUtils;
 import org.psem2m.utilities.logging.CLogLineTextBuilder;
+import org.psem2m.utilities.logging.EActivityLogColumn;
 import org.psem2m.utilities.logging.IActivityFormater;
 import org.psem2m.utilities.logging.IActivityLogger;
 import org.psem2m.utilities.logging.IActivityRequester;
 
-public class CInstallerLogger extends CAbstractComponentBase implements
-		IActivityLogger {
+/**
+ * MOD_OG_20160716 console mode
+ * 
+ * @author ogattaz
+ *
+ */
+class CInstallerLoggerBasic extends CActivityLoggerBasic {
+
+	/**
+	 * @param aLoggerName
+	 * @param aFilePathPattern
+	 * @param aLevel
+	 * @return
+	 * @throws Exception
+	 */
+	static CInstallerLoggerBasic newLogger(final String aLoggerName, final String aFilePathPattern,
+			final String aLevel) throws Exception {
+
+		CInstallerLoggerBasic wLogger = new CInstallerLoggerBasic(aLoggerName, aFilePathPattern, aLevel,
+				10 * 1024 * 1024, 10, IActivityFormater.LINE_SHORT, IActivityFormater.MULTILINES_TEXT);
+		wLogger.initFileHandler();
+		wLogger.open();
+		return wLogger;
+	}
+
+	/**
+	 * @param aLoggerName
+	 * @param aFilePathPattern
+	 * @param aLevel
+	 * @param aFileLimit
+	 * @param aFileCount
+	 * @param aLineDef
+	 * @param aMultiLine
+	 * @throws Exception
+	 */
+	CInstallerLoggerBasic(String aLoggerName, String aFilePathPattern, String aLevel,
+			int aFileLimit, int aFileCount, EActivityLogColumn[] aLineDef, boolean aMultiLine)
+			throws Exception {
+		super(aLoggerName, aFilePathPattern, aLevel, aFileLimit, aFileCount, aLineDef, aMultiLine);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.psem2m.utilities.logging.CActivityLogger#getFileHandler()
+	 */
+	@Override
+	public CActivityFileHandler getFileHandler() {
+		return super.getFileHandler();
+	}
+}
+
+/**
+ * @author ogattaz
+ *
+ */
+public class CInstallerLogger extends CAbstractComponentBase implements IActivityLogger {
 
 	private final static String FILENAME_EXT = "log";
 
@@ -29,12 +87,14 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	private static final IActivityFormater sActivityFormater = CActivityFormaterBasic
 			.getInstance(IActivityFormater.LINE_SIMPLEFORMATER);
 
-	private static CActivityLoggerBasic sFileLogger = null;
+	private static CInstallerLoggerBasic sFileLogger = null;
 
-	private static final CLogLineTextBuilder sLogLineTextBuilder = CLogLineTextBuilder
-			.getInstance();
+	private static final CLogLineTextBuilder sLogLineTextBuilder = CLogLineTextBuilder.getInstance();
 
 	private static SimpleFormatter sSimpleFormatter = new SimpleFormatter();
+	
+	private static final String LOG_LEVEL_DEFAULT = Level.INFO.getName();
+	private static final String LOG_LEVEL_PROPERTY = "LOGLEVEL";
 
 	/**
 	 * @param aLevel
@@ -50,8 +110,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * @param aWhat
 	 * @param aInfos
 	 */
-	public static void logInConsole(Level aLevel, final Object aWho,
-			CharSequence aWhat, Object... aInfos) {
+	public static void logInConsole(Level aLevel, final Object aWho, CharSequence aWhat, Object... aInfos) {
 
 		if (!isLogOn(aLevel)) {
 			return;
@@ -63,13 +122,11 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 		String wLogWho = sLogLineTextBuilder.buildWhoObjectId(aWho);
 		// System.out.println("wLogWho="+((wLogWho!=null)?wLogWho:"null"));
 
-		String wLogWhat = (aWhat != null) ? aWhat.toString() : CXJavaRunContext
-				.getPreCallingMethod();
+		String wLogWhat = (aWhat != null) ? aWhat.toString() : CXJavaRunContext.getPreCallingMethod();
 		// System.out.println("wLogWhat="+((wLogWhat!=null)?wLogWhat:"null"));
 
-		String wLine = sActivityFormater.format(System.currentTimeMillis(),
-				aLevel, wLogWho, wLogWhat, wLogText,
-				!IActivityFormater.WITH_END_LINE);
+		String wLine = sActivityFormater.format(System.currentTimeMillis(), aLevel, wLogWho, wLogWhat,
+				wLogText, !IActivityFormater.WITH_END_LINE);
 
 		LogRecord wLogRecord = new LogRecord(aLevel, wLine);
 		wLogRecord.setLoggerName("console CInstallerLogger:logInConsole()");
@@ -82,8 +139,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * @param aWhat
 	 * @param aInfos
 	 */
-	public static void logInFile(Level aLevel, final Object aWho,
-			CharSequence aWhat, Object... aInfos) {
+	public static void logInFile(Level aLevel, final Object aWho, CharSequence aWhat, Object... aInfos) {
 
 		if (!isLogOn(aLevel)) {
 			return;
@@ -121,14 +177,13 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 
 		initFileLogger(aName);
 
-		logInfo(this, "<init>", "instanciated: lineDef=[%s]",
-				sActivityFormater.getLineDefInString());
+		logInfo(this, "<init>", "instanciated: lineDef=[%s]", sActivityFormater.getLineDefInString());
 	}
 
-	//@Override
+	// @Override
 	public Appendable addDescriptionInBuffer(Appendable aBuffer) {
-		return CXStringUtils.appendStringsInBuff(aBuffer, getClass()
-				.getSimpleName(), String.valueOf(hashCode()));
+		return CXStringUtils.appendStringsInBuff(aBuffer, getClass().getSimpleName(),
+				String.valueOf(hashCode()));
 	}
 
 	/**
@@ -151,7 +206,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * 
 	 * @see org.psem2m.utilities.logging.IActivityLogger#close()
 	 */
-	//@Override
+	// @Override
 	public void close() {
 		logInfo(this, "close", "hasFileLogger=[%s]", (sFileLogger != null));
 
@@ -171,13 +226,12 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 		boolean wMoveLogFiles = (wDestDir != null);
 
 		if (!wMoveLogFiles) {
-			logInfo(this,
-					"closeAndMove",
-					"MoveLog=[%s] aDestPath [%s] is null or isn't an existing directory",
-					wMoveLogFiles, aDestPath);
+			logInfo(this, "closeAndMove",
+					"MoveLog=[%s] aDestPath [%s] is null or isn't an existing directory", wMoveLogFiles,
+					aDestPath);
 		} else {
-			logInfo(this, "closeAndMove", "MoveLog=[%s] Destination=[%s] ",
-					wMoveLogFiles, wDestDir.getAbsolutePath());
+			logInfo(this, "closeAndMove", "MoveLog=[%s] Destination=[%s] ", wMoveLogFiles,
+					wDestDir.getAbsolutePath());
 		}
 
 		close();
@@ -187,30 +241,27 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 				int wFileIdx = 0;
 
 				CXFile wDestFile;
-				CXFile wSourceFile = new CXFile(pAbsolutePathPattern.replace(
-						FILENAME_NUM, String.valueOf(wFileIdx)));
+				CXFile wSourceFile = new CXFile(pAbsolutePathPattern.replace(FILENAME_NUM,
+						String.valueOf(wFileIdx)));
 
 				while (wSourceFile.exists()) {
 
 					wDestFile = new CXFile(wDestDir, wSourceFile.getName());
 
-					wDestFile = wSourceFile.copyTo(wDestFile,
-							CXFile.DELETE_IF_EXIST);
+					wDestFile = wSourceFile.copyTo(wDestFile, CXFile.DELETE_IF_EXIST);
 
-					logInConsole(Level.INFO, this, "closeAndMove",
-							"copied=[%s] dest=[%s]", wDestFile.exists(),
-							wDestFile.getAbsolutePath());
+					logInConsole(Level.INFO, this, "closeAndMove", "copied=[%s] dest=[%s]",
+							wDestFile.exists(), wDestFile.getAbsolutePath());
 
 					if (wDestFile.exists()) {
 
 						boolean wDeleted = wSourceFile.delete();
-						logInConsole(Level.INFO, this, "closeAndMove",
-								"deleted=[%s] source=[%s]", wDeleted,
+						logInConsole(Level.INFO, this, "closeAndMove", "deleted=[%s] source=[%s]", wDeleted,
 								wSourceFile.getAbsolutePath());
 					}
 					wFileIdx++;
-					wSourceFile = new CXFile(pAbsolutePathPattern.replace(
-							FILENAME_NUM, String.valueOf(wFileIdx)));
+					wSourceFile = new CXFile(pAbsolutePathPattern.replace(FILENAME_NUM,
+							String.valueOf(wFileIdx)));
 				}
 
 			} catch (IOException e) {
@@ -239,9 +290,18 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * 
 	 * @see org.psem2m.utilities.logging.IActivityLoggerBase#getLevel()
 	 */
-	//@Override
+	// @Override
 	public Level getLevel() {
 		return (sFileLogger != null) ? sFileLogger.getLevel() : Level.OFF;
+	}
+
+	/**
+	 * MOD_OG_20160716 console mode
+	 * 
+	 * @return
+	 */
+	public Handler gethandler() {
+		return sFileLogger.getFileHandler();
 	}
 
 	/*
@@ -249,7 +309,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * 
 	 * @see org.psem2m.utilities.logging.IActivityLogger#getRequester()
 	 */
-	//@Override
+	// @Override
 	public IActivityRequester getRequester() {
 		return null;
 	}
@@ -261,23 +321,28 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	private void initFileLogger(final String aLoggerName) {
 
 		try {
-			String wLevel = "FINE";
-
+			String wLevelName = LOG_LEVEL_DEFAULT;
+			
+			if (System.getProperties().containsKey(LOG_LEVEL_PROPERTY)){
+				wLevelName = System.getProperty(LOG_LEVEL_PROPERTY);
+				
+				if (Level.OFF.equals(CActivityUtils.levelToLevel(wLevelName))){
+					String wMess = String.format("The log level [%s] given in the argument [-D%s] is wrong, the defualt one [%s] is used", wLevelName,LOG_LEVEL_PROPERTY,LOG_LEVEL_DEFAULT);
+					System.err.println(wMess);
+					wLevelName = LOG_LEVEL_DEFAULT;
+				}
+			}
+			
 			String wLogFileNamePattern = buildFileNamePattern(aLoggerName);
 
 			File wDirLogs = CXFileDir.getTempDir();
-			CXFileDir wLogFilePattern = new CXFileDir(wDirLogs,
-					wLogFileNamePattern);
+			CXFileDir wLogFilePattern = new CXFileDir(wDirLogs, wLogFileNamePattern);
 
 			pAbsolutePathPattern = wLogFilePattern.getAbsolutePath();
 
-			sFileLogger = (CActivityLoggerBasic) CActivityLoggerBasic
-					.newLogger(aLoggerName, pAbsolutePathPattern, wLevel,
-							10 * 1024 * 1024, 10, IActivityFormater.LINE_SHORT,
-							IActivityFormater.MULTILINES_TEXT);
+			sFileLogger = CInstallerLoggerBasic.newLogger(aLoggerName, pAbsolutePathPattern, wLevelName);
 
-			logInfo(this, "initFileLogger", "FileLogger: %s",
-					sFileLogger.toDescription());
+			logInfo(this, "initFileLogger", "FileLogger: %s", sFileLogger.toDescription());
 
 		} catch (Exception e) {
 			logSevere(this, "initFileLogger", e);
@@ -289,7 +354,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * 
 	 * @see org.psem2m.utilities.logging.IActivityLoggerBase#isLogDebugOn()
 	 */
-	//@Override
+	// @Override
 	public boolean isLogDebugOn() {
 		return isLoggable(Level.FINE);
 	}
@@ -301,7 +366,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * org.psem2m.utilities.logging.IActivityLoggerBase#isLoggable(java.util
 	 * .logging.Level)
 	 */
-	//@Override
+	// @Override
 	public boolean isLoggable(final Level aLevel) {
 		return isLogOn(aLevel);
 	}
@@ -311,7 +376,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * 
 	 * @see org.psem2m.utilities.logging.IActivityLoggerBase#isLogInfoOn()
 	 */
-	//@Override
+	// @Override
 	public boolean isLogInfoOn() {
 		return isLoggable(Level.INFO);
 	}
@@ -321,7 +386,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * 
 	 * @see org.psem2m.utilities.logging.IActivityLoggerBase#isLogSevereOn()
 	 */
-	//@Override
+	// @Override
 	public boolean isLogSevereOn() {
 		return isLoggable(Level.SEVERE);
 	}
@@ -331,7 +396,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * 
 	 * @see org.psem2m.utilities.logging.IActivityLoggerBase#isLogWarningOn()
 	 */
-	//@Override
+	// @Override
 	public boolean isLogWarningOn() {
 		return true;
 	}
@@ -350,9 +415,8 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * org.psem2m.utilities.logging.IActivityLogger#log(java.util.logging.Level,
 	 * java.lang.Object, java.lang.CharSequence, java.lang.Object[])
 	 */
-	//@Override
-	public void log(final Level aLevel, final Object aWho,
-			final CharSequence aWhat, final Object... aInfos) {
+	// @Override
+	public void log(final Level aLevel, final Object aWho, final CharSequence aWhat, final Object... aInfos) {
 
 		if (!isLoggable(aLevel))
 			return;
@@ -367,7 +431,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * org.psem2m.utilities.logging.IActivityLoggerBase#log(java.util.logging
 	 * .LogRecord)
 	 */
-	//@Override
+	// @Override
 	public void log(final LogRecord record) {
 		logInFile(record);
 	}
@@ -379,9 +443,8 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * org.psem2m.utilities.logging.IActivityLogger#logDebug(java.lang.Object,
 	 * java.lang.CharSequence, java.lang.Object[])
 	 */
-	//@Override
-	public void logDebug(final Object aWho, final CharSequence aWhat,
-			final Object... aInfos) {
+	// @Override
+	public void logDebug(final Object aWho, final CharSequence aWhat, final Object... aInfos) {
 		log(Level.FINE, aWho, aWhat, aInfos);
 
 	}
@@ -393,9 +456,8 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * org.psem2m.utilities.logging.IActivityLogger#logInfo(java.lang.Object,
 	 * java.lang.CharSequence, java.lang.Object[])
 	 */
-	//@Override
-	public void logInfo(final Object aWho, final CharSequence aWhat,
-			final Object... aInfos) {
+	// @Override
+	public void logInfo(final Object aWho, final CharSequence aWhat, final Object... aInfos) {
 		log(Level.INFO, aWho, aWhat, aInfos);
 	}
 
@@ -406,9 +468,8 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * org.psem2m.utilities.logging.IActivityLogger#logSevere(java.lang.Object,
 	 * java.lang.CharSequence, java.lang.Object[])
 	 */
-	//@Override
-	public void logSevere(final Object aWho, final CharSequence aWhat,
-			final Object... aInfos) {
+	// @Override
+	public void logSevere(final Object aWho, final CharSequence aWhat, final Object... aInfos) {
 		log(Level.SEVERE, aWho, aWhat, aInfos);
 	}
 
@@ -419,9 +480,8 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * org.psem2m.utilities.logging.IActivityLogger#logWarn(java.lang.Object,
 	 * java.lang.CharSequence, java.lang.Object[])
 	 */
-	//@Override
-	public void logWarn(final Object aWho, final CharSequence aWhat,
-			final Object... aInfos) {
+	// @Override
+	public void logWarn(final Object aWho, final CharSequence aWhat, final Object... aInfos) {
 		log(Level.WARNING, aWho, aWhat, aInfos);
 	}
 
@@ -432,7 +492,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * org.psem2m.utilities.logging.IActivityLogger#setLevel(java.util.logging
 	 * .Level)
 	 */
-	//@Override
+	// @Override
 	public void setLevel(Level aLevel) {
 		if (sFileLogger != null) {
 			sFileLogger.setLevel(aLevel);
@@ -445,7 +505,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * @see
 	 * org.psem2m.utilities.logging.IActivityLogger#setLevel(java.lang.String)
 	 */
-	//@Override
+	// @Override
 	public void setLevel(String aLevelName) {
 		if (sFileLogger != null) {
 			sFileLogger.setLevel(aLevelName);
@@ -457,7 +517,7 @@ public class CInstallerLogger extends CAbstractComponentBase implements
 	 * 
 	 * @see org.psem2m.utilities.IXDescriber#toDescription()
 	 */
-	//@Override
+	// @Override
 	public String toDescription() {
 		return addDescriptionInBuffer(new StringBuilder(128)).toString();
 	}

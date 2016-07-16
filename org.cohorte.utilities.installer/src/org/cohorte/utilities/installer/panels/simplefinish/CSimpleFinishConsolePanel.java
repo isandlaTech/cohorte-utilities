@@ -1,13 +1,12 @@
-package org.cohorte.utilities.installer.panels;
+package org.cohorte.utilities.installer.panels.simplefinish;
 
 import static org.cohorte.utilities.installer.CInstallerTools.getServiceLogger;
 
 import org.psem2m.utilities.logging.IActivityLogger;
 
-import com.izforge.izpack.api.resource.Resources;
 import com.izforge.izpack.installer.console.ConsolePanel;
 import com.izforge.izpack.installer.panel.PanelView;
-import com.izforge.izpack.panels.htmllicence.HTMLLicenceConsolePanel;
+import com.izforge.izpack.panels.simplefinish.SimpleFinishConsolePanel;
 
 /**
  * MOD_OG_20160715 console mode
@@ -25,23 +24,24 @@ import com.izforge.izpack.panels.htmllicence.HTMLLicenceConsolePanel;
  * @author ogattaz
  *
  */
-public class CLicenseConsolePanel extends HTMLLicenceConsolePanel {
+public class CSimpleFinishConsolePanel extends SimpleFinishConsolePanel {
+
 	/**
 	 * Logger
 	 */
 	private final IActivityLogger pLogger;
 
 	/**
+	 * @param unpacker
 	 * @param panel
-	 * @param resources
 	 */
-	public CLicenseConsolePanel(PanelView<ConsolePanel> panel, Resources resources) {
+	public CSimpleFinishConsolePanel(PanelView<ConsolePanel> panel) {
 
-		super(panel, resources);
-		
+		super(panel);
+
 		// get logger service (using static class CInstallerTools)
 		pLogger = getServiceLogger();
 		// log
-		pLogger.logInfo(this, "<init>", "instanciated panelClass=[%s]", getClass().getName());
+		pLogger.logInfo(this, "<init>", "instanciated panelClass=[%s]", getClass().getName() );
 	}
 }

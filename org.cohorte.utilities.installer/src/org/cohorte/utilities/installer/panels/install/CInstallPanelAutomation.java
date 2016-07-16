@@ -1,4 +1,4 @@
-package org.cohorte.utilities.installer.panels;
+package org.cohorte.utilities.installer.panels.install;
 
 import static org.cohorte.utilities.installer.CInstallerTools.getServiceLogger;
 
@@ -6,26 +6,22 @@ import org.psem2m.utilities.logging.IActivityLogger;
 
 import com.izforge.izpack.api.adaptator.IXMLElement;
 import com.izforge.izpack.api.data.InstallData;
-import com.izforge.izpack.panels.treepacks.TreePacksPanelAutomationHelper;
+import com.izforge.izpack.installer.unpacker.IUnpacker;
+import com.izforge.izpack.panels.install.InstallPanelAutomationHelper;
 
 /**
  * MOD_OG_20160715 automation
  * 
  * To manage the data available in the element
- * "org.cohorte.utilities.installer.panels.CTreePacksConsolePanel"
+ * "org.cohorte.utilities.installer.panels.CTargetPanel"
  * 
  * <pre>
  * <?xml version="1.0" encoding="UTF-8" standalone="no"?>
  * <AutomatedInstallation langpack="fra">
  * ...
- * <org.cohorte.utilities.installer.panels.CTreePacksConsolePanel id="treePackspanel">
- * <pack index="0" name="Installer" selected="true"/>
- * <pack index="1" name="Agilium Server" selected="true"/>
- * <pack index="2" name="Agilium Sample Projects" selected="true"/>
- * <pack index="3" name="Agilium Web" selected="true"/>
- * <pack index="4" name="Agilium Factory" selected="true"/>
- * <pack index="5" name="LDAP Browser" selected="true"/>
- * </com.izforge.izpack.panels.treepacks.TreePacksPanel>
+ * <org.cohorte.utilities.installer.panels.CTargetPanel id="panel.target">
+ * <installpath>/Users/ogattaz/temp/test-install/temp</installpath>
+ * </org.cohorte.utilities.installer.panels.CTargetPanel>
  * ...
  * </AutomatedInstallation>
  * </pre>
@@ -37,7 +33,7 @@ import com.izforge.izpack.panels.treepacks.TreePacksPanelAutomationHelper;
  * @author ogattaz
  *
  */
-public class CTreePacksPanelAutomation extends TreePacksPanelAutomationHelper {
+public class CInstallPanelAutomation extends InstallPanelAutomationHelper {
 
 	/**
 	 * Logger
@@ -49,8 +45,8 @@ public class CTreePacksPanelAutomation extends TreePacksPanelAutomationHelper {
 	 * @param installData
 	 * @param prompt
 	 */
-	public CTreePacksPanelAutomation() {
-		super();
+	public CInstallPanelAutomation(IUnpacker unpacker) {
+		super( unpacker);
 
 		// get logger service (using static class CInstallerTools)
 		pLogger = getServiceLogger();
@@ -95,4 +91,5 @@ public class CTreePacksPanelAutomation extends TreePacksPanelAutomationHelper {
 
 		pLogger.logInfo(this, "runAutomated", "end");
 	}
+
 }

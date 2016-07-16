@@ -1,5 +1,7 @@
 package org.cohorte.utilities.installer.panels;
 
+import org.cohorte.utilities.installer.panels.treepacks.CTreePacksPanel;
+
 import com.izforge.izpack.api.data.Panel;
 import com.izforge.izpack.api.resource.Locales;
 import com.izforge.izpack.api.resource.Resources;

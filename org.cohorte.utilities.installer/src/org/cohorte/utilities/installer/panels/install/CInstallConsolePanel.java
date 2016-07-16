@@ -1,15 +1,13 @@
-package org.cohorte.utilities.installer.panels;
+package org.cohorte.utilities.installer.panels.install;
 
 import static org.cohorte.utilities.installer.CInstallerTools.getServiceLogger;
 
 import org.psem2m.utilities.logging.IActivityLogger;
 
-import com.izforge.izpack.api.data.Panel;
-import com.izforge.izpack.api.resource.Resources;
-import com.izforge.izpack.gui.log.Log;
-import com.izforge.izpack.installer.data.GUIInstallData;
-import com.izforge.izpack.installer.gui.InstallerFrame;
-import com.izforge.izpack.panels.install.InstallPanel;
+import com.izforge.izpack.installer.console.ConsolePanel;
+import com.izforge.izpack.installer.panel.PanelView;
+import com.izforge.izpack.installer.unpacker.IUnpacker;
+import com.izforge.izpack.panels.install.InstallConsolePanel;
 
 /**
  * MOD_OG_20160715 console mode
@@ -27,12 +25,7 @@ import com.izforge.izpack.panels.install.InstallPanel;
  * @author ogattaz
  *
  */
-public class CInstallPanel extends InstallPanel {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2753159166991682257L;
+public class CInstallConsolePanel extends InstallConsolePanel {
 
 	/**
 	 * Logger
@@ -40,16 +33,12 @@ public class CInstallPanel extends InstallPanel {
 	private final IActivityLogger pLogger;
 
 	/**
+	 * @param unpacker
 	 * @param panel
-	 * @param parent
-	 * @param installData
-	 * @param resources
-	 * @param log
 	 */
-	public CInstallPanel(Panel panel, InstallerFrame parent, GUIInstallData installData, Resources resources,
-			Log log) {
+	public CInstallConsolePanel(IUnpacker unpacker, PanelView<ConsolePanel> panel) {
 
-		super(panel, parent, installData, resources, log);
+		super(unpacker, panel);
 
 		// get logger service (using static class CInstallerTools)
 		pLogger = getServiceLogger();
@@ -63,10 +52,10 @@ public class CInstallPanel extends InstallPanel {
 	 * @see com.izforge.izpack.installer.gui.IzPanel#panelActivate()
 	 */
 	@Override
-	public void panelActivate() {
-		pLogger.logInfo(this, "panelActivate", "Activating");
-		super.panelActivate();
-		pLogger.logInfo(this, "panelActivate", "Activated");
+	public void startAction(String name, int no_of_steps) {
+		pLogger.logInfo(this, "panelActivate", "Activating [%s] [%s]", no_of_steps, name);
+		super.startAction(name, no_of_steps);
+		pLogger.logInfo(this, "panelActivate", "Activated  [%s] [%s]", no_of_steps, name);
 	}
 
 	/*
@@ -75,10 +64,9 @@ public class CInstallPanel extends InstallPanel {
 	 * @see com.izforge.izpack.installer.gui.IzPanel#panelDeactivate()
 	 */
 	@Override
-	public void panelDeactivate() {
+	public void stopAction() {
 		pLogger.logInfo(this, "panelDeactivate", "Deactivating");
-		super.panelDeactivate();
+		super.stopAction();
 		pLogger.logInfo(this, "panelDeactivate", "Deactivated");
 	}
-
 }

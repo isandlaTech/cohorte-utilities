@@ -1,5 +1,7 @@
 package org.cohorte.utilities.installer.panels;
 
+import org.cohorte.utilities.installer.panels.process.CProcessPanel;
+
 import com.izforge.izpack.api.data.Panel;
 import com.izforge.izpack.api.resource.Resources;
 import com.izforge.izpack.api.rules.RulesEngine;
