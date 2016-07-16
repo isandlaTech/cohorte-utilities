@@ -143,46 +143,39 @@ public abstract class CInstallerBase extends CAbstractComponentBase implements I
 
 	/**
 	 * <pre>
-	 *  dumpLoggers; nbLogger=[37] 
-	 *   dumpLogger; [com.izforge.izpack.installer.bootstrap.Installer                                ] UseParentHandlers=[true] LoggerParent=[com.izforge.izpack]
-	 *   dumpLogger; [com.izforge.izpack.api.data.LocaleDatabase                                      ] UseParentHandlers=[true] LoggerParent=[com.izforge.izpack]
-	 *   dumpLogger; [java.awt.KeyboardFocusManager                                                   ] UseParentHandlers=[true] LoggerParent=[]
-	 *   dumpLogger; [global                                                                          ] UseParentHandlers=[true] LoggerParent=[]
-	 *   dumpLogger; [sun.awt.AppContext                                                              ] UseParentHandlers=[true] LoggerParent=[]
-	 *   dumpLogger; [sun.awt.focus.KeyboardFocusManagerPeerImpl                                      ] UseParentHandlers=[true] LoggerParent=[]
-	 *   dumpLogger; [java.awt.mixing.Container                                                       ] UseParentHandlers=[true] LoggerParent=[]
-	 *   dumpLogger; [java.awt.event.Container                                                        ] UseParentHandlers=[true] LoggerParent=[]
-	 *   dumpLogger; [java.awt.AWTEvent                                                               ] UseParentHandlers=[true] LoggerParent=[]
-	 *   dumpLogger; [com.izforge.izpack.core.resource.DefaultLocales                                 ] UseParentHandlers=[true] LoggerParent=[com.izforge.izpack]
-	 *   dumpLogger; [java.awt.Cursor                                                                 ] UseParentHandlers=[true] LoggerParent=[]
-	 *   dumpLogger; [sun.awt.multiscreen.SunDisplayChanger                                           ] UseParentHandlers=[true] LoggerParent=[]
-	 *   dumpLogger; [com.izforge.izpack.util.Platforms                                               ] UseParentHandlers=[true] LoggerParent=[com.izforge.izpack]
-	 *   dumpLogger; [java.awt.mixing.Component                                                       ] UseParentHandlers=[true] LoggerParent=[]
-	 *   dumpLogger; [com.izforge.izpack.installer.container.provider.RulesProvider                   ] UseParentHandlers=[true] LoggerParent=[com.izforge.izpack]
-	 *   dumpLogger; [java.awt.event.Component                                                        ] UseParentHandlers=[true] LoggerParent=[]
-	 *   dumpLogger; [Installer_CInstaller+1                                                          ] UseParentHandlers=[false] LoggerParent=[]
+	 *  dumpLoggers; nbLogger=[29]
+	 *   dumpLogger; [com.izforge.izpack.installer.bootstrap.Installer                                ][no level] UseParent=[true] LoggerParent=[com.izforge.izpack]
+	 *   dumpLogger; [com.izforge.izpack.api.data.LocaleDatabase                                      ][no level] UseParent=[true] LoggerParent=[com.izforge.izpack]
+	 *   dumpLogger; [global                                                                          ][no level] UseParent=[true] LoggerParent=[]
+	 *   dumpLogger; [com.izforge.izpack.core.resource.DefaultLocales                                 ][no level] UseParent=[true] LoggerParent=[com.izforge.izpack]
+	 *   dumpLogger; [sun.awt.multiscreen.SunDisplayChanger                                           ][no level] UseParent=[true] LoggerParent=[]
+	 *   dumpLogger; [com.izforge.izpack.util.Platforms                                               ][no level] UseParent=[true] LoggerParent=[com.izforge.izpack]
+	 *   dumpLogger; [java.awt.mixing.Component                                                       ][no level] UseParent=[true] LoggerParent=[]
+	 *   dumpLogger; [com.izforge.izpack.installer.container.provider.RulesProvider                   ][no level] UseParent=[true] LoggerParent=[com.izforge.izpack]
+	 *   dumpLogger; [java.awt.event.Component                                                        ][no level] UseParent=[true] LoggerParent=[]
+	 *   dumpLogger; [Installer_CInstaller+1                                                          ][INFO    ] UseParent=[false] LoggerParent=[]
 	 *  dumpHandler; - [CActivityFileHandler] Level=[ALL] FilterName=[no filter] wFormatterName=[CActivityFormaterBasic] 
-	 *   dumpLogger; [java.awt.focus.DefaultKeyboardFocusManager                                      ] UseParentHandlers=[true] LoggerParent=[]
-	 *   dumpLogger; [com.izforge.izpack.util.OsVersion                                               ] UseParentHandlers=[true] LoggerParent=[com.izforge.izpack]
-	 *   dumpLogger; [java.awt.event.InputEvent                                                       ] UseParentHandlers=[true] LoggerParent=[]
-	 *   dumpLogger; [com.izforge.izpack.installer.bootstrap.InstallerGui                             ] UseParentHandlers=[true] LoggerParent=[com.izforge.izpack]
-	 *   dumpLogger; [com.izforge.izpack.installer.container.provider.IconsProvider                   ] UseParentHandlers=[true] LoggerParent=[com.izforge.izpack]
-	 *   dumpLogger; [com.izforge.izpack.core.data.DynamicVariableImpl                                ] UseParentHandlers=[true] LoggerParent=[com.izforge.izpack]
-	 *   dumpLogger; [java.awt.Container                                                              ] UseParentHandlers=[true] LoggerParent=[]
-	 *   dumpLogger; [com.izforge.izpack.core.data.DefaultVariables                                   ] UseParentHandlers=[true] LoggerParent=[com.izforge.izpack]
-	 *   dumpLogger; [com.izforge.izpack.core.substitutor.VariableSubstitutorBase                     ] UseParentHandlers=[true] LoggerParent=[com.izforge.izpack]
-	 *   dumpLogger; [java.awt.Component                                                              ] UseParentHandlers=[true] LoggerParent=[]
-	 *   dumpLogger; [java.awt.focus.KeyboardFocusManager                                             ] UseParentHandlers=[true] LoggerParent=[]
-	 *   dumpLogger; [com.izforge.izpack.installer.container.provider.GUIInstallDataProvider          ] UseParentHandlers=[true] LoggerParent=[com.izforge.izpack]
-	 *   dumpLogger; [java.awt.focus.Component                                                        ] UseParentHandlers=[true] LoggerParent=[]
-	 *   dumpLogger; [com.izforge.izpack.installer.container.provider.AbstractInstallDataProvider     ] UseParentHandlers=[true] LoggerParent=[com.izforge.izpack]
-	 *   dumpLogger; [com.izforge.izpack.util.Housekeeper                                             ] UseParentHandlers=[true] LoggerParent=[com.izforge.izpack]
-	 *   dumpLogger; [java.awt.ContainerOrderFocusTraversalPolicy                                     ] UseParentHandlers=[true] LoggerParent=[]
-	 *   dumpLogger; [com.izforge.izpack.util.PlatformModelMatcher                                    ] UseParentHandlers=[true] LoggerParent=[com.izforge.izpack]
-	 *   dumpLogger; [com.izforge.izpack.core.container.PlatformProvider                              ] UseParentHandlers=[true] LoggerParent=[com.izforge.izpack]
-	 *   dumpLogger; [com.izforge.izpack                                                              ] UseParentHandlers=[false] LoggerParent=[]
+	 *   dumpLogger; [java.awt.focus.DefaultKeyboardFocusManager                                      ][no level] UseParent=[true] LoggerParent=[]
+	 *   dumpLogger; [com.izforge.izpack.util.OsVersion                                               ][no level] UseParent=[true] LoggerParent=[com.izforge.izpack]
+	 *   dumpLogger; [java.awt.event.InputEvent                                                       ][no level] UseParent=[true] LoggerParent=[]
+	 *   dumpLogger; [com.izforge.izpack.installer.bootstrap.InstallerGui                             ][no level] UseParent=[true] LoggerParent=[com.izforge.izpack]
+	 *   dumpLogger; [com.izforge.izpack.installer.container.provider.IconsProvider                   ][no level] UseParent=[true] LoggerParent=[com.izforge.izpack]
+	 *   dumpLogger; [com.izforge.izpack.core.data.DynamicVariableImpl                                ][no level] UseParent=[true] LoggerParent=[com.izforge.izpack]
+	 *   dumpLogger; [java.awt.Container                                                              ][no level] UseParent=[true] LoggerParent=[]
+	 *   dumpLogger; [com.izforge.izpack.core.data.DefaultVariables                                   ][no level] UseParent=[true] LoggerParent=[com.izforge.izpack]
+	 *   dumpLogger; [com.izforge.izpack.core.substitutor.VariableSubstitutorBase                     ][no level] UseParent=[true] LoggerParent=[com.izforge.izpack]
+	 *   dumpLogger; [java.awt.Component                                                              ][no level] UseParent=[true] LoggerParent=[]
+	 *   dumpLogger; [com.izforge.izpack.installer.container.provider.GUIInstallDataProvider          ][no level] UseParent=[true] LoggerParent=[com.izforge.izpack]
+	 *   dumpLogger; [java.awt.focus.Component                                                        ][no level] UseParent=[true] LoggerParent=[]
+	 *   dumpLogger; [com.izforge.izpack.installer.container.provider.AbstractInstallDataProvider     ][no level] UseParent=[true] LoggerParent=[com.izforge.izpack]
+	 *   dumpLogger; [com.izforge.izpack.util.Housekeeper                                             ][no level] UseParent=[true] LoggerParent=[com.izforge.izpack]
+	 *   dumpLogger; [java.awt.ContainerOrderFocusTraversalPolicy                                     ][no level] UseParent=[true] LoggerParent=[]
+	 *   dumpLogger; [com.izforge.izpack.util.PlatformModelMatcher                                    ][no level] UseParent=[true] LoggerParent=[com.izforge.izpack]
+	 *   dumpLogger; [com.izforge.izpack.core.container.PlatformProvider                              ][no level] UseParent=[true] LoggerParent=[com.izforge.izpack]
+	 *   dumpLogger; [com.izforge.izpack                                                              ][INFO    ] UseParent=[false] LoggerParent=[]
 	 *  dumpHandler; - [LogHandler] Level=[INFO] FilterName=[no filter] wFormatterName=[LogFormatter] 
-	 *   dumpLogger; [                                                                                ] UseParentHandlers=[true] LoggerParent=[no parent]
+	 *  dumpHandler; - [CActivityFileHandler] Level=[ALL] FilterName=[no filter] wFormatterName=[CActivityFormaterBasic] 
+	 *   dumpLogger; [                                                                                ][INFO    ] UseParent=[true] LoggerParent=[no parent]
 	 * </pre>
 	 */
 	private void dumpLoggers() {
@@ -277,12 +270,10 @@ public abstract class CInstallerBase extends CAbstractComponentBase implements I
 		else {
 			Handler wHandler = pLogger.gethandler();
 			wIzPackLogger.addHandler(wHandler);
-			pLogger.logInfo(this, "redirectIzPackLogger", "Added handler=[%s]",
-					wHandler);
+			pLogger.logInfo(this, "redirectIzPackLogger", "Added handler=[%s]", wHandler);
 			Level wLevel = pLogger.getLevel();
 			wIzPackLogger.setLevel(wLevel);
-			pLogger.logInfo(this, "redirectIzPackLogger", "Set level=[%s]",
-					wLevel.getName());
+			pLogger.logInfo(this, "redirectIzPackLogger", "Set level=[%s]", wLevel.getName());
 		}
 	}
 }

@@ -36,6 +36,5 @@ public class CPanelWelcome extends CWelcomePanel{
 			final Log log) {
 		
 		super(panel, parent, installData, resources, log);
-		
 	}
 }

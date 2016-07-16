@@ -34,8 +34,9 @@ public class CPanelTreePacks extends CTreePacksPanel {
 	 */
 	public CPanelTreePacks(final Panel panel, final InstallerFrame parent,
 			final GUIInstallData installData, final Resources resources,
-			final Locales locals, RulesEngine rules) {
-		
+			final Locales locals, final RulesEngine rules) {
+
 		super(panel, parent, installData, resources, locals, rules);
 	}
 }
+

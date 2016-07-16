@@ -22,6 +22,7 @@ public class CPanelLicense extends CLicensePanel {
 	 */
 	private static final long serialVersionUID = 2735989402646225915L;
 
+
 	/**
 	 * Constructor of Welcome Panel.
 	 *
@@ -38,3 +39,4 @@ public class CPanelLicense extends CLicensePanel {
 
 	}
 }
+
