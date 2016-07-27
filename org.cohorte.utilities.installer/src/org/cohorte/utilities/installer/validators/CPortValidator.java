@@ -22,7 +22,7 @@ public class CPortValidator implements Validator {
 	}
 
 	private boolean checkPort(final String port) {
-		pLogger.logWarn(this, "validate", "Checking port %s availability.",
+		pLogger.logWarn(this, "checkPort", "Checking port [%s] availability.",
 				port);
 		return isPortAvailable(Integer.parseInt(port));
 	}
@@ -46,7 +46,8 @@ public class CPortValidator implements Validator {
 				try {
 					s.close();
 				} catch (IOException e) {
-					pLogger.logSevere(this, "", "Forbidden zone.\n %s", e);
+					pLogger.logSevere(this, "isPortAvailable",
+							"Forbidden zone.\n %s", e);
 					throw new RuntimeException(
 							"This code souldn't be reached.", e);
 				}
