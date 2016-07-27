@@ -1,4 +1,11 @@
 
+from 1.0.5  to 1.0.6 (master)
+-------------------------------------
+
+- MOD_OG_20160719
+  - Enhancement of CXFileDir: Use Files.delete() rather than File.delete() to get an explicit exception to diagnose easily the troubles
+
+
 
 from 1.0.4  to 1.0.5 (master)
 -------------------------------------

@@ -13,6 +13,7 @@ package org.psem2m.utilities.files;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -1024,13 +1025,14 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 */
 	public int remove() throws IOException {
 
-		return remove(true, NO_FILTER);
+		return remove(REMOVE_ME, NO_FILTER);
 	}
 
 	/**
 	 *
 	 * @param aRemoveMe
-	 * @return
+	 *            remove the directory if true
+	 * @return the number of removed file
 	 * @throws IOException
 	 */
 	private int remove(final boolean aRemoveMe, final FileFilter aFileFilter)
@@ -1044,7 +1046,19 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 				final File wFile = wIt.next();
 				if (wFile.isFile()) {
 					if (aFileFilter == null || aFileFilter.accept(wFile)) {
-						((CXFile) wFile).delete();
+						try {
+							// MOD_OG_20160719
+							// Use Files.delete() rather than File.delete() to
+							// get an explicit exception to diagnose easily the
+							// troubles
+							Files.delete(wFile.toPath());
+						} catch (Exception e) {
+							throw new IOException(
+									String.format(
+											"Unable to delete file [%s]. canWrite=[%b]. isFileEmpty=[%b]",
+											getAbsolutePath(), canWrite(),
+											((CXFile) wFile).isEmpty()), e);
+						}
 						wNbFile++;
 					}
 				} else if (wFile.isDirectory()) {
@@ -1052,12 +1066,17 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 				}
 			}
 			if (aRemoveMe) {
-				final boolean wDeleted = this.delete();
-				if (!wDeleted) {
+				try {
+					// MOD_OG_20160719
+					// Use Files.delete() rather than File.delete() to get an
+					// explicit exception to diagnose easily the troubles
+					Files.delete(this.toPath());
+				} catch (Exception e) {
 					throw new IOException(
 							String.format(
-									"Unable to delete [%s]. canWrite=[%b]. isEmpty=[%b]",
-									getAbsolutePath(), canWrite(), isEmpty()));
+									"Unable to delete dir [%s]. canWrite=[%b]. isDirEmpty=[%b]",
+									getAbsolutePath(), canWrite(), isEmpty()),
+									e);
 				}
 				wNbFile++;
 			}
