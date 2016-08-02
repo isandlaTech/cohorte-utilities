@@ -15,11 +15,16 @@ import com.izforge.izpack.panels.userinput.validator.Validator;
  *
  * @author ogattaz
  *
+ *         TODO: use Apache commons UrlValidator class
+ *         http://commons.apache.org/
+ *         proper/commons-validator/apidocs/org/apache/
+ *         commons/validator/routines/UrlValidator.html
+ *
  */
 public class CUrlValidator implements Validator {
 
 	/**
-	 * @see http 
+	 * @see http
 	 *      ://www.mkyong.com/regular-expressions/domain-name-regular-expression
 	 *      -example/
 	 *
@@ -128,20 +133,20 @@ public class CUrlValidator implements Validator {
 	}
 
 	/**
-	 * @see http 
+	 * @see http
 	 *      ://www.mkyong.com/regular-expressions/domain-name-regular-expression
 	 *      -example/
 	 *
 	 * @param domainName
 	 * @return
 	 */
-	public boolean isValidDomainName(String domainName) {
+	public boolean isValidDomainName(final String domainName) {
 		return pDomainNameOnly.matcher(domainName).find();
 	}
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * com.izforge.izpack.panels.userinput.validator.Validator#validate(com.
 	 * izforge.izpack.panels.userinput.processorclient.ProcessingClient)
