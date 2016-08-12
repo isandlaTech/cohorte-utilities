@@ -90,7 +90,7 @@ public class CUserInputConsolePanel extends UserInputConsolePanel {
 		try {
 			// private List<ConsoleField> fields = new
 			// ArrayList<ConsoleField>();
-			Field wFieldFields = UserInputPanel.class.getDeclaredField("fields");
+			Field wFieldFields = UserInputConsolePanel.class.getDeclaredField("fields");
 			wFieldFields.setAccessible(true);
 			wFields = (List<AbstractFieldView>) wFieldFields.get(this);
 
@@ -110,7 +110,7 @@ public class CUserInputConsolePanel extends UserInputConsolePanel {
 
 		try {
 			// private final InstallData installData;
-			Field wFieldInstallData = UserInputPanel.class.getDeclaredField("installData");
+			Field wFieldInstallData = UserInputConsolePanel.class.getDeclaredField("installData");
 			wFieldInstallData.setAccessible(true);
 			wInstallData = (InstallData) wFieldInstallData.get(this);
 
