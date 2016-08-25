@@ -10,7 +10,6 @@ import javax.servlet.ServletException;
 
 import org.apache.felix.ipojo.annotations.Bind;
 import org.apache.felix.ipojo.annotations.Component;
-import org.apache.felix.ipojo.annotations.Instantiate;
 import org.apache.felix.ipojo.annotations.Invalidate;
 import org.apache.felix.ipojo.annotations.Requires;
 import org.apache.felix.ipojo.annotations.Validate;
@@ -30,8 +29,7 @@ import org.osgi.service.log.LogService;
  * @author Ahmad Shahwan
  *
  */
-@Component
-@Instantiate
+@Component(name="Cohorte-Rest")
 public class CRestPublisher {
 	
 	/**

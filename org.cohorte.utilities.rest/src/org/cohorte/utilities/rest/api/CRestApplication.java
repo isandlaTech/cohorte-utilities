@@ -6,8 +6,8 @@ import java.util.Set;
 import javax.ws.rs.core.Application;
 
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
-
 import org.cohorte.utilities.rest.providers.CExceptionMapper;
+import org.cohorte.utilities.rest.providers.CRestCorsFilter;
 import org.cohorte.utilities.rest.providers.CRestLogFilter;
 import org.cohorte.utilities.rest.serializers.CJAXBMessageBodyHandler;
 import org.cohorte.utilities.rest.serializers.CJacksonMessageBodyHandler;
@@ -47,6 +47,7 @@ public abstract class CRestApplication
 		result.add(CRestLogFilter.class);
 		result.add(CJacksonMessageBodyHandler.class);
 		result.add(CJAXBMessageBodyHandler.class);
+		result.add(CRestCorsFilter.class);
 		result.add(CExceptionMapper.class);
 		return result;
 	}
