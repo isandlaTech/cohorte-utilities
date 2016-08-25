@@ -28,6 +28,7 @@ public class CInstaller extends CInstallerBase implements IInstaller,
 	/**
 	 * Constructor.
 	 *
+	 * @param aProductName
 	 * @throws Exception
 	 */
 	public CInstaller(String aProductName) throws Exception {		
@@ -35,6 +36,13 @@ public class CInstaller extends CInstallerBase implements IInstaller,
 				CInstaller.class.getSimpleName()));
 	}
 	
+	/**
+	 * Constructor.
+	 * 
+	 * @param aProductName
+	 * @param aLoggerName
+	 * @throws Exception
+	 */
 	public CInstaller(String aProductName, String aLoggerName) throws Exception {		
 		super(aLoggerName);
 		if (aProductName != null) {
@@ -123,7 +131,9 @@ public class CInstaller extends CInstallerBase implements IInstaller,
 	 */
 	@Override
 	public String getInstalledAppName() {
-		return pIzPackInstallData.getInfo().getAppName();
+		
+		//MOD_OG_20160712  Protection against null pointer exception during exit hook
+		return (pIzPackInstallData!=null)?pIzPackInstallData.getInfo().getAppName():null;
 	}
 
 	/*
@@ -134,7 +144,9 @@ public class CInstaller extends CInstallerBase implements IInstaller,
 	 */
 	@Override
 	public String getIzPackInstallPath() {
-		return pIzPackInstallData.getInstallPath();
+		
+		//MOD_OG_20160712  Protection against null pointer exception during exit hook
+		return (pIzPackInstallData!=null)?pIzPackInstallData.getInstallPath():null;
 	}
 
 	/*

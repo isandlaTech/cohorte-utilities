@@ -1,9 +1,39 @@
+1.3.2 (actual)
+=====
 
-1.1.0 (actual)
+MOD_OG_20160729
+    - add the class "org.cohorte.utilities.installer.validators.CUrlValidator"
+
+1.3.1
+=====
+
+MOD_OG_20160727
+    - add the class "org.cohorte.utilities.installer.validators.CHttpStatusValidator"
+
+
+1.3.0
+=====
+
+MOD_OG_20160715 
+	- console mode
+	
+MOD_OG_20160713
+	- migrate to izPack 5.0.9
+	
+MOD_OG_20160712 
+	- Protection against null pointer exception during exit hook
+
+1.2.0
+=====
+
+MOD_BD_20160701 :
+	- Using izpack 5.0.8 instead of 5.0.6
+	- Adding CPortValidator 
+
+1.1.0 
 =====
 
 MOD_BD_20160225 :
-
 	- Create UTF8 files without Bom using CJobTextFileCreator. 
 
 MOD_BD_20160219 :
@@ -11,8 +41,6 @@ MOD_BD_20160219 :
 	- Rename "org.cohorte.utilities.installer.update" to "org.cohorte.utilities.installer.validators".
 	
 MOD_BD_20160205 : Adding izpack base classes (listeners, panels, jobs, etc.)
-
-
 
 1.0.0.201501211743 
 ==================

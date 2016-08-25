@@ -16,12 +16,12 @@ import java.util.ArrayList;
 
 /**
  * @author ogattaz
- * 
+ *
  */
 public interface IXFilesContainer {
 
 	public static final FileFilter NO_FILTER = null;
-
+	public static final boolean REMOVE_ME = true;
 	public static final boolean WITH_DIRS = true;
 	public static final boolean WITH_SUBDIRS = true;
 	public static final boolean WITH_TEXTFILE = true;
@@ -44,29 +44,31 @@ public interface IXFilesContainer {
 	 * @return
 	 * @throws Exception
 	 */
-	public CXSortListFiles scanAll(CXSortListFiles aList, FileFilter aFilter, boolean aSubDirs,
-			boolean aInstanciateTxtFiles) throws Exception;
-
-	/**
-	 * @param aList
-	 * @param aFilter
-	 * @param aSubDirs
-	 * @param aInstanciateTxtFiles
-	 * @return
-	 * @throws Exception
-	 */
-	public CXSortListFiles scanAllDirs(CXSortListFiles aList, FileFilter aFilter, boolean aSubDirs,
-			boolean aInstanciateTxtFiles) throws Exception;
-
-	/**
-	 * @param aList
-	 * @param aFilter
-	 * @param aSubDirs
-	 * @param aInstanciateTxtFiles
-	 * @return
-	 * @throws Exception
-	 */
-	public CXSortListFiles scanAllFiles(CXSortListFiles aList, FileFilter aFilter,
+	public CXSortListFiles scanAll(CXSortListFiles aList, FileFilter aFilter,
 			boolean aSubDirs, boolean aInstanciateTxtFiles) throws Exception;
+
+	/**
+	 * @param aList
+	 * @param aFilter
+	 * @param aSubDirs
+	 * @param aInstanciateTxtFiles
+	 * @return
+	 * @throws Exception
+	 */
+	public CXSortListFiles scanAllDirs(CXSortListFiles aList,
+			FileFilter aFilter, boolean aSubDirs, boolean aInstanciateTxtFiles)
+			throws Exception;
+
+	/**
+	 * @param aList
+	 * @param aFilter
+	 * @param aSubDirs
+	 * @param aInstanciateTxtFiles
+	 * @return
+	 * @throws Exception
+	 */
+	public CXSortListFiles scanAllFiles(CXSortListFiles aList,
+			FileFilter aFilter, boolean aSubDirs, boolean aInstanciateTxtFiles)
+			throws Exception;
 
 }

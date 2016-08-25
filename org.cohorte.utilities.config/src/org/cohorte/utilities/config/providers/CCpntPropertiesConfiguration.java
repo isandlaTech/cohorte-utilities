@@ -172,7 +172,7 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 	private void readConfig() throws Exception {
 		pLogger.logDebug(this, "readConfig", "...");
 
-		File wDataDir = pPlatformDirsSrv.getNodeDataDir();
+		File wDataDir = pPlatformDirsSrv.getPlatformBase();
 		String wIsolateName = pPlatformDirsSrv.getIsolateName();
 		if (wDataDir != null) {
 			// load default properties
@@ -184,6 +184,9 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 			CXFileDir wIsolatConfDir = new CXFileDir(wConfigDir, wIsolateName);
 			CXFile wDefaultConfigFile = new CXFile(wIsolatConfDir,
 					CONFIGURATION_DEFAULT_FILENAME);
+			pLogger.logDebug(this, "readConfig",
+					"reading default configuration file [%s]",
+					wDefaultConfigFile.getAbsolutePath());
 			if (wDefaultConfigFile.exists()) {
 				pLogger.logDebug(this, "readConfig",
 						"Default configuration file=[%s]",
@@ -261,7 +264,7 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 
 	/**
 	 * Called when the component is validated.
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Validate
