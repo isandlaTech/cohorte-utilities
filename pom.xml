@@ -138,29 +138,50 @@
 				<artifactId>tycho-maven-plugin</artifactId>
 				<version>${tycho-version}</version>
 				<extensions>true</extensions>
-			</plugin>			
+			</plugin>
+			<!-- ignore maven deploy plugin-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+			    	<skip>true</skip>
+			   	</configuration>
+			</plugin>
+			<!-- nexus staging plugin-->			
+			<plugin>
+		      	<groupId>org.sonatype.plugins</groupId>
+		      	<artifactId>nexus-staging-maven-plugin</artifactId>
+		      	<version>1.6.6</version>		      
+		      	<extensions>true</extensions>
+		      	<executions>
+			    	<execution>
+			        	<id>default-deploy</id>
+			        	<phase>deploy</phase>
+			        	<goals>
+			        		<goal>deploy</goal>
+			        	</goals>
+			    	</execution>
+			  	</executions>
+		      	<configuration>
+		        	<serverId>cohorte-nexus</serverId>
+		        	<nexusUrl>http://forge.cohorte-technologies.com:6080</nexusUrl>
+		      	</configuration>
+		    </plugin>
 		</plugins>		
-		<extensions>
-	      <!-- Enabling the use of FTP -->
-	      <extension>
-	        <groupId>org.apache.maven.wagon</groupId>
-	         <artifactId>wagon-ftp</artifactId>
-	         <version>1.0-beta-6</version>
-	      </extension>
-	    </extensions>
 	</build>
 	
 	<distributionManagement>
 		<repository>
-			<id>isandlatech</id>
-			<name>isandlaTech Releases Repository</name>
-			<url>ftp://isandlatech.com/maven/releases</url>
+			<id>cohorte-nexus</id>
+			<name>Cohorte Releases Repository</name>
+			<url>http://forge.cohorte-technologies.com:6080/repository/cohorte-releases/</url>
 			<layout>default</layout>
 		</repository>
 		<snapshotRepository>
-			<id>isandlatech</id>
-			<name>isandlaTech Snapshots Repository</name>
-			<url>ftp://isandlatech.com/maven/snapshots</url>
+			<id>cohorte-nexus</id>
+			<name>Cohorte Snapshots Repository</name>
+			<url>http://forge.cohorte-technologies.com:6080/repository/cohorte-snapshots/</url>
 			<uniqueVersion>true</uniqueVersion>
 			<layout>default</layout>
 		</snapshotRepository>
