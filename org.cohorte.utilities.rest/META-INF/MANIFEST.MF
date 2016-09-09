@@ -24,19 +24,20 @@ Import-Package: com.fasterxml.jackson.core;version=2.7.4, com.fasterxm
  ilities.logging
 iPOJO-Components: component { $name="Cohorte-Rest" $classname="org.coh
  orte.utilities.rest.CRestPublisher" requires { $field="httpService" }
- requires { $field="pLogger" $optional="true" }requires { $aggregate="
- true" $id="" callback { $method="bind" $type="bind" }}callback { $tra
- nsition="validate" $method="validate" }callback { $transition="invali
- date" $method="invalidate" }manipulation { $classname="org.cohorte.ut
- ilities.rest.CRestPublisher" field { $name="httpService" $type="org.o
- sgi.service.http.HttpService" }field { $name="pAwaiting" $type="java.
- util.Set" }field { $name="pLogger" $type="org.osgi.service.log.LogSer
- vice" }field { $name="pValid" $type="boolean" }method { $name="bind" 
- $arguments="{org.cohorte.utilities.rest.api.IRestApplication}" $names
- ="{aApplication}" }method { $name="validate" }method { $name="invalid
- ate" }method { $name="register" $return="boolean" $arguments="{org.co
- horte.utilities.rest.api.IRestApplication}" $names="{aApplication}" }
- method { $name="getInitParams" $return="java.util.Dictionary" $argume
- nts="{org.cohorte.utilities.rest.api.IRestApplication}" $names="{modu
- le}" }}}
+ requires { $field="pLogger" $filter="(service.description=cohorte)" $
+ proxy="false" }requires { $aggregate="true" $id="" callback { $method
+ ="bind" $type="bind" }}callback { $transition="invalidate" $method="i
+ nvalidate" }callback { $transition="validate" $method="validate" }man
+ ipulation { $classname="org.cohorte.utilities.rest.CRestPublisher" fi
+ eld { $name="httpService" $type="org.osgi.service.http.HttpService" }
+ field { $name="pAwaiting" $type="java.util.Set" }field { $name="pBund
+ leContext" $type="org.osgi.framework.BundleContext" }field { $name="p
+ Logger" $type="org.osgi.service.log.LogService" }field { $name="pVali
+ d" $type="boolean" }method { $name="bind" $arguments="{org.cohorte.ut
+ ilities.rest.api.IRestApplication}" $names="{aApplication}" }method {
+  $name="getInitParams" $return="java.util.Dictionary" $arguments="{or
+ g.cohorte.utilities.rest.api.IRestApplication}" $names="{module}" }me
+ thod { $name="invalidate" }method { $name="register" $return="boolean
+ " $arguments="{org.cohorte.utilities.rest.api.IRestApplication}" $nam
+ es="{aApplication}" }method { $name="validate" }}}
 
