@@ -1,7 +1,5 @@
 package org.cohorte.utilities.rest;
 
-import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
-
 import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -18,7 +16,6 @@ import org.apache.felix.ipojo.annotations.Validate;
 import org.cohorte.utilities.rest.api.IRestApplication;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
@@ -47,12 +44,10 @@ public class CRestPublisher {
 	 */
 	private Set<IRestApplication> pAwaiting = new HashSet<>();
 
-	private final BundleContext pBundleContext;
-
 	/**
 	 * OSGi Logger.
 	 */
-	@Requires(proxy = false, filter = "(" + SERVICE_DESCRIPTION + "=cohorte)")
+	@Requires(proxy = false)
 	private LogService pLogger = null;
 
 	/**
@@ -63,10 +58,8 @@ public class CRestPublisher {
 	/**
 	 * No-args constructor.
 	 */
-	public CRestPublisher(final BundleContext aBundleContext) {
+	public CRestPublisher() {
 		super();
-		pBundleContext = aBundleContext;
-
 	}
 
 	/**
@@ -177,7 +170,7 @@ public class CRestPublisher {
 			 * started before Servlet registration. Fix for {@code
 			 * java.lang.IllegalStateException} with message: "No generator was
 			 * provided and there is no default generator registered"
-			 * 
+			 *
 			 * @see https://java.net/jira/browse/JERSEY-2788
 			 */
 			pLogger.log(LogService.LOG_INFO,
