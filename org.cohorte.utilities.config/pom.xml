@@ -43,6 +43,19 @@
 			<version>${ipojo-version}</version>
 			<scope>compile</scope>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.apache.felix/org.apache.felix.gogo.runtime -->
+		<dependency>
+		    <groupId>org.apache.felix</groupId>
+		    <artifactId>org.apache.felix.gogo.runtime</artifactId>
+		    <version>0.16.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.cohorte.herald</groupId>
+			<artifactId>org.cohorte.herald.api</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+				
 	</dependencies>
 
 	<build>
