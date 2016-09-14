@@ -94,6 +94,26 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 	
 	private static final String[] TRUE_VALUES = { "yes", "on" };
 	
+	/**
+	 * Default value of {@code pCurrentFilename}.
+	 */
+	String CURRENT_FILENAME = "current.properties";
+
+	/**
+	 * Default value of {@code pDefaultFilename}.
+	 */
+	String DEFAULT_FILENAME = "default.properties";
+	
+	/**
+	 * Default value of {@code pUserExtension}.
+	 */
+	String USER_EXTENSION = ".user.properties";
+
+	/**
+	 * Name of the directory that contains configuration sub-directory.
+	 */
+	String CONF_DIR = "conf";
+	
 	@Property(name=IServiceProperties.CURRENT_FILENAME)
 	private String pCurrentFilename = CURRENT_FILENAME;
 	

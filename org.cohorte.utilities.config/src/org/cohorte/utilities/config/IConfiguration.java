@@ -11,29 +11,6 @@ package org.cohorte.utilities.config;
  *
  */
 public interface IConfiguration {
-	
-	/**
-	 * Default name of the current properties file that contains configuration
-	 * parameters.
-	 */
-	String CURRENT_FILENAME = "current.properties";
-
-	/**
-	 * Default name of the default properties file that contains default
-	 * configuration parameters.
-	 */
-	String DEFAULT_FILENAME = "default.properties";
-	
-	/**
-	 * File extension for user-defined configuration files. 
-	 */
-	String USER_EXTENSION = ".user.properties";
-
-	/**
-	 * Name of the directory that contains configuration sub-directory.
-	 * The sub-directory name is identical to the isolate name by default.
-	 */
-	String CONF_DIR = "conf";
 
 	/**
 	 * Serialize configuration.
