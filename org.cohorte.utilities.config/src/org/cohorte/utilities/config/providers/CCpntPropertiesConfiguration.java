@@ -3,12 +3,10 @@ package org.cohorte.utilities.config.providers;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.felix.ipojo.annotations.Component;
@@ -16,69 +14,94 @@ import org.apache.felix.ipojo.annotations.Invalidate;
 import org.apache.felix.ipojo.annotations.Property;
 import org.apache.felix.ipojo.annotations.Provides;
 import org.apache.felix.ipojo.annotations.Requires;
-import org.apache.felix.ipojo.annotations.ServiceProperty;
 import org.apache.felix.ipojo.annotations.Validate;
 import org.cohorte.utilities.config.IConfiguration;
 import org.osgi.framework.BundleContext;
 import org.psem2m.isolates.base.IIsolateLoggerSvc;
-import org.psem2m.isolates.services.dirs.IPlatformDirsSvc;
-import org.psem2m.utilities.files.CXFile;
-import org.psem2m.utilities.files.CXFileDir;
+import org.psem2m.isolates.constants.IPlatformProperties;
 
 /**
- * Configuration files are basic Java properties files.
+ * Configuration service component.
+ * This component is not automatically instantiated.
+ * 
+ * <h3>Resources and Priorities</h3>
+ * The component read configuration from the following resources. Configurations
+ * pile, overriding one another, in respective order. Later resources have
+ * higher priority.
+ * 
+ * <ol>
+ * <li><strong>User-defined configuration files</strong>, those are java
+ * properties files with the extension {@code pUserExtension}, that are
+ * located in Cohorte data directory, under conf/{@code pSubdirName}
+ * directory. Order in which user-defined configuration files are considered is
+ * OS-dependent. User-defined configuration files are optional.</li>
+ * <li><strong>Custom configuration file</strong>, this is a file named
+ * {@code pCurrentFile}, and located in Cohorte data directory under
+ * conf/{@code pSubdirName}. This file is optional.</li>
+ * <li><strong>Default configuration file</strong>, this is a file named
+ * {@code pDefaultFile}, and located in Cohorte base directory under
+ * conf/{@code pSubdirName}. This file is optional.</li> 
+ * <li><strong>System properties</strong>, those are environment variable, plus
+ * properties passed through the JVM arguments.</li>
+ * </ol>
  *
- * You should provide this files :
- * <ul>
- * <li><b>default.properties</b>: contains default configuration parameter
- * values.</li>
- * <li><b>current.properties</b>: contains overrided values for the default
- * configuraiton parameters.</li>
- * </ul>
- *
- * This two configuration file should be placed on Cohorte Data directory, under
- * sub-directories "conf/isolate_name", where "isolate_name" is the name of the
- * isolate where this component will be instantiated.
- *
- * The bundle containing this component should be added to the "repo" directory,
- * and you should instantiate this component in the isolate that will use it.
- * E.g. (from composition.js file):
- *
- * <pre>
- *           {
- *               "name": "COHORTE_PROPERTIES_CONFIGURATION_READER",
- *               "factory": "Cohorte-CCpntPropertiesConfiguration-Factory",
- *               "isolate": "agiliumproxy"
- *           }
- * </pre>
- *
- * @author bdebbabi
+ * @author Ahmad Shahwan
+ * @author Bassem Debbabi
  *
  */
 @Component(name = CCpntPropertiesConfiguration.COMPONENT_NAME)
-@Provides(specifications = { IConfiguration.class })
+@Provides
 public class CCpntPropertiesConfiguration implements IConfiguration {
 	
 	/**
-	 * Service property names.
+	 * Service property names. The component can be parameterized using
+	 * properties with those keys. 
 	 * 
 	 * @author Ahmad Shahwan
 	 *
 	 */
 	public interface IServiceProperties {
+		/**
+		 * Custom filename service property name. This service property defines
+		 * {@code pCurrentFilename}.
+		 */
 		String CURRENT_FILENAME = "org.cohorte.config.current.filename";
+		
+		/**
+		 * Default filename service property name. This service property defines
+		 * {@code pDefaultFilename}.
+		 */
 		String DEFAULT_FILENAME = "org.cohorte.config.default.filename";
+		
+		/**
+		 * User file extension service property name. This service property
+		 * defines {@code pUserExtension}.
+		 */
+		String USER_EXTENSION = "org.cohorte.config.user.extension";
+		
+		/**
+		 * Sub-directory service property name. This service property defines
+		 * {@code pSubdirName}.
+		 */
 		String SUBDIR_NAME = "org.cohorte.config.subdir.name";
 	}
 	
+	/**
+	 * Component name.
+	 */
 	public static final String COMPONENT_NAME =
 			"Cohorte-CCpntPropertiesConfiguration-Factory";
+	
+	private static final String[] TRUE_VALUES = { "yes", "on" };
 	
 	@Property(name=IServiceProperties.CURRENT_FILENAME)
 	private String pCurrentFilename = CURRENT_FILENAME;
 	
 	@Property(name=IServiceProperties.DEFAULT_FILENAME)
 	private String pDefaultFilename = DEFAULT_FILENAME;
+	
+	@Property(name=IServiceProperties.USER_EXTENSION)
+	private String pUserExtension = USER_EXTENSION;
 	
 	@Property(name=IServiceProperties.SUBDIR_NAME)
 	private String pSubdirName = null;
@@ -90,20 +113,20 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 	private IIsolateLoggerSvc pLogger;
 
 	/**
-	 * Cohorte isolate service
-	 */
-	@Requires
-	protected IPlatformDirsSvc pPlatform;
-
-	/**
 	 * Final (merged) properties.
 	 */
 	private final Properties pProperties = new Properties();
+	
+	private final BundleContext pContext;
 
 	/**
 	 * Constructor.
+	 * 
+	 * @param aContext 
 	 */
-	public CCpntPropertiesConfiguration() {}
+	public CCpntPropertiesConfiguration(final BundleContext aContext) {
+		this.pContext = aContext;
+	}
 
 	/**
 	 * Cleanup properties
@@ -123,18 +146,18 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 	}
 
 	@Override
-	public String getParam(final String aParamName) {
-		return pProperties.getProperty(aParamName);
+	public String getParam(final String aName) {
+		return pProperties.getProperty(aName);
 	}
 
 	@Override
-	public String getParam(final String aParamName, final String aDefValue) {
-		return pProperties.getProperty(aParamName, aDefValue);
+	public String getParam(final String aName, final String aDefault) {
+		return pProperties.getProperty(aName, aDefault);
 	}
 
 	@Override
-	public boolean hasParam(final String aParamName) {
-		return pProperties.containsKey(aParamName);
+	public boolean hasParam(final String aName) {
+		return pProperties.containsKey(aName);
 	}
 
 	/**
@@ -147,113 +170,44 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 		pLogger.logDebug(this, "invalidating", "Done.");
 	}
 
-	/**
-	 * Read configuration files.
-	 *
-	 * We start first by loading configs from "default.properties" file.
-	 * Afterthat, we override the values by loading new values from
-	 * "current.properties" file.
-	 *
-	 * @throws Exception
-	 */
-	private void readConfig() throws Exception {
-		pLogger.logDebug(this, "readConfig", "...");
-
-		File wDataDir = pPlatform.getPlatformBase();
-		String wIsolateName = pPlatform.getIsolateName();
-		if (wDataDir != null) {
-			// load default properties
-			CXFileDir wConfigDir = new CXFileDir(wDataDir,
-					CONF_DIR);
-			pLogger.logDebug(this, "readConfig",
-					"Configuration directory=[%s]",
-					wConfigDir.getAbsolutePath());
-			CXFileDir wIsolatConfDir = new CXFileDir(wConfigDir, wIsolateName);
-			CXFile wDefaultConfigFile = new CXFile(wIsolatConfDir,
-					DEFAULT_FILENAME);
-			pLogger.logDebug(this, "readConfig",
-					"reading default configuration file [%s]",
-					wDefaultConfigFile.getAbsolutePath());
-			if (wDefaultConfigFile.exists()) {
-				pLogger.logDebug(this, "readConfig",
-						"Default configuration file=[%s]",
-						wDefaultConfigFile.getAbsolutePath());
-				FileInputStream wInputStreamDefault = null;
-				FileInputStream wInputStreamCurrent = null;
-				try {
-					wInputStreamDefault = new FileInputStream(
-							wDefaultConfigFile);
-					pProperties.load(new FileInputStream(wDefaultConfigFile));
-					CXFile wCurrentConfigFile = new CXFile(wIsolatConfDir,
-							CURRENT_FILENAME);
-					if (wCurrentConfigFile.exists()) {
-						// load current configuration
-						pLogger.logDebug(this, "readConfig",
-								"Current configuration file=[%s]",
-								wCurrentConfigFile.getAbsolutePath());
-						wInputStreamCurrent = new FileInputStream(
-								wCurrentConfigFile);
-						pProperties
-								.load(new FileInputStream(wCurrentConfigFile));
-					} else {
-						pLogger.logDebug(this, "readConfig",
-								"No current configuration file was provided!");
-					}
-				} catch (FileNotFoundException e) {
-					pLogger.logSevere(this, "readConfig",
-							"Configuration File not found! [%s]",
-							e.getMessage());
-					throw new Exception(e.getMessage());
-					// e.printStackTrace();
-				} catch (IOException e) {
-					pLogger.logSevere(this, "readConfig",
-							"Cannot read configuration File! [%s]",
-							e.getMessage());
-					throw new Exception(e.getMessage());
-					// e.printStackTrace();
-				} finally {
-					if (wInputStreamDefault != null) {
-						try {
-							wInputStreamDefault.close();
-						} catch (IOException e) {
-							pLogger.logSevere(
-									this,
-									"readConfig",
-									"Cannot close default configuration file reader stream! [%s]",
-									e.getMessage());
-							// e.printStackTrace();
-						}
-					}
-					if (wInputStreamCurrent != null) {
-						try {
-							wInputStreamCurrent.close();
-						} catch (IOException e) {
-							pLogger.logSevere(
-									this,
-									"readConfig",
-									"Cannot close current configuration file reader stream! [%s]",
-									e.getMessage());
-							// e.printStackTrace();
-						}
-					}
-				}
-			} else {
-				String wMsg = "No default configuration file was provided!";
-				pLogger.logSevere(this, "readConfig", wMsg);
-				throw new Exception(wMsg);
-			}
-		} else {
-			pLogger.logWarn(this, "readConfig",
-					"No Cohorte Data directory was found!");
+	private File getBaseDir() {
+		String wPath = this.pContext.getProperty(
+				IPlatformProperties.PROP_PLATFORM_BASE);
+		if (wPath == null) {
+			wPath =	this.pContext.getProperty(
+					IPlatformProperties.PROP_PLATFORM_HOME);
 		}
-		pLogger.logDebug(this, "readConfig", "...DONE");
+		if (wPath == null) {
+			return null;
+		}
+		File wDir = new File (wPath);
+		if (!wDir.isDirectory()) {
+			return null;
+		}
+		return wDir;
+	}
+	
+	private File getDataDir() {
+		String wPath = this.pContext.getProperty(
+				IPlatformProperties.PROP_NODE_DATA_DIR);
+		if (wPath == null) {
+			return this.getBaseDir();
+		}
+		File wDir = new File (wPath);
+		if (!wDir.isDirectory()) {
+			return null;
+		}
+		return wDir;
 	}
 	
 	private String getSubdirName() {
 		if (this.pSubdirName != null) {
 			return this.pSubdirName;
 		}
-		return this.pPlatform.getIsolateName();
+		/*
+		 * Isolate name.
+		 */
+		return this.pContext.getProperty(IPlatformProperties.PROP_ISOLATE_NAME);
 		
 	}
 	
@@ -266,43 +220,42 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 	
 	private File[] getConfigurationFiles() {
 		List<File> wList = new ArrayList<>(3);
-		File wFile = null;
 		/*
-		 * Default config file has the following default path:
+		 * Default configuration file has the following default path:
 		 * <cohort-base>/conf/<isolate-name>/default.properties
 		 */
-		wFile = pPlatform.getPlatformBase();
-		wFile = new File(wFile, CONF_DIR);
-		wFile = new File(wFile, getSubdirName());
-		wFile = new File(wFile, this.pDefaultFilename);
-		if (wFile.isFile()) {
-			addFile(wList, wFile);
+		File wDefault = getBaseDir();
+		wDefault = new File(wDefault, CONF_DIR);
+		wDefault = new File(wDefault, getSubdirName());
+		wDefault = new File(wDefault, this.pDefaultFilename);
+		if (wDefault.isFile()) {
+			addFile(wList, wDefault);
 		} else {
 			this.pLogger.logInfo(this, null,
 					"Default configurtation file not found.");
 		}
-		wFile = pPlatform.getNodeDataDir();
-		wFile = new File(wFile, CONF_DIR);
-		wFile = new File(wFile, getSubdirName());
-		if (wFile.isDirectory()) {
+		File wCurrent = getDataDir();
+		wCurrent = new File(wCurrent, CONF_DIR);
+		wCurrent = new File(wCurrent, getSubdirName());
+		if (wCurrent.isDirectory()) {
 			/*
 			 * List user-defined configuration files.
 			 */
-			File[] wUserFiles = wFile.listFiles(new FileFilter() {
+			File[] wUserFiles = wCurrent.listFiles(new FileFilter() {
 				
 				@Override
 				public boolean accept(File wCandidate) {
 					return wCandidate.isFile() && wCandidate.getName()
-							.toLowerCase().endsWith(USER_EXTENSION);
+							.toLowerCase().endsWith(pUserExtension);
 				}
 			});
 			/*
-			 * Default config file has the following default path:
+			 * Default configuration file has the following default path:
 			 * <cohort-data>/conf/<isolate-name>/current.properties
 			 */
-			wFile = new File(wFile, this.pCurrentFilename);
-			if (wFile.isFile()) {
-				addFile(wList, wFile);
+			wCurrent = new File(wCurrent, this.pCurrentFilename);
+			if (wCurrent.isFile()) {
+				addFile(wList, wCurrent);
 			}
 			/*
 			 * Add user-defined files, if any.
@@ -317,8 +270,6 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 
 	/**
 	 * Called when the component is validated.
-	 *
-	 * @throws Exception
 	 */
 	@Validate
 	public void validate() {
@@ -327,8 +278,8 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 		this.pProperties.clear();
 		File[] wFiles = getConfigurationFiles();
 		for (File wFile : wFiles) {
-			try {
-				this.pProperties.load(new FileInputStream(wFile));
+			try (FileInputStream wStream = new FileInputStream(wFile)) {
+				this.pProperties.load(wStream);
 			} catch (IOException e) {
 				this.pLogger.logSevere("validating", 
 					"Error while reading configuration file %s.",
@@ -339,5 +290,92 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 		// System properties have the highest priority.
 		this.pProperties.putAll(System.getProperties());
 		pLogger.logDebug(this, "validating", "Configuration dump:\n%s", dump());
+	}
+
+	@Override
+	public Integer getIntergerParam(String aName) {
+		return this.getIntergerParam(aName, null);
+	}
+
+	@Override
+	public Integer getIntergerParam(String aName, Integer aDefault) {
+		String wStr = this.getParam(aName);
+		if (wStr != null) {
+			try {
+				return Integer.parseInt(wStr);
+			} catch (NumberFormatException e) {}
+		}
+		return aDefault;
+	}
+
+	@Override
+	public int getIntergerParam(String aName, int aDefault) {
+		return this.getIntergerParam(aName, new Integer(aDefault));
+	}
+
+	@Override
+	public Long getLongParam(String aName) {
+		return this.getLongParam(aName, null);
+	}
+
+	@Override
+	public Long getLongParam(String aName, Long aDefault) {
+		String wStr = this.getParam(aName);
+		if (wStr != null) {
+			try {
+				return Long.parseLong(wStr);
+			} catch (NumberFormatException e) {}
+		}
+		return aDefault;
+	}
+
+	@Override
+	public long getLongParam(String aName, long aDefault) {
+		return this.getLongParam(aName, new Long(aDefault));
+	}
+
+	@Override
+	public Boolean getBooleanParam(String aName) {
+		return this.getBooleanParam(aName, null);
+	}
+
+	@Override
+	public Boolean getBooleanParam(String aName, Boolean aDefault) {
+		String wStr = this.getParam(aName);
+		if (wStr != null) {
+			wStr = wStr.toLowerCase();
+			if (Arrays.asList(TRUE_VALUES).contains(wStr)) {
+				return true;
+			}
+			return Boolean.parseBoolean(wStr);
+		} else {
+			return aDefault;
+		}
+	}
+
+	@Override
+	public boolean getBooleanParam(String aName, boolean aDefault) {
+		return this.getBooleanParam(aName, new Boolean(aDefault));
+	}
+
+	@Override
+	public Double getDoubleParam(String aName) {
+		return this.getDoubleParam(aName, null);
+	}
+
+	@Override
+	public Double getDoubleParam(String aName, Double aDefault) {
+		String wStr = this.getParam(aName);
+		if (wStr != null) {
+			try {
+				return Double.parseDouble(wStr);
+			} catch (NumberFormatException e) {}
+		}
+		return aDefault;
+	}
+
+	@Override
+	public double getDoubleParam(String aName, double aDefault) {
+		return this.getDoubleParam(aName, new Double(aDefault));
 	}
 }

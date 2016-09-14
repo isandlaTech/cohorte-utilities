@@ -127,7 +127,7 @@ public interface IConfiguration {
 	 * @param aDefault
 	 * @return
 	 */
-	Boolean getBooleanrParam(String aName, Boolean aDefault);
+	Boolean getBooleanParam(String aName, Boolean aDefault);
 	
 	/**
 	 * Get boolean parameter or fall back to default value.
