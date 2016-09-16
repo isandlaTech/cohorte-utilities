@@ -148,5 +148,29 @@ public interface IConfiguration {
 	 * @return
 	 */
 	boolean hasParam(String aParamName);
+	
+	/**
+	 * Path to Cohorte home directory. If none, path to the current directory.
+	 * This method should not return null.
+	 * 
+	 * @return
+	 */
+	String getHomePath();
+
+	/**
+	 * Path to Cohorte base directory. If none, path to Cohorte home directory.
+	 * This method should not return null.
+	 * 
+	 * @return
+	 */
+	String getBasePath();
+	
+	/**
+	 * Path to Cohorte data directory. If none, path to Cohorte base directory.
+	 * This method should not return null.
+	 * 
+	 * @return
+	 */
+	String getDataPath();
 
 }

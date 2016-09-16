@@ -127,7 +127,7 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 	private String pSubdirName = null;
 
 	/**
-	 * Cohorte Logger.
+	 * Cohorte isolate logger.
 	 */
 	@Requires
 	private IIsolateLoggerSvc pLogger;
@@ -137,6 +137,9 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 	 */
 	private final Properties pProperties = new Properties();
 	
+	/**
+	 * Bundle context.
+	 */
 	private final BundleContext pContext;
 
 	/**
@@ -189,24 +192,48 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 		clean();
 		pLogger.logDebug(this, "invalidating", "Done.");
 	}
+	
+	/**
+	 * Home directory. Not null.
+	 * 
+	 * @return
+	 */
+	private File getHomeDir() {
+		String wPath = this.pContext.getProperty(
+				IPlatformProperties.PROP_PLATFORM_HOME);
+		if (wPath == null) {
+			return new File("");
+		}
+		File wDir = new File (wPath);
+		if (!wDir.isDirectory()) {
+			return new File("");
+		}
+		return wDir;
+	}
 
+	/**
+	 * Base directory. Not null.
+	 * 
+	 * @return
+	 */
 	private File getBaseDir() {
 		String wPath = this.pContext.getProperty(
 				IPlatformProperties.PROP_PLATFORM_BASE);
 		if (wPath == null) {
-			wPath =	this.pContext.getProperty(
-					IPlatformProperties.PROP_PLATFORM_HOME);
-		}
-		if (wPath == null) {
-			return null;
+			return this.getHomeDir();
 		}
 		File wDir = new File (wPath);
 		if (!wDir.isDirectory()) {
-			return null;
+			return this.getHomeDir();
 		}
 		return wDir;
 	}
 	
+	/**
+	 * Data directory. Not null.
+	 * 
+	 * @return
+	 */
 	private File getDataDir() {
 		String wPath = this.pContext.getProperty(
 				IPlatformProperties.PROP_NODE_DATA_DIR);
@@ -215,7 +242,7 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 		}
 		File wDir = new File (wPath);
 		if (!wDir.isDirectory()) {
-			return null;
+			return this.getBaseDir();
 		}
 		return wDir;
 	}
@@ -283,7 +310,8 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 			for (File wUserFile : wUserFiles) addFile(wList, wUserFile);						
 		} else {
 			this.pLogger.logInfo(this, null,
-					"Node configuration diretory not found.");
+					"Node configuration diretory %s not found.",
+					wCurrent.getAbsolutePath());
 		}
 		return wList.toArray(new File[wList.size()]);
 	}
@@ -293,8 +321,9 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 	 */
 	@Validate
 	public void validate() {
+		this.pLogger.setLevel(IIsolateLoggerSvc.ALL);
 		this.pLogger.logDebug(this, "validating",
-				"Validating configuration manager.");
+				"Building configuration map.");
 		this.pProperties.clear();
 		File[] wFiles = getConfigurationFiles();
 		for (File wFile : wFiles) {
@@ -397,5 +426,20 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 	@Override
 	public double getDoubleParam(String aName, double aDefault) {
 		return this.getDoubleParam(aName, new Double(aDefault));
+	}
+
+	@Override
+	public String getBasePath() {
+		return this.getBaseDir().getAbsolutePath();
+	}
+
+	@Override
+	public String getHomePath() {
+		return this.getHomeDir().getAbsolutePath();
+	}
+
+	@Override
+	public String getDataPath() {
+		return this.getDataDir().getAbsolutePath();
 	}
 }
