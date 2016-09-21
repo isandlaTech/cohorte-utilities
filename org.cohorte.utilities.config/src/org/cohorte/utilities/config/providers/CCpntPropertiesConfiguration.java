@@ -342,12 +342,12 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 	}
 
 	@Override
-	public Integer getIntergerParam(String aName) {
-		return this.getIntergerParam(aName, null);
+	public Integer getIntegerParam(String aName) {
+		return this.getIntegerParam(aName, null);
 	}
 
 	@Override
-	public Integer getIntergerParam(String aName, Integer aDefault) {
+	public Integer getIntegerParam(String aName, Integer aDefault) {
 		String wStr = this.getParam(aName);
 		if (wStr != null) {
 			try {
@@ -358,8 +358,8 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 	}
 
 	@Override
-	public int getIntergerParam(String aName, int aDefault) {
-		return this.getIntergerParam(aName, new Integer(aDefault));
+	public int getIntegerParam(String aName, int aDefault) {
+		return this.getIntegerParam(aName, new Integer(aDefault));
 	}
 
 	@Override

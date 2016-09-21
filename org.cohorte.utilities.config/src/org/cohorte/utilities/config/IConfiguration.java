@@ -43,7 +43,7 @@ public interface IConfiguration {
 	 * @param aName
 	 * @return
 	 */
-	Integer getIntergerParam(String aName);
+	Integer getIntegerParam(String aName);
 	
 	/**
 	 * Get integer parameter or fall back to default value.
@@ -52,7 +52,7 @@ public interface IConfiguration {
 	 * @param aDefault
 	 * @return
 	 */
-	Integer getIntergerParam(String aName, Integer aDefault);
+	Integer getIntegerParam(String aName, Integer aDefault);
 	
 	/**
 	 * Get integer parameter or fall back to default value.
@@ -61,7 +61,7 @@ public interface IConfiguration {
 	 * @param aDefault
 	 * @return
 	 */
-	int getIntergerParam(String aName, int aDefault);
+	int getIntegerParam(String aName, int aDefault);
 	
 	/**
 	 * Get long parameter or fall back to null.
