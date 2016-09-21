@@ -146,16 +146,27 @@
   
   <repositories>
   		<repository>
-			<id>isandlatech.releases</id>
-			<name>isandlaTech Releases Repository</name>
-			<url>http://repo.isandlatech.com/maven/releases</url>
-			<releases>
+            <id>cohorte.snapshots</id>
+            <name>Cohorte Snapshot Repository</name>
+            <url>http://forge.cohorte-technologies.com:6080/repository/cohorte-snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>cohorte.releases</id>
+            <name>Cohorte Releases Repository</name>
+            <url>http://forge.cohorte-technologies.com:6080/repository/cohorte-releases</url>
+            <releases>
                 <enabled>true</enabled>
             </releases>
-			<snapshots>
+            <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-		</repository>
+        </repository>
   </repositories>
 
 </project>
