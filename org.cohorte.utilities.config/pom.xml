@@ -148,7 +148,7 @@
   		<repository>
             <id>cohorte.snapshots</id>
             <name>Cohorte Snapshot Repository</name>
-            <url>http://forge.cohorte-technologies.com:6080/repository/cohorte-snapshots</url>
+            <url>http://forge.cohorte-technologies.com/repository/cohorte-snapshots</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -159,7 +159,7 @@
         <repository>
             <id>cohorte.releases</id>
             <name>Cohorte Releases Repository</name>
-            <url>http://forge.cohorte-technologies.com:6080/repository/cohorte-releases</url>
+            <url>http://forge.cohorte-technologies.com/repository/cohorte-releases</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
