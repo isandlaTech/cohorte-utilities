@@ -143,5 +143,19 @@
 		</plugins>
 	</pluginManagement>
   </build>
+  
+  <repositories>
+  		<repository>
+			<id>isandlatech.releases</id>
+			<name>isandlaTech Releases Repository</name>
+			<url>http://repo.isandlatech.com/maven/releases</url>
+			<releases>
+                <enabled>true</enabled>
+            </releases>
+			<snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+		</repository>
+  </repositories>
 
 </project>
