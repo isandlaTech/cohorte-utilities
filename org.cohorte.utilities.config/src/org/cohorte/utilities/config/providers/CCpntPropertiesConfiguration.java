@@ -14,6 +14,7 @@ import org.apache.felix.ipojo.annotations.Invalidate;
 import org.apache.felix.ipojo.annotations.Property;
 import org.apache.felix.ipojo.annotations.Provides;
 import org.apache.felix.ipojo.annotations.Requires;
+import org.apache.felix.ipojo.annotations.ServiceController;
 import org.apache.felix.ipojo.annotations.Validate;
 import org.cohorte.utilities.config.IConfiguration;
 import org.osgi.framework.BundleContext;
@@ -97,22 +98,22 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 	/**
 	 * Default value of {@code pCurrentFilename}.
 	 */
-	String CURRENT_FILENAME = "current.properties";
+	public static final String CURRENT_FILENAME = "current.properties";
 
 	/**
 	 * Default value of {@code pDefaultFilename}.
 	 */
-	String DEFAULT_FILENAME = "default.properties";
+	public static final String DEFAULT_FILENAME = "default.properties";
 	
 	/**
 	 * Default value of {@code pUserExtension}.
 	 */
-	String USER_EXTENSION = ".user.properties";
+	public static final String USER_EXTENSION = ".user.properties";
 
 	/**
 	 * Name of the directory that contains configuration sub-directory.
 	 */
-	String CONF_DIR = "conf";
+	public static final String CONF_DIR = "conf";
 	
 	@Property(name=IServiceProperties.CURRENT_FILENAME)
 	private String pCurrentFilename = CURRENT_FILENAME;
@@ -125,6 +126,9 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 	
 	@Property(name=IServiceProperties.SUBDIR_NAME)
 	private String pSubdirName = null;
+	
+	@ServiceController
+	private boolean controller;
 
 	/**
 	 * Cohorte isolate logger.
@@ -152,10 +156,41 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 	}
 
 	/**
-	 * Cleanup properties
+	 * Called when the component is validated.
 	 */
-	private void clean() {
-		pProperties.clear();
+	@Validate
+	public void validate() {
+		this.pLogger.setLevel(IIsolateLoggerSvc.ALL);
+		this.pLogger.logDebug(this, "validating",
+				"Building configuration map.");
+		this.pProperties.clear();
+		File[] wFiles = getConfigurationFiles();
+		for (File wFile : wFiles) {
+			try (FileInputStream wStream = new FileInputStream(wFile)) {
+				this.pProperties.load(wStream);
+			} catch (IOException e) {
+				this.pLogger.logSevere("validating", 
+					"Error while reading configuration file %s.",
+					wFile.getPath());
+				// Move on to the next file.
+			}
+		}
+		// System properties have the highest priority.
+		this.pProperties.putAll(System.getProperties());
+		pLogger.logDebug(this, "validating", "Configuration dump:\n%s", dump());
+		/* Only now publish service */
+		this.controller = true;
+	}
+
+	/**
+	 * Called when this component is invalidated.
+	 */
+	@Invalidate
+	public void invalidate() {
+		pLogger.logDebug(this, "invalidating", "Cleaning cofig propetries.");
+		clean();
+		this.controller = false;
+		pLogger.logDebug(this, "invalidating", "Done.");
 	}
 
 	@Override
@@ -181,164 +216,6 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 	@Override
 	public boolean hasParam(final String aName) {
 		return pProperties.containsKey(aName);
-	}
-
-	/**
-	 * Called when this component is invalidated.
-	 */
-	@Invalidate
-	public void invalidate() {
-		pLogger.logDebug(this, "invalidating", "Cleaning cofig propetries.");
-		clean();
-		pLogger.logDebug(this, "invalidating", "Done.");
-	}
-	
-	/**
-	 * Home directory. Not null.
-	 * 
-	 * @return
-	 */
-	private File getHomeDir() {
-		String wPath = this.pContext.getProperty(
-				IPlatformProperties.PROP_PLATFORM_HOME);
-		if (wPath == null) {
-			return new File("");
-		}
-		File wDir = new File (wPath);
-		if (!wDir.isDirectory()) {
-			return new File("");
-		}
-		return wDir;
-	}
-
-	/**
-	 * Base directory. Not null.
-	 * 
-	 * @return
-	 */
-	private File getBaseDir() {
-		String wPath = this.pContext.getProperty(
-				IPlatformProperties.PROP_PLATFORM_BASE);
-		if (wPath == null) {
-			return this.getHomeDir();
-		}
-		File wDir = new File (wPath);
-		if (!wDir.isDirectory()) {
-			return this.getHomeDir();
-		}
-		return wDir;
-	}
-	
-	/**
-	 * Data directory. Not null.
-	 * 
-	 * @return
-	 */
-	private File getDataDir() {
-		String wPath = this.pContext.getProperty(
-				IPlatformProperties.PROP_NODE_DATA_DIR);
-		if (wPath == null) {
-			return this.getBaseDir();
-		}
-		File wDir = new File (wPath);
-		if (!wDir.isDirectory()) {
-			return this.getBaseDir();
-		}
-		return wDir;
-	}
-	
-	private String getSubdirName() {
-		if (this.pSubdirName != null) {
-			return this.pSubdirName;
-		}
-		/*
-		 * Isolate name.
-		 */
-		return this.pContext.getProperty(IPlatformProperties.PROP_ISOLATE_NAME);
-		
-	}
-	
-	private void addFile(List<File> aList, File aFile) {
-		aList.add(aFile);
-		this.pLogger.logDebug(this, null,
-				"Configurtation file %s added.", aFile.getAbsolutePath());
-		
-	}
-	
-	private File[] getConfigurationFiles() {
-		List<File> wList = new ArrayList<>(3);
-		/*
-		 * Default configuration file has the following default path:
-		 * <cohort-base>/conf/<isolate-name>/default.properties
-		 */
-		File wDefault = getBaseDir();
-		wDefault = new File(wDefault, CONF_DIR);
-		wDefault = new File(wDefault, getSubdirName());
-		wDefault = new File(wDefault, this.pDefaultFilename);
-		if (wDefault.isFile()) {
-			addFile(wList, wDefault);
-		} else {
-			this.pLogger.logInfo(this, null,
-					"Default configurtation file not found.");
-		}
-		File wCurrent = getDataDir();
-		wCurrent = new File(wCurrent, CONF_DIR);
-		wCurrent = new File(wCurrent, getSubdirName());
-		if (wCurrent.isDirectory()) {
-			/*
-			 * List user-defined configuration files.
-			 */
-			File[] wUserFiles = wCurrent.listFiles(new FileFilter() {
-				
-				@Override
-				public boolean accept(File wCandidate) {
-					return wCandidate.isFile() && wCandidate.getName()
-							.toLowerCase().endsWith(pUserExtension);
-				}
-			});
-			/*
-			 * Default configuration file has the following default path:
-			 * <cohort-data>/conf/<isolate-name>/current.properties
-			 */
-			wCurrent = new File(wCurrent, this.pCurrentFilename);
-			if (wCurrent.isFile()) {
-				addFile(wList, wCurrent);
-			}
-			/*
-			 * Add user-defined files, if any.
-			 */
-			for (File wUserFile : wUserFiles) addFile(wList, wUserFile);						
-		} else {
-			this.pLogger.logInfo(this, null,
-					"Node configuration diretory %s not found.",
-					wCurrent.getAbsolutePath());
-		}
-		return wList.toArray(new File[wList.size()]);
-	}
-
-	/**
-	 * Called when the component is validated.
-	 */
-	@Validate
-	public void validate() {
-		this.pLogger.setLevel(IIsolateLoggerSvc.ALL);
-		this.pLogger.logDebug(this, "validating",
-				"Building configuration map.");
-		this.pProperties.clear();
-		File[] wFiles = getConfigurationFiles();
-		for (File wFile : wFiles) {
-			try (FileInputStream wStream = new FileInputStream(wFile)) {
-				this.pProperties.load(wStream);
-			} catch (IOException e) {
-				this.pLogger.logSevere("validating", 
-					"Error while reading configuration file %s.",
-					wFile.getPath());
-				// Move on to the next file.
-			}
-		}
-		// System properties have the highest priority.
-		this.pProperties.putAll(System.getProperties());
-		pLogger.logDebug(this, "validating", "Configuration dump:\n%s", dump());
 	}
 
 	@Override
@@ -441,5 +318,135 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 	@Override
 	public String getDataPath() {
 		return this.getDataDir().getAbsolutePath();
+	}
+
+	/**
+	 * Cleanup properties
+	 */
+	private void clean() {
+		pProperties.clear();
+	}
+
+	/**
+	 * Home directory. Not null.
+	 * 
+	 * @return
+	 */
+	private File getHomeDir() {
+		String wPath = this.pContext.getProperty(
+				IPlatformProperties.PROP_PLATFORM_HOME);
+		if (wPath == null) {
+			return new File("");
+		}
+		File wDir = new File (wPath);
+		if (!wDir.isDirectory()) {
+			return new File("");
+		}
+		return wDir;
+	}
+
+	/**
+	 * Base directory. Not null.
+	 * 
+	 * @return
+	 */
+	private File getBaseDir() {
+		String wPath = this.pContext.getProperty(
+				IPlatformProperties.PROP_PLATFORM_BASE);
+		if (wPath == null) {
+			return this.getHomeDir();
+		}
+		File wDir = new File (wPath);
+		if (!wDir.isDirectory()) {
+			return this.getHomeDir();
+		}
+		return wDir;
+	}
+
+	/**
+	 * Data directory. Not null.
+	 * 
+	 * @return
+	 */
+	private File getDataDir() {
+		String wPath = this.pContext.getProperty(
+				IPlatformProperties.PROP_NODE_DATA_DIR);
+		if (wPath == null) {
+			return this.getBaseDir();
+		}
+		File wDir = new File (wPath);
+		if (!wDir.isDirectory()) {
+			return this.getBaseDir();
+		}
+		return wDir;
+	}
+
+	private String getSubdirName() {
+		if (this.pSubdirName != null) {
+			return this.pSubdirName;
+		}
+		/*
+		 * Isolate name.
+		 */
+		return this.pContext.getProperty(IPlatformProperties.PROP_ISOLATE_NAME);
+		
+	}
+
+	private void addFile(List<File> aList, File aFile) {
+		aList.add(aFile);
+		this.pLogger.logDebug(this, null,
+				"Configurtation file %s added.", aFile.getAbsolutePath());
+		
+	}
+
+	private File[] getConfigurationFiles() {
+		List<File> wList = new ArrayList<>(3);
+		/*
+		 * Default configuration file has the following default path:
+		 * <cohort-base>/conf/<isolate-name>/default.properties
+		 */
+		File wDefault = getBaseDir();
+		wDefault = new File(wDefault, CONF_DIR);
+		wDefault = new File(wDefault, getSubdirName());
+		wDefault = new File(wDefault, this.pDefaultFilename);
+		if (wDefault.isFile()) {
+			addFile(wList, wDefault);
+		} else {
+			this.pLogger.logInfo(this, null,
+					"Default configurtation file not found.");
+		}
+		File wCurrent = getDataDir();
+		wCurrent = new File(wCurrent, CONF_DIR);
+		wCurrent = new File(wCurrent, getSubdirName());
+		if (wCurrent.isDirectory()) {
+			/*
+			 * List user-defined configuration files.
+			 */
+			File[] wUserFiles = wCurrent.listFiles(new FileFilter() {
+				
+				@Override
+				public boolean accept(File wCandidate) {
+					return wCandidate.isFile() && wCandidate.getName()
+							.toLowerCase().endsWith(pUserExtension);
+				}
+			});
+			/*
+			 * Default configuration file has the following default path:
+			 * <cohort-data>/conf/<isolate-name>/current.properties
+			 */
+			wCurrent = new File(wCurrent, this.pCurrentFilename);
+			if (wCurrent.isFile()) {
+				addFile(wList, wCurrent);
+			}
+			/*
+			 * Add user-defined files, if any.
+			 */
+			for (File wUserFile : wUserFiles) addFile(wList, wUserFile);						
+		} else {
+			this.pLogger.logInfo(this, null,
+					"Node configuration diretory %s not found.",
+					wCurrent.getAbsolutePath());
+		}
+		return wList.toArray(new File[wList.size()]);
 	}
 }
