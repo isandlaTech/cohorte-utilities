@@ -128,7 +128,7 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 	private String pSubdirName = null;
 	
 	@ServiceController
-	private boolean controller;
+	private boolean pController;
 
 	/**
 	 * Cohorte isolate logger.
@@ -179,7 +179,7 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 		this.pProperties.putAll(System.getProperties());
 		pLogger.logDebug(this, "validating", "Configuration dump:\n%s", dump());
 		/* Only now publish service */
-		this.controller = true;
+		this.pController = true;
 	}
 
 	/**
@@ -189,7 +189,7 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 	public void invalidate() {
 		pLogger.logDebug(this, "invalidating", "Cleaning cofig propetries.");
 		clean();
-		this.controller = false;
+		this.pController = false;
 		pLogger.logDebug(this, "invalidating", "Done.");
 	}
 

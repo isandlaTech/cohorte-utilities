@@ -16,58 +16,58 @@ Import-Package: org.apache.felix.ipojo;version="[1.12.1,2.0.0)", org.a
  , org.psem2m.utilities.logging
 iPOJO-Components: component { $name="Cohorte-CCpntPropertiesConfigurat
  ion-Factory" $classname="org.cohorte.utilities.config.providers.CCpnt
- PropertiesConfiguration" provides { controller { $field="controller" 
- }}properties { property { $name="org.cohorte.config.current.filename"
-  $field="pCurrentFilename" }property { $name="org.cohorte.config.defa
- ult.filename" $field="pDefaultFilename" }property { $name="org.cohort
- e.config.user.extension" $field="pUserExtension" }property { $name="o
- rg.cohorte.config.subdir.name" $field="pSubdirName" }}requires { $fie
- ld="pLogger" }callback { $transition="validate" $method="validate" }c
- allback { $transition="invalidate" $method="invalidate" }manipulation
-  { $classname="org.cohorte.utilities.config.providers.CCpntProperties
- Configuration" interface { $name="org.cohorte.utilities.config.IConfi
- guration" }field { $name="controller" $type="boolean" }field { $name=
- "pContext" $type="org.osgi.framework.BundleContext" }field { $name="p
- CurrentFilename" $type="java.lang.String" }field { $name="pDefaultFil
- ename" $type="java.lang.String" }field { $name="pLogger" $type="org.p
- sem2m.isolates.base.IIsolateLoggerSvc" }field { $name="pProperties" $
- type="java.util.Properties" }field { $name="pSubdirName" $type="java.
- lang.String" }field { $name="pUserExtension" $type="java.lang.String"
-  }method { $name="validate" }method { $name="invalidate" }method { $n
- ame="dump" $return="java.lang.String" }method { $name="getParam" $ret
- urn="java.lang.String" $arguments="{java.lang.String}" $names="{aName
- }" }method { $name="getParam" $return="java.lang.String" $arguments="
- {java.lang.String,java.lang.String}" $names="{aName,aDefault}" }metho
- d { $name="hasParam" $return="boolean" $arguments="{java.lang.String}
- " $names="{aName}" }method { $name="getIntegerParam" $return="java.la
- ng.Integer" $arguments="{java.lang.String}" $names="{aName}" }method 
- { $name="getIntegerParam" $return="java.lang.Integer" $arguments="{ja
- va.lang.String,java.lang.Integer}" $names="{aName,aDefault}" }method 
- { $name="getIntegerParam" $return="int" $arguments="{java.lang.String
- ,int}" $names="{aName,aDefault}" }method { $name="getLongParam" $retu
- rn="java.lang.Long" $arguments="{java.lang.String}" $names="{aName}" 
- }method { $name="getLongParam" $return="java.lang.Long" $arguments="{
- java.lang.String,java.lang.Long}" $names="{aName,aDefault}" }method {
-  $name="getLongParam" $return="long" $arguments="{java.lang.String,lo
- ng}" $names="{aName,aDefault}" }method { $name="getBooleanParam" $ret
- urn="java.lang.Boolean" $arguments="{java.lang.String}" $names="{aNam
- e}" }method { $name="getBooleanParam" $return="java.lang.Boolean" $ar
- guments="{java.lang.String,java.lang.Boolean}" $names="{aName,aDefaul
- t}" }method { $name="getBooleanParam" $return="boolean" $arguments="{
- java.lang.String,boolean}" $names="{aName,aDefault}" }method { $name=
- "getDoubleParam" $return="java.lang.Double" $arguments="{java.lang.St
- ring}" $names="{aName}" }method { $name="getDoubleParam" $return="jav
- a.lang.Double" $arguments="{java.lang.String,java.lang.Double}" $name
- s="{aName,aDefault}" }method { $name="getDoubleParam" $return="double
- " $arguments="{java.lang.String,double}" $names="{aName,aDefault}" }m
- ethod { $name="getBasePath" $return="java.lang.String" }method { $nam
- e="getHomePath" $return="java.lang.String" }method { $name="getDataPa
- th" $return="java.lang.String" }method { $name="clean" }method { $nam
- e="getHomeDir" $return="java.io.File" }method { $name="getBaseDir" $r
- eturn="java.io.File" }method { $name="getDataDir" $return="java.io.Fi
- le" }method { $name="getSubdirName" $return="java.lang.String" }metho
- d { $name="addFile" $arguments="{java.util.List,java.io.File}" $names
- ="{aList,aFile}" }method { $name="getConfigurationFiles" $return="jav
- a.io.File[]" }inner { $name="1" method { $name="accept" $return="bool
- ean" $arguments="{java.io.File}" $names="{}" }}}}
+ PropertiesConfiguration" provides { controller { $field="pController"
+  }}properties { property { $name="org.cohorte.config.current.filename
+ " $field="pCurrentFilename" }property { $name="org.cohorte.config.def
+ ault.filename" $field="pDefaultFilename" }property { $name="org.cohor
+ te.config.user.extension" $field="pUserExtension" }property { $name="
+ org.cohorte.config.subdir.name" $field="pSubdirName" }}requires { $fi
+ eld="pLogger" }callback { $transition="validate" $method="validate" }
+ callback { $transition="invalidate" $method="invalidate" }manipulatio
+ n { $classname="org.cohorte.utilities.config.providers.CCpntPropertie
+ sConfiguration" interface { $name="org.cohorte.utilities.config.IConf
+ iguration" }field { $name="pContext" $type="org.osgi.framework.Bundle
+ Context" }field { $name="pController" $type="boolean" }field { $name=
+ "pCurrentFilename" $type="java.lang.String" }field { $name="pDefaultF
+ ilename" $type="java.lang.String" }field { $name="pLogger" $type="org
+ .psem2m.isolates.base.IIsolateLoggerSvc" }field { $name="pProperties"
+  $type="java.util.Properties" }field { $name="pSubdirName" $type="jav
+ a.lang.String" }field { $name="pUserExtension" $type="java.lang.Strin
+ g" }method { $name="validate" }method { $name="invalidate" }method { 
+ $name="dump" $return="java.lang.String" }method { $name="getParam" $r
+ eturn="java.lang.String" $arguments="{java.lang.String}" $names="{aNa
+ me}" }method { $name="getParam" $return="java.lang.String" $arguments
+ ="{java.lang.String,java.lang.String}" $names="{aName,aDefault}" }met
+ hod { $name="hasParam" $return="boolean" $arguments="{java.lang.Strin
+ g}" $names="{aName}" }method { $name="getIntegerParam" $return="java.
+ lang.Integer" $arguments="{java.lang.String}" $names="{aName}" }metho
+ d { $name="getIntegerParam" $return="java.lang.Integer" $arguments="{
+ java.lang.String,java.lang.Integer}" $names="{aName,aDefault}" }metho
+ d { $name="getIntegerParam" $return="int" $arguments="{java.lang.Stri
+ ng,int}" $names="{aName,aDefault}" }method { $name="getLongParam" $re
+ turn="java.lang.Long" $arguments="{java.lang.String}" $names="{aName}
+ " }method { $name="getLongParam" $return="java.lang.Long" $arguments=
+ "{java.lang.String,java.lang.Long}" $names="{aName,aDefault}" }method
+  { $name="getLongParam" $return="long" $arguments="{java.lang.String,
+ long}" $names="{aName,aDefault}" }method { $name="getBooleanParam" $r
+ eturn="java.lang.Boolean" $arguments="{java.lang.String}" $names="{aN
+ ame}" }method { $name="getBooleanParam" $return="java.lang.Boolean" $
+ arguments="{java.lang.String,java.lang.Boolean}" $names="{aName,aDefa
+ ult}" }method { $name="getBooleanParam" $return="boolean" $arguments=
+ "{java.lang.String,boolean}" $names="{aName,aDefault}" }method { $nam
+ e="getDoubleParam" $return="java.lang.Double" $arguments="{java.lang.
+ String}" $names="{aName}" }method { $name="getDoubleParam" $return="j
+ ava.lang.Double" $arguments="{java.lang.String,java.lang.Double}" $na
+ mes="{aName,aDefault}" }method { $name="getDoubleParam" $return="doub
+ le" $arguments="{java.lang.String,double}" $names="{aName,aDefault}" 
+ }method { $name="getBasePath" $return="java.lang.String" }method { $n
+ ame="getHomePath" $return="java.lang.String" }method { $name="getData
+ Path" $return="java.lang.String" }method { $name="clean" }method { $n
+ ame="getHomeDir" $return="java.io.File" }method { $name="getBaseDir" 
+ $return="java.io.File" }method { $name="getDataDir" $return="java.io.
+ File" }method { $name="getSubdirName" $return="java.lang.String" }met
+ hod { $name="addFile" $arguments="{java.util.List,java.io.File}" $nam
+ es="{aList,aFile}" }method { $name="getConfigurationFiles" $return="j
+ ava.io.File[]" }inner { $name="1" method { $name="accept" $return="bo
+ olean" $arguments="{java.io.File}" $names="{}" }}}}
 
