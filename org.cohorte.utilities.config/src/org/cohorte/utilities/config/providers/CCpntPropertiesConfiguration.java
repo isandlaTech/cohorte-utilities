@@ -15,6 +15,7 @@ import org.apache.felix.ipojo.annotations.Property;
 import org.apache.felix.ipojo.annotations.Provides;
 import org.apache.felix.ipojo.annotations.Requires;
 import org.apache.felix.ipojo.annotations.ServiceController;
+import org.apache.felix.ipojo.annotations.ServiceProperty;
 import org.apache.felix.ipojo.annotations.Validate;
 import org.cohorte.utilities.config.IConfiguration;
 import org.osgi.framework.BundleContext;
@@ -129,6 +130,12 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 	
 	@ServiceController
 	private boolean pController;
+	
+	/**
+	 * Service only available locally (inside the isolate).
+	 */
+	@ServiceProperty(name = "pelix.remote.export.reject", immutable = true)
+	private final String pNoExport = IConfiguration.class.getName();
 
 	/**
 	 * Cohorte isolate logger.
