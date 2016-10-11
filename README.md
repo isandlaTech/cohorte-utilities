@@ -20,7 +20,5 @@ org.cohorte.utilities.picosoc | 1.0.0 | no
 org.cohorte.utilities.picosoc.webapp | 1.0.0 | no
 org.cohorte.utilities.rest | 1.0.0 | no
 org.cohorte.utilities.test | 1.0.0 | no
-org.cohorte.utilities.webapp | 1.0.0 | no
-org.cohorte.utilities.win32 | 1.0.0 | no
 
 Note1: "changed?" means if the sub-module is concerned (released) with the new parent module's release.
