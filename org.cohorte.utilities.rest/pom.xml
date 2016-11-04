@@ -13,12 +13,6 @@
   
 <dependencies>
 
-<dependency>
-  <groupId>org.cohorte.utilities</groupId>
-  <artifactId>org.cohorte.utilities</artifactId>
-  <version>1.0.6</version>
-</dependency>
-
 <!-- http://mvnrepository.com/artifact/org.osgi/org.osgi.compendium -->
 <dependency>
     <groupId>org.osgi</groupId>
