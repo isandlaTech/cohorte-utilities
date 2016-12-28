@@ -1,0 +1,39 @@
+
+HOW TO USE
+
+La librairie "org.cohorte.utilities.win32" contient la classe  "org.psem2m.utilities.system.win32.W32processPidSearcher"
+
+Cette classe est une implémentation de "org.psem2m.utilities.system.IXOSProcessPidSearcher" ( voir: lib/bundle  "org.cohorte.utilities" )
+
+La librairie "org.cohorte.utilities.win32" dépend des jars "jna-4.1.0.jar" et "jna-platform-4.1.0.jar"
+
+
+
+Dans le cadre d'une application Java
+---------------------------------------------
+
+Les 4 librairies doivent être dans le classpath
+ - jna-4.1.0.jar
+ - jna-platform-4.1.0.jar"
+ - org.cohorte.utilities
+ - org.cohorte.utilities.win32
+
+C'est à l'application utilisatrice d'instancier un "W32processPidSearcher" et de l'injecter dans la classe "org.psem2m.utilities.system.CXProcessWin32" 
+en utilisant la méthode statique : 
+"org.psem2m.utilities.system.CXProcessWin32.setOSProcessPidSearcher(IXOSProcessPidSearcher)"
+
+
+
+Dans le contexte d'une application COHORTE
+---------------------------------------------
+
+il faut construire une bundle d'initialisation qui soit chargé au immédiatement par la framework OSGi (cf. configuration de l'isolat)
+
+Ce bundle doit contenir les librairies
+ - org.cohorte.utilities.win32
+ - jna-4.1.0.jar
+ - jna-platform-4.1.0.jar"
+
+Ce bundle doit importer le package "org.psem2m.utilities.system" exporté par le bundle "org.cohorte.utilities"
+
+L'instanciation d'un "W32processPidSearcher" et son injection dans la classe "org.psem2m.utilities.system.CXProcessWin32" doit se faire dans le start de ce bundle
