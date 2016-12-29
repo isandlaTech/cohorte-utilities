@@ -1,6 +1,12 @@
+from 1.0.7 to 1.0.8
+-------------------
 
-from 1.0.5  to 1.0.6 (master)
--------------------------------------
+- MOD_BD_20161228 
+  - system: correct test against java.lang.ProcessImpl for jre 8 (missing getName()) -- CXProcessWin32.isProcessWin32(..)
+  - add comment about passing environment varialbes to CXOSServer.start(..) -- PATH is ignored if sub-process is not a shell
+
+from 1.0.5  to 1.0.6
+--------------------
 
 - MOD_OG_20160719
   - Enhancement of CXFileDir: Use Files.delete() rather than File.delete() to get an explicit exception to diagnose easily the troubles
