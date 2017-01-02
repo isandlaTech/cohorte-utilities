@@ -5,7 +5,7 @@ import java.util.Map;
 
 /**
  * @author ogattaz
- * 
+ *
  */
 public interface IXOSServer extends IXOSRunner {
 
@@ -20,6 +20,10 @@ public interface IXOSServer extends IXOSRunner {
 	EXServerState getServerState();
 
 	/**
+	 * WARNING: if aEnv has a new value for PATH environment variable, if the
+	 * sub-process is not a shell, PATH will be ignored. Hint: launch your
+	 * program using a shell, e.g., "cmd.exe /c your_cmd args"
+	 *
 	 * @param aTimeOut
 	 *            no timeout if <= 0
 	 * @param aUserDir
@@ -33,6 +37,10 @@ public interface IXOSServer extends IXOSRunner {
 	boolean start(final File aUserDir, final Map<String, String> aEnv);
 
 	/**
+	 * WARNING: if aEnv has a new value for PATH environment variable, if the
+	 * sub-process is not a shell, PATH will be ignored. Hint: launch your
+	 * program using a shell, e.g., "cmd.exe /c your_cmd args"
+	 *
 	 * @param aUserDir
 	 *            the "user dir" of the command
 	 * @param aEnv
