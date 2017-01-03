@@ -1,4 +1,9 @@
 
+version 1.0.3
+
+MOD_OG 20170103
+ - accept encoded dbuserpassword
+ 
 version 1.0.2
 
 MOD_OG 20170102

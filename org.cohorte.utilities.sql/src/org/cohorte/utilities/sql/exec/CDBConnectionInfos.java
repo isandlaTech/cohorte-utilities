@@ -4,6 +4,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
 
+import org.cohorte.utilities.encode.CBase64Decoder;
+import org.cohorte.utilities.encode.IBase64;
 import org.cohorte.utilities.sql.EDBType;
 import org.cohorte.utilities.sql.IDBDriver;
 import org.cohorte.utilities.sql.ISqlConstants;
@@ -128,13 +130,6 @@ public class CDBConnectionInfos {
 	public String asJsonStream() {
 		return toStream(ISqlConstants.FORMAT_JSON);
 
-	}
-
-	/**
-	 * @return
-	 */
-	public String toXmlStream() {
-		return toStream(ISqlConstants.FORMAT_XML);
 	}
 
 	/**
@@ -652,7 +647,16 @@ public class CDBConnectionInfos {
 	 *            the dbPassword to set
 	 */
 	private void setDbPassword(final String dbPassword) {
-		this.dbPassword = dbPassword;
+		String wDecoded = dbPassword;
+
+		// eg. basic:bXVpbGlnQQ==
+		if (dbPassword != null
+				&& !dbPassword.isEmpty()
+				&& (dbPassword.startsWith(IBase64.BASIC_PREFIX) || dbPassword
+						.startsWith(IBase64.BASE64_PREFIX))) {
+			wDecoded = new CBase64Decoder(dbPassword).getString();
+		}
+		this.dbPassword = wDecoded;
 	}
 
 	/**
@@ -735,12 +739,19 @@ public class CDBConnectionInfos {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 		return addDescriptionInSB(new StringBuilder()).toString();
+	}
+
+	/**
+	 * @return
+	 */
+	public String toXmlStream() {
+		return toStream(ISqlConstants.FORMAT_XML);
 	}
 
 }
