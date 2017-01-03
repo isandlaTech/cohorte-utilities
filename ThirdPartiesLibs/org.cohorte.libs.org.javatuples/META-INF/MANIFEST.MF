@@ -10,5 +10,6 @@ Bundle-Vendor: org.javatuples
 Bundle-ClassPath: lib/javatuples-1.2.jar,
  .
 Export-Package: org.cohorte.libs.org.javatuples,
+ org.cohorte.libs.org.javatuples.docs,
  org.javatuples,
  org.javatuples.valueintf
