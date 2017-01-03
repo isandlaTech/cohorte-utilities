@@ -50,11 +50,7 @@
 		    <artifactId>org.apache.felix.gogo.runtime</artifactId>
 		    <version>0.16.2</version>
 		</dependency>
-		<dependency>
-			<groupId>org.cohorte.herald</groupId>
-			<artifactId>org.cohorte.herald.api</artifactId>
-			<version>1.0.0</version>
-		</dependency>
+		<!-- used for the logger of the isolate -->
 		<dependency>
 			<groupId>org.cohorte.runtime</groupId>
 			<artifactId>org.psem2m.isolates.base</artifactId>
@@ -157,7 +153,7 @@
   		<repository>
             <id>cohorte.snapshots</id>
             <name>Cohorte Snapshot Repository</name>
-            <url>http://forge.cohorte-technologies.com/repository/cohorte-snapshots</url>
+            <url>https://nrm.cohorte.tech/repository/cohorte-snapshots</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -168,7 +164,7 @@
         <repository>
             <id>cohorte.releases</id>
             <name>Cohorte Releases Repository</name>
-            <url>http://forge.cohorte-technologies.com/repository/cohorte-releases</url>
+            <url>https://nrm.cohorte.tech/repository/cohorte-releases</url>
             <releases>
                 <enabled>true</enabled>
             </releases>

@@ -71,9 +71,10 @@ iPOJO-Components: component { $name="Cohorte-CCpntPropertiesConfigurat
  {aName}" }method { $name="getParam" $return="java.lang.String" $argum
  ents="{java.lang.String,java.lang.String}" $names="{aName,aDefault}" 
  }method { $name="getSubdirName" $return="java.lang.String" }method { 
- $name="hasParam" $return="boolean" $arguments="{java.lang.String}" $n
- ames="{aName}" }method { $name="invalidate" }method { $name="size" $r
- eturn="int" }method { $name="validate" }inner { $name="1" method { $n
- ame="accept" $return="boolean" $arguments="{java.io.File}" $names="{}
- " }}}}
+ $name="getSubset" $return="java.util.Properties" $arguments="{java.la
+ ng.String}" $names="{aFilter}" }method { $name="hasParam" $return="bo
+ olean" $arguments="{java.lang.String}" $names="{aName}" }method { $na
+ me="invalidate" }method { $name="size" $return="int" }method { $name=
+ "validate" }inner { $name="1" method { $name="accept" $return="boolea
+ n" $arguments="{java.io.File}" $names="{}" }}}}
 

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.TreeMap;
 
@@ -183,7 +184,7 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.cohorte.utilities.config.IConfiguration#dump()
 	 */
 	@Override
@@ -217,21 +218,47 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 		return wDir;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.cohorte.utilities.config.IConfiguration#getBasePath()
+	 */
 	@Override
 	public String getBasePath() {
 		return this.getBaseDir().getAbsolutePath();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.cohorte.utilities.config.IConfiguration#getBooleanParam(java.lang
+	 * .String)
+	 */
 	@Override
 	public Boolean getBooleanParam(String aName) {
 		return this.getBooleanParam(aName, null);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.cohorte.utilities.config.IConfiguration#getBooleanParam(java.lang
+	 * .String, boolean)
+	 */
 	@Override
 	public boolean getBooleanParam(String aName, boolean aDefault) {
 		return this.getBooleanParam(aName, new Boolean(aDefault));
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.cohorte.utilities.config.IConfiguration#getBooleanParam(java.lang
+	 * .String, java.lang.Boolean)
+	 */
 	@Override
 	public Boolean getBooleanParam(String aName, Boolean aDefault) {
 		String wStr = this.getParam(aName);
@@ -290,7 +317,7 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 		/*
 		 * Current configuration files are in the directory :
 		 * <cohorte-data>/conf/<isolate-name>
-		 *
+		 * 
 		 * if the framework properties "cohorte.node.data.dir" isn't defined,
 		 * the wExtendDir is the same as the wDefaultDir
 		 */
@@ -329,7 +356,7 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 				public boolean accept(File wCandidate) {
 					return wCandidate.isFile()
 							&& wCandidate.getName().toLowerCase()
-							.endsWith(pUserExtension);
+									.endsWith(pUserExtension);
 				}
 			});
 			/*
@@ -360,21 +387,47 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 		return wDir;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.cohorte.utilities.config.IConfiguration#getDataPath()
+	 */
 	@Override
 	public String getDataPath() {
 		return this.getDataDir().getAbsolutePath();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.cohorte.utilities.config.IConfiguration#getDoubleParam(java.lang.
+	 * String)
+	 */
 	@Override
 	public Double getDoubleParam(String aName) {
 		return this.getDoubleParam(aName, null);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.cohorte.utilities.config.IConfiguration#getDoubleParam(java.lang.
+	 * String, double)
+	 */
 	@Override
 	public double getDoubleParam(String aName, double aDefault) {
 		return this.getDoubleParam(aName, new Double(aDefault));
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.cohorte.utilities.config.IConfiguration#getDoubleParam(java.lang.
+	 * String, java.lang.Double)
+	 */
 	@Override
 	public Double getDoubleParam(String aName, Double aDefault) {
 		String wStr = this.getParam(aName);
@@ -405,21 +458,47 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 		return wDir;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.cohorte.utilities.config.IConfiguration#getHomePath()
+	 */
 	@Override
 	public String getHomePath() {
 		return this.getHomeDir().getAbsolutePath();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.cohorte.utilities.config.IConfiguration#getIntegerParam(java.lang
+	 * .String)
+	 */
 	@Override
 	public Integer getIntegerParam(String aName) {
 		return this.getIntegerParam(aName, null);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.cohorte.utilities.config.IConfiguration#getIntegerParam(java.lang
+	 * .String, int)
+	 */
 	@Override
 	public int getIntegerParam(String aName, int aDefault) {
 		return this.getIntegerParam(aName, new Integer(aDefault));
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.cohorte.utilities.config.IConfiguration#getIntegerParam(java.lang
+	 * .String, java.lang.Integer)
+	 */
 	@Override
 	public Integer getIntegerParam(String aName, Integer aDefault) {
 		String wStr = this.getParam(aName);
@@ -432,16 +511,37 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 		return aDefault;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.cohorte.utilities.config.IConfiguration#getLongParam(java.lang.String
+	 * )
+	 */
 	@Override
 	public Long getLongParam(String aName) {
 		return this.getLongParam(aName, null);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.cohorte.utilities.config.IConfiguration#getLongParam(java.lang.String
+	 * , long)
+	 */
 	@Override
 	public long getLongParam(String aName, long aDefault) {
 		return this.getLongParam(aName, new Long(aDefault));
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.cohorte.utilities.config.IConfiguration#getLongParam(java.lang.String
+	 * , java.lang.Long)
+	 */
 	@Override
 	public Long getLongParam(String aName, Long aDefault) {
 		String wStr = this.getParam(aName);
@@ -454,11 +554,24 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 		return aDefault;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.cohorte.utilities.config.IConfiguration#getParam(java.lang.String)
+	 */
 	@Override
 	public String getParam(final String aName) {
 		return pProperties.getProperty(aName);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.cohorte.utilities.config.IConfiguration#getParam(java.lang.String,
+	 * java.lang.String)
+	 */
 	@Override
 	public String getParam(final String aName, final String aDefault) {
 		return pProperties.getProperty(aName, aDefault);
@@ -478,6 +591,38 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.cohorte.utilities.config.IConfiguration#getSubset(java.lang.String)
+	 */
+	@Override
+	public Properties getSubset(final String aFilter) {
+		Properties wSubSet = new Properties();
+
+		if (aFilter == null || aFilter.isEmpty()
+				|| "*".equalsIgnoreCase(aFilter)) {
+			wSubSet.putAll(this.pProperties);
+		}
+		//
+		else {
+			for (Entry<Object, Object> wEntry : pProperties.entrySet()) {
+				if (wEntry.getKey().toString().toLowerCase()
+						.startsWith(aFilter.toLowerCase())) {
+					wSubSet.put(wEntry.getKey(), wEntry.getValue());
+				}
+			}
+		}
+		return wSubSet;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.cohorte.utilities.config.IConfiguration#hasParam(java.lang.String)
+	 */
 	@Override
 	public boolean hasParam(final String aName) {
 		return pProperties.containsKey(aName);
@@ -500,7 +645,13 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 		pLogger.logInfo(this, "invalidate", "invalidated.");
 	}
 
-	private int size() {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.cohorte.utilities.config.IConfiguration#size()
+	 */
+	@Override
+	public int size() {
 		return pProperties.size();
 	}
 
