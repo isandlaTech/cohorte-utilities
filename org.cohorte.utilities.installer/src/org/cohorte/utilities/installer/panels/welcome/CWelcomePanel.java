@@ -3,6 +3,10 @@ package org.cohorte.utilities.installer.panels.welcome;
 import static org.cohorte.utilities.installer.CInstallerTools.getService;
 import static org.cohorte.utilities.installer.CInstallerTools.getServiceLogger;
 
+import java.io.PrintStream;
+import java.util.prefs.Preferences;
+
+import org.cohorte.utilities.installer.IConstants;
 import org.cohorte.utilities.installer.IInstaller;
 import org.psem2m.utilities.logging.IActivityLogger;
 
@@ -15,7 +19,7 @@ import com.izforge.izpack.panels.htmlhello.HTMLHelloPanel;
 
 /**
  * MOD_OG_20160715 console mode
- * 
+ *
  * <p/>
  * Console implementations must use the naming convention:
  * <p>
@@ -25,16 +29,41 @@ import com.izforge.izpack.panels.htmlhello.HTMLHelloPanel;
  * E.g for the panel {@code HelloPanel}, the console implementation must be
  * named {@code HelloConsolePanel}.
  * <p/>
- * 
+ *
  * @author ogattaz
  *
  */
-public class CWelcomePanel extends HTMLHelloPanel  {
+public class CWelcomePanel extends HTMLHelloPanel {
 
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = 2735989401646225915L;
+
+	/**
+	 * @see http
+	 *      ://stackoverflow.com/questions/4350356/detect-if-java-application
+	 *      -was-run-as-a-windows-admin
+	 * @return
+	 */
+	public static boolean isPrivilegedMode() {
+		Preferences prefs = Preferences.systemRoot();
+		PrintStream systemErr = System.err;
+		synchronized (systemErr) { // better synchroize to avoid problems with
+									// other threads that access System.err
+			System.setErr(null);
+			try {
+				prefs.put("foo", "bar"); // SecurityException on Windows
+				prefs.remove("foo");
+				prefs.flush(); // BackingStoreException on Linux
+				return true;
+			} catch (Exception e) {
+				return false;
+			} finally {
+				System.setErr(systemErr);
+			}
+		}
+	}
 
 	/**
 	 * Logger
@@ -59,16 +88,23 @@ public class CWelcomePanel extends HTMLHelloPanel  {
 		pLogger = getServiceLogger();
 
 		try {
-			pLogger.logInfo(this, "<init>", "Try to store installData [%s]", this.installData);
+			pLogger.logInfo(this, "<init>", "Try to store installData [%s]",
+					this.installData);
 
 			// set the installData object of our installer service
 			getService(IInstaller.class).setIzPackInstallData(this.installData);
-						
-			
+
+			// set priviliged mode variable
+			boolean wIsPrivileged = isPrivilegedMode();
+			this.installData.setVariable(IConstants.INSTALLER__PRIVILEGED_MODE,
+					new Boolean(wIsPrivileged).toString());
+
 		} catch (Exception e) {
 			pLogger.logSevere(this, "<init>", "ERROR: %s", e);
 		}
 		// log
-		pLogger.logInfo(this, "<init>", "instanciated panelClass=[%s] panelResourceName=[%s]", getClass().getName(),panelResourceNameStr);
+		pLogger.logInfo(this, "<init>",
+				"instanciated panelClass=[%s] panelResourceName=[%s]",
+				getClass().getName(), panelResourceNameStr);
 	}
 }
