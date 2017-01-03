@@ -4,4 +4,5 @@ version 5.0.8
 MOD_OG 20170102
  - creation of the PDE project of the bundle : org.cohorte.libs.com.mysql
  - embeding of the "com.mysql" library vesion 5.0.8
+ - set the DynamicImport-Package entry in the manifest to allow  MySQL Connector/J to load   the classes it needs
 

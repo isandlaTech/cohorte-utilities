@@ -9,6 +9,9 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.osgi.framework;version="1.3.0"
 Bundle-ClassPath: lib/mysql-connector-java-5.0.8-bin.jar,
  .
+DynamicImport-Package: javax.*,
+ org.w3c.*,
+ org.xml.*
 Export-Package: com.mysql.jdbc,
  com.mysql.jdbc.exceptions,
  com.mysql.jdbc.integration.c3p0,
