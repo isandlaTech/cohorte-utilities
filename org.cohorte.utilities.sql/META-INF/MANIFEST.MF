@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: COHORTE :: utilities.sql
+Bundle-SymbolicName: org.cohorte.utilities.sql
+Bundle-Version: 1.0.2
+Bundle-Activator: org.cohorte.utilities.sql.Activator
+Bundle-Vendor: COHORTE TECHNOLOGIES
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+DynamicImport-Package: javax.xml.*,org.w3c.*,org.xml.*,com.sun.*,com.m
+ ysql.*,org.postgresql.*,com.microsoft.sqlserver.*
+Import-Package: org.osgi.framework;version="1.3.0",
+ org.psem2m.utilities,
+ org.psem2m.utilities.json,
+ org.psem2m.utilities.logging
+Export-Package: org.cohorte.utilities.sql,
+ org.cohorte.utilities.sql.drivers,
+ org.cohorte.utilities.sql.exec,
+ org.cohorte.utilities.sql.pool
