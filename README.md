@@ -16,7 +16,7 @@ Module | Version | changed? | Comment
 org.cohorte.utilities | 1.0.8 | yes | version 1.0.6 used in Cohorte 1.2.0 
 org.cohorte.utilities.config | 1.1.0 | no | 
 org.cohorte.utilities.crypto | 1.0.1 | no
-org.cohorte.utilities.installer | 1.3.2 | no
+org.cohorte.utilities.installer | 1.3.3 | yes | version 1.3.3 used in OFFLine installer 1.0.11
 org.cohorte.utilities.picosoc | 1.0.0 | no
 org.cohorte.utilities.picosoc.webapp | 1.0.0 | no
 org.cohorte.utilities.rest | 1.0.0 | no

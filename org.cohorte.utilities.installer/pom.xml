@@ -12,7 +12,8 @@
 
 	<!-- MOD_BD_20150911 -->
 	<!-- MOD_OG_20160712 -->
-	<version>1.3.2</version>
+	<!-- MOD_BD_20170103 version 1.3.3 -->
+	<version>1.3.3</version>
 	<packaging>jar</packaging>
 
 	<properties>
