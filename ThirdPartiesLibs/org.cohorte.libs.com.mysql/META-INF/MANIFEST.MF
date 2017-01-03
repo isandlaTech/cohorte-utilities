@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: MySQL Connector/J
 Bundle-SymbolicName: org.cohorte.libs.com.mysql
 Bundle-Version: 5.0.8
-Bundle-Activator: org.cohorte.utilities.lib.mysql.Activator
+Bundle-Activator: org.cohorte.libs.com.mysql.Activator
 Bundle-Vendor: MySQL
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.osgi.framework;version="1.3.0"
@@ -17,6 +17,6 @@ Export-Package: com.mysql.jdbc,
  com.mysql.jdbc.log,
  com.mysql.jdbc.profiler,
  com.mysql.jdbc.util,
- org.cohorte.utilities.lib.mysql,
- org.cohorte.utilities.lib.mysql.docs,
+ org.cohorte.libs.com.mysql,
+ org.cohorte.libs.com.mysql.docs,
  org.gjt.mm.mysql
