@@ -151,6 +151,11 @@
   
   <repositories>
   		<repository>
+            <id>cohorte.p2</id>
+            <url>https://nrm.cohorte.tech/repository/cohorte-p2/1.2.0/</url>
+            <layout>p2</layout>
+        </repository>
+  		<repository>
             <id>cohorte.snapshots</id>
             <name>Cohorte Snapshot Repository</name>
             <url>https://nrm.cohorte.tech/repository/cohorte-snapshots</url>
