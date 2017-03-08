@@ -89,6 +89,8 @@ public class CWelcomePanelAutomation implements PanelAutomation {
 			boolean wIsPrivileged = CWelcomePanel.isPrivilegedMode();
 			installData.setVariable(IConstants.INSTALLER__PRIVILEGED_MODE,
 					new Boolean(wIsPrivileged).toString());
+			installData.setVariable(IConstants.INSTALLER__64_ARCH,
+					System.getenv("ProgramW6432") != null ? "true" : "false");
 		} catch (Exception e) {
 			pLogger.logSevere(this, "runAutomated", "ERROR: %s", e);
 		}

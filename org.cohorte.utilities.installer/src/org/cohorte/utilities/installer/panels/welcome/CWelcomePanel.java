@@ -98,6 +98,8 @@ public class CWelcomePanel extends HTMLHelloPanel {
 			boolean wIsPrivileged = isPrivilegedMode();
 			this.installData.setVariable(IConstants.INSTALLER__PRIVILEGED_MODE,
 					new Boolean(wIsPrivileged).toString());
+			this.installData.setVariable(IConstants.INSTALLER__64_ARCH,
+					System.getenv("ProgramW6432") != null ? "true" : "false");
 
 		} catch (Exception e) {
 			pLogger.logSevere(this, "<init>", "ERROR: %s", e);
