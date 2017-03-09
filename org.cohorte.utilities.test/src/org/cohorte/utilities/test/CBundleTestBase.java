@@ -30,7 +30,7 @@ public abstract class CBundleTestBase extends TestSuite implements IBundleTest {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.cohorte.utilities.test.IBundleTest#getOrder()
 	 */
 	@Override

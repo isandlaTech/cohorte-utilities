@@ -29,7 +29,7 @@ import org.apache.felix.ipojo.annotations.Requires;
 import org.apache.felix.ipojo.annotations.ServiceProperty;
 import org.cohorte.utilities.test.IBundleTest;
 import org.cohorte.utilities.test.ITestExecuter;
-import org.psem2m.utilities.logging.IActivityLogger;
+import org.psem2m.isolates.base.IIsolateLoggerSvc;
 
 /**
  * Component implementing the default behavior of a Test Executer.
@@ -41,18 +41,18 @@ import org.psem2m.utilities.logging.IActivityLogger;
  * @author bdebbabi
  *
  */
-@Component(name = "Cohorte-CCpntDefaultTestExecuter-factory")
+@Component(name = "Cohorte-CCpntDefaultTestExecuter-Factory")
 @Provides(specifications = { ITestExecuter.class })
 public class CCpntDefaultTestExecuter implements ITestExecuter {
 
 	private static final String PROP_EXPORT_REJECT = "pelix.remote.export.reject";
 
-	@Requires
+	@Requires(optional = true)
 	private IBundleTest[] pBundleTests;
 
 	/** Cohorte Isolate logger, injected by iPOJO */
 	@Requires
-	private IActivityLogger pLogger;
+	private IIsolateLoggerSvc pLogger;
 
 	/**
 	 * The "pelix.remote.export.reject" property limits the remote export of the
@@ -62,7 +62,7 @@ public class CCpntDefaultTestExecuter implements ITestExecuter {
 	private final String pRejectExport = ITestExecuter.class.getName();
 
 	/** Test Listeners **/
-	@Requires
+	@Requires(optional = true)
 	private TestListener[] pTestListeners;
 
 	/*

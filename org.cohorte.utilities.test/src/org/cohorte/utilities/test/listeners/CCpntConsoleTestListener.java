@@ -32,7 +32,7 @@ import org.apache.felix.ipojo.annotations.ServiceProperty;
  * @author ashahwan & bdebbabi
  *
  */
-@Component(name = "Cohorte-CCpntConsoleTestListener-factory")
+@Component(name = "Cohorte-CCpntConsoleTestListener-Factory")
 @Provides(specifications = { TestListener.class })
 public class CCpntConsoleTestListener implements TestListener {
 
