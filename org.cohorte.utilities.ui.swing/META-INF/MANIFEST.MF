@@ -1,0 +1,32 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: COHORTE :: utilities ui Swing
+Bundle-SymbolicName: org.cohorte.utilities.ui.swing
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.cohorte.utilities.ui.swing.Activator
+Bundle-Vendor: COHORTE Technologies
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: javax.swing,
+ javax.swing.border,
+ javax.swing.colorchooser,
+ javax.swing.event,
+ javax.swing.filechooser,
+ javax.swing.plaf,
+ javax.swing.plaf.basic,
+ javax.swing.plaf.metal,
+ javax.swing.plaf.multi,
+ javax.swing.plaf.nimbus,
+ javax.swing.plaf.synth,
+ javax.swing.table,
+ javax.swing.text,
+ javax.swing.text.html,
+ javax.swing.text.html.parser,
+ javax.swing.text.rtf,
+ javax.swing.tree,
+ javax.swing.undo,
+ org.osgi.framework;version="1.3.0",
+ org.psem2m.isolates.base,
+ org.psem2m.utilities,
+ org.psem2m.utilities.logging
+Export-Package: org.cohorte.utilities.ui.swing,
+ org.cohorte.utilities.ui.swing.panel
