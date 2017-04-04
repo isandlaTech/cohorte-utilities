@@ -53,6 +53,7 @@
 		<module>org.cohorte.utilities.rest</module>
 		<module>org.cohorte.utilities.config</module>
 		<module>org.cohorte.utilities.sql</module>
+		<module>org.cohorte.utilities.ui.swing</module>
 		<!--
 		<module>org.cohorte.utilities.webapp</module>
 		-->
