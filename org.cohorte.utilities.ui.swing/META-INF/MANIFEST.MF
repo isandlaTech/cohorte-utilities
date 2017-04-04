@@ -25,7 +25,6 @@ Import-Package: javax.swing,
  javax.swing.tree,
  javax.swing.undo,
  org.osgi.framework;version="1.3.0",
- org.psem2m.isolates.base,
  org.psem2m.utilities,
  org.psem2m.utilities.logging
 Export-Package: org.cohorte.utilities.ui.swing,
