@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: COHORTE :: utilities ui Swing
 Bundle-SymbolicName: org.cohorte.utilities.ui.swing
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.0
 Bundle-Activator: org.cohorte.utilities.ui.swing.Activator
 Bundle-Vendor: COHORTE Technologies
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
