@@ -48,8 +48,12 @@
 		<module>org.cohorte.utilities.picosoc.webapp</module>
 		<module>org.cohorte.utilities.installer</module>
 		<module>org.cohorte.utilities.crypto</module>
+		<!-- have to :
+			- rename to org.cohorte.utilities.unittest
+			- implement a specific logger (eg. CCpntLoraLoggerTraffic )
+			- remove the dependency to IIsolateLoggerSvc
 		<module>org.cohorte.utilities.test</module>
-		
+		-->
 		<module>org.cohorte.utilities.rest</module>
 		<module>org.cohorte.utilities.config</module>
 		<module>org.cohorte.utilities.sql</module>
