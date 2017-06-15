@@ -6,12 +6,14 @@ import javax.script.ScriptContext;
 
 import org.cohorte.utilities.tests.CAppConsoleBase;
 import org.psem2m.utilities.CXBytesUtils;
+import org.psem2m.utilities.CXException;
 import org.psem2m.utilities.CXJvmUtils;
 import org.psem2m.utilities.CXOSUtils;
 import org.psem2m.utilities.files.CXFileDir;
 import org.psem2m.utilities.rsrc.CXRsrcProviderFile;
 import org.psem2m.utilities.rsrc.CXRsrcUriPath;
 import org.psem2m.utilities.scripting.CXJsEngine;
+import org.psem2m.utilities.scripting.CXJsExcepRhino;
 import org.psem2m.utilities.scripting.CXJsManager;
 import org.psem2m.utilities.scripting.CXJsScriptContext;
 import org.psem2m.utilities.scripting.CXJsSourceMain;
@@ -19,11 +21,25 @@ import org.psem2m.utilities.scripting.IXjsTracer;
 
 /**
  * @author ogattaz
- * 
+ *
  */
 public class CTestJavascript extends CAppConsoleBase {
 
+	/**
+	 * @author ogattaz
+	 *
+	 */
 	class CJsTracer implements IXjsTracer {
+
+		/**
+		 * @param e
+		 * @return
+		 */
+		private String getCauseMessagesList(final Throwable e) {
+			return "\t- "
+					+ CXException.eCauseMessagesInString(e).replace(" , ",
+							"\n\t- ");
+		}
 
 		@Override
 		public boolean isTraceDebugOn() {
@@ -37,29 +53,29 @@ public class CTestJavascript extends CAppConsoleBase {
 
 		@Override
 		public void trace(final CharSequence aSB) {
-			pLogger.logInfo(this, "trace", aSB);
+			pLogger.logInfo(this, "jsTrace", aSB);
 
 		}
 
 		@Override
 		public void trace(final Object aObj, final CharSequence aSB) {
-			pLogger.logInfo(aObj, "trace", "%s", aSB);
+			pLogger.logInfo(aObj, "jsTrace", "%s", aSB);
 
 		}
 
 		@Override
 		public void trace(final Object aObj, final CharSequence aSB,
 				final Throwable e) {
-			pLogger.logInfo(aObj, "trace", "%s\n%s", aSB, e);
+			pLogger.logInfo(aObj, "jsTrace", "%s\n%s", aSB,
+					getCauseMessagesList(e));
 
 		}
 
 		@Override
 		public void trace(final Object aObj, final Throwable e) {
-			pLogger.logInfo(aObj, "trace", "%s", e);
+			pLogger.logInfo(aObj, "jsTrace", "%s", getCauseMessagesList(e));
 
 		}
-
 	}
 
 	private final static String CMD_RUN = "run";
@@ -70,10 +86,10 @@ public class CTestJavascript extends CAppConsoleBase {
 	public static void main(final String[] args) {
 
 		try {
-			CTestJavascript wTest = new CTestJavascript(args);
+			final CTestJavascript wTest = new CTestJavascript(args);
 			wTest.runApp();
 			wTest.destroy();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -106,33 +122,49 @@ public class CTestJavascript extends CAppConsoleBase {
 	private void doCommandRun(final String aCmdeLine) throws Exception {
 		pLogger.logInfo(this, "doCommandRun", "begin");
 
-		CXJsManager wXJsManager = new CXJsManager("JavaScript");
+		final CXJsManager wXJsManager = new CXJsManager("JavaScript");
 
-		CXJsEngine wXJsEngine = wXJsManager.getScriptEngineFactory()
+		final CXJsEngine wXJsEngine = wXJsManager.getScriptEngineFactory()
 				.getScriptEngine();
 
 		// dossier dans lequel on trouve les sources
-		CXFileDir wDir = new CXFileDir(CXFileDir.getUserDir(),
+		final CXFileDir wDir = new CXFileDir(CXFileDir.getUserDir(),
 				"testcases/scripts/");
-		CXRsrcProviderFile wProvider = new CXRsrcProviderFile(wDir,
+		final CXRsrcProviderFile wProvider = new CXRsrcProviderFile(wDir,
 				Charset.forName(CXBytesUtils.ENCODING_UTF_8));
 
 		pLogger.logInfo(this, "initOneProvider", "new RsrcProvider  for [%s]",
 				wDir.getAbsolutePath());
 
-		IXjsTracer wXjsTracer = new CJsTracer();
+		final IXjsTracer wXjsTracer = new CJsTracer();
 
-		CXJsSourceMain wMain = wXJsManager.getMainSource(wProvider,
+		final CXJsSourceMain wMain = wXJsManager.getMainSource(wProvider,
 				new CXRsrcUriPath("test.js"), wXjsTracer);
 
-		CXJsScriptContext wCtx = new CXJsScriptContext(1024);
+		final CXJsScriptContext wCtx = new CXJsScriptContext(1024);
 		wCtx.setAttribute("ENGSCOP", "ENGINE_1", ScriptContext.ENGINE_SCOPE);
 		wCtx.setAttribute("GLOSCOP", "GLOBAL_1", ScriptContext.GLOBAL_SCOPE);
 
-		Object wResult = wXJsEngine.eval(wMain, wCtx, wXjsTracer);
+		try {
+			final Object wResult = wXJsEngine.eval(wMain, wCtx, wXjsTracer);
 
-		pLogger.logInfo(this, "doCommandRun", "end wResult=[%s]", wResult);
+			pLogger.logInfo(this, "doCommandRun", "Result=[%s]", wResult);
 
+		} catch (final CXJsExcepRhino wE) {
+
+			// get the partial source around the line where the error
+
+			String wPartialSource = wMain.getText(wE.getLineNumber(), 5);
+			wPartialSource = "\n\t>> "
+					+ wPartialSource.replace("\n", "\n\t>> ");
+
+			pLogger.logSevere(this, "doCommandRun", "ERROR message=[%s] %s",
+					wE.getMessage(), wPartialSource);
+
+			pLogger.logSevere(this, "doCommandRun", wMain.toDescription());
+
+		}
+		pLogger.logInfo(this, "doCommandRun", "End");
 	}
 
 	/*

@@ -17,7 +17,7 @@ import org.psem2m.utilities.CXTimer;
 
 /**
  * @author ogattaz
- * 
+ *
  */
 public class CXJsScriptContext implements ScriptContext {
 
@@ -47,12 +47,25 @@ public class CXJsScriptContext implements ScriptContext {
 	protected Writer writer;
 
 	/**
+	 * MOD_OG_20170615
+	 *
 	 * @param aInitSize
 	 */
-	public CXJsScriptContext(int aInitSize) {
+	public CXJsScriptContext(final int aInitSize) {
+		this(aInitSize, null);
+	}
+
+	/**
+	 * MOD_OG_20170615
+	 *
+	 * @param aInitSize
+	 * @param aEngineBindings
+	 */
+	public CXJsScriptContext(int aInitSize, final Bindings aEngineBindings) {
 		globalScope = null;
 		pInitSize = aInitSize > 0 ? aInitSize : 8192;
-		engineScope = new SimpleBindings();
+		engineScope = (aEngineBindings != null) ? aEngineBindings
+				: new SimpleBindings();
 		resetWriter();
 	}
 
@@ -60,20 +73,22 @@ public class CXJsScriptContext implements ScriptContext {
 	 * @return
 	 */
 	public String descrToString() {
-		StringBuilder wSB = new StringBuilder(1024);
-		CXJsObjectBase.descrAddLine(wSB, "Output buffer - Size", pBuffer.getBuffer().length());
+		final StringBuilder wSB = new StringBuilder(1024);
+		CXJsObjectBase.descrAddLine(wSB, "Output buffer - Size", pBuffer
+				.getBuffer().length());
 		CXJsObjectBase.descrAddIndent(wSB, pBuffer.getBuffer().toString());
 		if (pErrBuffer != null) {
-			CXJsObjectBase
-					.descrAddLine(wSB, "Error buffer - Size", pErrBuffer.getBuffer().length());
-			CXJsObjectBase.descrAddIndent(wSB, pErrBuffer.getBuffer().toString());
+			CXJsObjectBase.descrAddLine(wSB, "Error buffer - Size", pErrBuffer
+					.getBuffer().length());
+			CXJsObjectBase.descrAddIndent(wSB, pErrBuffer.getBuffer()
+					.toString());
 		}
 		return wSB.toString();
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#getAttribute(java.lang.String)
 	 */
 	@Override
@@ -88,7 +103,7 @@ public class CXJsScriptContext implements ScriptContext {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#getAttribute(java.lang.String, int)
 	 */
 	@Override
@@ -109,7 +124,7 @@ public class CXJsScriptContext implements ScriptContext {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#getAttributesScope(java.lang.String)
 	 */
 	@Override
@@ -125,7 +140,7 @@ public class CXJsScriptContext implements ScriptContext {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#getBindings(int)
 	 */
 	@Override
@@ -159,8 +174,8 @@ public class CXJsScriptContext implements ScriptContext {
 	 * @return
 	 */
 	public String getDurationStrMs() {
-		return new StringBuilder(pAction).append(" - ").append(pTimer.getDurationStrMilliSec())
-				.toString();
+		return new StringBuilder(pAction).append(" - ")
+				.append(pTimer.getDurationStrMilliSec()).toString();
 	}
 
 	/**
@@ -175,7 +190,7 @@ public class CXJsScriptContext implements ScriptContext {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#getErrorWriter()
 	 */
 	@Override
@@ -189,7 +204,7 @@ public class CXJsScriptContext implements ScriptContext {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#getReader()
 	 */
 	@Override
@@ -203,7 +218,7 @@ public class CXJsScriptContext implements ScriptContext {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#getScopes()
 	 */
 	@Override
@@ -230,7 +245,7 @@ public class CXJsScriptContext implements ScriptContext {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#getWriter()
 	 */
 	@Override
@@ -261,7 +276,7 @@ public class CXJsScriptContext implements ScriptContext {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#removeAttribute(java.lang.String, int)
 	 */
 	@Override
@@ -283,7 +298,7 @@ public class CXJsScriptContext implements ScriptContext {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void resetWriter() {
 		pBuffer = new StringWriter(pInitSize);
@@ -311,7 +326,7 @@ public class CXJsScriptContext implements ScriptContext {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#setAttribute(java.lang.String,
 	 * java.lang.Object, int)
 	 */
@@ -335,7 +350,7 @@ public class CXJsScriptContext implements ScriptContext {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#setBindings(javax.script.Bindings, int)
 	 */
 	@Override
@@ -357,7 +372,7 @@ public class CXJsScriptContext implements ScriptContext {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#setErrorWriter(java.io.Writer)
 	 */
 	@Override
@@ -367,7 +382,7 @@ public class CXJsScriptContext implements ScriptContext {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#setReader(java.io.Reader)
 	 */
 	@Override
@@ -377,7 +392,7 @@ public class CXJsScriptContext implements ScriptContext {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#setWriter(java.io.Writer)
 	 */
 	@Override

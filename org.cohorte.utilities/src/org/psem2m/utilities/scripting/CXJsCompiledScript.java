@@ -9,7 +9,7 @@ import org.psem2m.utilities.CXTimer;
 
 /**
  * @author ogattaz
- * 
+ *
  */
 
 public class CXJsCompiledScript extends CXJsObjectBase {
@@ -25,8 +25,9 @@ public class CXJsCompiledScript extends CXJsObjectBase {
 	 * @param aEngine
 	 * @param aCheckTimeStamp
 	 */
-	protected CXJsCompiledScript(CXJsSourceMain aMainModule, CompiledScript aCompiledScript,
-			CXJsEngine aEngine, boolean aCheckTimeStamp) {
+	protected CXJsCompiledScript(CXJsSourceMain aMainModule,
+			CompiledScript aCompiledScript, CXJsEngine aEngine,
+			boolean aCheckTimeStamp) {
 		super();
 		pCompiledScript = aCompiledScript;
 		pEngine = aEngine;
@@ -36,7 +37,7 @@ public class CXJsCompiledScript extends CXJsObjectBase {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.scripting.CXJsObjectBase#addDescriptionInBuffer(
 	 * java.lang.Appendable)
@@ -55,19 +56,21 @@ public class CXJsCompiledScript extends CXJsObjectBase {
 	 * @return
 	 * @throws CXJsException
 	 */
-	protected synchronized boolean checkTimeStamp(IXjsTracer tracer) throws CXJsException {
-		boolean trace = tracer != null;
+	protected synchronized boolean checkTimeStamp(IXjsTracer tracer)
+			throws CXJsException {
+		final boolean trace = tracer != null;
 		if (!pCheckTimeStamp) {
 			if (trace) {
 				tracer.trace("no checkTimeStamp");
 			}
 			return true;
 		}
-		CXTimer wT = trace ? new CXTimer("checkTimeStamp", true) : null;
+		final CXTimer wT = trace ? new CXTimer("checkTimeStamp", true) : null;
 		try {
 			return pMainModule.checkTimeStamp();
-		} catch (Exception e) {
-			throwMyScriptExcep(tracer, "Error checking timeStamp", e, "checkTimeStamp");
+		} catch (final Exception e) {
+			throwMyScriptExcep(tracer, "Error checking timeStamp", e,
+					"checkTimeStamp");
 		} finally {
 			if (trace) {
 				wT.stop();
@@ -78,7 +81,7 @@ public class CXJsCompiledScript extends CXJsObjectBase {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void destroy() {
 		pEngine = null;
@@ -104,31 +107,18 @@ public class CXJsCompiledScript extends CXJsObjectBase {
 	}
 
 	/**
-	 * @param bindings
-	 * @param tracer
+	 * @param aBinding
+	 * @param aJsTracer
 	 * @return
 	 * @throws CXJsException
 	 */
-	public Object eval(Bindings bindings, IXjsTracer tracer) throws CXJsException {
-		boolean trace = tracer != null;
-		CXTimer wT = trace ? new CXTimer("evalBindingCompiled", true) : null;
-		try {
-			if (!checkTimeStamp(tracer)) {
-				recompile(tracer);
-			}
-			return pCompiledScript.eval(bindings);
-		} catch (ScriptException e) {
-			// FDB - 64796
-			CXJsExcepRhino.throwMyScriptExcep(this, pMainModule, tracer, e, "evalCompiledBinding");
-		} catch (Exception e) {
-			throwMyScriptExcep(tracer, "Error evaluating script", e, "evalCompiledBinding");
-		} finally {
-			if (trace) {
-				wT.stop();
-				tracer.trace(wT.toDescription());
-			}
-		}
-		return null;
+	public Object eval(Bindings aBinding, IXjsTracer aJsTracer)
+			throws CXJsException {
+
+		final ScriptContext wScriptContext = new CXJsScriptContext(1024,
+				aBinding);
+
+		return eval(wScriptContext, aJsTracer);
 	}
 
 	/**
@@ -136,25 +126,9 @@ public class CXJsCompiledScript extends CXJsObjectBase {
 	 * @return
 	 * @throws CXJsException
 	 */
-	public Object eval(IXjsTracer tracer) throws CXJsException {
-		boolean trace = tracer != null;
-		CXTimer wT = trace ? new CXTimer("evalCompiled", true) : null;
-		try {
-			if (!checkTimeStamp(tracer)) {
-				recompile(tracer);
-			}
-			return pCompiledScript.eval();
-		} catch (ScriptException e) {
-			CXJsExcepRhino.throwMyScriptExcep(this, pMainModule, tracer, e, "evalCompiled");
-		} catch (Exception e) {
-			throwMyScriptExcep(tracer, "Error evaluating script", e, "evalCompiled");
-		} finally {
-			if (trace) {
-				wT.stop();
-				tracer.trace(wT.toDescription());
-			}
-		}
-		return null;
+	public Object eval(IXjsTracer aJsTracer) throws CXJsException {
+
+		return eval((ScriptContext) null, aJsTracer);
 	}
 
 	/**
@@ -162,38 +136,52 @@ public class CXJsCompiledScript extends CXJsObjectBase {
 	 * @return
 	 * @throws CXJsException
 	 */
-	public Object eval(ScriptContext context) throws CXJsException {
-		return eval(context, null);
+	public Object eval(ScriptContext aScriptContext) throws CXJsException {
+		return eval(aScriptContext, null);
 	}
 
 	/**
 	 * AJout tracer
-	 * 
-	 * 
-	 * @param context
-	 * @param tracer
+	 *
+	 *
+	 * @param aScriptContext
+	 * @param aJsTracer
 	 * @return
 	 * @throws CXJsException
 	 */
-	public Object eval(ScriptContext context, IXjsTracer tracer) throws CXJsException {
+	public Object eval(ScriptContext aScriptContext, IXjsTracer aJsTracer)
+			throws CXJsException {
 		Object wRes = null;
 		// Test tracer!=null car on n'a pas de isTraceOn() dans ITracer
-		boolean trace = tracer != null;
-		CXTimer wT = trace ? new CXTimer("evalCompiledContext", true) : null;
+		final boolean wTraceOn = aJsTracer != null;
+		final CXTimer wTimer = wTraceOn ? new CXTimer("evalCompiledContext",
+				true) : null;
 		try {
-			if (!checkTimeStamp(tracer)) {
-				recompile(tracer);
+			if (!checkTimeStamp(aJsTracer)) {
+				recompile(aJsTracer);
 			}
-			wRes = pCompiledScript.eval(context);
-		} catch (ScriptException e) {
+
+			// MOD_OG_20170615 add the TRACER and a FORMATER in the script
+			// context
+			if (wTraceOn) {
+				aScriptContext.setAttribute("TRACER", aJsTracer,
+						ScriptContext.ENGINE_SCOPE);
+			}
+			aScriptContext.setAttribute("FORMATER", new CXJsFormater(),
+					ScriptContext.ENGINE_SCOPE);
+
+			wRes = pCompiledScript.eval(aScriptContext);
+		} catch (final ScriptException e) {
 			// FDB - 64796
-			CXJsExcepRhino.throwMyScriptExcep(this, pMainModule, tracer, e, "evalContextCompiled");
-		} catch (Exception e) {
-			throwMyScriptExcep(tracer, "Error evaluating script", e, "evalContextCompiled");
+			CXJsExcepRhino.throwMyScriptExcep(this, pMainModule, aJsTracer, e,
+					"evalContextCompiled");
+		} catch (final Exception e) {
+			throwMyScriptExcep(aJsTracer, "Error evaluating script", e,
+					"evalContextCompiled");
 		} finally {
-			if (trace) {
-				wT.stop();
-				tracer.trace(wT.toDescription());
+			if (wTraceOn) {
+				wTimer.stop();
+				aJsTracer.trace(wTimer.toDescription());
 			}
 		}
 		return wRes;
@@ -249,8 +237,8 @@ public class CXJsCompiledScript extends CXJsObjectBase {
 	 * @param aAction
 	 * @throws CXJsException
 	 */
-	protected void throwMyScriptExcep(IXjsTracer tracer, String aErrMsg, String aAction)
-			throws CXJsException {
+	protected void throwMyScriptExcep(IXjsTracer tracer, String aErrMsg,
+			String aAction) throws CXJsException {
 		if (tracer != null) {
 			tracer.trace(aAction + "Error[" + aErrMsg + "]");
 		}
@@ -264,8 +252,8 @@ public class CXJsCompiledScript extends CXJsObjectBase {
 	 * @param aAction
 	 * @throws CXJsException
 	 */
-	protected void throwMyScriptExcep(IXjsTracer tracer, String aErrMsg, Throwable e, String aAction)
-			throws CXJsException {
+	protected void throwMyScriptExcep(IXjsTracer tracer, String aErrMsg,
+			Throwable e, String aAction) throws CXJsException {
 		if (tracer != null) {
 			tracer.trace(this, aAction + "Error[" + aErrMsg + "]", e);
 		}

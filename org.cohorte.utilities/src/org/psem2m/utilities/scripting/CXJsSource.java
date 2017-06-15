@@ -9,15 +9,15 @@ import org.psem2m.utilities.rsrc.CXRsrcUriDir;
 
 /**
  * Represente un source JS
- * 
+ *
  * @author ogattaz
- * 
+ *
  */
 public abstract class CXJsSource extends CXJsObjectBase {
 
 	/**
 	 * @author ogattaz
-	 * 
+	 *
 	 */
 	public static class CXJsSourceLocalization {
 
@@ -72,7 +72,7 @@ public abstract class CXJsSource extends CXJsObjectBase {
 	private CXRsrcUriDir pSrcRootDir;
 
 	/**
-	 * 
+	 *
 	 */
 	protected CXJsSource() {
 		this(null);
@@ -86,15 +86,22 @@ public abstract class CXJsSource extends CXJsObjectBase {
 		pRoot = aParent == null ? (CXJsSourceMain) this : aParent.pRoot;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.psem2m.utilities.scripting.CXJsObjectBase#addDescriptionInBuffer(
+	 * java.lang.Appendable)
+	 */
 	@Override
 	public Appendable addDescriptionInBuffer(Appendable aSB) {
-		aSB = super.addDescriptionInBuffer(aSB);
+
 		descrAddLine(aSB, "SourceName", getSourceName());
 		descrAddProp(aSB, "SourcesNbLines", pSourcesNbLines);
 		descrAddProp(aSB, "MergeStartLine", pMergeStartLine);
 		descrAddLine(aSB, "NbModules", pModules == null ? 0 : pModules.size());
 		if (pModules != null) {
-			StringBuilder wTmp = new StringBuilder(1024);
+			final StringBuilder wTmp = new StringBuilder(1024);
 			for (int i = 0; i < pModules.size(); i++) {
 				descrAddLine(wTmp, "Module[" + i + "]");
 				if (i != 0) {
@@ -136,7 +143,8 @@ public abstract class CXJsSource extends CXJsObjectBase {
 	public CXJsSourceLocalization findSource(int aMergeLineNumber) {
 		if (aMergeLineNumber >= pMergeStartLine
 				&& aMergeLineNumber <= (pMergeStartLine + pSourcesNbLines)) {
-			return new CXJsSourceLocalization(aMergeLineNumber - pMergeStartLine + 1, this);
+			return new CXJsSourceLocalization(aMergeLineNumber
+					- pMergeStartLine + 1, this);
 		}
 		return null;
 	}
@@ -168,7 +176,7 @@ public abstract class CXJsSource extends CXJsObjectBase {
 	 * @return
 	 */
 	public String getIncludeStack() {
-		StringBuilder wSB = new StringBuilder();
+		final StringBuilder wSB = new StringBuilder();
 		if (!isRoot()) {
 			wSB.append(getParent().getIncludeStack()).append('/');
 		}
@@ -180,7 +188,8 @@ public abstract class CXJsSource extends CXJsObjectBase {
 	 * @return
 	 */
 	public CXJsModule[] getModules() {
-		return hasModules() ? pModules.toArray(new CXJsModule[pModules.size()]) : null;
+		return hasModules() ? pModules.toArray(new CXJsModule[pModules.size()])
+				: null;
 	}
 
 	/**
@@ -191,8 +200,9 @@ public abstract class CXJsSource extends CXJsObjectBase {
 		if (pModules == null || aModule == null) {
 			return null;
 		}
-		int wIdx = getIdx(aModule);
-		return wIdx < 0 || wIdx > (pModules.size() - 2) ? null : pModules.get(wIdx + 1);
+		final int wIdx = getIdx(aModule);
+		return wIdx < 0 || wIdx > (pModules.size() - 2) ? null : pModules
+				.get(wIdx + 1);
 	}
 
 	/**
@@ -218,7 +228,7 @@ public abstract class CXJsSource extends CXJsObjectBase {
 
 	/**
 	 * Sources originaux avec les includes
-	 * 
+	 *
 	 * @return
 	 */
 	public String getSources() {
@@ -227,7 +237,7 @@ public abstract class CXJsSource extends CXJsObjectBase {
 
 	/**
 	 * Sources originaux avec les includes commentes
-	 * 
+	 *
 	 * @return
 	 */
 	public String getSourcesNoInclude() {
@@ -257,12 +267,15 @@ public abstract class CXJsSource extends CXJsObjectBase {
 	 * @return
 	 */
 	public String getText(int aLineNum, int aNbLines, String aMark) {
-		StringBuilder wRes = new StringBuilder(1024);
+		final StringBuilder wRes = new StringBuilder(1024);
 		try {
-			BufferedReader wReader = new BufferedReader(new StringReader(pSources));
+			// MOD_OG_20170615 Use the method "getSources()" to be able to get
+			// the merged sources
+			final BufferedReader wReader = new BufferedReader(new StringReader(
+					getSources()));
 			if (wReader.ready()) {
-				int wStart = aLineNum - (aNbLines / 2);
-				int wStop = aLineNum + (aNbLines / 2);
+				final int wStart = aLineNum - (aNbLines / 2);
+				final int wStop = aLineNum + (aNbLines / 2);
 				int wCpt = 0;
 				String wLine;
 				while ((wLine = wReader.readLine()) != null) {
@@ -278,9 +291,9 @@ public abstract class CXJsSource extends CXJsObjectBase {
 					}
 				}
 			}
-		} catch (IOException e) {
-			wRes.append("Source[" + getSourceName() + "] - Error reading line[" + aLineNum
-					+ "] - Msg[" + e.getMessage() + "]");
+		} catch (final IOException e) {
+			wRes.append("Source[" + getSourceName() + "] - Error reading line["
+					+ aLineNum + "] - Msg[" + e.getMessage() + "]");
 		}
 		return wRes.toString();
 	}
@@ -310,7 +323,7 @@ public abstract class CXJsSource extends CXJsObjectBase {
 		pParent = null;
 		// Suppression des liaison pour les modules lies au main
 		if (pModules != null) {
-			for (CXJsModule xModule : pModules) {
+			for (final CXJsModule xModule : pModules) {
 				xModule.initMainReload(true);
 			}
 			pModules.clear();
@@ -357,12 +370,12 @@ public abstract class CXJsSource extends CXJsObjectBase {
 	/**
 	 * Renvoie le nombre total de lignes - Repertoire qui contient le soure ->
 	 * Null si root ou source non lu dans un fichier
-	 * 
+	 *
 	 * @throws CXJsExcepLoad
 	 */
 	public void load() throws CXJsExcepLoad {
 		boolean wHasInclude = false;
-		StringBuilder wSB = new StringBuilder();
+		final StringBuilder wSB = new StringBuilder();
 		if (pModules != null) {
 			// Pour reload du main
 			pModules.clear();
@@ -370,7 +383,8 @@ public abstract class CXJsSource extends CXJsObjectBase {
 			pLoaded = false;
 		}
 		pSourcesNbLines = 0;
-		BufferedReader wReader = new BufferedReader(new StringReader(pSources));
+		final BufferedReader wReader = new BufferedReader(new StringReader(
+				pSources));
 		try {
 			if (wReader.ready()) {
 				String wLine;
@@ -380,7 +394,7 @@ public abstract class CXJsSource extends CXJsObjectBase {
 					if (wLine.length() > INCLUDE_START.length()) {
 						int i = 0;
 						while (i < wLine.length()) {
-							char wChar = wLine.charAt(i);
+							final char wChar = wLine.charAt(i);
 							// Prend en compte #include ou #include
 							if (wChar != ' ' && wChar != '\t' && wChar != '/') {
 								break;
@@ -388,7 +402,8 @@ public abstract class CXJsSource extends CXJsObjectBase {
 								i++;
 							}
 						}
-						String wTrim = i == 0 ? wLine : wLine.substring(i);
+						final String wTrim = i == 0 ? wLine : wLine
+								.substring(i);
 						wInclude = wTrim.startsWith(INCLUDE_START);
 					}
 					if (wInclude) {
@@ -400,16 +415,20 @@ public abstract class CXJsSource extends CXJsObjectBase {
 						// Module a charger
 						// CXJsModule wModule=loadNewModule(extractPath(wLine),
 						// aParentDir);
-						CXJsModule wModule = CXJsModule.loadNewModule(this, extractPath(wLine),
-								wLine);
+						final CXJsModule wModule = CXJsModule.loadNewModule(
+								this, extractPath(wLine), wLine);
 						if (wModule.getPath() != null) {
 							// Le module est identifie par sont pathpar rapport
 							// au route des scripts
 							if (!pRoot.loadModuleExists(wModule.getPath())) {
 								if (!hasModule(wModule) && !isMe(wModule)) {
 									if (traceDebugOn()) {
-										System.out.println(getSourceName() + " - Add ["
-												+ wModule.getSourceName() + "]");
+										System.out
+												.println(getSourceName()
+														+ " - Add ["
+														+ wModule
+																.getSourceName()
+														+ "]");
 									}
 									// Ajout en 1er pour recursivite
 									pRoot.loadModuleAdd(wModule);
@@ -438,9 +457,9 @@ public abstract class CXJsSource extends CXJsObjectBase {
 				}
 				pLoaded = true;
 			}
-		} catch (CXJsExcepLoad e) {
+		} catch (final CXJsExcepLoad e) {
 			throw (e);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			loadThrowExcep(getRoot(), e);
 		}
 		if (wHasInclude) {
@@ -455,8 +474,10 @@ public abstract class CXJsSource extends CXJsObjectBase {
 	 * @param e
 	 * @throws CXJsExcepLoad
 	 */
-	protected void loadThrowExcep(CXJsSourceMain aMain, Throwable e) throws CXJsExcepLoad {
-		throw new CXJsExcepLoad(aMain, e, "Error reading source '" + getSourceName() + "'");
+	protected void loadThrowExcep(CXJsSourceMain aMain, Throwable e)
+			throws CXJsExcepLoad {
+		throw new CXJsExcepLoad(aMain, e, "Error reading source '"
+				+ getSourceName() + "'");
 	}
 
 	/**
@@ -471,8 +492,8 @@ public abstract class CXJsSource extends CXJsObjectBase {
 		}
 		aSb.append(getSourcesNoInclude());
 		if (traceDebugOn()) {
-			System.out.println(getSourceName() + " - Start " + pMergeStartLine + " - Stop "
-					+ (pMergeStartLine + pSourcesNbLines));
+			System.out.println(getSourceName() + " - Start " + pMergeStartLine
+					+ " - Stop " + (pMergeStartLine + pSourcesNbLines));
 		}
 		return pMergeStartLine + pSourcesNbLines;
 	}

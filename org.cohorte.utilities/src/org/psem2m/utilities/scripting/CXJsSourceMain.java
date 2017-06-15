@@ -12,13 +12,15 @@ import org.psem2m.utilities.rsrc.CXRsrcUriPath;
 
 /**
  * @author ogattaz
- * 
+ *
  */
 public class CXJsSourceMain extends CXJsSource {
 
-	public static CXJsSourceMain newInstanceFromFile(CXRsrcProvider aSrcProvider,
-			CXRsrcUriPath aRelPath, String aLanguage, IXjsTracer tracer) throws CXJsException {
-		CXJsSourceMain wResult = new CXJsSourceMain(aSrcProvider, aLanguage);
+	public static CXJsSourceMain newInstanceFromFile(
+			CXRsrcProvider aSrcProvider, CXRsrcUriPath aRelPath,
+			String aLanguage, IXjsTracer tracer) throws CXJsException {
+		final CXJsSourceMain wResult = new CXJsSourceMain(aSrcProvider,
+				aLanguage);
 		wResult.loadFromFile(aRelPath, tracer);
 		return wResult;
 	}
@@ -26,8 +28,8 @@ public class CXJsSourceMain extends CXJsSource {
 	/**
 	 * Acces au JS qui pointe sur le repertoires des script aMairSrcRelPath :
 	 * Path relatif par rapport a aSrcProvider pour les includes de aMainSrc
-	 * 
-	 * 
+	 *
+	 *
 	 * @param aSrcProvider
 	 * @param aMainSrcRelPath
 	 * @param aMainSrc
@@ -38,17 +40,20 @@ public class CXJsSourceMain extends CXJsSource {
 	 * @return
 	 * @throws CXJsException
 	 */
-	public static CXJsSourceMain newInstanceFromSource(CXRsrcProvider aSrcProvider,
-			String aMainSrcRelPath, String aMainSrc, String aLanguage, IXjsTracer tracer)
+	public static CXJsSourceMain newInstanceFromSource(
+			CXRsrcProvider aSrcProvider, String aMainSrcRelPath,
+			String aMainSrc, String aLanguage, IXjsTracer tracer)
 			throws CXJsException {
-		CXJsSourceMain wResult = new CXJsSourceMain(aSrcProvider, aLanguage);
-		wResult.loadFromSource(aMainSrc, new CXRsrcUriDir(aMainSrcRelPath), tracer);
+		final CXJsSourceMain wResult = new CXJsSourceMain(aSrcProvider,
+				aLanguage);
+		wResult.loadFromSource(aMainSrc, new CXRsrcUriDir(aMainSrcRelPath),
+				tracer);
 		return wResult;
 	}
 
 	/**
 	 * LowCase permet plus de souplesse dasn les includes
-	 * 
+	 *
 	 * @param aRelPath
 	 * @return
 	 */
@@ -98,8 +103,8 @@ public class CXJsSourceMain extends CXJsSource {
 		descrAddIndent(aSB, pRootRsrc.toDescription());
 		if (pResources != null) {
 			descrAddLine(aSB, "Ressources");
-			StringBuilder wTmp = new StringBuilder();
-			for (CXRsrcText xRsrc : pResources) {
+			final StringBuilder wTmp = new StringBuilder();
+			for (final CXRsrcText xRsrc : pResources) {
 				descrAddLine(wTmp, xRsrc.toDescription());
 			}
 			descrAddIndent(aSB, wTmp);
@@ -120,14 +125,15 @@ public class CXJsSourceMain extends CXJsSource {
 			if (pResources == null) {
 				return true;
 			}
-			for (CXRsrcText xRsrc : pResources) {
+			for (final CXRsrcText xRsrc : pResources) {
 				if (!pRootRsrc.checkTimeStamp(xRsrc)) {
 					return false;
 				}
 			}
 			return true;
-		} catch (Exception e) {
-			throw new CXJsException(this, "Error checking timeStamp", e, "checkTimeStamp");
+		} catch (final Exception e) {
+			throw new CXJsException(this, "Error checking timeStamp", e,
+					"checkTimeStamp");
 		}
 	}
 
@@ -140,15 +146,18 @@ public class CXJsSourceMain extends CXJsSource {
 			if (pResources == null) {
 				return null;
 			}
-			ArrayList<CXRsrcText> wArray = new ArrayList<CXRsrcText>(pResources.length);
-			for (CXRsrcText xRsrc : pResources) {
+			final ArrayList<CXRsrcText> wArray = new ArrayList<CXRsrcText>(
+					pResources.length);
+			for (final CXRsrcText xRsrc : pResources) {
 				if (!pRootRsrc.checkTimeStamp(xRsrc)) {
 					wArray.add(xRsrc);
 				}
 			}
-			return wArray.size() == 0 ? null : wArray.toArray(new CXRsrcText[wArray.size()]);
-		} catch (Exception e) {
-			throw new CXJsException(this, "Error checking timeStamp", e, "checkTimeStamp");
+			return wArray.size() == 0 ? null : wArray
+					.toArray(new CXRsrcText[wArray.size()]);
+		} catch (final Exception e) {
+			throw new CXJsException(this, "Error checking timeStamp", e,
+					"checkTimeStamp");
 		}
 	}
 
@@ -163,8 +172,9 @@ public class CXJsSourceMain extends CXJsSource {
 		if (aMergeLineNumber < 0) {
 			return null;
 		}
-		for (CXJsModule xMod : pOrderedIncludes) {
-			CXJsSourceLocalization wRes = xMod.findSource(aMergeLineNumber);
+		for (final CXJsModule xMod : pOrderedIncludes) {
+			final CXJsSourceLocalization wRes = xMod
+					.findSource(aMergeLineNumber);
 			if (wRes != null) {
 				return wRes;
 			}
@@ -189,10 +199,12 @@ public class CXJsSourceMain extends CXJsSource {
 	}
 
 	/**
-	 * @return
+	 * MOD_OG_20170615 Use the merged sources to retreive text
+	 *
+	 * @return the pMergedCode ou the original sources if not loaded
 	 */
 	public String getMergedCode() {
-		return isLoaded() ? pMergedCode : "";
+		return isLoaded() ? pMergedCode : super.getSources();
 	}
 
 	/*
@@ -230,10 +242,21 @@ public class CXJsSourceMain extends CXJsSource {
 	}
 
 	/**
+	 * MOD_OG_20170615 Use the merged sources to retreive text
+	 *
+	 * @return
+	 */
+	@Override
+	public String getSources() {
+		return getMergedCode();
+	}
+
+	/**
 	 * @return
 	 */
 	public boolean hasFilesDependencies() {
-		return isLoadedFromFile() || (pResources != null && pResources.length != 0);
+		return isLoadedFromFile()
+				|| (pResources != null && pResources.length != 0);
 	}
 
 	/**
@@ -265,7 +288,8 @@ public class CXJsSourceMain extends CXJsSource {
 	 * @param aSrcRootDir
 	 * @throws CXJsExcepLoad
 	 */
-	protected void load(String aSource, CXRsrcUriDir aSrcRootDir) throws CXJsExcepLoad {
+	protected void load(String aSource, CXRsrcUriDir aSrcRootDir)
+			throws CXJsExcepLoad {
 		load(aSource, aSrcRootDir, (IXjsTracer) null);
 	}
 
@@ -275,21 +299,22 @@ public class CXJsSourceMain extends CXJsSource {
 	 * @param tracer
 	 * @throws CXJsExcepLoad
 	 */
-	protected void load(String aSource, CXRsrcUriDir aSrcRootDir, IXjsTracer tracer)
-			throws CXJsExcepLoad {
-		boolean trace = tracer != null;
-		CXTimer wT = trace ? new CXTimer("loadMainScript", true) : null;
+	protected void load(String aSource, CXRsrcUriDir aSrcRootDir,
+			IXjsTracer tracer) throws CXJsExcepLoad {
+		final boolean trace = tracer != null;
+		final CXTimer wT = trace ? new CXTimer("loadMainScript", true) : null;
 		try {
 			setSource(aSource);
 			setSrcRootDir(aSrcRootDir);
-			StringBuilder wSB = loadDoBefore();
+			final StringBuilder wSB = loadDoBefore();
 			super.load();
 			loadDoAfter(wSB);
 			if (trace) {
-				tracer.trace("loadOk - code[" + (pMergedCode == null ? 0 : pMergedCode.length())
+				tracer.trace("loadOk - code["
+						+ (pMergedCode == null ? 0 : pMergedCode.length())
 						+ "] chars");
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			if (trace) {
 				tracer.trace("loadMainScriptError", e);
 			}
@@ -317,22 +342,24 @@ public class CXJsSourceMain extends CXJsSource {
 			if (pFileRsrc != null) {
 				pResources[i++] = pFileRsrc;
 			}
-			for (CXJsModule xMod : pListModules.values()) {
+			for (final CXJsModule xMod : pListModules.values()) {
 				pResources[i++] = xMod.getRsrc();
 			}
 		}
-		StringBuilder wSB = new StringBuilder();
+		final StringBuilder wSB = new StringBuilder();
 		processIncludes();
 		int wStartLine = 1;
-		for (CXJsModule xMod : pOrderedIncludes) {
+		for (final CXJsModule xMod : pOrderedIncludes) {
 			wStartLine = xMod.merge(wSB, wStartLine);
 		}
 		merge(wSB, wStartLine);
 		pMergedCode = wSB.toString();
 		if (traceDebugOn()) {
-			System.out.println("------------------ descrToString ------------------");
+			System.out
+					.println("------------------ descrToString ------------------");
 			System.out.println(toDescription());
-			System.out.println("------------------ MergedCode ------------------");
+			System.out
+					.println("------------------ MergedCode ------------------");
 			System.out.println(pMergedCode);
 		}
 	}
@@ -348,22 +375,23 @@ public class CXJsSourceMain extends CXJsSource {
 
 	/**
 	 * Renvoie le nombre total de lignes
-	 * 
+	 *
 	 * @param aRelpath
 	 * @param tracer
 	 * @throws CXJsExcepLoad
 	 */
-	public void loadFromFile(CXRsrcUriPath aRelpath, IXjsTracer tracer) throws CXJsExcepLoad {
+	public void loadFromFile(CXRsrcUriPath aRelpath, IXjsTracer tracer)
+			throws CXJsExcepLoad {
 		try {
 			pFilePath = aRelpath;
 			pFileRsrc = pRootRsrc.rsrcReadTxt(aRelpath);
 			load(pFileRsrc.getContent(), pFilePath.getParent(), tracer);
-		} catch (CXJsExcepLoad e) {
+		} catch (final CXJsExcepLoad e) {
 			if (tracer != null) {
 				tracer.trace("loadMainFleError", e);
 			}
 			throw (e);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			if (tracer != null) {
 				tracer.trace("loadMainFleError", e);
 			}
@@ -373,20 +401,20 @@ public class CXJsSourceMain extends CXJsSource {
 
 	/**
 	 * Renvoie le nombre total de lignes
-	 * 
+	 *
 	 * @param aSource
 	 * @param aDir
 	 * @param tracer
 	 * @throws CXJsExcepLoad
 	 */
-	public void loadFromSource(String aSource, CXRsrcUriDir aDir, IXjsTracer tracer)
-			throws CXJsExcepLoad {
+	public void loadFromSource(String aSource, CXRsrcUriDir aDir,
+			IXjsTracer tracer) throws CXJsExcepLoad {
 		load(aSource, aDir, tracer);
 	}
 
 	/**
 	 * Acces au code
-	 * 
+	 *
 	 * @param aModule
 	 */
 	protected void loadModuleAdd(CXJsModule aModule) {
@@ -409,9 +437,11 @@ public class CXJsSourceMain extends CXJsSource {
 	 * .scripting.CXJsSourceMain, java.lang.Throwable)
 	 */
 	@Override
-	protected void loadThrowExcep(CXJsSourceMain aMain, Throwable e) throws CXJsExcepLoad {
+	protected void loadThrowExcep(CXJsSourceMain aMain, Throwable e)
+			throws CXJsExcepLoad {
 		if (isLoadedFromFile()) {
-			throw new CXJsExcepLoad(aMain, e, "Error main module " + pFilePath.getName());
+			throw new CXJsExcepLoad(aMain, e, "Error main module "
+					+ pFilePath.getName());
 		} else {
 			super.loadThrowExcep(aMain, e);
 		}
@@ -419,13 +449,13 @@ public class CXJsSourceMain extends CXJsSource {
 
 	/**
 	 * UNiquement sir load si !pMergeIncludes
-	 * 
+	 *
 	 * @return
 	 * @throws CXJsExcepLoad
 	 */
 	protected LinkedList<CXJsModule> processIncludes() throws CXJsExcepLoad {
 		if (hasModules()) {
-			for (CXJsModule xMod : getModules()) {
+			for (final CXJsModule xMod : getModules()) {
 				xMod.orderIncludes(pOrderedIncludes, -1);
 			}
 		}
@@ -450,8 +480,8 @@ public class CXJsSourceMain extends CXJsSource {
 				loadFromSource(getSources(), getSrcRootDir(), tracer);
 			}
 		} else {
-			throw new CXJsExcepLoad(this, "Can't reload script[" + getSourceName()
-					+ "] - Script is not loaded");
+			throw new CXJsExcepLoad(this, "Can't reload script["
+					+ getSourceName() + "] - Script is not loaded");
 		}
 	}
 }
