@@ -58,6 +58,7 @@
 		<module>org.cohorte.utilities.config</module>
 		<module>org.cohorte.utilities.sql</module>
 		<module>org.cohorte.utilities.ui.swing</module>
+		<module>org.cohorte.utilities.json</module>
 		<!--
 		<module>org.cohorte.utilities.webapp</module>
 		-->
@@ -185,13 +186,13 @@
 		<repository>
 			<id>cohorte-nexus</id>
 			<name>Cohorte Releases Repository</name>
-			<url>https://nrm.cohorte.tech/repository/cohorte-releases/</url>
+			<url>http://nrm.cohorte.tech/repository/cohorte-releases/</url>
 			<layout>default</layout>
 		</repository>
 		<snapshotRepository>
 			<id>cohorte-nexus</id>
 			<name>Cohorte Snapshots Repository</name>
-			<url>https://nrm.cohorte.tech/repository/cohorte-snapshots/</url>
+			<url>http://nrm.cohorte.tech/repository/cohorte-snapshots/</url>
 			<uniqueVersion>true</uniqueVersion>
 			<layout>default</layout>
 		</snapshotRepository>

@@ -10,7 +10,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>org.cohorte.utilities</artifactId>
-	<version>1.0.8</version>   <!-- ATTENSION : doit être le même que celui du MANIFEST -->
+	<version>1.0.9</version>   <!-- ATTENSION : doit être le même que celui du MANIFEST -->
 
 	<packaging>eclipse-plugin</packaging>
 	
