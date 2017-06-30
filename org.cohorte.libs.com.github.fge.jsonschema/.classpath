@@ -15,6 +15,6 @@
 	</classpathentry>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="/cohorte-home/repo/org.cohorte.utilities-1.0.6.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.cohorte.utilities"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

@@ -19,6 +19,7 @@ import org.psem2m.utilities.json.JSONObject;
 import org.psem2m.utilities.logging.IActivityLogger;
 import org.psem2m.utilities.rsrc.CXRsrcProvider;
 import org.psem2m.utilities.rsrc.CXRsrcProviderHttp;
+import org.psem2m.utilities.rsrc.CXRsrcProviderMemory;
 import org.psem2m.utilities.rsrc.CXRsrcText;
 
 

@@ -11,6 +11,7 @@ import java.util.Set;
 import org.psem2m.utilities.rsrc.CXRsrcProvider;
 import org.psem2m.utilities.rsrc.CXRsrcProviderFile;
 import org.psem2m.utilities.rsrc.CXRsrcProviderHttp;
+import org.psem2m.utilities.rsrc.CXRsrcProviderMemory;
 import org.psem2m.utilities.rsrc.CXRsrcText;
 
 public class CJsonRsrcResolver implements IJsonRsrcResolver {

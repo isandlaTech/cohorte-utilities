@@ -3,6 +3,7 @@ package org.cohorte.utilities.json.provider;
 
 import org.psem2m.utilities.json.JSONObject;
 import org.psem2m.utilities.logging.IActivityLogger;
+import org.psem2m.utilities.rsrc.CXRsrcProviderMemory;
 import org.psem2m.utilities.rsrc.CXRsrcText;
 import org.psem2m.utilities.rsrc.CXRsrcTextReadInfo;
 import org.psem2m.utilities.rsrc.CXRsrcUriPath;

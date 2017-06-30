@@ -1,13 +1,9 @@
-package org.cohorte.utilities.json.provider;
+package org.psem2m.utilities.rsrc;
 
 
 import java.nio.charset.Charset;
 import java.util.Hashtable;
 import java.util.Map;
-
-import org.psem2m.utilities.rsrc.CXRsrcProvider;
-import org.psem2m.utilities.rsrc.CXRsrcText;
-import org.psem2m.utilities.rsrc.CXRsrcUriPath;
 
 public class CXRsrcProviderMemory extends CXRsrcProvider {
 

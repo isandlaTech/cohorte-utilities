@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.psem2m.utilities.rsrc.CXRsrcProvider;
+import org.psem2m.utilities.rsrc.CXRsrcProviderMemory;
 import org.psem2m.utilities.rsrc.CXRsrcText;
 
 /**
