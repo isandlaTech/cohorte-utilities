@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Cohorte :: Iot Pack :: lib jsonschema
+Bundle-SymbolicName: org.cohorte.com.github.fge.jsonschema
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.cohorte.iot.json.validator.Activator
+Bundle-Vendor: COHORTE
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Import-Package: org.osgi.framework;version="1.3.0",
+ org.psem2m.utilities,
+ org.psem2m.utilities.json,
+ org.psem2m.utilities.logging
+Bundle-ClassPath: .,
+ lib/json-schema-validator-2.2.6-lib.jar
+Export-Package: org.cohorte.iot.json.validator.api
