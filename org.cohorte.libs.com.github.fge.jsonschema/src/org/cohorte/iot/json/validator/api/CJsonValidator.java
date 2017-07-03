@@ -32,7 +32,6 @@ public class CJsonValidator implements IJsonValidator {
 		// set private contructor
 	}
 
-	@Override
 	public CJsonSchema getSchema(final IActivityLogger aLogger,
 			final JSONObject aSchema) throws SchemaException {
 		// create schema
@@ -50,16 +49,14 @@ public class CJsonValidator implements IJsonValidator {
 		}
 	}
 
-	@Override
 	public boolean valdate(final IActivityLogger aLogger,
-			final CJsonSchema aSchema, final JSONObject aJson)
-			throws SchemaException {
+			final CJsonSchema aSchema, final JSONObject aData) throws Exception {
 		// validate json
 		try {
 			aLogger.logDebug(this, "getSchema",
 					"create JsonNode fro JSONObject for the data");
 			ObjectMapper wMapper = new ObjectMapper();
-			JsonNode wJson = wMapper.readTree(aJson.toString());
+			JsonNode wJson = wMapper.readTree(aData.toString());
 
 			aLogger.logDebug(this, "getSchema", "validate data with schema");
 			ProcessingReport wReport = aSchema.getSchema()
@@ -75,7 +72,6 @@ public class CJsonValidator implements IJsonValidator {
 		}
 	}
 
-	@Override
 	public boolean validateJson(final IActivityLogger aLogger,
 			final JSONObject aSchema, final JSONObject aJson)
 			throws SchemaException {

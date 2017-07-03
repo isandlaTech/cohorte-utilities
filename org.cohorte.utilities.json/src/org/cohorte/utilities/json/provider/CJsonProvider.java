@@ -1,6 +1,5 @@
 package org.cohorte.utilities.json.provider;
 
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ import org.psem2m.utilities.rsrc.CXRsrcProvider;
 import org.psem2m.utilities.rsrc.CXRsrcProviderHttp;
 import org.psem2m.utilities.rsrc.CXRsrcProviderMemory;
 import org.psem2m.utilities.rsrc.CXRsrcText;
-
 
 public class CJsonProvider {
 
@@ -403,14 +401,4 @@ public class CJsonProvider {
 		pJsonResolver = aResolver;
 	}
 
-	public boolean validate(final String aTag, final String aPath,
-			final String aContentId) {
-		try {
-			getJSONObject(aTag, aPath, aContentId);
-			return true;
-		} catch (Exception e) {
-			pLogger.logSevere(this, "validate", "ERROR; exception [%s]", e);
-			return false;
-		}
-	}
 }
