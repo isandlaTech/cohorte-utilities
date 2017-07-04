@@ -352,6 +352,11 @@ public class CJsonProvider {
 											getSubPath(wTag, wRsrc),
 											wValidContent, aUseMemoryProvider));
 								} else {
+									if (!aUseMemoryProvider) {
+										// no resolution we init the cache with
+										// the current content
+										initMemoryProviderCache(aContent, wTag);
+									}
 									wSubNoCommentContent.add(wStr);
 								}
 							}

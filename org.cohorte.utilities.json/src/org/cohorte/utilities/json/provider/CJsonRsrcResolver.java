@@ -1,8 +1,8 @@
 package org.cohorte.utilities.json.provider;
 
-
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -138,7 +138,7 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 			wContent = getContentByProvider(pListMemoryProviderByTag.get(aTag),
 					aContentId);
 		}
-		if (wContent == null) {
+		if (wContent == null && pListProviderByTag.get(aTag) != null) {
 			// look on all provider and return the first elem found
 			Set<Integer> wKeys = pListProviderByTag.get(aTag).keySet();
 			for (int wKey : wKeys) {
@@ -168,14 +168,18 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 
 	@Override
 	public Set<String> getListTags() {
-		// TODO Auto-generated method stub
-		return pListProviderByTag.keySet();
+		Set<String> wListTag = new HashSet<String>();
+		wListTag.addAll(pListProviderByTag.keySet());
+		wListTag.addAll(pListMemoryProviderByTag.keySet());
+		return wListTag;
 	}
 
 	@Override
 	public Collection<CXRsrcProvider> getRsrcProvider(final String aTag) {
 		List<CXRsrcProvider> wList = new ArrayList<CXRsrcProvider>();
-		wList.addAll(pListProviderByTag.get(aTag).values());
+		if (pListProviderByTag.get(aTag) != null) {
+			wList.addAll(pListProviderByTag.get(aTag).values());
+		}
 		wList.add(getRsrcProviderMemory(aTag));
 		return wList;
 	}
