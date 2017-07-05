@@ -9,7 +9,7 @@
 		<version>3.0.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<artifactId>org.cohorte.com.github.fge.jsonschema</artifactId>
+	<artifactId>org.cohorte.libs.com.github.fge.jsonschema</artifactId>
 	<version>1.0.0</version>   <!-- ATTENSION : doit être le même que celui du MANIFEST -->
 
 	<packaging>eclipse-plugin</packaging>
@@ -21,10 +21,12 @@
 		    <version>2.2.8</version>
 		</dependency>
 		<dependency>
-		    <groupId>utilities-parent</groupId>
+		    <groupId>org.cohorte.utilities</groupId>
 		    <artifactId>org.cohorte.utilities</artifactId>
 		    <version>1.0.9</version>
 		</dependency>
+		
+		
 	</dependencies>
 	<!--
 	<properties>
@@ -46,6 +48,11 @@
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-source-plugin</artifactId>
 				<version>${tycho-version}</version>
+				 <configuration>
+		          <includes>
+		            <include>lib/*</include>
+		          </includes>
+		        </configuration>
 				<executions>
 					<execution>
 						<id>plugin-source</id>

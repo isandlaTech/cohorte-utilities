@@ -13,22 +13,22 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory;
  * @author apisu
  *
  */
-public class CJsonValidator implements IJsonValidator {
+public class CJsonValidatorDefault implements IValidator {
 
 	private static Object lock = new Object();
 
-	private static IJsonValidator pSingleton;
+	private static IValidator pSingleton;
 
-	public static IJsonValidator getDefault() {
+	public static IValidator getInstance() {
 		synchronized (lock) {
 			if (pSingleton == null) {
-				pSingleton = new CJsonValidator();
+				pSingleton = new CJsonValidatorDefault();
 			}
 		}
 		return pSingleton;
 	}
 
-	private CJsonValidator() {
+	private CJsonValidatorDefault() {
 		// set private contructor
 	}
 
@@ -81,6 +81,5 @@ public class CJsonValidator implements IJsonValidator {
 		} catch (Exception e) {
 			throw new SchemaException(e, e.getMessage());
 		}
-
 	}
 }

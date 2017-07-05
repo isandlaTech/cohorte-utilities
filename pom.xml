@@ -43,6 +43,7 @@
 	</dependencies>
 
 	<modules>		
+		<module>org.cohorte.libs.com.github.fge.jsonschema</module>
 		<module>org.cohorte.utilities</module>
 		<module>org.cohorte.utilities.picosoc</module>
 		<module>org.cohorte.utilities.picosoc.webapp</module>

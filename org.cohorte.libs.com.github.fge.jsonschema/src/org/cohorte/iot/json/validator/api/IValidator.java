@@ -10,7 +10,7 @@ import org.psem2m.utilities.logging.IActivityLogger;
  * @author apisu
  *
  */
-public interface IJsonValidator {
+public interface IValidator {
 
 	/**
 	 * validate if the schema provide as a JSONObject is a valide and follow the

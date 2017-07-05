@@ -21,7 +21,7 @@ import org.psem2m.utilities.rsrc.CXRsrcProviderHttp;
 import org.psem2m.utilities.rsrc.CXRsrcProviderMemory;
 import org.psem2m.utilities.rsrc.CXRsrcText;
 
-public class CJsonProvider {
+public class CJsonProvider implements IJsonProvider {
 
 	public static final String INCLUDE = "$include";
 
@@ -110,6 +110,7 @@ public class CJsonProvider {
 	 * @return
 	 * @throws Exception
 	 */
+	@Override
 	public JSONObject getJSONObject(final JSONObject aUnresolvedJson)
 			throws Exception {
 
@@ -123,6 +124,7 @@ public class CJsonProvider {
 	 * @return
 	 * @throws Exception
 	 */
+	@Override
 	public JSONObject getJSONObject(final String aContentId) throws Exception {
 		// get content
 		pLogger.logInfo(this, "getJSONObject", "get content from id %s",
@@ -145,7 +147,8 @@ public class CJsonProvider {
 		// preprocess content
 
 		// check include content that must be resolve
-		pLogger.logDebug(this, "getJSONObject", "preprocess resolve subcontent");
+		pLogger.logDebug(this, "getJSONObject",
+				"preprocess resolve subcontent ");
 
 		// resolve file and http and call handle for mem cache
 		String wResolvedString = resolveInclude(currentPath, aContent,
@@ -173,6 +176,7 @@ public class CJsonProvider {
 	 * @return
 	 * @throws Exception
 	 */
+	@Override
 	public JSONObject getJSONObject(final String aTag, final String aContentId)
 			throws Exception {
 		// get content
@@ -199,14 +203,10 @@ public class CJsonProvider {
 
 		CXRsrcText wRsrc = pJsonResolver.getContent(aTag, wPath, false);
 		String aContent = wRsrc.getContent();
-		// preprocess content
-		pLogger.logDebug(this, "getJSONObject",
-				"preprocess content to remove comment");
+
 		String wNotComment = removeComment(aContent);
-		pLogger.logDebug(this, "getJSONObject", "preprocess check is JSon");
 		checkIsJson(wNotComment);
 		// check include content that must be resolve
-		pLogger.logDebug(this, "getJSONObject", "preprocess resolve subcontent");
 		return getJSONObject(aPath, new JSONObject(wNotComment));
 	}
 
@@ -284,8 +284,7 @@ public class CJsonProvider {
 					}
 				}
 			}
-			pLogger.logInfo(this, "getJSONObject",
-					"preprocess check is Json Object");
+
 		}
 		return wNoComment;
 	}
