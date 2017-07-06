@@ -60,6 +60,11 @@ public class CJsonProvider implements IJsonProvider {
 	}
 
 	public CJsonProvider(final IJsonRsrcResolver aResolver,
+			final IActivityLogger aLogger, final boolean aIgnoreMissingFile) {
+		this(aResolver, null, aLogger, aIgnoreMissingFile);
+	}
+
+	public CJsonProvider(final IJsonRsrcResolver aResolver,
 			final List<Properties> aListProperties,
 			final IActivityLogger aLogger, final Boolean aIgnoreMissingContent) {
 		pLogger = aLogger;
@@ -193,6 +198,7 @@ public class CJsonProvider implements IJsonProvider {
 	 * @return
 	 * @throws Exception
 	 */
+	@Override
 	public JSONObject getJSONObject(final String aTag, final String aPath,
 			final String aContentId) throws Exception {
 		// get content
@@ -393,10 +399,12 @@ public class CJsonProvider implements IJsonProvider {
 
 	}
 
+	@Override
 	public void setIgnoreMissingContent(final boolean aIgnoreMissingContent) {
 		this.pIgnoreMissingContent = aIgnoreMissingContent;
 	}
 
+	@Override
 	public void setInitMemoryCache(final IHandlerInitMemoryCache aInitCache) {
 		this.pInitCacheHandler = aInitCache;
 	}

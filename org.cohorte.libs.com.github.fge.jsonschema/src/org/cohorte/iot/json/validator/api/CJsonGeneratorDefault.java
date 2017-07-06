@@ -12,26 +12,6 @@ import org.psem2m.utilities.logging.IActivityLogger;
 
 public class CJsonGeneratorDefault implements IJsonGenerator {
 
-	private static Object lock = new Object();
-	private static CJsonGeneratorDefault sGenerator;
-
-	/**
-	 * get singleton generator with custom logger. if the singleton exists it
-	 * switch the logger
-	 *
-	 * @return
-	 */
-	public static CJsonGeneratorDefault getInstance() {
-		if (sGenerator == null) {
-			synchronized (lock) {
-				if (sGenerator == null) {
-					sGenerator = new CJsonGeneratorDefault();
-				}
-			}
-		}
-		return sGenerator;
-	}
-
 	@Override
 	public JSONObject generateFakeJson(final IActivityLogger aLogger,
 			final JSONObject aSchema, final boolean aIsEmpty) throws Exception {

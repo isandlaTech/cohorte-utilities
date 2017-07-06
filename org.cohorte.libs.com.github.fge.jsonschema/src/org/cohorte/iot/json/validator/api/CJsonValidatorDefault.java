@@ -15,23 +15,11 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory;
  */
 public class CJsonValidatorDefault implements IValidator {
 
-	private static Object lock = new Object();
-
-	private static IValidator pSingleton;
-
-	public static IValidator getInstance() {
-		synchronized (lock) {
-			if (pSingleton == null) {
-				pSingleton = new CJsonValidatorDefault();
-			}
-		}
-		return pSingleton;
-	}
-
-	private CJsonValidatorDefault() {
+	public CJsonValidatorDefault() {
 		// set private contructor
 	}
 
+	@Override
 	public CJsonSchema getSchema(final IActivityLogger aLogger,
 			final JSONObject aSchema) throws SchemaException {
 		// create schema
@@ -49,6 +37,7 @@ public class CJsonValidatorDefault implements IValidator {
 		}
 	}
 
+	@Override
 	public boolean valdate(final IActivityLogger aLogger,
 			final CJsonSchema aSchema, final JSONObject aData) throws Exception {
 		// validate json
@@ -72,6 +61,7 @@ public class CJsonValidatorDefault implements IValidator {
 		}
 	}
 
+	@Override
 	public boolean validateJson(final IActivityLogger aLogger,
 			final JSONObject aSchema, final JSONObject aJson)
 			throws SchemaException {
