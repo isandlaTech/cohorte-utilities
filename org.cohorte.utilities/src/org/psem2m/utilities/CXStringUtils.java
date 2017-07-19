@@ -556,7 +556,8 @@ public final class CXStringUtils implements IConstants {
 		final StringBuilder builder = new StringBuilder();
 		int i = 0;
 		while (matcher.find()) {
-			final String replacement = aReplacements.get(matcher.group(1));
+			final String replacement = aReplacements != null ? aReplacements
+					.get(matcher.group(1)) : null;
 			builder.append(aText.substring(i, matcher.start()));
 			if (replacement == null) {
 				builder.append(aReplaceEmpty ? "" : matcher.group(0));
