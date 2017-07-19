@@ -46,7 +46,7 @@
 			},
 			"required": ["ref"]
 		},
-		"deviceTest": [{ "$file" : "includeFile.js;subdir/includeFile.js,subdir2/*.js" }],
+		"deviceTest": [{ "$file" : "file://includeFile.js;file://subdir/includeFile.js,file://subdir2/*.js" }],
 
 		/**
 		 * my comment 5

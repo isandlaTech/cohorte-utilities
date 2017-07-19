@@ -51,7 +51,7 @@
 			}, {
 				"properties": {
 					"test": {
-						"type": "string"
+						"type": "maReplaceVar"
 					}
 				}
 			}],

@@ -7,7 +7,7 @@
 	}, {
 		"properties": {
 			"test": {
-				"type": "string"
+				"type": "${testVal}"
 			}
 		}
 	}],

@@ -107,8 +107,11 @@ public class CTestProcessJson extends TestCase {
 					+ ".js");
 
 			JSONObject out = new JSONObject(wFileOut.readAll());
+			System.out.println("------");
 
 			System.out.println(in.toString());
+			System.out.println(out.toString());
+
 			assertEquals(in.toString(), out.toString());
 
 		} catch (Exception e) {

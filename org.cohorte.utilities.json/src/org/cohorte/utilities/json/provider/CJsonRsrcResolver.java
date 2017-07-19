@@ -1,5 +1,6 @@
 package org.cohorte.utilities.json.provider;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -133,8 +134,9 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 	public CXRsrcText getContent(final String aTag, final String aContentId,
 			final boolean aMemoryProvider) throws Exception {
 		CXRsrcText wContent = null;
+		List<Exception> wExcept = new ArrayList<Exception>();
 
-		if (aMemoryProvider) {
+		if (aMemoryProvider && pListMemoryProviderByTag.get(aTag) != null) {
 			wContent = getContentByProvider(pListMemoryProviderByTag.get(aTag),
 					aContentId);
 		}
@@ -146,12 +148,21 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 				// check if the content id contain file://, memory:// or http://
 				// and
 				// return the path without the prefix or null if it's not valid
-				wContent = getContentByProvider(wProv, aContentId);
+				try {
+					wContent = getContentByProvider(wProv, aContentId);
+				} catch (Exception e) {
+					wExcept.add(e);
+				}
 				if (wContent != null) {
 					break;// exit the loop
 				}
 
 			}
+		}
+		if (wContent == null) {
+			throw new FileNotFoundException(String.format(
+					"content '%s' not found in all providers\n Cause : %s",
+					aContentId, wExcept));
 		}
 		return wContent;
 	}

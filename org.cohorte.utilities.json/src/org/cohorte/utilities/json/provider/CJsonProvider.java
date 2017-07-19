@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.cohorte.utilities.json.provider.CJsonRsrcResolver.EProviderKind;
+import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.json.JSONArray;
 import org.psem2m.utilities.json.JSONException;
 import org.psem2m.utilities.json.JSONObject;
@@ -312,87 +315,113 @@ public class CJsonProvider implements IJsonProvider {
 		String wResolvContent = aContent;
 		for (String wTag : pJsonResolver.getListTags()) {
 			// regexp that allow to catch the strings like
-			// {"$file":"content..."
-			// }
-			Pattern wPatternDollarFile = Pattern.compile("(\\{\\s*\"\\" + wTag
-					+ "\"\\s*:\\s*\".*\"\\s*\\})", Pattern.MULTILINE);
+
+			Pattern wPatternDollarFile = Pattern.compile(
+					"((\\n|\\t)*\\{(\\n|\\t)*\\s*\"\\" + wTag
+							+ "\"\\s*:((\\s*\".*\"\\s*)|(.|\\n|\\t)*)\\})",
+					Pattern.MULTILINE);
 
 			// looking for subcontent identified by a id e.g $file, $ur ,
 			// $memory
 			Matcher wMatcherFile = wPatternDollarFile.matcher(aContent);
 			while (wMatcherFile.find()) {
-				for (int i = 0; i < wMatcherFile.groupCount(); i++) {
-					List<String> wSubNoCommentContent = new ArrayList<String>();
-					String wStr = wMatcherFile.group(i);
-					if (wStr != null) {
-						JSONObject wJsonSubId = new JSONObject(wStr);
-						try {
+				List<String> wSubNoCommentContent = new ArrayList<String>();
+				String wStr = wMatcherFile.group();
+				if (wStr != null) {
+					JSONObject wJsonSubId = new JSONObject(wStr);
+					try {
 
-							// set absolute path
-							String wlPath = wJsonSubId.optString(wTag, null);
-							List<String> wListPath = Arrays.asList(wlPath
-									.split(SEP_PATH));
-							for (String wPath : wListPath) {
-								// if file we are allowed to put relative path
-								if (!wPath.startsWith(EProviderKind.FILE
-										.toString() + "/")) {
-									// we include te current path
+						// set absolute path
+						/*
+						 * the content of the tag can be a string that is the
+						 * path or an object that contain path property and
+						 * properties property that are value to apply to the
+						 * sub content ex : {
+						 * "$tag":"file://myRelativeOrFullPath" } or { "$tag":{
+						 * "path" : "file://myRelativeOrFullPath",
+						 * "properties":{ "key1":"val1", ... } } } for the e.g 2
+						 * with properties and path the subcontent that contain
+						 * string value like {key1} will be replace by val1
+						 */
+						Object wlTag = wJsonSubId.opt(wTag);
+						String wlPath;
+						Map<String, String> replaceVars = null;
+						if (wlTag instanceof String) {
+							wlPath = (String) wlTag;
+						} else if (wlTag instanceof JSONObject) {
+							wlPath = ((JSONObject) wlTag).optString("path");
+							replaceVars = transformAsKeyValue(((JSONObject) wlTag)
+									.opt("properties"));
+
+						} else {
+							wlPath = "";
+						}
+						List<String> wListPath = Arrays.asList(wlPath
+								.split(SEP_PATH));
+						for (String wPath : wListPath) {
+							// if file we are allowed to put relative path
+							if (!wPath.startsWith(EProviderKind.FILE.toString()
+									+ "/")) {
+								// we include te current path
+								if (currentPath != null) {
 									wPath = wPath.replace(
 											EProviderKind.FILE.toString(),
 											EProviderKind.FILE.toString()
 													+ currentPath
 													+ File.separatorChar);
 								}
+							}
 
-								CXRsrcText wRsrc = pJsonResolver.getContent(
-										wTag, wPath, aUseMemoryProvider);
-								if (wRsrc != null) {
-									// resolv subcontent
-									String wValidContent = getValidContent(wRsrc);
-									if (!aUseMemoryProvider) {
-										initMemoryProviderCache(wValidContent,
-												wTag);
-									}
-									wSubNoCommentContent.add(resolveInclude(
-											getSubPath(wTag, wRsrc),
-											wValidContent, aUseMemoryProvider));
-								} else {
-									if (!aUseMemoryProvider) {
-										// no resolution we init the cache with
-										// the current content
-										initMemoryProviderCache(aContent, wTag);
-									}
-									wSubNoCommentContent.add(wStr);
+							CXRsrcText wRsrc = pJsonResolver.getContent(wTag,
+									wPath, aUseMemoryProvider);
+							if (wRsrc != null) {
+								// resolv subcontent
+								String wValidContent = getValidContent(wRsrc);
+								// replace vars in the resolve content
+								wValidContent = CXStringUtils.replaceVariables(
+										wValidContent, replaceVars);
+								if (!aUseMemoryProvider) {
+									initMemoryProviderCache(wValidContent, wTag);
 								}
-							}
-
-						} catch (Exception e) {
-							// TODO Provider must return a typed exception and
-							// not a global one
-							if (pIgnoreMissingContent
-									&& e.getCause() instanceof FileNotFoundException) {
-								// continue but log warning
-								pLogger.logWarn(this, "resolvInclude",
-										"subfile not found {%s]",
-										e.getMessage());
-
+								wSubNoCommentContent.add(resolveInclude(
+										getSubPath(wTag, wRsrc), wValidContent,
+										aUseMemoryProvider));
 							} else {
-								// raise e
-								throw e;
+								if (!aUseMemoryProvider) {
+									// no resolution we init the cache with
+									// the current content
+									initMemoryProviderCache(aContent, wTag);
+								}
+								wSubNoCommentContent.add(wStr);
 							}
-
 						}
 
-						// replace file by empty json.
-						String wRep = wSubNoCommentContent != null
-								&& wSubNoCommentContent.size() != 0 ? wSubNoCommentContent
-								.stream().collect(Collectors.joining(","))
-								: EMPTYJSON;
-						wResolvContent = wResolvContent.replace(wStr,
-								wRep.isEmpty() ? EMPTYJSON : wRep);
+					} catch (Exception e) {
+						// TODO Provider must return a typed exception and
+						// not a global one
+						if (pIgnoreMissingContent
+								&& e.getCause() instanceof FileNotFoundException) {
+							// continue but log warning
+							pLogger.logWarn(this, "resolvInclude",
+									"subfile not found {%s]", e.getMessage());
+
+						} else {
+							// raise e
+							throw e;
+						}
 
 					}
+
+					// replace file by empty json.
+					String wRep = wSubNoCommentContent != null
+							&& wSubNoCommentContent.size() != 0 ? wSubNoCommentContent
+							.stream().collect(Collectors.joining(","))
+							: EMPTYJSON;
+					wResolvContent = wResolvContent.replace(wStr,
+							wRep.isEmpty() ? EMPTYJSON : wRep);
+
 				}
+
 			}
 		}
 		return wResolvContent;
@@ -411,6 +440,27 @@ public class CJsonProvider implements IJsonProvider {
 
 	public void setJsonResolver(final IJsonRsrcResolver aResolver) {
 		pJsonResolver = aResolver;
+	}
+
+	/**
+	 * only manage string property
+	 *
+	 * @return
+	 */
+	private Map<String, String> transformAsKeyValue(final Object aObj) {
+		Map<String, String> wKeyVal = new HashMap<String, String>();
+
+		if (aObj instanceof JSONObject) {
+			JSONObject wObj = (JSONObject) aObj;
+			wObj.keySet().stream().forEach(key -> {
+				String wVal = wObj.optString(key, null);
+				if (wVal != null) {
+					wKeyVal.put(key, wVal);
+				}
+			});
+		}
+		return wKeyVal;
+
 	}
 
 }
