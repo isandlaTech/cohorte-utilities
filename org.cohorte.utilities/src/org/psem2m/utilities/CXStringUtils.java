@@ -537,14 +537,14 @@ public final class CXStringUtils implements IConstants {
 	 */
 	public static String replaceVariables(final String aText,
 			final Map<String, String> aReplacements) {
-		return replaceVariables(aText, aReplacements, false);
+		return replaceVariables(aText, aReplacements, null);
 	}
 
 	public static String replaceVariables(final String aText,
-			final Map<String, String> aReplacements, final boolean aReplaceEmpty) {
+			final Map<String, String> aReplacements, final String aDefault) {
 
 		if (aText == null || aText.isEmpty()) {
-			if (!aReplaceEmpty
+			if (aDefault != null
 					&& (aReplacements == null || aReplacements.size() == 0)) {
 				return aText;
 			}
@@ -560,7 +560,7 @@ public final class CXStringUtils implements IConstants {
 					.get(matcher.group(1)) : null;
 			builder.append(aText.substring(i, matcher.start()));
 			if (replacement == null) {
-				builder.append(aReplaceEmpty ? "" : matcher.group(0));
+				builder.append(aDefault != null ? aDefault : matcher.group(0));
 			} else {
 				builder.append(replacement);
 			}
