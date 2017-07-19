@@ -6,6 +6,6 @@
 		 "path": "file://subsubdir/includeFile2.js",
 		 "properties":{
 			 "testVal":"maReplaceVar"
-		 }
+		  }
  	}
  }

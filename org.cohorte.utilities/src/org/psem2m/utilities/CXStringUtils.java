@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 
 /**
  * @author isandlatech (www.isandlatech.com) - ogattaz
- * 
+ *
  */
 public final class CXStringUtils implements IConstants {
 
@@ -335,7 +335,7 @@ public final class CXStringUtils implements IConstants {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aString
 	 * @param aChar
 	 * @return the number of the searched char int the string
@@ -528,7 +528,7 @@ public final class CXStringUtils implements IConstants {
 	 * <pre>
 	 * Hello ${name} Please find attached ${file}
 	 * </pre>
-	 * 
+	 *
 	 * @param aText
 	 *            a text containing variables as ${variableId}
 	 * @param aReplacements
@@ -537,10 +537,17 @@ public final class CXStringUtils implements IConstants {
 	 */
 	public static String replaceVariables(final String aText,
 			final Map<String, String> aReplacements) {
+		return replaceVariables(aText, aReplacements, false);
+	}
 
-		if (aText == null || aText.isEmpty() || aReplacements == null
-				|| aReplacements.size() == 0) {
-			return aText;
+	public static String replaceVariables(final String aText,
+			final Map<String, String> aReplacements, final boolean aReplaceEmpty) {
+
+		if (aText == null || aText.isEmpty()) {
+			if (!aReplaceEmpty
+					&& (aReplacements == null || aReplacements.size() == 0)) {
+				return aText;
+			}
 		}
 
 		final Pattern pattern = Pattern.compile("\\$\\{(.+?)\\}");
@@ -552,7 +559,7 @@ public final class CXStringUtils implements IConstants {
 			final String replacement = aReplacements.get(matcher.group(1));
 			builder.append(aText.substring(i, matcher.start()));
 			if (replacement == null) {
-				builder.append(matcher.group(0));
+				builder.append(aReplaceEmpty ? "" : matcher.group(0));
 			} else {
 				builder.append(replacement);
 			}
@@ -651,8 +658,8 @@ public final class CXStringUtils implements IConstants {
 	 * @return
 	 * @throws Exception
 	 */
-	public static String strFromInputStream(InputStream aInputStream,
-			String aCharsetName) throws Exception {
+	public static String strFromInputStream(final InputStream aInputStream,
+			final String aCharsetName) throws Exception {
 
 		return new String(CXBytesUtils.readAllBytes(aInputStream), aCharsetName);
 	}
@@ -662,7 +669,7 @@ public final class CXStringUtils implements IConstants {
 	 * <p>
 	 * Voir TRIMABLE_CHARS = " \t\n\r".
 	 * </p>
-	 * 
+	 *
 	 * @param aStr
 	 * @return
 	 */
@@ -676,7 +683,7 @@ public final class CXStringUtils implements IConstants {
 	 * <p>
 	 * aBadChars =null --> aBadChars = " \t\n\r"
 	 * </p>
-	 * 
+	 *
 	 * @param aStr
 	 * @param aBadChars
 	 * @return
@@ -690,7 +697,7 @@ public final class CXStringUtils implements IConstants {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aStr
 	 * @param aBadCharsPrefix
 	 * @param aBadCharsSuffix
@@ -729,7 +736,7 @@ public final class CXStringUtils implements IConstants {
 	/**
 	 * Supress all the trimable characters at the begining and at the end of the
 	 * string
-	 * 
+	 *
 	 * @see TRIMABLE_CONTROL = "\t\n\r".
 	 * @see TRIMABLE_CHARS = " \t\n\r". *
 	 * @param aStr
@@ -1014,15 +1021,15 @@ public final class CXStringUtils implements IConstants {
 
 	/**
 	 * remove the "white chars" at the begining the string.
-	 * 
+	 *
 	 * eg.
-	 * 
+	 *
 	 * <pre>
 	 * [   \t    value   \r\n   ]  => [value   \r\n   ]
 	 * </pre>
-	 * 
+	 *
 	 * @see TRIMABLE_CHARS
-	 * 
+	 *
 	 * @param aStr
 	 *            a string
 	 * @return
@@ -1034,7 +1041,7 @@ public final class CXStringUtils implements IConstants {
 
 	/**
 	 * Remplace toutes les occurences de aWhat par aBy dasn aStr
-	 * 
+	 *
 	 * @param aStr
 	 * @param aWhat
 	 * @param aBy
@@ -1117,15 +1124,15 @@ public final class CXStringUtils implements IConstants {
 
 	/**
 	 * remove the "white chars" at the end the string.
-	 * 
+	 *
 	 * eg.
-	 * 
+	 *
 	 * <pre>
 	 * [   \t    value   \r\n   ]  => [   \t    value]
 	 * </pre>
-	 * 
+	 *
 	 * @see TRIMABLE_CHARS
-	 * 
+	 *
 	 * @param aStr
 	 * @return
 	 */
@@ -1288,7 +1295,7 @@ public final class CXStringUtils implements IConstants {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	private CXStringUtils() {
 

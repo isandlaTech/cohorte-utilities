@@ -159,7 +159,7 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 
 			}
 		}
-		if (wContent == null) {
+		if (wContent == null && aMemoryProvider) {
 			throw new FileNotFoundException(String.format(
 					"content '%s' not found in all providers\n Cause : %s",
 					aContentId, wExcept));

@@ -7,7 +7,9 @@
 	}, {
 		"properties": {
 			"test": {
-				"type": "${testVal}"
+				"type": "${testVal}",
+				"type2": "${testVal2}"
+
 			}
 		}
 	}],

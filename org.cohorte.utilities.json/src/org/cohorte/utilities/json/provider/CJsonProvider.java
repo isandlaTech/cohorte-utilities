@@ -379,7 +379,7 @@ public class CJsonProvider implements IJsonProvider {
 								String wValidContent = getValidContent(wRsrc);
 								// replace vars in the resolve content
 								wValidContent = CXStringUtils.replaceVariables(
-										wValidContent, replaceVars);
+										wValidContent, replaceVars, true);
 								if (!aUseMemoryProvider) {
 									initMemoryProviderCache(wValidContent, wTag);
 								}
@@ -453,7 +453,7 @@ public class CJsonProvider implements IJsonProvider {
 		if (aObj instanceof JSONObject) {
 			JSONObject wObj = (JSONObject) aObj;
 			wObj.keySet().stream().forEach(key -> {
-				String wVal = wObj.optString(key, null);
+				String wVal = wObj.optString(key, "");
 				if (wVal != null) {
 					wKeyVal.put(key, wVal);
 				}
