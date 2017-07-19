@@ -653,9 +653,9 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 
 	/*
 	 * Renvoie la liste des Fichier et dossiers - Non recursif
-	 * 
+	 *
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.files.IXFilesContainer#getMyFiles(java.io.FileFilter
 	 * , boolean, boolean)
@@ -1035,7 +1035,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 * @return the number of removed file
 	 * @throws IOException
 	 */
-	private int remove(final boolean aRemoveMe, final FileFilter aFileFilter)
+	public int remove(final boolean aRemoveMe, final FileFilter aFileFilter)
 			throws IOException {
 
 		int wNbFile = 0;
@@ -1076,7 +1076,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 							String.format(
 									"Unable to delete dir [%s]. canWrite=[%b]. isDirEmpty=[%b]",
 									getAbsolutePath(), canWrite(), isEmpty()),
-									e);
+							e);
 				}
 				wNbFile++;
 			}
@@ -1251,7 +1251,7 @@ public class CXFileDir extends CXFileBase implements IXFilesContainer {
 	 */
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.files.IXFilesContainer#scanAllFiles(org.psem2m.utilities
 	 * .files.CXSortListFiles, java.io.FileFilter, boolean, boolean)
