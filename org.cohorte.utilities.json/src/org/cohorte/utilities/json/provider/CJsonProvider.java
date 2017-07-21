@@ -379,7 +379,7 @@ public class CJsonProvider implements IJsonProvider {
 								String wValidContent = getValidContent(wRsrc);
 								// replace vars in the resolve content
 								wValidContent = CXStringUtils.replaceVariables(
-										wValidContent, replaceVars, " ");
+										wValidContent, replaceVars, "");
 								if (!aUseMemoryProvider) {
 									initMemoryProviderCache(wValidContent, wTag);
 								}
