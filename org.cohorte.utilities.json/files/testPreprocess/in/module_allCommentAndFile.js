@@ -42,12 +42,24 @@
 				"ref": {
 					"id": "/properties/org_id/properties/ref",
 					"type": "string"
-				},
+				}
 			},
 			"required": ["ref"]
 		},
-		"deviceTest": { "$file" : "file://includeFile.js" },
-		"deviceTest2": { "$file" : "file://subdir/includeFile.js" },
+		"deviceTest": { 
+			"$file" : "file://includeFile.js" 
+		},
+		"deviceTest2": { 
+			"$file" : {
+				"path" : "file://subdir/includeFile.js" ,
+				"properties":{
+					"includeFile":"includeFile2",
+					"test2":"test1",
+					"test3":"test1",
+					"test4":"test1"
+				}
+			}
+		},
 
 		/**
 		 * my comment 5

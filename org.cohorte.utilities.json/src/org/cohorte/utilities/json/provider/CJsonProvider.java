@@ -83,26 +83,24 @@ public class CJsonProvider implements IJsonProvider {
 	 * @return
 	 * @throws JSONException
 	 */
-	private boolean checkIsJson(final String aJsonString) throws JSONException {
+	private String checkIsJson(final String aJsonString) throws JSONException {
 		if (aJsonString == null || aJsonString.isEmpty()) {
-			return true;
+			return null;
 		} else {
 			int indexSquare = aJsonString.indexOf('[');
 			int indexCurly = aJsonString.indexOf('{');
 			if (indexCurly == -1 && indexSquare == -1) {// not a json
-				new JSONObject(aJsonString);
+				return new JSONObject(aJsonString).toString(0);
 			} else if (indexCurly != -1 && indexSquare == -1) {
-				new JSONObject(aJsonString);
+				return new JSONObject(aJsonString).toString(0);
 			} else if (indexCurly == -1 && indexSquare != 1) {
-				new JSONArray(aJsonString);
+				return new JSONArray(aJsonString).toString(0);
 			} else if (indexCurly > indexSquare) {
-				new JSONArray(aJsonString);
+				return new JSONArray(aJsonString).toString(0);
 			} else {
-				new JSONObject(aJsonString);
+				return new JSONObject(aJsonString).toString(0);
 			}
 		}
-
-		return true;
 
 	}
 
@@ -151,7 +149,7 @@ public class CJsonProvider implements IJsonProvider {
 	public JSONObject getJSONObject(final String currentPath,
 			final JSONObject aUnresolvedJson) throws Exception {
 
-		String aContent = aUnresolvedJson.toString(2);
+		String aContent = aUnresolvedJson.toString(0);
 		// preprocess content
 
 		// check include content that must be resolve
@@ -161,7 +159,7 @@ public class CJsonProvider implements IJsonProvider {
 		// resolve file and http and call handle for mem cache
 		String wResolvedString = resolveInclude(currentPath, aContent,
 				pInitCacheHandler == null);
-		checkIsJson(wResolvedString);
+		wResolvedString = checkIsJson(wResolvedString);
 		if (pInitCacheHandler != null) {
 			// call wit memory resolution only
 			wResolvedString = resolveInclude(currentPath, wResolvedString, true);
@@ -214,7 +212,7 @@ public class CJsonProvider implements IJsonProvider {
 		String aContent = wRsrc.getContent();
 
 		String wNotComment = removeComment(aContent);
-		checkIsJson(wNotComment);
+		wNotComment = checkIsJson(wNotComment);
 		// check include content that must be resolve
 		return getJSONObject(aPath, new JSONObject(wNotComment));
 	}
@@ -249,7 +247,7 @@ public class CJsonProvider implements IJsonProvider {
 		wSubContent = removeComment(wSubContent);
 
 		// check if it's json
-		checkIsJson(wSubContent);
+		wSubContent = checkIsJson(wSubContent);
 
 		return wSubContent;
 	}
@@ -317,8 +315,8 @@ public class CJsonProvider implements IJsonProvider {
 			// regexp that allow to catch the strings like
 
 			Pattern wPatternDollarFile = Pattern.compile(
-					"((\\n|\\t)*\\{(\\n|\\t)*\\s*\"\\" + wTag
-							+ "\"\\s*:((\\s*\".*\"\\s*)|(.|\\n|\\t)*)\\})",
+					"((\\n)*\\{(\\n)*\\s*\"\\" + wTag
+							+ "\"\\s*:((\\s*\".*\"\\s*)|(.|\\n)*\\})\\})",
 					Pattern.MULTILINE);
 
 			// looking for subcontent identified by a id e.g $file, $ur ,
