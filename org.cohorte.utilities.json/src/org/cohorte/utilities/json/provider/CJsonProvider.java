@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.cohorte.utilities.json.provider.CJsonRsrcResolver.EProviderKind;
+import org.psem2m.utilities.CXQueryString;
 import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.json.JSONArray;
 import org.psem2m.utilities.json.JSONException;
@@ -316,8 +317,7 @@ public class CJsonProvider implements IJsonProvider {
 
 			Pattern wPatternDollarFile = Pattern.compile(
 					"((\\n)*\\{(\\n)*\\s*\"\\" + wTag
-							+ "\"\\s*:((\\s*\".*\"\\s*)|(.|\\n)*\\})\\})",
-					Pattern.MULTILINE);
+							+ "\"\\s*:(\\s*\".*\"\\s*)\\})", Pattern.MULTILINE);
 
 			// looking for subcontent identified by a id e.g $file, $ur ,
 			// $memory
@@ -346,10 +346,14 @@ public class CJsonProvider implements IJsonProvider {
 						Map<String, String> replaceVars = null;
 						if (wlTag instanceof String) {
 							wlPath = (String) wlTag;
-						} else if (wlTag instanceof JSONObject) {
-							wlPath = ((JSONObject) wlTag).optString("path");
-							replaceVars = transformAsKeyValue(((JSONObject) wlTag)
-									.opt("properties"));
+							int wIdx = wlPath.indexOf("?");
+							if (wIdx != -1) {
+								// need to parse to extract the memory key
+								String wParam = wlPath.substring(wIdx + 1);
+								wlPath = wlPath.substring(0, wIdx);
+								replaceVars = CXQueryString
+										.splitQueryFirst(wParam);
+							}
 
 						} else {
 							wlPath = "";

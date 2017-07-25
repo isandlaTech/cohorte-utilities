@@ -50,15 +50,7 @@
 			"$file" : "file://includeFile.js" 
 		},
 		"deviceTest2": { 
-			"$file" : {
-				"path" : "file://subdir/includeFile.js" ,
-				"properties":{
-					"includeFile":"includeFile2",
-					"test2":"test1",
-					"test3":"test1",
-					"test4":"test1"
-				}
-			}
+			"$file" : "file://subdir/includeFile.js?includeFile=includeFile2&test2=test1&test3=test2&test4=test2" 
 		},
 
 		/**
