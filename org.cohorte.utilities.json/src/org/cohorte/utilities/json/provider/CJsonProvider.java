@@ -210,12 +210,15 @@ public class CJsonProvider implements IJsonProvider {
 				: aContentId;
 
 		CXRsrcText wRsrc = pJsonResolver.getContent(aTag, wPath, false);
-		String aContent = wRsrc.getContent();
+		if (wRsrc != null) {
+			String aContent = wRsrc.getContent();
 
-		String wNotComment = removeComment(aContent);
-		wNotComment = checkIsJson(wNotComment);
-		// check include content that must be resolve
-		return getJSONObject(aPath, new JSONObject(wNotComment));
+			String wNotComment = removeComment(aContent);
+			wNotComment = checkIsJson(wNotComment);
+			// check include content that must be resolve
+			return getJSONObject(aPath, new JSONObject(wNotComment));
+		}
+		return null;
 	}
 
 	public IJsonRsrcResolver getJsonResolver() {
