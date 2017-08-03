@@ -405,6 +405,11 @@ public final class CXStringUtils implements IConstants {
 		return aStr != null && !aStr.isEmpty();
 	}
 
+	// return true if the value is a boolean
+	public static boolean isBoolean(final String aStr) {
+		return "true".equalsIgnoreCase(aStr) || "false".equalsIgnoreCase(aStr);
+	}
+
 	/**
 	 * @param aString
 	 *            a String
@@ -542,6 +547,25 @@ public final class CXStringUtils implements IConstants {
 
 	public static String replaceVariables(final String aText,
 			final Map<String, String> aReplacements, final String aDefault) {
+		return replaceVariables(aText, aReplacements, aDefault, null);
+	}
+
+	/**
+	 * replace variable identified by ${myvar} by the corresponding value and
+	 * replace the string that encapsulate the variable if exists
+	 *
+	 * @param aText
+	 * @param aReplacements
+	 * @param aDefault
+	 * @param aRemoveEncapsulate
+	 *            : string that encapsulate the variable we want to be remove
+	 *            (e.g "${myvar)" we expact value without the character " ) if
+	 *            null nothing to remove
+	 * @return
+	 */
+	public static String replaceVariables(final String aText,
+			final Map<String, String> aReplacements, final String aDefault,
+			final String aRemoveEncapsulate) {
 
 		if (aText == null || aText.isEmpty()) {
 			if (aDefault != null
@@ -549,8 +573,11 @@ public final class CXStringUtils implements IConstants {
 				return aText;
 			}
 		}
-
-		final Pattern pattern = Pattern.compile("\\$\\{(.+?)\\}");
+		String wRegexp = "\\$\\{(.+?)\\}";
+		if (aRemoveEncapsulate != null) {
+			wRegexp = aRemoveEncapsulate + wRegexp + aRemoveEncapsulate;
+		}
+		final Pattern pattern = Pattern.compile(wRegexp);
 		final Matcher matcher = pattern.matcher(aText);
 		// populate the replacements map ...
 		final StringBuilder builder = new StringBuilder();
