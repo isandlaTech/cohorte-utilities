@@ -411,6 +411,48 @@ public final class CXStringUtils implements IConstants {
 	}
 
 	/**
+	 * return true if the string is float with "." as a separator
+	 *
+	 * @param aStr
+	 * @param aSep
+	 * @return
+	 */
+	public static boolean isFloat(final String aStr) {
+		return isFloat(aStr, '.');
+	}
+
+	/**
+	 * return true if the string is float with on the separater char passed in
+	 * parameter aSep
+	 *
+	 * @param aStr
+	 * @param aSep
+	 * @return
+	 */
+	public static boolean isFloat(final String aStr, final char aSep) {
+		boolean hasDot = false;
+		if (!hasContent(aStr)) {
+			return false;
+		}
+		final int wMax = aStr.length();
+		int wI = 0;
+		while (wI < wMax) {
+			char wChar = aStr.charAt(wI);
+			// check if it's digit
+			if (!Character.isDigit(wChar) && aSep != wChar) {
+				return false;
+			} else if (hasDot && aSep == wChar) {
+				return false;
+			} else if (!hasDot && aSep == wChar) {
+				hasDot = true;
+			}
+
+			wI++;
+		}
+		return true;
+	}
+
+	/**
 	 * @param aString
 	 *            a String
 	 * @param aValues
@@ -432,6 +474,7 @@ public final class CXStringUtils implements IConstants {
 
 	/**
 	 * @param aStr
+	 *
 	 * @return
 	 */
 	public static boolean isNumeric(final String aStr) {
