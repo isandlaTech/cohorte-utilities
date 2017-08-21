@@ -9,8 +9,26 @@
 
 	<packaging>eclipse-plugin</packaging>
 	
+	<properties>
+		<tycho-version>1.0.0</tycho-version>
+		<osgi-version>5.0.0</osgi-version>		
+		<ipojo-version>1.12.1</ipojo-version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>				
+	</properties>
 		
 	<dependencies>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<version>${osgi-version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.ipojo.annotations</artifactId>
+			<version>${ipojo-version}</version>
+			<scope>compile</scope>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -18,21 +36,16 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<!--
-	<properties>
-		<eclipse-p2-repo.url>http://download.eclipse.org/releases/luna</eclipse-p2-repo.url>
-	</properties>
-	
-	<repositories>
-		<repository>
-			<id>eclipse-p2-repo</id>
-			<url>${eclipse-p2-repo.url}</url>
-			<layout>p2</layout>
-		</repository>
-	</repositories>
-	-->
+
 	<build>
 		<plugins>
+			<!-- tyco plugin -->
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<extensions>true</extensions>
+			</plugin>
 			<!-- Generates sources jar -->
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
@@ -47,11 +60,99 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- ipOJO Plugin -->
 			<plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-ipojo-plugin</artifactId>
 			</plugin>
 		</plugins>
+		<pluginManagement>					
+			<plugins>
+				<!-- tycho plugin configuration -->
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-maven-plugin</artifactId>
+					<version>${tycho-version}</version>
+					<extensions>true</extensions>
+				</plugin>
+				<!-- Generates sources plugin configuration -->
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-source-plugin</artifactId>
+					<version>${tycho-version}</version>
+					<executions>
+						<execution>
+							<id>plugin-source</id>
+							<goals>
+								<goal>plugin-source</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>	
+				<!-- consider pom dependencies -->
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>target-platform-configuration</artifactId>
+					<version>${tycho-version}</version>
+					<configuration>
+						<pomDependencies>consider</pomDependencies>
+					</configuration>
+				</plugin>
+				<!-- Add iPOJO annotations to class path -->
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-compiler-plugin</artifactId>
+					<version>${tycho-version}</version>
+					<configuration>
+						<source>1.7</source>
+						<target>1.7</target>
+						<extraClasspathElements>
+							<!-- iPOJO Annotations are not in a bundle -->
+							<extraClasspathElement>
+								<groupId>org.apache.felix</groupId>
+								<artifactId>org.apache.felix.ipojo.annotations</artifactId>
+								<version>${ipojo-version}</version>
+							</extraClasspathElement>
+						</extraClasspathElements>
+					</configuration>
+				</plugin>				
+				<!-- iPOJO manipulation -->
+				<plugin>
+					<groupId>org.apache.felix</groupId>
+					<artifactId>maven-ipojo-plugin</artifactId>
+					<version>${ipojo-version}</version>
+					<configuration>
+						<!-- Add support for Tycho packaging -->
+						<m_supportedProjectTypes>
+							<type>eclipse-plugin</type>
+						</m_supportedProjectTypes>
+					</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>ipojo-bundle</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>				
+			</plugins>
+		</pluginManagement>
 	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>cohorte-nexus</id>
+			<name>Cohorte Releases Repository</name>
+			<url>http://nrm.cohorte.tech/repository/cohorte-releases/</url>
+			<layout>default</layout>
+		</repository>
+		<snapshotRepository>
+			<id>cohorte-nexus</id>
+			<name>Cohorte Snapshots Repository</name>
+			<url>http://nrm.cohorte.tech/repository/cohorte-snapshots/</url>
+			<uniqueVersion>true</uniqueVersion>
+			<layout>default</layout>
+		</snapshotRepository>
+	</distributionManagement>
 
 </project>
