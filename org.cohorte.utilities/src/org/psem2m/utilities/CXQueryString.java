@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 public class CXQueryString {
 
@@ -99,7 +98,7 @@ public class CXQueryString {
 		Map<String, String> wResult = new HashMap<String, String>();
 		for (String wKey : wSplit.keySet()) {
 			List<String> wVals = wSplit.get(wKey);
-			wResult.put(wKey, wVals.stream().collect(Collectors.joining("|")));
+			wResult.put(wKey, CXStringUtils.stringListToString(wVals, "|"));
 		}
 
 		return wResult;
@@ -331,7 +330,7 @@ public class CXQueryString {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
