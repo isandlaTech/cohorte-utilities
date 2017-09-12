@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: COHORTE :: Utilities
 Bundle-SymbolicName: org.cohorte.utilities
-Bundle-Version: 1.0.13
+Bundle-Version: 1.0.14
 Bundle-Vendor: isandlaTech.com
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: javax.script,
@@ -18,7 +18,7 @@ Export-Package: javax.script,
  org.psem2m.utilities.scripting,
  org.psem2m.utilities.system
 DynamicImport-Package: *
-Import-Package: org.osgi.framework
 Bundle-ClassPath: .
 Bundle-Activator: org.cohorte.utilities.Activator
 Bundle-ActivationPolicy: lazy
+Import-Package: org.osgi.framework

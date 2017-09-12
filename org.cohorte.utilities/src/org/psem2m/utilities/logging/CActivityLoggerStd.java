@@ -12,10 +12,10 @@ import org.psem2m.utilities.CXStringUtils;
 
 /**
  * @author isandlatech (www.isandlatech.com) - ogattaz
- * 
+ *
  */
 public class CActivityLoggerStd extends CActivityObject implements
-		IActivityLogger {
+		IActivityLoggerJul {
 
 	private final static String FORMAT_CLOSELOG = "Close logger [%s]";
 
@@ -45,7 +45,7 @@ public class CActivityLoggerStd extends CActivityObject implements
 			final String aFilePathPattern, final String aLevel,
 			final int aFileLimit, final int aFileCount) throws Exception {
 
-		CActivityLoggerStd wLogger = new CActivityLoggerStd(aLoggerName,
+		final CActivityLoggerStd wLogger = new CActivityLoggerStd(aLoggerName,
 				aFilePathPattern, aLevel, aFileLimit, aFileCount);
 		wLogger.initFileHandler();
 		wLogger.open();
@@ -62,7 +62,7 @@ public class CActivityLoggerStd extends CActivityObject implements
 
 	private Level pLevel;
 
-	private Logger pLogger;
+	private Logger pJulLogger;
 
 	private final CLogLineTextBuilder pLogLineTextBuilder = CLogLineTextBuilder
 			.getInstance();
@@ -106,7 +106,7 @@ public class CActivityLoggerStd extends CActivityObject implements
 	 */
 	protected CharSequence buildLine(CharSequence aLine, final Throwable e) {
 		if (e != null) {
-			StringBuilder wSB = new StringBuilder();
+			final StringBuilder wSB = new StringBuilder();
 			wSB.append(aLine);
 			wSB.append(' ');
 			wSB.append(CXException.eInString(e));
@@ -116,28 +116,29 @@ public class CActivityLoggerStd extends CActivityObject implements
 	}
 
 	/**
-   * 
+   *
    */
 	@Override
 	public void close() {
 		if (isOpened()) {
 			// restart the logging in the parent logger
-			pLogger.setUseParentHandlers(true);
+			pJulLogger.setUseParentHandlers(true);
 
-			String wLine = String.format(FORMAT_CLOSELOG, getLoggerName());
-			pLogger.logp(Level.INFO, getClass().getSimpleName(),
+			final String wLine = String
+					.format(FORMAT_CLOSELOG, getLoggerName());
+			pJulLogger.logp(Level.INFO, getClass().getSimpleName(),
 					LIB_METHOD_CLOSE, wLine);
 			// close
-			pLogger.setLevel(Level.OFF);
+			pJulLogger.setLevel(Level.OFF);
 			pFileHandler.close();
 
 			// disociates the file handler and the logger
 			if (hasFileHandler()) {
-				pLogger.removeHandler(pFileHandler);
+				pJulLogger.removeHandler(pFileHandler);
 			}
 
 			// free the logger
-			pLogger = null;
+			pJulLogger = null;
 		}
 	}
 
@@ -175,6 +176,11 @@ public class CActivityLoggerStd extends CActivityObject implements
 	}
 
 	@Override
+	public Logger getJulLogger() {
+		return pJulLogger;
+	}
+
+	@Override
 	public Level getLevel() {
 		return pLevel;
 	}
@@ -188,7 +194,7 @@ public class CActivityLoggerStd extends CActivityObject implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.psem2m.utilities.IActivityLogger#getRequester()
 	 */
 	@Override
@@ -218,10 +224,10 @@ public class CActivityLoggerStd extends CActivityObject implements
 	}
 
 	/**
-   * 
+   *
    */
 	protected void initFileHandler() throws Exception {
-		CActivityFileHandler wFileHandler = new CActivityFileHandler(
+		final CActivityFileHandler wFileHandler = new CActivityFileHandler(
 				getFilePathPattern(), getFileLimit(), getFileCount());
 		wFileHandler.setFormatter(new CActivityFormaterStd());
 		setFileHandler(wFileHandler);
@@ -234,7 +240,7 @@ public class CActivityLoggerStd extends CActivityObject implements
 
 	@Override
 	public boolean isLoggable(final Level aLevel) {
-		return isOpened() && pLogger.isLoggable(aLevel);
+		return isOpened() && pJulLogger.isLoggable(aLevel);
 	}
 
 	@Override
@@ -259,12 +265,12 @@ public class CActivityLoggerStd extends CActivityObject implements
 	 * @return
 	 */
 	protected boolean isOpened() {
-		return pLogger != null;
+		return pJulLogger != null;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.logging.IActivityLogger#log(java.util.logging.Level,
 	 * java.lang.Object, java.lang.CharSequence, java.lang.Object[])
@@ -277,12 +283,12 @@ public class CActivityLoggerStd extends CActivityObject implements
 		if (isOpened()) {
 			wLogLine = pLogLineTextBuilder.buildLogLine(aInfos);
 		}
-		CharSequence wWhat = (aWhat != null) ? aWhat : CXJavaRunContext
+		final CharSequence wWhat = (aWhat != null) ? aWhat : CXJavaRunContext
 				.getPreCallingMethod();
 
 		// to diagnose the logging tool
 		if (isTraceDebugOn()) {
-			CLogLineBuffer wTB = new CLogLineBuffer();
+			final CLogLineBuffer wTB = new CLogLineBuffer();
 			wTB.appendDescr("LOG", aLevel.getName());
 			wTB.append(' ');
 			wTB.append(wLogLine != null ? wLogLine : "no infos");
@@ -291,7 +297,7 @@ public class CActivityLoggerStd extends CActivityObject implements
 
 		if (wLogLine != null) {
 
-			pLogger.logp(aLevel, pLogLineTextBuilder.buildWhoObjectId(aWho),
+			pJulLogger.logp(aLevel, pLogLineTextBuilder.buildWhoObjectId(aWho),
 					wWhat.toString(), wLogLine);
 		}
 
@@ -299,19 +305,19 @@ public class CActivityLoggerStd extends CActivityObject implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.logging.IActivityLoggerBase#log(java.util.logging
 	 * .LogRecord)
 	 */
 	@Override
 	public void log(final LogRecord record) {
-		pLogger.log(record);
+		pJulLogger.log(record);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.logging.IActivityLogger#logDebug(java.lang.Object,
 	 * java.lang.CharSequence, java.lang.Object[])
@@ -325,7 +331,7 @@ public class CActivityLoggerStd extends CActivityObject implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.logging.IActivityLogger#logInfo(java.lang.Object,
 	 * java.lang.CharSequence, java.lang.Object[])
@@ -338,7 +344,7 @@ public class CActivityLoggerStd extends CActivityObject implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.logging.IActivityLogger#logSevere(java.lang.Object,
 	 * java.lang.CharSequence, java.lang.Object[])
@@ -351,7 +357,7 @@ public class CActivityLoggerStd extends CActivityObject implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.logging.IActivityLogger#logWarn(java.lang.Object,
 	 * java.lang.CharSequence, java.lang.Object[])
@@ -363,7 +369,7 @@ public class CActivityLoggerStd extends CActivityObject implements
 	}
 
 	/**
-   * 
+   *
    */
 	protected void open() throws Exception {
 		if (!hasLoggerName()) {
@@ -379,7 +385,7 @@ public class CActivityLoggerStd extends CActivityObject implements
 		}
 
 		if (isOpened()) {
-			throw new Exception("The Logger [" + pLogger.getName()
+			throw new Exception("The Logger [" + pJulLogger.getName()
 					+ "] is already opened.");
 		}
 
@@ -389,26 +395,26 @@ public class CActivityLoggerStd extends CActivityObject implements
 		 * logging output to its parent's handlers. It will be registered in the
 		 * LogManager global namespace.
 		 */
-		pLogger = Logger.getLogger(getLoggerName());
+		pJulLogger = Logger.getLogger(getLoggerName());
 		// remove the current handler of the new logger
-		removeHandlers(pLogger);
+		removeHandlers(pJulLogger);
 		// put in place the Filehandler in the logger
 		if (hasFileHandler()) {
-			pLogger.addHandler(pFileHandler);
+			pJulLogger.addHandler(pFileHandler);
 			// use the same formater as the file handler one in the parent
 			// logger
-			if (pLogger.getUseParentHandlers()) {
-				setFormater(pLogger.getParent(), pFileHandler.getFormatter());
+			if (pJulLogger.getUseParentHandlers()) {
+				setFormater(pJulLogger.getParent(), pFileHandler.getFormatter());
 			}
 		}
-		pLogger.setLevel(pLevel);
+		pJulLogger.setLevel(pLevel);
 
-		String wLine = String.format(FORMAT_OPENLOG, getLoggerName());
+		final String wLine = String.format(FORMAT_OPENLOG, getLoggerName());
 		// log in the current logger and in its parent
 		logInfo(this, LIB_METHOD_OPEN, wLine);
 
 		// stop the logging in the parent logger
-		pLogger.setUseParentHandlers(false);
+		pJulLogger.setUseParentHandlers(false);
 	}
 
 	/**
@@ -418,7 +424,7 @@ public class CActivityLoggerStd extends CActivityObject implements
 	private int removeHandlers(final Logger aLogger) {
 		int wMax = -1;
 		if (aLogger != null) {
-			Handler[] wHandlers = aLogger.getHandlers();
+			final Handler[] wHandlers = aLogger.getHandlers();
 			wMax = (wHandlers != null) ? wHandlers.length : -1;
 			int wI = 0;
 			while (wI < wMax) {
@@ -444,7 +450,7 @@ public class CActivityLoggerStd extends CActivityObject implements
 	private int setFormater(final Logger aLogger, final Formatter aFormatter) {
 		int wMax = -1;
 		if (aLogger != null) {
-			Handler[] wHandlers = aLogger.getHandlers();
+			final Handler[] wHandlers = aLogger.getHandlers();
 			wMax = (wHandlers != null) ? wHandlers.length : -1;
 			int wI = 0;
 			while (wI < wMax) {
@@ -457,7 +463,7 @@ public class CActivityLoggerStd extends CActivityObject implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.logging.IActivityLogger#setLevel(java.util.logging
 	 * .Level)
@@ -473,8 +479,8 @@ public class CActivityLoggerStd extends CActivityObject implements
 	@Override
 	public void setLevel(String aLevel) {
 		pLevel = CActivityUtils.levelToLevel(aLevel);
-		if (pLogger != null) {
-			pLogger.setLevel(pLevel);
+		if (pJulLogger != null) {
+			pJulLogger.setLevel(pLevel);
 		}
 	}
 }

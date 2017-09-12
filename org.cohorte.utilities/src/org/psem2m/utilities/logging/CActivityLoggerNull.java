@@ -2,14 +2,15 @@ package org.psem2m.utilities.logging;
 
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import org.psem2m.utilities.CXStringUtils;
 
 /**
  * @author isandlatech (www.isandlatech.com) - ogattaz
- * 
+ *
  */
-public class CActivityLoggerNull implements IActivityLogger {
+public class CActivityLoggerNull implements IActivityLoggerJul {
 
 	/**
 	 * @return
@@ -20,7 +21,7 @@ public class CActivityLoggerNull implements IActivityLogger {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.IXDescriber#addDescriptionInBuffer(java.lang.Appendable
 	 * )
@@ -40,7 +41,7 @@ public class CActivityLoggerNull implements IActivityLogger {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.psem2m.utilities.logging.IActivityLogger#close()
 	 */
 	@Override
@@ -50,6 +51,16 @@ public class CActivityLoggerNull implements IActivityLogger {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see org.psem2m.utilities.logging.IActivityLoggerJul#getJulLogger()
+	 */
+	@Override
+	public Logger getJulLogger() {
+		return CXJulUtils.getRootLogger();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
 	 * @see org.psem2m.utilities.logging.IActivityLoggerBase#getLevel()
 	 */
 	@Override
@@ -59,7 +70,7 @@ public class CActivityLoggerNull implements IActivityLogger {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.psem2m.utilities.logging.IActivityLogger#getRequester()
 	 */
 	@Override
@@ -110,7 +121,7 @@ public class CActivityLoggerNull implements IActivityLogger {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.logging.IActivityLoggerBase#log(java.util.logging
 	 * .LogRecord)
@@ -121,7 +132,7 @@ public class CActivityLoggerNull implements IActivityLogger {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.logging.IActivityLogger#logDebug(java.lang.Object,
 	 * java.lang.CharSequence, java.lang.Object[])
@@ -134,7 +145,7 @@ public class CActivityLoggerNull implements IActivityLogger {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.logging.IActivityLogger#logInfo(java.lang.Object,
 	 * java.lang.CharSequence, java.lang.Object[])
@@ -146,7 +157,7 @@ public class CActivityLoggerNull implements IActivityLogger {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.logging.IActivityLogger#logSevere(java.lang.Object,
 	 * java.lang.CharSequence, java.lang.Object[])
@@ -158,7 +169,7 @@ public class CActivityLoggerNull implements IActivityLogger {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.logging.IActivityLogger#logWarn(java.lang.Object,
 	 * java.lang.CharSequence, java.lang.Object[])
@@ -175,7 +186,7 @@ public class CActivityLoggerNull implements IActivityLogger {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.logging.IActivityLogger#setLevel(java.lang.String)
 	 */
@@ -186,7 +197,7 @@ public class CActivityLoggerNull implements IActivityLogger {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.psem2m.utilities.IXDescriber#toDescription()
 	 */
 	@Override

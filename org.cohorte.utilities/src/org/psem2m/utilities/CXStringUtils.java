@@ -29,6 +29,9 @@ public final class CXStringUtils implements IConstants {
 	 **/
 	public final static char CHAR_LINE_LOG_SEP = '\u00A7';
 
+	// MOD_OG_1.0.14
+	public static final String ELEMENT_SEP = ",";
+
 	private static final String FORMAT_EXCEPTION = "Exception=[%s] ";
 
 	private static final String FORMAT_MESAGE = "Message=[%s] ";
@@ -437,7 +440,7 @@ public final class CXStringUtils implements IConstants {
 		final int wMax = aStr.length();
 		int wI = 0;
 		while (wI < wMax) {
-			char wChar = aStr.charAt(wI);
+			final char wChar = aStr.charAt(wI);
 			// check if it's digit
 			if (!Character.isDigit(wChar) && aSep != wChar) {
 				return false;
@@ -909,10 +912,10 @@ public final class CXStringUtils implements IConstants {
 		if (aStringMap.isEmpty()) {
 			return "{}";
 		}
-		StringBuilder wSB = new StringBuilder(256);
+		final StringBuilder wSB = new StringBuilder(256);
 		wSB.append('{');
 		int wI = 0;
-		for (Map.Entry<String, String> wKeyValue : aStringMap.entrySet()) {
+		for (final Map.Entry<String, String> wKeyValue : aStringMap.entrySet()) {
 			if (wI > 0) {
 				wSB.append(aSeparator);
 			}

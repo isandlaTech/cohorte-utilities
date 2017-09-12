@@ -1,15 +1,16 @@
 package org.psem2m.utilities.logging;
 
 import java.util.logging.Formatter;
+import java.util.logging.Logger;
 
 import org.psem2m.utilities.CXException;
 
 /**
  * @author ogattaz
- * 
+ *
  */
 public class CActivityLoggerBasic extends CActivityLogger implements
-		IActivityLogger {
+		IActivityLoggerJul {
 
 	/**
 	 * @param aTracer
@@ -48,9 +49,9 @@ public class CActivityLoggerBasic extends CActivityLogger implements
 			final String aFilePathPattern, final String aLevel,
 			final int aFileLimit, final int aFileCount,
 			EActivityLogColumn[] aLineDef, boolean aMultiLine) throws Exception {
-		CActivityLoggerBasic wLogger = new CActivityLoggerBasic(aLoggerName,
-				aFilePathPattern, aLevel, aFileLimit, aFileCount, aLineDef,
-				aMultiLine);
+		final CActivityLoggerBasic wLogger = new CActivityLoggerBasic(
+				aLoggerName, aFilePathPattern, aLevel, aFileLimit, aFileCount,
+				aLineDef, aMultiLine);
 		wLogger.initFileHandler();
 		wLogger.open();
 		return wLogger;
@@ -110,13 +111,23 @@ public class CActivityLoggerBasic extends CActivityLogger implements
 	 */
 	protected String buildLine(String aLine, final Throwable e) {
 		if (e != null) {
-			StringBuilder wSB = new StringBuilder();
+			final StringBuilder wSB = new StringBuilder();
 			wSB.append(aLine);
 			wSB.append(' ');
 			wSB.append(CXException.eInString(e).replace('\n', '|'));
 			aLine = wSB.toString();
 		}
 		return aLine;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.logging.IActivityLoggerJul#getJulLogger()
+	 */
+	@Override
+	public Logger getJulLogger() {
+		return pLogger;
 	}
 
 	/*
@@ -137,10 +148,10 @@ public class CActivityLoggerBasic extends CActivityLogger implements
 	@Override
 	protected void initFileHandler() throws Exception {
 
-		CActivityFileHandler wFileHandler = new CActivityFileHandler(
+		final CActivityFileHandler wFileHandler = new CActivityFileHandler(
 				getFilePathPattern(), getFileLimit(), getFileCount());
 
-		IActivityFormater wActivityFormater = CActivityFormaterBasic
+		final IActivityFormater wActivityFormater = CActivityFormaterBasic
 				.getInstance(pLineDef);
 
 		wActivityFormater.acceptMultiline(pMultiLine);

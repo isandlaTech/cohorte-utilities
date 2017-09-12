@@ -12,7 +12,7 @@ import org.psem2m.utilities.CXStringUtils;
 
 /**
  * @author isandlatech (www.isandlatech.com) - ogattaz
- * 
+ *
  */
 public class CActivityLogger extends CActivityObject implements IActivityLogger {
 
@@ -44,7 +44,7 @@ public class CActivityLogger extends CActivityObject implements IActivityLogger 
 			final String aFilePathPattern, final String aLevel,
 			final int aFileLimit, final int aFileCount) throws Exception {
 
-		CActivityLogger wLogger = new CActivityLogger(aLoggerName,
+		final CActivityLogger wLogger = new CActivityLogger(aLoggerName,
 				aFilePathPattern, aLevel, aFileLimit, aFileCount);
 		wLogger.initFileHandler();
 		wLogger.open();
@@ -61,7 +61,10 @@ public class CActivityLogger extends CActivityObject implements IActivityLogger 
 
 	private Level pLevel;
 
-	private Logger pLogger;
+	protected Logger pLogger;
+
+	// MOD_OG_1.0.14
+	private final String pLoggerName;
 
 	private final CLogLineTextBuilder pLogLineTextBuilder = CLogLineTextBuilder
 			.getInstance();
@@ -82,6 +85,7 @@ public class CActivityLogger extends CActivityObject implements IActivityLogger 
 			final String aFilePathPattern, final String aLevel,
 			final int aFileLimit, final int aFileCount) throws Exception {
 		super(null, aLoggerName);
+		pLoggerName = aLoggerName;
 		pFilePathPattern = aFilePathPattern;
 		setLevel(aLevel);
 		pFileLimit = aFileLimit;
@@ -105,7 +109,7 @@ public class CActivityLogger extends CActivityObject implements IActivityLogger 
 	 */
 	protected CharSequence buildLine(CharSequence aLine, final Throwable e) {
 		if (e != null) {
-			StringBuilder wSB = new StringBuilder();
+			final StringBuilder wSB = new StringBuilder();
 			wSB.append(aLine);
 			wSB.append(' ');
 			wSB.append(CXException.eInString(e));
@@ -115,7 +119,7 @@ public class CActivityLogger extends CActivityObject implements IActivityLogger 
 	}
 
 	/**
-   * 
+   *
    */
 	@Override
 	public void close() {
@@ -123,7 +127,8 @@ public class CActivityLogger extends CActivityObject implements IActivityLogger 
 			// restart the logging in the parent logger
 			pLogger.setUseParentHandlers(true);
 
-			String wLine = String.format(FORMAT_CLOSELOG, getLoggerName());
+			final String wLine = String
+					.format(FORMAT_CLOSELOG, getLoggerName());
 			pLogger.logp(Level.INFO, getClass().getSimpleName(),
 					LIB_METHOD_CLOSE, wLine);
 
@@ -195,10 +200,12 @@ public class CActivityLogger extends CActivityObject implements IActivityLogger 
 	}
 
 	/**
-	 * @return
+	 * MOD_OG_1.0.14
+	 * 
+	 * @return The name of the logger name
 	 */
 	public String getLoggerName() {
-		return getIdentifier();
+		return pLoggerName;
 	}
 
 	/*
@@ -233,10 +240,10 @@ public class CActivityLogger extends CActivityObject implements IActivityLogger 
 	}
 
 	/**
-   * 
+   *
    */
 	protected void initFileHandler() throws Exception {
-		CActivityFileHandler wFileHandler = new CActivityFileHandler(
+		final CActivityFileHandler wFileHandler = new CActivityFileHandler(
 				getFilePathPattern(), getFileLimit(), getFileCount());
 		wFileHandler.setFormatter(new CActivityFormaterStd());
 		setFileHandler(wFileHandler);
@@ -292,12 +299,12 @@ public class CActivityLogger extends CActivityObject implements IActivityLogger 
 		if (isOpened()) {
 			wLogLine = pLogLineTextBuilder.buildLogLine(aInfos);
 		}
-		CharSequence wWhat = (aWhat != null) ? aWhat : CXJavaRunContext
+		final CharSequence wWhat = (aWhat != null) ? aWhat : CXJavaRunContext
 				.getPreCallingMethod();
 
 		// to diagnose the logging tool
 		if (isTraceDebugOn()) {
-			CLogLineBuffer wTB = new CLogLineBuffer();
+			final CLogLineBuffer wTB = new CLogLineBuffer();
 			wTB.appendDescr("LOG", aLevel.getName());
 			wTB.append(' ');
 			wTB.append(wLogLine != null ? wLogLine : "no infos");
@@ -378,7 +385,7 @@ public class CActivityLogger extends CActivityObject implements IActivityLogger 
 	}
 
 	/**
-   * 
+   *
    */
 	protected void open() throws Exception {
 		if (!hasLoggerName()) {
@@ -418,7 +425,7 @@ public class CActivityLogger extends CActivityObject implements IActivityLogger 
 		}
 		pLogger.setLevel(pLevel);
 
-		String wLine = String.format(FORMAT_OPENLOG, getLoggerName());
+		final String wLine = String.format(FORMAT_OPENLOG, getLoggerName());
 		// log in the current logger and in its parent
 		logInfo(this, LIB_METHOD_OPEN, wLine);
 
@@ -433,7 +440,7 @@ public class CActivityLogger extends CActivityObject implements IActivityLogger 
 	private int removeHandlers(final Logger aLogger) {
 		int wMax = -1;
 		if (aLogger != null) {
-			Handler[] wHandlers = aLogger.getHandlers();
+			final Handler[] wHandlers = aLogger.getHandlers();
 			wMax = (wHandlers != null) ? wHandlers.length : -1;
 			int wI = 0;
 			while (wI < wMax) {
@@ -459,7 +466,7 @@ public class CActivityLogger extends CActivityObject implements IActivityLogger 
 	private int setFormater(final Logger aLogger, final Formatter aFormatter) {
 		int wMax = -1;
 		if (aLogger != null) {
-			Handler[] wHandlers = aLogger.getHandlers();
+			final Handler[] wHandlers = aLogger.getHandlers();
 			wMax = (wHandlers != null) ? wHandlers.length : -1;
 			int wI = 0;
 			while (wI < wMax) {
