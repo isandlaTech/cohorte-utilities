@@ -49,11 +49,13 @@ public class CJsonProvider implements IJsonProvider {
 	private final IActivityLogger pLogger;
 
 	private final Pattern pPatternAll = Pattern.compile(
-			"(/\\*+.*(\n|.)*?\\*.*(\n|.)*?.*\\*+/)|(.*//.*$)",
+			"(/\\*+((\n|\\s|\t)*[^\\*][^/](\n|\\s|\t)*)*\\*+/)|(.*//.*$)",
+
 			Pattern.MULTILINE);
 
 	private final Pattern pPatternCheck = Pattern.compile(
-			"(/\\*+.*(\n|.)*?\\*.*(\n|.)*?.*\\*+/)", Pattern.MULTILINE);
+			"(/\\*+((\n|\\s|\t)*[^\\*][^/](\n|\\s|\t)*)*\\*+/)",
+			Pattern.MULTILINE);
 
 	private final Pattern pPatternCheckSlash = Pattern.compile("(\".*//.*\")",
 			Pattern.MULTILINE);

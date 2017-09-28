@@ -1,4 +1,4 @@
-package org.cohorte.utilities.json;
+package test.cohorte.utilities.json;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -15,7 +15,7 @@ import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 import org.psem2m.utilities.files.CXFileText;
 import org.psem2m.utilities.json.JSONObject;
-import org.psem2m.utilities.logging.CActivityLoggerNull;
+import org.psem2m.utilities.logging.CActivityLoggerBasicConsole;
 import org.psem2m.utilities.rsrc.CXRsrcProviderFile;
 
 /**
@@ -63,7 +63,7 @@ public class CTestProcessJson extends TestCase {
 					fileTestsIn2, Charset.defaultCharset()));
 
 			pProvider = new CJsonProvider(wResolver,
-					CActivityLoggerNull.getInstance());
+					CActivityLoggerBasicConsole.getInstance());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
