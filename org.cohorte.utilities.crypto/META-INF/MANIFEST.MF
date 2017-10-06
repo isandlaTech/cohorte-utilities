@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: COHORTE :: Utilities.Crypto
 Bundle-SymbolicName: org.cohorte.utilities.crypto
-Bundle-Version: 1.0.1
+Bundle-Version: 1.0.2
 Bundle-Activator: org.cohorte.utilities.crypto.Activator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.cohorte.utilities.encode,
