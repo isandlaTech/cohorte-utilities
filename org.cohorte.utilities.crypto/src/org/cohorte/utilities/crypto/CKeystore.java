@@ -31,26 +31,27 @@ public class CKeystore {
 	private final KeyStore pKS;
 	private boolean pLoaded = false;
 	private String wPassPhrase = null;
-	
+
+	/**
+	 * @param aKeystoreType
+	 * @param aPassPhrase
+	 * @throws KeyStoreException
+	 */
+	public CKeystore(final EKeystoreType aKeystoreType, final String aPassPhrase)
+			throws KeyStoreException {
+		super();
+		wPassPhrase = aPassPhrase;
+		pKS = KeyStore.getInstance(aKeystoreType.name());
+	}
 
 	/**
 	 * @param aPassPhrase
 	 * @throws KeyStoreException
 	 * @deprecated
 	 */
+	@Deprecated
 	public CKeystore(final String aPassPhrase) throws KeyStoreException {
-		this(EKeystoreType.JKS,aPassPhrase);
-	}
-	
-	/**
-	 * @param aKeystoreType
-	 * @param aPassPhrase
-	 * @throws KeyStoreException
-	 */
-	public CKeystore(final EKeystoreType aKeystoreType ,final String aPassPhrase) throws KeyStoreException {
-		super();
-		wPassPhrase = aPassPhrase;
-		pKS = KeyStore.getInstance(aKeystoreType.name());
+		this(EKeystoreType.JKS, aPassPhrase);
 	}
 
 	/**
@@ -101,6 +102,26 @@ public class CKeystore {
 	}
 
 	/**
+	 * @param aAlias
+	 * @return
+	 * @throws KeyStoreException
+	 */
+	public boolean contains(final String aAlias) throws KeyStoreException {
+		return isCertificateEntry(aAlias) || isKeyEntry(aAlias);
+	}
+
+	/**
+	 * @param aAlias
+	 * @return
+	 * @throws KeyStoreException
+	 */
+	public Certificate getCerificate(final String aAlias)
+			throws KeyStoreException {
+
+		return pKS.getCertificate(aAlias);
+	}
+
+	/**
 	 * @return
 	 * @throws KeyStoreException
 	 */
@@ -115,56 +136,6 @@ public class CKeystore {
 		}
 		return new ArrayList<String>();
 	}
-	
-	/**
-	 * @param aAlias
-	 * @return
-	 * @throws KeyStoreException
-	 */
-	public boolean isCertificateEntry(final String aAlias) throws KeyStoreException{
-		
-		return pKS.isCertificateEntry(aAlias);
-	}
-	
-	/**
-	 * @param aAlias
-	 * @return
-	 * @throws KeyStoreException
-	 */
-	public boolean contains(final String aAlias) throws KeyStoreException{
-		return isCertificateEntry(aAlias) || isKeyEntry(aAlias);
-	}
-	/**
-	 * @param aAlias
-	 * @return
-	 * @throws KeyStoreException
-	 */
-	public boolean isKeyEntry(final String aAlias) throws KeyStoreException{
-		
-		return pKS.isKeyEntry(aAlias);
-	}
-	/**
-	 * @param aAlias
-	 * @return
-	 * @throws KeyStoreException
-	 */
-	public Certificate getCerificate(final String aAlias) throws KeyStoreException{
-		
-		return pKS.getCertificate(aAlias);
-	}
-	
-	/**
-	 * @param aAlias
-	 * @param aPassword
-	 * @return
-	 * @throws UnrecoverableKeyException
-	 * @throws NoSuchAlgorithmException
-	 * @throws KeyStoreException
-	 */
-	public Key getKey(final String aAlias,final String aPassword) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException{
-		
-		return pKS.getKey(aAlias, aPassword.toCharArray());
-	}
 
 	/**
 	 * @return
@@ -174,11 +145,27 @@ public class CKeystore {
 	}
 
 	/**
+	 * @param aAlias
+	 * @param aPassword
+	 * @return
+	 * @throws UnrecoverableKeyException
+	 * @throws NoSuchAlgorithmException
+	 * @throws KeyStoreException
+	 */
+	public Key getKey(final String aAlias, final String aPassword)
+			throws UnrecoverableKeyException, NoSuchAlgorithmException,
+			KeyStoreException {
+
+		return pKS.getKey(aAlias, aPassword.toCharArray());
+	}
+
+	/**
 	 * @return
 	 */
-	public KeyStore getKeyStore(){
+	public KeyStore getKeyStore() {
 		return pKS;
 	}
+
 	/**
 	 * @return
 	 */
@@ -198,6 +185,17 @@ public class CKeystore {
 	 */
 	private char[] getPassPhraseAsChars() {
 		return (wPassPhrase != null) ? wPassPhrase.toCharArray() : new char[0];
+	}
+
+	/**
+	 * @param aAlias
+	 * @return
+	 * @throws KeyStoreException
+	 */
+	public boolean isCertificateEntry(final String aAlias)
+			throws KeyStoreException {
+
+		return pKS.isCertificateEntry(aAlias);
 	}
 
 	/**
@@ -231,6 +229,16 @@ public class CKeystore {
 	}
 
 	/**
+	 * @param aAlias
+	 * @return
+	 * @throws KeyStoreException
+	 */
+	public boolean isKeyEntry(final String aAlias) throws KeyStoreException {
+
+		return pKS.isKeyEntry(aAlias);
+	}
+
+	/**
 	 *
 	 */
 	public boolean isLoaded() {
@@ -254,7 +262,8 @@ public class CKeystore {
 		// if the file doesn't exist => init with a null streams
 		else {
 			pKS.load(null, null);
-			getLogger().logWarn(this, "load", "KeyStore not loaded. File is not readable");
+			getLogger().logWarn(this, "load",
+					"KeyStore not loaded. File is not readable");
 		}
 
 		return pLoaded;
@@ -270,31 +279,6 @@ public class CKeystore {
 
 		pKS.setCertificateEntry(aAloas, aCert);
 	}
-	
-	/**
-	 * @param aAlias
-	 * @param aKey
-	 * @param aPassword
-	 * @param aChain
-	 * @throws KeyStoreException
-	 */
-	public void setKeyEntry(final String aAlias, final PrivateKey aKey,final String aPassword,final Certificate[] aChain)
-			throws KeyStoreException {
-
-		pKS.setKeyEntry(aAlias, aKey, aPassword.toCharArray(), aChain);;
-	}
-	
-	/**
-	 * @param aAlias
-	 * @param aKey
-	 * @param aChain
-	 * @throws KeyStoreException
-	 */
-	public void setKeyEntry(final String aAlias, final byte[] aKey,final Certificate[] aChain)
-			throws KeyStoreException {
-
-		pKS.setKeyEntry(aAlias, aKey, aChain);;
-	}
 
 	/**
 	 * @param aFile
@@ -303,6 +287,51 @@ public class CKeystore {
 	public void setFile(final File aFile) {
 
 		pFile = aFile;
+	}
+
+	/**
+	 * @param aAlias
+	 * @param aKey
+	 * @param aChain
+	 * @throws KeyStoreException
+	 */
+	public void setKeyEntry(final String aAlias, final byte[] aKey,
+			final Certificate[] aChain) throws KeyStoreException {
+
+		pKS.setKeyEntry(aAlias, aKey, aChain);
+	}
+
+	/**
+	 * @param aAlias
+	 * @param aKey
+	 * @param aPassword
+	 * @param aChain
+	 * @throws KeyStoreException
+	 */
+	public void setKeyEntry(final String aAlias, final PrivateKey aKey,
+			final String aPassword, final Certificate[] aChain)
+			throws KeyStoreException {
+
+		pKS.setKeyEntry(aAlias, aKey, aPassword.toCharArray(), aChain);
+		;
+	}
+
+	public void setKeyEntry(final String aAlias, final PrivateKey aKey,
+			final String aPassword, final CX509Certificate... aChain)
+			throws KeyStoreException {
+		if (aChain != null && aChain.length > 0) {
+			// convert the aChain array of CX509Certificate to X509Certificate
+			Certificate[] wChain = new Certificate[aChain.length];
+			for (int i = 0; i < aChain.length; i++) {
+				wChain[i] = aChain[i].getCertificate();
+			}
+			pKS.setKeyEntry(aAlias, aKey, aPassword.toCharArray(), wChain);
+
+		} else {
+			// will throw a exception because it's needed
+			pKS.setKeyEntry(aAlias, aKey, aPassword.toCharArray(), null);
+
+		}
 	}
 
 	/**
@@ -356,7 +385,7 @@ public class CKeystore {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#toString()
 	 */
 	@Override

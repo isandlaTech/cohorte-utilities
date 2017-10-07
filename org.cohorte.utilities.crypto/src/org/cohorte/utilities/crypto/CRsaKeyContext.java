@@ -13,15 +13,16 @@ import org.psem2m.utilities.CXTimer;
 
 /**
  * An instance of CRsaKeyContext contains
- * 
+ *
  * @author ogattaz
- * 
+ *
  */
 public class CRsaKeyContext extends CX509Certificate {
 
 	private final CXTimer pCertificatTimer;
 	private final KeyPair pKeyPair;
 	private final CXTimer pKeyTimer;
+
 	private final long pTimeStamp;
 
 	/**
@@ -59,6 +60,10 @@ public class CRsaKeyContext extends CX509Certificate {
 	 */
 	public String getKeyDuration() {
 		return pKeyTimer.getDurationStrMilliSec();
+	}
+
+	public KeyPair getKeyPair() {
+		return pKeyPair;
 	}
 
 	/**
@@ -122,7 +127,7 @@ public class CRsaKeyContext extends CX509Certificate {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#toString()
 	 */
 	@Override

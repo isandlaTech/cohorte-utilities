@@ -79,6 +79,12 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 		String DEFAULT_FILENAME = "org.cohorte.config.default.filename";
 
 		/**
+		 * install filename service property name. This service property defines 
+		 * {@code pInstallFilename}.
+		 */
+		String INSTALL_FILENAME = "org.cohorte.config.install.filename";
+
+		/**
 		 * Sub-directory service property name. This service property defines
 		 * {@code pSubdirName}.
 		 */
@@ -105,6 +111,10 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 	 * Default value of {@code pCurrentFilename}.
 	 */
 	public static final String CURRENT_FILENAME = "current.properties";
+	/**
+	 * Default value of {@code pINstallFilename}.
+	 */
+	public static final String INSTALL_FILENAME = "install.properties";
 
 	/**
 	 * Default value of {@code pDefaultFilename}.
@@ -132,6 +142,8 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 	@Property(name = IServiceProperties.DEFAULT_FILENAME)
 	private String pDefaultFilename = DEFAULT_FILENAME;
 
+	@Property(name = IServiceProperties.INSTALL_FILENAME)
+	private String pInstallFileName = INSTALL_FILENAME;
 	/**
 	 * Cohorte isolate logger.
 	 */
@@ -313,7 +325,24 @@ public class CCpntPropertiesConfiguration implements IConfiguration {
 		else {
 			addFile(wList, wDefaultFile);
 		}
+		/*
+		 * install configuration file has the following default path:
+		 * <cohorte-base>/conf/<isolate-name>/install.properties
+		 */
+		File wInstallFile = new File(wDefaultDir, this.pInstallFileName);
 
+		// WARNING if the 'default.properties' file doen't exist !
+		if (!wInstallFile.isFile()) {
+			pLogger.logWarn(this, "getConfigurationFiles",
+					"The 'install' config file isn't found : [%s]",
+					wInstallFile);
+		}
+		// add the "install.properties" in the list
+		else {
+			addFile(wList, wInstallFile);
+		}
+
+		
 		/*
 		 * Current configuration files are in the directory :
 		 * <cohorte-data>/conf/<isolate-name>
