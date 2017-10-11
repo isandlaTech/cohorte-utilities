@@ -10,9 +10,8 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>org.cohorte.libs.org.javatuples</artifactId>
-	<!-- MOD_0G_20170102 -->
-	<version>1.2</version>
-	<!--<version>1.0.0.201501211743</version>-->
+	<!-- MOD_250 0G 20171010 -->
+	<version>1.2.0</version>
 	
 	<packaging>eclipse-plugin</packaging>
 	
