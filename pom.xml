@@ -45,7 +45,11 @@
 	<modules>		
 		<module>org.cohorte.libs.com.github.fge.jsonschema</module>
 		<!-- MOD_250 OG Have to correct the shape of the organizations of the feature "meteo neige" -->
-		<module>org.cohorte.libs.jts-all</module>
+		<module>ThirdPartiesLibs/org.cohorte.libs.jts-all</module>
+		<!-- MOD_250 OG add the building of  org.cohorte.libs.org.javatuples -->
+		<module>ThirdPartiesLibs/org.cohorte.libs.org.javatuples</module>
+		<!-- MOD_250 OG add the building of org.cohorte.libs.com.mysql which contains the mySql 5.0.8 jdbc driver -->
+		<module>ThirdPartiesLibs/org.cohorte.libs.com.mysql</module>
 
 		<!--<module>org.cohorte.utilities</module>-->
 		<module>org.cohorte.utilities.picosoc</module>
