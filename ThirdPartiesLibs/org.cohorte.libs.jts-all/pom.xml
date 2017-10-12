@@ -7,7 +7,7 @@
 		<groupId>org.cohorte.utilities.extra</groupId>
 		<artifactId>bundles</artifactId>
 		<version>1.0.0</version>
-		<relativePath>../Build/maven/build-bundles/pom.xml</relativePath>
+		<relativePath>../../Build/maven/build-bundles/pom.xml</relativePath>
 	</parent>
 	<artifactId>org.cohorte.libs.jts-all</artifactId>
 	<version>1.14.0</version>   <!-- ATTENSION : doit être le même que celui du MANIFEST -->
