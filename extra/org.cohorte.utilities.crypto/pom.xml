@@ -7,7 +7,7 @@
 		<groupId>org.cohorte.utilities.extra</groupId>
 		<artifactId>bundles</artifactId>
 		<version>1.0.0</version>
-		<relativePath>../Build/maven/build-bundles/pom.xml</relativePath>
+		<relativePath>../../Build/maven/build-bundles/pom.xml</relativePath>
 	</parent>
 	<artifactId>org.cohorte.utilities.crypto</artifactId>
 	<!-- MOD_BD_20150911 -->
