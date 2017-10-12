@@ -4,10 +4,10 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.cohorte.utilities</groupId>
-		<artifactId>utilities-parent</artifactId>
-		<version>3.0.0</version>
-		<relativePath>../pom.xml</relativePath>
+		<groupId>org.cohorte.utilities.extra</groupId>
+		<artifactId>bundles</artifactId>
+		<version>1.0.0</version>
+		<relativePath>../Build/maven/build-bundles/pom.xml</relativePath>
 	</parent>
 	<artifactId>org.cohorte.libs.com.mysql</artifactId>
 	<!-- MOD_0G_20170102 -->

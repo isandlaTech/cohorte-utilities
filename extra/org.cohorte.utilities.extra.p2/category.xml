@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <bundle id="org.cohorte.utilities" version="1.0.14">
+      <category name="utilities.extra"/>
+   </bundle>
+   <bundle id="org.cohorte.utilities.crypto" version="1.0.2">
+      <category name="utilities.extra"/>
+   </bundle>
+   <bundle id="org.cohorte.utilities.json" version="1.0.3">
+      <category name="utilities.extra"/>
+   </bundle>
+   <bundle id="org.cohorte.utilities.sql" version="1.0.3">
+      <category name="utilities.extra"/>
+   </bundle>
+   <bundle id="org.cohorte.utilities.test" version="1.0.1">
+      <category name="utilities.extra"/>
+   </bundle>
+   <bundle id="org.cohorte.utilities.ui.swing" version="1.0.0">
+      <category name="utilities.extra"/>
+   </bundle>
+   <bundle id="org.cohorte.utilities.webapp" version="1.0.0">
+      <category name="utilities.extra"/>
+   </bundle>
+   <bundle id="org.cohorte.libs.com.github.fge.jsonschema" version="1.0.0">
+      <category name="libs"/>
+   </bundle>
+   <bundle id="org.cohorte.libs.com.mysql" version="5.0.8">
+      <category name="libs"/>
+   </bundle>
+   <bundle id="org.cohorte.libs.com.sun.jna" version="3.3.0">
+      <category name="libs"/>
+   </bundle>
+   <bundle id="org.cohorte.libs.jts-all" version="1.14.0">
+      <category name="libs"/>
+   </bundle>
+   <bundle id="org.cohorte.libs.org.javatuples" version="1.2.0">
+      <category name="libs"/>
+   </bundle>
+   <category-def name="utilities.extra" label="utilities.extra"/>
+   <category-def name="libs" label="libs"/>
+</site>
