@@ -73,13 +73,13 @@
 	
 	<distributionManagement>
 		<repository>
-			<id>cohorte-nexus</id>
+			<id>utilities-extra</id>
 			<name>utilities-extra Releases Repository</name>
 			<url>http://nrm.cohorte.tech/repository/utilities-extra-releases</url>
 			<layout>default</layout>
 		</repository>
 		<snapshotRepository>
-			<id>cohorte-nexus</id>
+			<id>utilities-extra</id>
 			<name>utilities-extra Snapshots Repository</name>
 			<url>http://nrm.cohorte.tech/repository/utilities-extra-snapshots</url>
 			<uniqueVersion>true</uniqueVersion>
