@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.cohorte.utilities.extra</groupId>
+		<artifactId>utilities-extra-parent</artifactId>
+		<version>1.0.0</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<groupId>org.cohorte.utilities.extra</groupId>
+	<artifactId>updatesite</artifactId>
+
+	<packaging>pom</packaging>
+
+
+	<build>	
+		<plugins>								
+        	<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.6.0</version>
+				<executions>
+					<execution>
+						<id>delete_existing_raw_repo</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>bash</executable>
+							<workingDirectory>../../../extra/org.cohorte.utilities.extra.p2</workingDirectory>
+							<arguments>
+								<argument>delete.sh</argument>
+								<argument>${NEXUS_USER}</argument>
+								<argument>${NEXUS_PASS}</argument>
+								<argument>utilities-extra-p2-${project.version}</argument>
+							</arguments>							
+						</configuration>
+					</execution>
+					<execution>
+						<id>create_raw_repo</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>bash</executable>
+							<workingDirectory>../../../extra/org.cohorte.utilities.extra.p2</workingDirectory>
+							<arguments>
+								<argument>create.sh</argument>
+								<argument>${NEXUS_USER}</argument>
+								<argument>${NEXUS_PASS}</argument>
+								<argument>utilities-extra-p2-${project.version}</argument>
+							</arguments>							
+						</configuration>
+					</execution>
+					<execution>
+						<id>upload</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>bash</executable>
+							<workingDirectory>../../../extra/org.cohorte.utilities.extra.p2</workingDirectory>
+							<arguments>
+								<argument>upload.sh</argument>								
+								<argument>${NEXUS_USER}</argument>
+								<argument>${NEXUS_PASS}</argument>
+								<argument>utilities-extra-p2-${project.version}</argument>
+							</arguments>							
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>	
+		</plugins>
+
+	</build>
+	
+
+</project>
