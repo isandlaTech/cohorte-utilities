@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <bundle id="org.cohorte.utilities" version="1.0.14">
+   <bundle id="org.cohorte.utilities" version="1.0.15">
       <category name="utilities.extra"/>
    </bundle>
    <bundle id="org.cohorte.utilities.crypto" version="1.0.2">
@@ -24,7 +24,7 @@
    <bundle id="org.cohorte.libs.com.sun.jna" version="3.3.0">
       <category name="libs"/>
    </bundle>
-   <bundle id="org.cohorte.libs.jts-all" version="1.14.0">
+   <bundle id="org.cohorte.libs.jts-all" version="1.14.1">
       <category name="libs"/>
    </bundle>
    <bundle id="org.cohorte.libs.org.javatuples" version="1.2.0">
