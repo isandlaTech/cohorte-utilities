@@ -1,3 +1,12 @@
+from 1.0.14 to 1.0.15
+---------------------
+
+-MOD_OG 
+ - Addition of new constructors in CXException, CXFile, CXFileText and CXFileUtf8
+ - Addition of the generic method 'List<T> getEntries(T)' in JSONArray
+ - New package org.cohorte.utilities.security ( tooling for obfuscation)
+ 
+ 
 from 1.0.8 to 1.0.14
 --------------------
 

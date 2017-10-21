@@ -10,11 +10,13 @@
  *******************************************************************************/
 package org.psem2m.utilities.files;
 
+import java.io.File;
+
 /**
  * Lecture/Ecriture de fichiers XML Encodage UTF-8 par defaut
- * 
+ *
  * @author ogattaz
- * 
+ *
  */
 public class CXFileUtf8 extends CXFileText {
 
@@ -33,6 +35,23 @@ public class CXFileUtf8 extends CXFileText {
 	 * @param aFileName
 	 */
 	public CXFileUtf8(CXFileDir aParentDir, String aFileName) {
+		super(aParentDir, aFileName);
+		myInit();
+	}
+
+	/**
+	 * @param aFile
+	 */
+	public CXFileUtf8(File aFile) {
+		super(aFile);
+		myInit();
+	}
+
+	/**
+	 * @param aParentDir
+	 * @param aFileName
+	 */
+	public CXFileUtf8(File aParentDir, String aFileName) {
 		super(aParentDir, aFileName);
 		myInit();
 	}
@@ -65,7 +84,7 @@ public class CXFileUtf8 extends CXFileText {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	protected void myInit() {
 		// On reecrit le BOM utf-8 standard meme si le fichiher existe
