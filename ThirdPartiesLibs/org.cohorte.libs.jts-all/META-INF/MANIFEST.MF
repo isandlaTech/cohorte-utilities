@@ -10,7 +10,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: jts
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.cohorte.libs.jts-all
-Bundle-Version: 1.14.0
+Bundle-Version: 1.14.1
 Created-By: iPOJO 1.12.1
 Export-Package: com.vividsolutions.jts,
  com.vividsolutions.jts.algorithm,
