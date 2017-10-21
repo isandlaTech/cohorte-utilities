@@ -299,9 +299,9 @@ public class CXFileText extends CXFile {
 	}
 
 	/*
-	 * 
+	 *
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.io.File#canWrite()
 	 */
 	@Override
@@ -321,7 +321,7 @@ public class CXFileText extends CXFile {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.adonix.adminsrv.utils.CXFile#close()
 	 */
 	@Override
@@ -704,7 +704,7 @@ public class CXFileText extends CXFile {
 	 *
 	 * @throws Exception
 	 */
-	private void writeEncoding() throws IOException {
+	protected void writeEncoding() throws IOException {
 		byte[] wBOM = null;
 		if (pEncoding == null || pEncoding.equals(ENCODING_ISO_8859_1)) {
 			wBOM = null;
