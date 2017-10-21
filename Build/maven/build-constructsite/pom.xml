@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.cohorte.utilities.extra</groupId>
+		<artifactId>utilities-extra-parent</artifactId>
+		<version>1.0.0</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<groupId>org.cohorte.utilities.extra</groupId>
+	<artifactId>constructsite</artifactId>
+
+	<packaging>pom</packaging>
+
+	<modules>		
+		<module>../../../extra/org.cohorte.utilities.extra.p2</module>				
+	</modules>
+
+	<build>	
+		<plugins>					
+			<!-- tycho : maven -->
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>				
+			</plugin>
+			<!-- tycho : target platform -->
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+			</plugin>
+		
+		</plugins>
+		
+		<pluginManagement>
+			<!-- Generates sources jar -->
+			<plugins>
+				<!--  tycho : maven -->
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-maven-plugin</artifactId>
+					<version>${tycho-version}</version>
+					<extensions>true</extensions>
+				</plugin>
+				<!-- tycho : target platform -->
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>target-platform-configuration</artifactId>
+					<version>${tycho-version}</version>
+					<configuration>
+						<!-- consider bundles compiled with maven and available on local maven repository.
+							they will be added to the target platform used by tycho to compile each project.  
+							@see http://wiki.eclipse.org/Tycho/Target_Platform -->
+						<pomDependencies>consider</pomDependencies>
+					</configuration>
+				</plugin>				
+			</plugins>
+		</pluginManagement>
+	</build>
+	
+	<repositories>	 	
+		<repository>
+        	<id>p2-repo</id>
+        	<url>${p2-repo-location}</url>
+        	<layout>p2</layout>
+        </repository>        
+	</repositories>
+
+</project>

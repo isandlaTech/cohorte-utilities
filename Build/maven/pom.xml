@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!--   
+    Copyright 2012-2014 isandlaTech (http://isandlatech.com/)   
+  -->
+	
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.cohorte.utilities.extra</groupId>
+	<artifactId>utilities-extra-parent</artifactId>
+	<version>1.0.0</version>
+
+	<packaging>pom</packaging>
+<properties>
+		<!-- this three properties should be set whan calling maven -->        
+     
+        <p2-repo-location>file:///${P2_LOCAL_REPO}</p2-repo-location>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+       	<!-- Versions -->
+       	<tycho-version>0.26.0</tycho-version>
+       	<cohorte-version>1.3.0-SNAPSHOT</cohorte-version>
+		<osgi-version>5.0.0</osgi-version>
+		<ipojo-version>1.12.1</ipojo-version>
+	</properties>
+
+	<dependencies>
+		<!-- OSGi API -->
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<version>${osgi-version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- iPOJO Annotations -->
+		<dependency>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.ipojo.annotations</artifactId>
+			<version>${ipojo-version}</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+    <repositories>
+    	 <repository>
+            <id>Cohorte p2</id>
+            <url>http://nrm.cohorte.tech/repository/cohorte-p2-${cohorte-version}/</url>
+            <layout>p2</layout>
+        </repository>
+		<repository>
+            <id>cohorte.snapshots</id>
+            <name>utilities-extra Snapshot Repository</name>
+            <url>http://nrm.cohorte.tech/repository/utilities-extra-snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>cohorte.releases</id>
+            <name>utilities-extra Releases Repository</name>
+            <url>http://nrm.cohorte.tech/repository/utilities-extra-releases</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+	</repositories>
+	
+	<distributionManagement>
+		<repository>
+			<id>utilities-extra</id>
+			<name>utilities-extra Releases Repository</name>
+			<url>http://nrm.cohorte.tech/repository/utilities-extra-releases</url>
+			<layout>default</layout>
+		</repository>
+		<snapshotRepository>
+			<id>utilities-extra</id>
+			<name>utilities-extra Snapshots Repository</name>
+			<url>http://nrm.cohorte.tech/repository/utilities-extra-snapshots</url>
+			<uniqueVersion>true</uniqueVersion>
+			<layout>default</layout>
+		</snapshotRepository>
+	</distributionManagement>
+	
+	
+	<profiles>
+		<profile>
+			<id>cleanup</id>
+			<build>
+				<plugins>
+					<!-- cleanup -->
+					<plugin>
+						<artifactId>maven-clean-plugin</artifactId>
+						<version>2.6.1</version>
+						<configuration>
+							<excludeDefaultDirectories>true</excludeDefaultDirectories>
+							<filesets>
+                               
+								<fileset>
+									<directory>${basedir}/p2-repo</directory>
+									<excludes>										
+										<exclude>README*</exclude>
+										<exclude>.gitignore</exclude>	
+										<exclude>category.xml</exclude>	
+									</excludes>                                    
+									<followSymlinks>false</followSymlinks>
+								</fileset> 
+								                           					
+							</filesets>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile> 
+       	<profile>
+			<id>build_bundles</id>
+			<modules>
+				<module>build-bundles</module>
+			</modules>
+		</profile>
+			<profile>
+			<id>construct_site</id>
+			<modules>
+				<module>build-constructsite</module>
+			</modules>
+		</profile>
+		
+		<profile>
+			<id>update_site</id>
+			<modules>
+				<module>build-updatesite</module>
+			</modules>
+		</profile>
+		
+		<profile>
+			<!-- generate eclipse p2 repo -->
+			<id>construct_p2_repo</id>
+			<build>
+				<plugins>                    
+				
+				
+					<plugin>
+						<groupId>org.eclipse.tycho.extras</groupId>
+						<artifactId>tycho-p2-extras-plugin</artifactId>
+						<version>${tycho-version}</version>
+						<executions>
+							<execution>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>publish-features-and-bundles</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<sourceLocation>${basedir}/p2-repo/sources</sourceLocation>
+							<artifactRepositoryLocation>${basedir}/p2-repo</artifactRepositoryLocation>
+							<metadataRepositoryLocation>${basedir}/p2-repo</metadataRepositoryLocation>
+							<compress>false</compress>
+							<append>true</append>
+							<publishArtifacts>true</publishArtifacts>
+						</configuration>
+					</plugin>				
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	
+	
+	
+</project>
