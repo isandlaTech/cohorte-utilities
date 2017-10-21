@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.cohorte.utilities.extra</groupId>
+		<artifactId>utilities-extra-parent</artifactId>
+		<version>1.0.0</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<groupId>org.cohorte.utilities.extra</groupId>
+	<artifactId>bundles</artifactId>
+
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>../../../ThirdPartiesLibs/org.cohorte.libs.com.github.fge.jsonschema</module>
+		<!-- MOD_250 OG Have to correct the shape of the organizations of the feature "meteo neige" -->
+		<module>../../../ThirdPartiesLibs/org.cohorte.libs.jts-all</module>
+		<!-- MOD_250 OG add the building of  org.cohorte.libs.org.javatuples -->
+		<module>../../../ThirdPartiesLibs/org.cohorte.libs.org.javatuples</module>
+		<!-- MOD_250 OG add the building of org.cohorte.libs.com.mysql which contains the mySql 5.0.8 jdbc driver -->
+		<module>../../../ThirdPartiesLibs/org.cohorte.libs.com.mysql</module>
+		<module>../../../extra/org.cohorte.utilities.test</module>
+		<module>../../../ThirdPartiesLibs/org.cohorte.libs.com.sun.jna</module>
+	
+		<module>../../../extra/org.cohorte.utilities.webapp</module>
+		<module>../../../extra/org.cohorte.utilities.picosoc</module>
+		
+		<module>../../../extra/org.cohorte.utilities.picosoc.webapp</module>
+		<module>../../../extra/org.cohorte.utilities.installer</module>
+		<module>../../../extra/org.cohorte.utilities.crypto</module>
+		
+		<module>../../../extra/org.cohorte.utilities.sql</module>
+		<module>../../../extra/org.cohorte.utilities.ui.swing</module>
+		<module>../../../extra/org.cohorte.utilities.json</module>
+		
+		
+	</modules>
+
+	
+	<build>	
+		<plugins>
+			<!-- iPOJO -->
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-ipojo-plugin</artifactId>
+			</plugin>					
+			<!-- tycho : maven -->
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>				
+			</plugin>
+			<!-- tycho : target platform -->
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+			</plugin>
+					
+			<!-- tycho : generate sources jars -->
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-source-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<!-- Tycho: Tolerate version differences -->
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-packaging-plugin</artifactId>
+				<configuration>
+					<strictVersions>false</strictVersions>
+				</configuration>
+			</plugin>
+				<!-- to copy all generated jar to cohorte-base/repo/app. -->	
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>copy-files</id>
+						<phase>install</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target name="copy jar file p2-repo">
+								<mkdir dir="${P2_LOCAL_REPO}sources/plugins" />
+								<copy todir="${P2_LOCAL_REPO}sources/plugins">
+									<fileset dir="${project.build.directory}" includes="*.jar">
+										<exclude name="**/*-sources.jar" />
+										<exclude name="**/original-*.jar" />
+									</fileset>
+								</copy>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		
+		<pluginManagement>
+			<!-- Generates sources jar -->
+			<plugins>
+				<!-- iPOJO manipulation -->
+				<plugin>
+					<groupId>org.apache.felix</groupId>
+					<artifactId>maven-ipojo-plugin</artifactId>
+					<version>${ipojo-version}</version>
+					<configuration>
+						<!-- Add support for Tycho packaging -->
+						<m_supportedProjectTypes>
+							<type>eclipse-plugin</type>
+						</m_supportedProjectTypes>
+					</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>ipojo-bundle</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<!--  tycho : maven -->
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-maven-plugin</artifactId>
+					<version>${tycho-version}</version>
+					<extensions>true</extensions>
+				</plugin>
+				<!-- tycho : target platform -->
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>target-platform-configuration</artifactId>
+					<version>${tycho-version}</version>
+					<configuration>
+						<!-- consider bundles compiled with maven and available on local maven repository.
+							they will be added to the target platform used by tycho to compile each project.  
+							@see http://wiki.eclipse.org/Tycho/Target_Platform -->
+						<pomDependencies>consider</pomDependencies>
+					</configuration>
+				</plugin>
+				<!-- tycho : generate sources jars -->
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-source-plugin</artifactId>
+					<version>${tycho-version}</version>
+					<executions>
+						<execution>
+							<id>plugin-source</id>
+							<goals>
+								<goal>plugin-source</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				
+				<!-- Add iPOJO annotations to class path ?? -->
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-compiler-plugin</artifactId>
+					<version>${tycho-version}</version>
+					<configuration>
+						<source>1.8</source>
+						<target>1.8</target>
+						<extraClasspathElements>
+							<!-- iPOJO Annotations are not in a bundle -->
+							<extraClasspathElement>
+								<groupId>org.apache.felix</groupId>
+								<artifactId>org.apache.felix.ipojo.annotations</artifactId>
+								<version>${ipojo-version}</version>
+							</extraClasspathElement>
+						</extraClasspathElements>
+					</configuration>
+				</plugin>				
+			</plugins>
+		</pluginManagement>
+	</build>
+
+</project>

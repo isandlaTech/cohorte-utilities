@@ -1,0 +1,42 @@
+Manifest-Version: 1.0
+Bundle-Activator: org.cohorte.utilities.rest.Activator
+Bundle-ManifestVersion: 2
+Bundle-Name: Cohorte REST
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.cohorte.utilities.rest
+Bundle-Vendor: isandlaTech
+Bundle-Version: 1.0.0
+Created-By: iPOJO 1.12.1
+Export-Package: org.cohorte.utilities.rest.api,org.cohorte.utilities.r
+ est.objects,org.cohorte.utilities.rest.serializers
+Import-Package: com.fasterxml.jackson.core;version=2.7.4, com.fasterxm
+ l.jackson.databind;version=2.7.4, com.fasterxml.jackson.module.jaxb;v
+ ersion=2.7.4, javax.servlet, javax.servlet.http, javax.ws.rs;version=
+ 2.0.1, javax.ws.rs.container;version=2.0.1, javax.ws.rs.core;version=
+ 2.0.1, javax.ws.rs.ext;version=2.0.1, javax.xml.bind, org.apache.feli
+ x.ipojo;version="[1.12.1,2.0.0)", org.apache.felix.ipojo.architecture
+ ;version="[1.12.1,2.0.0)", org.glassfish.hk2.osgiresourcelocator;vers
+ ion=1.0.1, org.glassfish.jersey.media.multipart;version=2.22.2, org.g
+ lassfish.jersey.server.spi;version=2.22.2, org.glassfish.jersey.servl
+ et;version=2.22.2, org.osgi.framework;version=1.3.0, org.osgi.service
+ .cm;version=1.2, org.osgi.service.http;version=1.2.1, org.osgi.servic
+ e.log;version=1.3, org.osgi.util.tracker;version=1.5.1, org.psem2m.ut
+ ilities.logging
+iPOJO-Components: component { $name="Cohorte-Rest" $classname="org.coh
+ orte.utilities.rest.CRestPublisher" requires { $field="httpService" }
+ requires { $field="pLogger" $proxy="false" }requires { $aggregate="tr
+ ue" $id="" callback { $method="bind" $type="bind" }}callback { $trans
+ ition="invalidate" $method="invalidate" }callback { $transition="vali
+ date" $method="validate" }manipulation { $classname="org.cohorte.util
+ ities.rest.CRestPublisher" field { $name="httpService" $type="org.osg
+ i.service.http.HttpService" }field { $name="pAwaiting" $type="java.ut
+ il.Set" }field { $name="pLogger" $type="org.osgi.service.log.LogServi
+ ce" }field { $name="pValid" $type="boolean" }method { $name="bind" $a
+ rguments="{org.cohorte.utilities.rest.api.IRestApplication}" $names="
+ {aApplication}" }method { $name="getInitParams" $return="java.util.Di
+ ctionary" $arguments="{org.cohorte.utilities.rest.api.IRestApplicatio
+ n}" $names="{module}" }method { $name="invalidate" }method { $name="r
+ egister" $return="boolean" $arguments="{org.cohorte.utilities.rest.ap
+ i.IRestApplication}" $names="{aApplication}" }method { $name="validat
+ e" }}}
+
