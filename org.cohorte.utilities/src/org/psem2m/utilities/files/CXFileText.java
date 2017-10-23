@@ -29,14 +29,14 @@ import org.psem2m.utilities.CXOSUtils;
 
 /**
  * Classe de gestion de fichiers de type TEXT
- * 
+ *
  * Prend en compte la gestion des fichiers unicode en lecture et ecriture -->
  * Lit les 'Byte Order Mark' (BOM) suivants : -----> UTF_8, UTF_16BE, UTF_16LE,
  * UTF_32BE, UTF_32LE --> Codage par defaut
  * getDefaultEncoding()=ENCODING_ISO_8859_1
- * 
+ *
  * Ecriture --> Si le fichier est trouve, on conserve le BOM existant
- * 
+ *
  * !! MonoThread
  */
 public class CXFileText extends CXFile {
@@ -71,7 +71,7 @@ public class CXFileText extends CXFile {
 	public static final String ENCODING_UTF_8 = CXBytesUtils.ENCODING_UTF_8;
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 3258125856164622641L;
 
@@ -82,7 +82,7 @@ public class CXFileText extends CXFile {
 
 	/**
 	 * True si aBomRef est contenu dans aBom
-	 * 
+	 *
 	 * @param aBom
 	 * @param aBomRef
 	 * @return
@@ -99,7 +99,7 @@ public class CXFileText extends CXFile {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aBuffer
 	 * @return l'encoding au vu des premier octets du buffer
 	 */
@@ -127,8 +127,8 @@ public class CXFileText extends CXFile {
 		}
 
 		if (wEncoding == null) {
-			wEncoding = (aDefaultEncoding != null) ? aDefaultEncoding : CXOSUtils
-					.getDefaultFileEncoding();
+			wEncoding = (aDefaultEncoding != null) ? aDefaultEncoding
+					: CXOSUtils.getDefaultFileEncoding();
 		}
 		return wEncoding;
 	}
@@ -137,7 +137,7 @@ public class CXFileText extends CXFile {
 	 * Lit le BOM du fichier et renvoie l'encodage Pas de BOM --> Renvoie
 	 * l'encodage par defaut du systeme Methode Static pour etre sur qu'elle
 	 * n'altere aucune propriete de la classe
-	 * 
+	 *
 	 * @param aUnreadStream
 	 *            stream pour lecture (gere l'unread de entete)
 	 *            aUnreadStream=null -> Creation et close d'une stream
@@ -147,8 +147,9 @@ public class CXFileText extends CXFile {
 	 * @return l'encodage du fichier texte
 	 * @throws IOException
 	 */
-	protected static String readEncoding(File aFile, PushbackInputStream aUnreadStream,
-			boolean aFail) throws IOException {
+	protected static String readEncoding(File aFile,
+			PushbackInputStream aUnreadStream, boolean aFail)
+			throws IOException {
 		return readEncoding(aFile, aUnreadStream, null, aFail);
 	}
 
@@ -156,7 +157,7 @@ public class CXFileText extends CXFile {
 	 * Lit le BOM du fichier et renvoie l'encodage Pas de BOM --> Renvoie
 	 * aDefaultEncoding Methode Static pour etre sur qu'elle n'altere aucune
 	 * propriete de la classe
-	 * 
+	 *
 	 * @param aUnreadStream
 	 *            stream pour lecture (gere l'unread de entete)
 	 *            aUnreadStream=null -> Creation et close d'une stream
@@ -170,18 +171,20 @@ public class CXFileText extends CXFile {
 	 * @throws IOException
 	 */
 	@SuppressWarnings("resource")
-	protected static String readEncoding(File aFile, final PushbackInputStream aUnreadStream,
-			String aDefaultEncoding, boolean aFail) throws IOException {
+	protected static String readEncoding(File aFile,
+			final PushbackInputStream aUnreadStream, String aDefaultEncoding,
+			boolean aFail) throws IOException {
 		PushbackInputStream wUnreadStream = aUnreadStream;
-		String wDefEncod = aDefaultEncoding != null ? aDefaultEncoding : CXOSUtils
-				.getDefaultFileEncoding();
+		final String wDefEncod = aDefaultEncoding != null ? aDefaultEncoding
+				: CXOSUtils.getDefaultFileEncoding();
 		String wEncoding = null;
 		try {
 			if (aUnreadStream == null) {
-				wUnreadStream = new PushbackInputStream(new FileInputStream(aFile), BOM_SIZE);
+				wUnreadStream = new PushbackInputStream(new FileInputStream(
+						aFile), BOM_SIZE);
 			}
 
-			byte bom[] = new byte[BOM_SIZE];
+			final byte bom[] = new byte[BOM_SIZE];
 			int n, unread;
 			n = wUnreadStream.read(bom, 0, bom.length);
 
@@ -212,7 +215,7 @@ public class CXFileText extends CXFile {
 			if (unread > 0) {
 				wUnreadStream.unread(bom, (n - unread), unread);
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			if (aFail) {
 				throw e;
 			} else {
@@ -227,7 +230,7 @@ public class CXFileText extends CXFile {
 	}
 
 	/*
-	 * 
+	 *
 	 */
 	private BufferedReader pBufReader = null;
 	private BufferedWriter pBufWriter = null;
@@ -256,11 +259,27 @@ public class CXFileText extends CXFile {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aParentDir
 	 * @param aFileName
 	 */
 	public CXFileText(CXFileDir aParentDir, String aFileName) {
+		super(aParentDir, aFileName);
+	}
+
+	/**
+	 * @param aFile
+	 */
+	public CXFileText(File aFile) {
+		super(aFile);
+	}
+
+	/**
+	 *
+	 * @param aParentDir
+	 * @param aFileName
+	 */
+	public CXFileText(File aParentDir, String aFileName) {
 		super(aParentDir, aFileName);
 	}
 
@@ -280,9 +299,9 @@ public class CXFileText extends CXFile {
 	}
 
 	/*
-	 * 
+	 *
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.io.File#canWrite()
 	 */
 	@Override
@@ -295,14 +314,14 @@ public class CXFileText extends CXFile {
 	 */
 	private void checkWrite() throws IOException {
 		if (!canWrite()) {
-			throw new IOException("File not opened - Can't write into file '" + getAbsolutePath()
-					+ "'");
+			throw new IOException("File not opened - Can't write into file '"
+					+ getAbsolutePath() + "'");
 		}
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.adonix.adminsrv.utils.CXFile#close()
 	 */
 	@Override
@@ -324,7 +343,7 @@ public class CXFileText extends CXFile {
 			if (pBufWriter != null) {
 				pBufWriter.close();
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 		}
 		pFileReader = null;
 		pBufReader = null;
@@ -367,7 +386,8 @@ public class CXFileText extends CXFile {
 		}
 		// Lit le BOM et renvoie l'encodage
 		pUnreadStream = new PushbackInputStream(getInputStream(), BOM_SIZE);
-		pEncoding = readEncoding(this, pUnreadStream, getDefaultEncoding(), true);
+		pEncoding = readEncoding(this, pUnreadStream, getDefaultEncoding(),
+				true);
 		// Use given encoding - Jamais null - Au cas oe...
 		if (pEncoding == null) {
 			pFileReader = new InputStreamReader(pUnreadStream);
@@ -380,7 +400,7 @@ public class CXFileText extends CXFile {
 	/**
 	 * Sauvegarde de la 1ere version qui fonctionnait
 	 * http://koti.mbnet.fi/akini/java/unicodereader/UnicodeInputStream.java.txt
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	protected void initStreamReaderSVG() throws IOException {
@@ -395,11 +415,12 @@ public class CXFileText extends CXFile {
 		pUnreadStream = new PushbackInputStream(getInputStream(), BOM_SIZE);
 
 		String encoding = null;
-		byte bom[] = new byte[BOM_SIZE];
+		final byte bom[] = new byte[BOM_SIZE];
 		int n, unread;
 		n = pUnreadStream.read(bom, 0, bom.length);
 
-		if ((bom[0] == (byte) 0xEF) && (bom[1] == (byte) 0xBB) && (bom[2] == (byte) 0xBF)) {
+		if ((bom[0] == (byte) 0xEF) && (bom[1] == (byte) 0xBB)
+				&& (bom[2] == (byte) 0xBF)) {
 			encoding = ENCODING_UTF_8;
 			unread = n - BOM_SIZE_8;
 		} else if ((bom[0] == (byte) 0xFE) && (bom[1] == (byte) 0xFF)) {
@@ -408,12 +429,12 @@ public class CXFileText extends CXFile {
 		} else if ((bom[0] == (byte) 0xFF) && (bom[1] == (byte) 0xFE)) {
 			encoding = ENCODING_UTF_16LE;
 			unread = n - BOM_SIZE - 16;
-		} else if ((bom[0] == (byte) 0x00) && (bom[1] == (byte) 0x00) && (bom[2] == (byte) 0xFE)
-				&& (bom[3] == (byte) 0xFF)) {
+		} else if ((bom[0] == (byte) 0x00) && (bom[1] == (byte) 0x00)
+				&& (bom[2] == (byte) 0xFE) && (bom[3] == (byte) 0xFF)) {
 			encoding = ENCODING_UTF_32BE;
 			unread = n - BOM_SIZE;
-		} else if ((bom[0] == (byte) 0xFF) && (bom[1] == (byte) 0xFE) && (bom[2] == (byte) 0x00)
-				&& (bom[3] == (byte) 0x00)) {
+		} else if ((bom[0] == (byte) 0xFF) && (bom[1] == (byte) 0xFE)
+				&& (bom[2] == (byte) 0x00) && (bom[3] == (byte) 0x00)) {
 			encoding = ENCODING_UTF_32LE;
 			unread = n - BOM_SIZE;
 		} else {
@@ -498,7 +519,7 @@ public class CXFileText extends CXFile {
 
 	/**
 	 * Ouvre un fichier text en lecture
-	 * 
+	 *
 	 * @param aAppend
 	 *            - true --> Ecriture en fin de fichier
 	 * @param aAppend
@@ -549,11 +570,11 @@ public class CXFileText extends CXFile {
 		close();
 		initStreamReader();
 		String wRes;
-		int wMax = pUnreadStream.available();
+		final int wMax = pUnreadStream.available();
 		if (wMax == 0) {
 			wRes = new String("");
 		} else {
-			byte[] wData = new byte[wMax];
+			final byte[] wData = new byte[wMax];
 			pUnreadStream.read(wData);
 			pUnreadStream.close();
 			wRes = new String(wData, pEncoding);
@@ -580,19 +601,19 @@ public class CXFileText extends CXFile {
 		if (isOpenReadLine() && super.canRead()) {
 			return pBufReader.readLine();
 		} else {
-			throw new IOException("File not opened - Can't read line in file '" + getAbsolutePath()
-					+ "'");
+			throw new IOException("File not opened - Can't read line in file '"
+					+ getAbsolutePath() + "'");
 		}
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 * @throws Exception
 	 */
 	public List<String> readLines() throws IOException {
 		openReadLine();
-		List<String> wLines = new ArrayList<String>();
+		final List<String> wLines = new ArrayList<String>();
 		boolean wEof = false;
 		String wLine;
 		while (isOpenReadLine() && super.canRead() && !wEof) {
@@ -617,7 +638,7 @@ public class CXFileText extends CXFile {
 	 * Sur un openWrite (non append) et si le fgichier existe on peut -> soit
 	 * conserver le BOM du fichier existant -> soit le forcer avec la valeur de
 	 * l'encodage shouaite
-	 * 
+	 *
 	 * @param aValue
 	 *            --> pKeepExistingBOM=true conserve le BOM du fichier -->
 	 *            pKeepExistingBOM=false force le BOM avec l'encodage souhaite
@@ -633,7 +654,7 @@ public class CXFileText extends CXFile {
 	public void write(Collection<? extends Object> aCol) throws IOException {
 		if (aCol != null) {
 			checkWrite();
-			Iterator<? extends Object> wIt = aCol.iterator();
+			final Iterator<? extends Object> wIt = aCol.iterator();
 			while (wIt.hasNext()) {
 				writeLine(wIt.next().toString());
 			}
@@ -680,10 +701,10 @@ public class CXFileText extends CXFile {
 
 	/**
 	 * Ecrit l'encodage dasn le fichier
-	 * 
+	 *
 	 * @throws Exception
 	 */
-	private void writeEncoding() throws IOException {
+	protected void writeEncoding() throws IOException {
 		byte[] wBOM = null;
 		if (pEncoding == null || pEncoding.equals(ENCODING_ISO_8859_1)) {
 			wBOM = null;
@@ -699,7 +720,7 @@ public class CXFileText extends CXFile {
 			wBOM = BOM_UTF_32LE;
 		}
 
-		FileOutputStream wS = getOutputStream(false);
+		final FileOutputStream wS = getOutputStream(false);
 		if (wBOM != null) {
 			wS.write(wBOM);
 		}
