@@ -13,7 +13,7 @@ echo
 echo "********************************** build_bundles **********************************"
 echo
 
-mvn clean install -U -P build_bundles -DP2_LOCAL_REPO=$P2_LOCAL_REPO
+mvn clean install deploy -X -U -P build_bundles -DP2_LOCAL_REPO=$P2_LOCAL_REPO
 if test $? -ne 0 ; then
 exit
 fi
