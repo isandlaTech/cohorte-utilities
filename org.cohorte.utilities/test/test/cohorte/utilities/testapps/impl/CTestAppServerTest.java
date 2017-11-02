@@ -1,4 +1,4 @@
-package org.cohorte.utilities.tests.impl;
+package test.cohorte.utilities.testapps.impl;
 
 import java.util.logging.Level;
 
@@ -36,7 +36,7 @@ import org.psem2m.utilities.CXDateTime;
  * @author ogattaz
  * 
  * @see org.psem2m.utilities.system.CXOSServer
- * @see org.cohorte.utilities.tests.impl.CTestOSServer
+ * @see test.cohorte.utilities.testapps.impl.CTestOSServer
  * 
  */
 public class CTestAppServerTest extends CAppConsoleBase {

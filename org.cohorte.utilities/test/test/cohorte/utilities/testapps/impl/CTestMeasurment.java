@@ -1,4 +1,4 @@
-package org.cohorte.utilities.tests.impl;
+package test.cohorte.utilities.testapps.impl;
 
 import java.util.ArrayList;
 import java.util.List;
