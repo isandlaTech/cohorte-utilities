@@ -65,20 +65,17 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	 * <li>and probably more :)
 	 * </ul>
 	 * 
-	 * @see http 
+	 * @see http
 	 *      ://stackoverflow.com/questions/13495449/how-to-split-a-command-line
 	 *      -like-string
 	 */
 	private static final Pattern sCommandSplitPattern = Pattern
-			.compile(
-					"[^\\s]*\"(\\\\+\"|[^\"])*?\"|[^\\s]*'(\\\\+'|[^'])*?'|(\\\\\\s|[^\\s])+",
-					Pattern.MULTILINE);
+			.compile("[^\\s]*\"(\\\\+\"|[^\"])*?\"|[^\\s]*'(\\\\+'|[^'])*?'|(\\\\\\s|[^\\s])+", Pattern.MULTILINE);
 
 	protected final String[] pAppArgs;
 
 	// Default Options. Overrided by the extend class if needed
-	protected CAppOptionsBase pAppOptions = new CAppOptionsBase(getClass()
-			.getSimpleName());
+	protected CAppOptionsBase pAppOptions = new CAppOptionsBase(getClass().getSimpleName());
 
 	private String pCmdeLast;
 
@@ -88,7 +85,7 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	private String[] pCommandArgs = new String[0];
 
 	// les définitions des commandes acceptables
-	private final Map<String, CCommand> pCommands = new HashMap<String, CCommand>();
+	private final Map<String, CCommand> pCommands = new HashMap<>();
 
 	private CXFileDir pScriptDir = CXFileDir.getUserDir();
 
@@ -106,20 +103,16 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 
 		addOneCommand(CMD_QUIT, "q", new String[] { "Close the tester" });
 
-		addOneCommand(CMD_REDO, "r",
-				new String[] { "Redo the last command line" });
+		addOneCommand(CMD_REDO, "r", new String[] { "Redo the last command line" });
 
-		addOneCommand(CMD_HELP, "?", new String[] { "Show help",
-				"--usage for the options" });
+		addOneCommand(CMD_HELP, "?", new String[] { "Show help", "--usage for the options" });
 
-		addOneCommand(CMD_INFOS, "i", new String[] { "Show infos",
-				"--kind : '*','env','jvm','dirs','args'" });
+		addOneCommand(CMD_INFOS, "i", new String[] { "Show infos", "--kind : '*','env','jvm','dirs','args'" });
 
-		addOneCommand(CMD_SCRIPT, "s", new String[] { "manage scripts",
-				"--action : 'list','dump','run'", "--name : idx | name" });
+		addOneCommand(CMD_SCRIPT, "s",
+				new String[] { "manage scripts", "--action : 'list','dump','run'", "--name : idx | name" });
 
-		addOneCommand(CMD_SLEEP, "S", new String[] { "Sleep a duration",
-				"--value n milli-seconds" });
+		addOneCommand(CMD_SLEEP, "S", new String[] { "Sleep a duration", "--value n milli-seconds" });
 	}
 
 	/**
@@ -127,18 +120,15 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	 * @param aCmdeAlias
 	 * @param aCmdeHelp
 	 */
-	protected void addOneCommand(final String aCmdeVerb,
-			final String aCmdeAlias, final String[] aCmdeHelp) {
-		pCommands
-				.put(aCmdeVerb, new CCommand(aCmdeVerb, aCmdeAlias, aCmdeHelp));
+	protected void addOneCommand(final String aCmdeVerb, final String aCmdeAlias, final String[] aCmdeHelp) {
+		pCommands.put(aCmdeVerb, new CCommand(aCmdeVerb, aCmdeAlias, aCmdeHelp));
 	}
 
 	/**
 	 * @param aCmdeVerb
 	 * @param aCmdeHelp
 	 */
-	protected void addOneCommand(final String aCmdeVerb,
-			final String[] aCmdeHelp) {
+	protected void addOneCommand(final String aCmdeVerb, final String[] aCmdeHelp) {
 		addOneCommand(aCmdeVerb, aCmdeVerb, aCmdeHelp);
 	}
 
@@ -164,7 +154,7 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	 * @throws Exception
 	 */
 	protected void doCommandHelp() throws Exception {
-		CXSortList<CCommand> wSL = new CXSortList<CCommand>();
+		CXSortList<CCommand> wSL = new CXSortList<>();
 		wSL.addAll(pCommands.values());
 
 		for (CCommand wCCommand : wSL) {
@@ -180,24 +170,20 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 		String wKind = getAppOptions().getKindValue(INFO_KIND_ALL);
 
 		// env
-		if (optionMatch(wKind, INFO_KIND_ENV)
-				|| INFO_KIND_ALL.equalsIgnoreCase(wKind)) {
+		if (optionMatch(wKind, INFO_KIND_ENV) || INFO_KIND_ALL.equalsIgnoreCase(wKind)) {
 			pLogger.logInfo(this, "doCommandInfo", CXOSUtils.getEnvContext());
 		} else
 		// jvm
-		if (optionMatch(wKind, INFO_KIND_JVM)
-				|| INFO_KIND_ALL.equalsIgnoreCase(wKind)) {
+		if (optionMatch(wKind, INFO_KIND_JVM) || INFO_KIND_ALL.equalsIgnoreCase(wKind)) {
 			pLogger.logInfo(this, "doCommandInfo", CXJvmUtils.getJavaContext());
 		} else
 		// args
-		if (optionMatch(wKind, INFO_KIND_ARGS)
-				|| INFO_KIND_ALL.equalsIgnoreCase(wKind)) {
+		if (optionMatch(wKind, INFO_KIND_ARGS) || INFO_KIND_ALL.equalsIgnoreCase(wKind)) {
 			pLogger.logInfo(this, "doCommandInfo", "Application arguments; %s",
 					CXStringUtils.stringTableToString(pAppArgs));
 		} else
 		// dirs
-		if (optionMatch(wKind, INFO_KIND_DIRS)
-				|| INFO_KIND_ALL.equalsIgnoreCase(wKind)) {
+		if (optionMatch(wKind, INFO_KIND_DIRS) || INFO_KIND_ALL.equalsIgnoreCase(wKind)) {
 			// Nothing => must be implmeented in the app
 		}
 	}
@@ -214,13 +200,11 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 		pAppOptions.parse((String[]) CXArray.removeOneObject(pCommandArgs, 0));
 		// sho the options's values
 		if (pAppOptions.hasValue()) {
-			pLogger.logInfo(this, "waitForCommand", "AppOptions: %s",
-					pAppOptions.toString());
+			pLogger.logInfo(this, "waitForCommand", "AppOptions: %s", pAppOptions.toString());
 		}
 
 		if (pAppOptions.hasUsageOn()) {
-			pLogger.logInfo(this, "waitForCommand", "Usage:\n%s",
-					pAppOptions.getUsage());
+			pLogger.logInfo(this, "waitForCommand", "Usage:\n%s", pAppOptions.getUsage());
 		} else {
 			try {
 				wWantClose = doCommandX();
@@ -239,13 +223,11 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	protected void doCommandRedo() throws Exception {
 
 		if (isLineRunnable(pCmdeLast)) {
-			pLogger.logInfo(this, "doCommandRedo", "REDO  BEGIN ===== [%s]",
-					pCmdeLast);
+			pLogger.logInfo(this, "doCommandRedo", "REDO  BEGIN ===== [%s]", pCmdeLast);
 			CXTimer wTimer = CXTimer.newStartedTimer();
 			doCommandLine(pCmdeLast);
 			wTimer.stop();
-			pLogger.logInfo(this, "doCommandRedo",
-					"REDO END   ===== [%s] ===== Duration=[%s]", pCmdeLast,
+			pLogger.logInfo(this, "doCommandRedo", "REDO END   ===== [%s] ===== Duration=[%s]", pCmdeLast,
 					wTimer.getDurationStrMicroSec());
 		}
 	}
@@ -254,8 +236,7 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	 * @throws Exception
 	 */
 	protected void doCommandScript() throws Exception {
-		pLogger.logInfo(this, "doCommandScript", "ScriptDir=[%s]",
-				getScriptDir().getAbsolutePath());
+		pLogger.logInfo(this, "doCommandScript", "ScriptDir=[%s]", getScriptDir().getAbsolutePath());
 
 		String wOptAction = getAppOptions().getActionValue(ACTION_LIST);
 
@@ -268,11 +249,9 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 			String wOptName = getAppOptions().getNameValue();
 			CXFileText wScriptFile = (CXFileText) findScriptFile(wOptName);
 			if (wScriptFile == null) {
-				pLogger.logSevere(this, "doCommandScript",
-						"UNKNWON SCRIPT [%s]", wOptName);
+				pLogger.logSevere(this, "doCommandScript", "UNKNWON SCRIPT [%s]", wOptName);
 			} else {
-				pLogger.logSevere(this, "doCommandScript", "SCRIPT [%s]\n%s",
-						wOptName, wScriptFile.readAll());
+				pLogger.logSevere(this, "doCommandScript", "SCRIPT [%s]\n%s", wOptName, wScriptFile.readAll());
 			}
 
 		} else if (optionMatch(wOptAction, ACTION_RUN)) {
@@ -281,26 +260,22 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 			CXFileText wScriptFile = (CXFileText) findScriptFile(wOptName);
 
 			if (wScriptFile == null) {
-				pLogger.logSevere(this, "doCommandScript",
-						"UNKNWON SCRIPT [%s]", wOptName);
+				pLogger.logSevere(this, "doCommandScript", "UNKNWON SCRIPT [%s]", wOptName);
 			} else {
 
 				List<String> wLines = wScriptFile.readLines();
 
-				pLogger.logInfo(this, "doCommandScript",
-						"NameOrIdx=[%s] FileName=[%s] size=[%s]", wOptName,
+				pLogger.logInfo(this, "doCommandScript", "NameOrIdx=[%s] FileName=[%s] size=[%s]", wOptName,
 						wScriptFile.getName(), wLines.size());
 
 				for (String wLine : wLines) {
 					if (isLineRunnable(wLine)) {
-						pLogger.logInfo(this, "doCommandScript",
-								"RUN  BEGIN ===== [%s]", wLine);
+						pLogger.logInfo(this, "doCommandScript", "RUN  BEGIN ===== [%s]", wLine);
 						CXTimer wTimer = CXTimer.newStartedTimer();
 						doCommandLine(wLine);
 						wTimer.stop();
-						pLogger.logInfo(this, "doCommandScript",
-								"RUN  END   ===== [%s] ===== Duration=[%s]",
-								wLine, wTimer.getDurationStrMicroSec());
+						pLogger.logInfo(this, "doCommandScript", "RUN  END   ===== [%s] ===== Duration=[%s]", wLine,
+								wTimer.getDurationStrMicroSec());
 					}
 				}
 			}
@@ -312,13 +287,11 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	 */
 	protected void doCommandSleep() throws Exception {
 
-		String wOptValue = getAppOptions().getStringOptionValue(
-				IAppOptions.OPT_VALUE, "1000");
+		String wOptValue = getAppOptions().getStringOptionValue(IAppOptions.OPT_VALUE, "1000");
 
 		boolean wSleepComplete = CXThreadUtils.sleep(wOptValue);
 
-		pLogger.logInfo(this, "doCommandScript",
-				"Sleep : %s milliseconds (sleep complete=[%s])", wOptValue,
+		pLogger.logInfo(this, "doCommandScript", "Sleep : %s milliseconds (sleep complete=[%s])", wOptValue,
 				wSleepComplete);
 
 	}
@@ -328,8 +301,7 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	 * @throws Exception
 	 */
 
-	protected abstract void doCommandUser(final String aCmdeLine)
-			throws Exception;
+	protected abstract void doCommandUser(final String aCmdeLine) throws Exception;
 
 	/**
 	 * @param aCmdeLine
@@ -371,8 +343,7 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 			if (wIdx > 1) {
 				wSB.append('\n');
 			}
-			wSB.append(String.format("script(%1$2d):%2$s", wIdx,
-					((CXFile) wScriptFile).getNameWithoutExtension()));
+			wSB.append(String.format("script(%1$2d):%2$s", wIdx, ((CXFile) wScriptFile).getNameWithoutExtension()));
 			wIdx++;
 		}
 		return wSB.toString();
@@ -383,8 +354,7 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	 */
 	protected void echoCommandLine(final String aCmdeLine) {
 
-		pLogger.logInfo(this, "echoCommandLine", "StdIn command line: [%s]",
-				aCmdeLine);
+		pLogger.logInfo(this, "echoCommandLine", "StdIn command line: [%s]", aCmdeLine);
 	}
 
 	/**
@@ -392,8 +362,7 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	 * @return
 	 * @throws IOException
 	 */
-	protected CXFile findScriptFile(final String aScriptNameOrIndex)
-			throws IOException {
+	protected CXFile findScriptFile(final String aScriptNameOrIndex) throws IOException {
 
 		List<File> wScriptFiles = getScriptFiles();
 		int wIdx = -1;
@@ -410,8 +379,7 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 		}
 		for (File wFile : wScriptFiles) {
 			CXFile wScriptFile = (CXFile) wFile;
-			if (wScriptFile.getNameWithoutExtension().equalsIgnoreCase(
-					aScriptNameOrIndex)) {
+			if (wScriptFile.getNameWithoutExtension().equalsIgnoreCase(aScriptNameOrIndex)) {
 				return wScriptFile;
 			}
 		}
@@ -480,9 +448,8 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	 * @throws IOException
 	 */
 	protected List<File> getScriptFiles() throws IOException {
-		return pScriptDir.getMySortedFiles(
-				CXFileFilter.getFilterExtension(CXFile.EXTENSION_TXT),
-				!CXFileDir.WITH_DIR, CXFileDir.WITH_TEXTFILE);
+		return pScriptDir.getMySortedFiles(CXFileFilter.getFilterExtension(CXFile.EXTENSION_TXT), !CXFileDir.WITH_DIR,
+				CXFileDir.WITH_TEXTFILE);
 	}
 
 	/**
@@ -497,10 +464,8 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	 * @param aPrefix
 	 * @return
 	 */
-	protected boolean isCmdeLineStartsBy(final String aCmdeLine,
-			final String aPrefix) {
-		return (aCmdeLine != null && aCmdeLine.trim().toLowerCase()
-				.startsWith(aPrefix));
+	protected boolean isCmdeLineStartsBy(final String aCmdeLine, final String aPrefix) {
+		return (aCmdeLine != null && aCmdeLine.trim().toLowerCase().startsWith(aPrefix));
 
 	}
 
@@ -525,9 +490,8 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 		String wFirstCommandArg = getFirstCommandArg();
 
 		CCommand wCommand = pCommands.get(aCommandId);
-		return wCommand != null
-				&& (wFirstCommandArg.toLowerCase().equals(wCommand.getVerb()) || wFirstCommandArg
-						.toLowerCase().equals(wCommand.getAlias()));
+		return wCommand != null && (wFirstCommandArg.toLowerCase().equals(wCommand.getVerb())
+				|| wFirstCommandArg.toLowerCase().equals(wCommand.getAlias()));
 	}
 
 	/**
@@ -546,13 +510,11 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	 */
 	private boolean isLineRunnable(final String aLine) {
 
-		return (aLine != null && !aLine.isEmpty() && aLine.charAt(0) != '#' && !aLine
-				.startsWith(CMD_REDO));
+		return (aLine != null && !aLine.isEmpty() && aLine.charAt(0) != '#' && !aLine.startsWith(CMD_REDO));
 	}
 
 	protected void logEndConstructor() {
-		pLogger.logInfo(this, "<init>", "App [%s] instanciated. %s", this
-				.getClass().getSimpleName(), toString());
+		pLogger.logInfo(this, "<init>", "App [%s] instanciated. %s", this.getClass().getSimpleName(), toString());
 	}
 
 	/**
@@ -561,10 +523,8 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	 * @return
 	 */
 	protected boolean optionMatch(final String aOptAction, final String aOption) {
-		return aOptAction != null
-				&& aOptAction != null
-				&& (aOptAction.toLowerCase().contains(aOption.toLowerCase()) || optionMatchFirstChar(
-						aOptAction, aOption));
+		return aOptAction != null && aOptAction != null && (aOptAction.toLowerCase().contains(aOption.toLowerCase())
+				|| optionMatchFirstChar(aOptAction, aOption));
 	}
 
 	/**
@@ -572,10 +532,8 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	 * @param aOption
 	 * @return
 	 */
-	protected boolean optionMatchFirstChar(final String aOptAction,
-			final String aOption) {
-		return aOptAction != null && aOptAction != null
-				&& aOptAction.toLowerCase().charAt(0) == aOption.charAt(0);
+	protected boolean optionMatchFirstChar(final String aOptAction, final String aOption) {
+		return aOptAction != null && aOptAction != null && aOptAction.toLowerCase().charAt(0) == aOption.charAt(0);
 	}
 
 	/**
@@ -600,7 +558,7 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	/**
 	 * @param aCommandLine
 	 * @return
-	 * @see http 
+	 * @see http
 	 *      ://stackoverflow.com/questions/13495449/how-to-split-a-command-line
 	 *      -like-string
 	 */
@@ -610,7 +568,7 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 		}
 
 		Matcher matcher = sCommandSplitPattern.matcher(aCommandLine.trim());
-		List<String> matches = new ArrayList<String>();
+		List<String> matches = new ArrayList<>();
 		while (matcher.find()) {
 			matches.add(matcher.group());
 		}
@@ -634,8 +592,7 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	 */
 	protected boolean waitForCommand() throws Exception {
 
-		pLogger.logInfo(this, "waitForCommand",
-				"begin. Stdin console. Wait for a close command to stop the server.");
+		pLogger.logInfo(this, "waitForCommand", "begin. Stdin console. Wait for a 'close' command to stop the server.");
 
 		pLogger.logInfo(this, "waitForUserCommand", "=>");
 		Scanner wScanStdIn = new Scanner(System.in);
@@ -662,8 +619,7 @@ public abstract class CAppConsoleBase extends CAppObjectBase {
 	 * @throws Exception
 	 */
 	protected void wrongCommandUser(final String aCmdeLine) throws Exception {
-		pLogger.logSevere(this, "wrongCommandUser", "Unknown command [%s]",
-				aCmdeLine);
+		pLogger.logSevere(this, "wrongCommandUser", "Unknown command [%s]", aCmdeLine);
 	}
 }
 
@@ -683,8 +639,7 @@ class CCommand implements Comparable<CCommand> {
 	 * @param aCmdeVerb
 	 * @param aCmdeHelp
 	 */
-	CCommand(final String aCmdeVerb, final String aCmdeAlias,
-			final String... aCmdeHelp) {
+	CCommand(final String aCmdeVerb, final String aCmdeAlias, final String... aCmdeHelp) {
 		super();
 		pCmdeVerb = aCmdeVerb.toLowerCase();
 		pCmdeAlias = aCmdeAlias.toLowerCase();
@@ -752,8 +707,7 @@ class CCommand implements Comparable<CCommand> {
 	public String toString() {
 
 		String wPrefix = String.format("%20s (%5s): ", getVerb(), getAlias());
-		String wHelp = getFullHelpStr().replace("\n",
-				"\n" + CXStringUtils.strFromChar(' ', wPrefix.length()));
+		String wHelp = getFullHelpStr().replace("\n", "\n" + CXStringUtils.strFromChar(' ', wPrefix.length()));
 		return String.format("%s%s", wPrefix, wHelp);
 	}
 }

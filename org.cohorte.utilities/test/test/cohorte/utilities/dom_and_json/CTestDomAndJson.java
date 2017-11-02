@@ -1,4 +1,4 @@
-package org.cohorte.utilities.tests.impl;
+package test.cohorte.utilities.dom_and_json;
 
 import java.io.InputStream;
 import java.util.Map;
