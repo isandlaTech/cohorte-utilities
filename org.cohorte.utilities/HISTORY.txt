@@ -1,3 +1,13 @@
+from 1.0.15 to 1.0.16
+---------------------
+
+-MOD_OG 
+ - Move the tester applications in the package "test.cohorte.utilities.testapps.impl".
+ - Addition of the class "org.psem2m.utilities.logging.CXLoggerUtils" to publish generic logging tools.
+ - Addition of the test of the availability of the configuration of the logging SimpleFormatter in the "CAppObjectBase".
+ - Deletion of the resource "org.psem2m.utilities.json.validator-validator.json"
+ - Re-move the META-INF dir under src as it was.
+
 from 1.0.14 to 1.0.15
 ---------------------
 

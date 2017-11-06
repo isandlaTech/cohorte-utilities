@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.cohorte.utilities.tests.impl;
+package test.cohorte.utilities.testapps.impl;
 
 import org.psem2m.utilities.CXJvmUtils;
 import org.psem2m.utilities.CXOSUtils;
