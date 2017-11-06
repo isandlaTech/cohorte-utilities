@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.cohorte.utilities.tests.impl;
+package test.cohorte.utilities.testapps.impl;
 
 import org.cohorte.utilities.tests.CAppConsoleBase;
 import org.psem2m.utilities.CXArray;
