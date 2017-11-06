@@ -40,12 +40,12 @@
 		<dependency>
 			<groupId>org.cohorte.utilities</groupId>
 			<artifactId>org.cohorte.utilities</artifactId>
-			<version>1.0.0</version>
+			<version>[1.0.0,)</version>
 		</dependency>
 		<dependency>
-			<groupId>org.cohorte.utilities</groupId>
+			<groupId>org.cohorte.utilities.extra</groupId>
 			<artifactId>org.cohorte.utilities.picosoc</artifactId>
-			<version>1.0.0</version>
+			<version>[1.0.0,)</version>
 		</dependency>
 	</dependencies>
 	
