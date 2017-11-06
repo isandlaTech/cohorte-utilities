@@ -28,10 +28,10 @@
 	
 		<module>../../../extra/org.cohorte.utilities.webapp</module>
 		<module>../../../extra/org.cohorte.utilities.picosoc</module>
-		
+		<module>../../../extra/org.cohorte.utilities.crypto</module>
+
 		<module>../../../extra/org.cohorte.utilities.picosoc.webapp</module>
 		<module>../../../extra/org.cohorte.utilities.installer</module>
-		<module>../../../extra/org.cohorte.utilities.crypto</module>
 		
 		<module>../../../extra/org.cohorte.utilities.sql</module>
 		<module>../../../extra/org.cohorte.utilities.ui.swing</module>
