@@ -35,7 +35,7 @@
 			<version>[1.0.0,)</version>
 		</dependency>
 		<dependency>
-			<groupId>org.cohorte.utilitiess.extra</groupId>
+			<groupId>org.cohorte.utilities.extra</groupId>
 			<artifactId>org.cohorte.utilities.crypto</artifactId>
 			<!-- MOD_OG_20160325 -->
 			<version>[1.0.0,)</version>
