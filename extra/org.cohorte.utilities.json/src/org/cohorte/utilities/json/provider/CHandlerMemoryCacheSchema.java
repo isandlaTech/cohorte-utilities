@@ -42,10 +42,10 @@ public class CHandlerMemoryCacheSchema implements IHandlerInitMemoryCache {
 							wKey),
 							CXRsrcTextReadInfo
 									.newInstanceFromString(wStrToCache));
-					pLogger.logDebug(this, "initCache", "add %s memory cache",
-							wFinalKey);
 					aMemoryProvider.add(wFinalKey, wRsrcToCache);
 				}
+				pLogger.logDebug(this, "initCache", "add %s memory cache",
+						wDef.keySet());
 			}
 		} catch (Exception e) {
 			pLogger.logSevere(this, "initCache",
