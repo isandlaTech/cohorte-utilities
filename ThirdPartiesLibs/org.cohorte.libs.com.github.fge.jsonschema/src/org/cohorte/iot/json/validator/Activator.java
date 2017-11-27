@@ -14,11 +14,12 @@ public class Activator implements BundleActivator {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext
 	 * )
 	 */
+	@Override
 	public void start(final BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		Bundle wBundle = context.getBundle();
@@ -30,15 +31,16 @@ public class Activator implements BundleActivator {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
+	@Override
 	public void stop(final BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		Bundle wBundle = context.getBundle();
-		System.out.printf("%50s | Bundle=[%50s][%s] started\n",
-				"Activator.start()", wBundle.getSymbolicName(),
+		System.out.printf("%50s | Bundle=[%50s][%s] stopped\n",
+				"Activator.stop()", wBundle.getSymbolicName(),
 				wBundle.getVersion());
 	}
 
