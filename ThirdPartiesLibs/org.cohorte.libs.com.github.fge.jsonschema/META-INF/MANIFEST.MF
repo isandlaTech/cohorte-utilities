@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Cohorte :: Iot Pack :: lib jsonschema
 Bundle-SymbolicName: org.cohorte.libs.com.github.fge.jsonschema
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.1
 Bundle-Activator: org.cohorte.iot.json.validator.Activator
 Bundle-Vendor: COHORTE
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

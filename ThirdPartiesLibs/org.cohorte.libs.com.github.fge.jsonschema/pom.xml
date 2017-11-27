@@ -10,7 +10,7 @@
 		<relativePath>../../Build/maven/build-bundles/pom.xml</relativePath>
 	</parent>
 	<artifactId>org.cohorte.libs.com.github.fge.jsonschema</artifactId>
-	<version>1.0.0</version>   <!-- ATTENSION : doit être le même que celui du MANIFEST -->
+	<version>1.0.1</version>   <!-- ATTENSION : doit être le même que celui du MANIFEST -->
 
 	<packaging>eclipse-plugin</packaging>
 
