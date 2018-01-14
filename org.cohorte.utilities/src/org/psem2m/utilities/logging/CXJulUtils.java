@@ -31,48 +31,48 @@ public class CXJulUtils {
 	 * Build a description of a Logger
 	 *
 	 * <pre>
-	 * LoggerName=[org.apache.felix.gogo.runtime.threadio.ThreadIOImpl                   ](51) Level =[?      ] UseParentH=[true] Parent=[root]
-	 * LoggerName=[org.chohorte.isolate.logger.svc+2                                     ](33) Level =[ALL    ] UseParentH=[false] Parent=[root]
+	 * LoggerName=[org.apache.felix.gogo.runtime.threadio.ThreadIOImpl ](51) Level
+	 * =[? ] UseParentH=[true] Parent=[root]
+	 * LoggerName=[org.chohorte.isolate.logger.svc+2 ](33) Level =[ALL ]
+	 * UseParentH=[false] Parent=[root]
 	 *
 	 * <pre>
+	 * 
 	 * @param aSB
-	 * @param aLoggerName The name of the logger
-	 * @param aLogger The instance of Jul logger.
+	 * @param aLoggerName
+	 *            The name of the logger
+	 * @param aLogger
+	 *            The instance of Jul logger.
 	 * @return
 	 *
 	 *
 	 */
-	public static StringBuilder addDescriptionInSB(final StringBuilder aSB,
-			final String aLoggerName, final Logger aLogger) {
+	public static StringBuilder addDescriptionInSB(final StringBuilder aSB, final String aLoggerName,
+			final Logger aLogger) {
 
 		String wLoggerName = aLoggerName;
 		if (wLoggerName == null) {
 			wLoggerName = (aLogger != null) ? aLogger.getName() : "null";
 		}
-		final int wLoggerNameSize = wLoggerName.length();
 		// if "root" logger => set label "root" after the size calculation !
 		if (wLoggerName.isEmpty()) {
 			wLoggerName = "root";
 		}
 
-		aSB.append(String.format(" LoggerName=[%-70s](%2d)", wLoggerName,
-				wLoggerNameSize));
+		aSB.append(String.format(" JULogger:[%-70s]", wLoggerName));
 
 		if (aLogger == null) {
 			aSB.append(" - LOGGER IS NULL");
 		} else {
 
-			aSB.append(String.format(" Level =[%-7s]",
-					(aLogger.getLevel() != null) ? aLogger.getLevel().getName()
-							: "?"));
+			aSB.append(
+					String.format(" Level:[%-7s]", (aLogger.getLevel() != null) ? aLogger.getLevel().getName() : "?"));
 
-			aSB.append(String.format(" UseParentH=[%b]",
-					aLogger.getUseParentHandlers()));
+			aSB.append(String.format(" UseParentH=[%b]", aLogger.getUseParentHandlers()));
 
 			if (aLogger.getParent() != null) {
 				final String wParentName = aLogger.getParent().getName();
-				aSB.append(String.format(" Parent=[%s]",
-						(!wParentName.isEmpty() ? wParentName : "root")));
+				aSB.append(String.format(" Parent:[%s]", (!wParentName.isEmpty() ? wParentName : "root")));
 			}
 
 			final Handler[] wHandlers = aLogger.getHandlers();
@@ -83,13 +83,10 @@ public class CXJulUtils {
 					String wFormatterClassName = "?";
 					final Formatter wFormatter = wHandler.getFormatter();
 					if (wFormatter != null) {
-						wFormatterClassName = wFormatter.getClass()
-								.getSimpleName();
+						wFormatterClassName = wFormatter.getClass().getSimpleName();
 					}
-					aSB.append(String.format(
-							"\n\t- Handler=[%25s] Formatter=[%s_]", wHandler
-									.getClass().getSimpleName(),
-							wFormatterClassName));
+					aSB.append(String.format("\n\t- Handler=[%25s] Formatter=[%s_]",
+							wHandler.getClass().getSimpleName(), wFormatterClassName));
 				}
 			}
 		}
@@ -128,8 +125,7 @@ public class CXJulUtils {
 	 *
 	 * @return
 	 */
-	public static StringBuilder addDumpCurrentLoggersInSB(
-			final StringBuilder wSB, final String aLoggerNameFilter) {
+	public static StringBuilder addDumpCurrentLoggersInSB(final StringBuilder wSB, final String aLoggerNameFilter) {
 
 		final List<String> wSortedwNames = getLoggerNames();
 
@@ -137,12 +133,10 @@ public class CXJulUtils {
 		for (final String wLoggerName : wSortedwNames) {
 
 			if (wLoggerName == null) {
-				wSB.append(String.format("\n(%3d) LoggerName is null.",
-						wLoggerIdx));
+				wSB.append(String.format("\n(%3d) LoggerName is null.", wLoggerIdx));
 			}
 			//
-			else if (aLoggerNameFilter == null || aLoggerNameFilter.isEmpty()
-					|| wLoggerName.isEmpty()
+			else if (aLoggerNameFilter == null || aLoggerNameFilter.isEmpty() || wLoggerName.isEmpty()
 					|| filterLogger(wLoggerName, aLoggerNameFilter)) {
 
 				wSB.append(String.format("\n(%3d) ", wLoggerIdx));
@@ -165,33 +159,29 @@ public class CXJulUtils {
 
 	/**
 	 * @param aLoggerNameFilter
-	 *            The filter to apply. Test the string equality by default. If
-	 *            the last char is a star "*", the filter is used as prefix.
+	 *            The filter to apply. Test the string equality by default. If the
+	 *            last char is a star "*", the filter is used as prefix.
 	 * @return
 	 */
 	public static String dumpCurrentLoggers(final String aLoggerNameFilter) {
-		return addDumpCurrentLoggersInSB(new StringBuilder(), aLoggerNameFilter)
-				.toString();
+		return addDumpCurrentLoggersInSB(new StringBuilder(), aLoggerNameFilter).toString();
 	}
 
 	/**
 	 * @param aLoggerName
 	 * @param aLoggerNameFilter
-	 *            The filter to apply. Test the string equality by default. If
-	 *            the last char is a star "*", the filter is used as prefix.
+	 *            The filter to apply. Test the string equality by default. If the
+	 *            last char is a star "*", the filter is used as prefix.
 	 * @return
 	 */
-	private static boolean filterLogger(final String aLoggerName,
-			final String aLoggerNameFilter) {
+	private static boolean filterLogger(final String aLoggerName, final String aLoggerNameFilter) {
 
-		if (aLoggerName == null || aLoggerName.isEmpty()
-				|| aLoggerNameFilter == null || aLoggerNameFilter.isEmpty()) {
+		if (aLoggerName == null || aLoggerName.isEmpty() || aLoggerNameFilter == null || aLoggerNameFilter.isEmpty()) {
 			return true;
 		}
 
 		if (aLoggerNameFilter.endsWith("*")) {
-			final String wFilterPrefix = aLoggerNameFilter.substring(0,
-					aLoggerNameFilter.length() - 2);
+			final String wFilterPrefix = aLoggerNameFilter.substring(0, aLoggerNameFilter.length() - 2);
 			return aLoggerName.startsWith(wFilterPrefix);
 		}
 		return aLoggerName.equals(aLoggerNameFilter);
@@ -213,8 +203,8 @@ public class CXJulUtils {
 
 	/**
 	 * @param aLoggerNameFilter
-	 *            The filter to apply. Test the string equality by default. If
-	 *            the last char is a star "*", the filter is used as prefix.
+	 *            The filter to apply. Test the string equality by default. If the
+	 *            last char is a star "*", the filter is used as prefix.
 	 * @return The sorted list of the names of the Jul loggers
 	 */
 	public static List<String> getLoggerNames(final String aLoggerNameFilter) {
@@ -279,10 +269,10 @@ public class CXJulUtils {
 	 *
 	 * "%1$tY/%1$tm/%1$td %1$tH-%1$tM-%1$tS.%1$tL|%3$46s|%4$14s| %5$s%6$s%n";
 	 *
-	 * @see http 
+	 * @see http
 	 *      ://docs.oracle.com/javase/7/docs/api/java/util/logging/SimpleFormatter
 	 *      .html#formatting
-	 * @see http 
+	 * @see http
 	 *      ://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html#syntax
 	 *
 	 *
@@ -305,41 +295,35 @@ public class CXJulUtils {
 		if (wHasMainLogger) {
 
 			wMainLoggerLevel = wMainLogger.getLevel();
-			wSB.append(String
-					.format("\nMainLoggerLevel=[%s]", wMainLoggerLevel));
+			wSB.append(String.format("\nMainLoggerLevel=[%s]", wMainLoggerLevel));
 			try {
 				wHandlers = wMainLogger.getHandlers();
 				if (wHandlers != null && wHandlers.length > 0) {
 					for (final Handler wHandler : wHandlers) {
 						if (wHandler instanceof ConsoleHandler) {
 							wHandler.setFormatter(sSimpleFormatter);
-							wSB.append(String.format(
-									"\n(%3d) [%s] setSimpleFormatter=[%b]",
-									wHandlerIdx, "ConsoleHandler", true));
+							wSB.append(String.format("\n(%3d) [%s] setSimpleFormatter=[%b]", wHandlerIdx,
+									"ConsoleHandler", true));
 
 						} else if (wHandler instanceof FileHandler) {
 							wHandler.setFormatter(sSimpleFormatter);
-							wSB.append(String.format(
-									"\n(%3d) [%s] setSimpleFormatter=[%b]",
-									wHandlerIdx, "FileHandler", true));
+							wSB.append(String.format("\n(%3d) [%s] setSimpleFormatter=[%b]", wHandlerIdx, "FileHandler",
+									true));
 						}
 						wHandlerIdx++;
 					}
 				}
 
 			} catch (final Exception e) {
-				final Exception wEx = new Exception(String.format(
-						"Unable to set the formater of the main logger [%s]",
-						wMainLogger.getName()), e);
-				wSB.append(String.format("\nERROR: %s",
-						CXException.eInString(wEx)));
+				final Exception wEx = new Exception(
+						String.format("Unable to set the formater of the main logger [%s]", wMainLogger.getName()), e);
+				wSB.append(String.format("\nERROR: %s", CXException.eInString(wEx)));
 			}
 
 		}
 
-		wSB.append(String.format("\nAll handlers configured=[%b] [%d/%d]",
-				(wHandlers.length == wHandlerIdx), wHandlerIdx,
-				wHandlers.length));
+		wSB.append(String.format("\nAll handlers configured=[%b] [%d/%d]", (wHandlers.length == wHandlerIdx),
+				wHandlerIdx, wHandlers.length));
 
 		return wSB.toString();
 	}
@@ -351,8 +335,7 @@ public class CXJulUtils {
 	 *            The Jul line formater to apply
 	 * @return The number of modified handler
 	 */
-	public static int setFormatter(final Logger aLogger,
-			final Formatter aFormatter) {
+	public static int setFormatter(final Logger aLogger, final Formatter aFormatter) {
 
 		int wNbSet = 0;
 		final Handler[] wHandlers = aLogger.getHandlers();
@@ -391,10 +374,8 @@ public class CXJulUtils {
 	 * @return
 	 */
 	public static String toString(final Logger aLogger) {
-		final String wLoggerName = (aLogger != null) ? aLogger.getName()
-				: "logger null";
-		return addDescriptionInSB(new StringBuilder(), wLoggerName, aLogger)
-				.toString();
+		final String wLoggerName = (aLogger != null) ? aLogger.getName() : "logger null";
+		return addDescriptionInSB(new StringBuilder(), wLoggerName, aLogger).toString();
 	}
 
 }
