@@ -43,7 +43,7 @@
 
     <repositories>
     	 <repository>
-            <id>Cohorte_p2</id>
+            <id>cohorte_p2</id>
             <url>http://nrm.cohorte.tech/repository/cohorte-p2-${cohorte-version}/</url>
             <layout>p2</layout>
         </repository>
