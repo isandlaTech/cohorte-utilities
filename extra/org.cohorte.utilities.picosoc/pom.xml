@@ -7,8 +7,8 @@
 		<relativePath>../../Build/maven/build-bundles/pom.xml</relativePath>
 	</parent>
     <artifactId>org.cohorte.utilities.picosoc</artifactId>
-    <!-- MOD_BD_20150911 -->
-	<version>1.0.0</version>
+    <!-- MOD_BD_20180117 -->
+	<version>1.0.1</version>
     <!--<version>1.0.0.201501211743</version>-->
     <packaging>jar</packaging>
 	
