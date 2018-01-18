@@ -17,6 +17,16 @@ do
 	curl -v --user "$USERNAME:$PASSWORD" --upload-file ${file} http://nrm.cohorte.tech/repository/${REPO_NAME}/${file}
 done;
 
+cd $DIR/../../Build/maven/p2-repo
+echo "-----------"
+pwd 
+echo "-----------"
+
+for file in ./*
+do
+	curl -v --user "$USERNAME:$PASSWORD" --upload-file ${file} http://nrm.cohorte.tech/repository/${REPO_NAME}/${file}
+done;
+
 for file in plugins/*
 do
 	curl -v --user "$USERNAME:$PASSWORD" --upload-file ${file} http://nrm.cohorte.tech/repository/${REPO_NAME}/${file}
