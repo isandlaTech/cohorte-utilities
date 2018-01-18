@@ -48,9 +48,9 @@
             <layout>p2</layout>
         </repository>
 		<repository>
-			<id>utilities.extra.snapshot</id>
-            <name>utilities-extra Snapshot Repository</name>
-            <url>http://nrm.cohorte.tech/repository/utilities-extra-snapshots</url>
+            <id>cohorte.snapshots</id>
+            <name>Cohorte Snapshot Repository</name>
+            <url>http://nrm.cohorte.tech/repository/cohorte-snapshots</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -59,9 +59,9 @@
             </snapshots>
         </repository>
         <repository>
-			<id>utilities.extra.releases</id>
-            <name>utilities-extra Releases Repository</name>
-            <url>http://nrm.cohorte.tech/repository/utilities-extra-releases</url>
+            <id>cohorte.releases</id>
+            <name>Cohorte Releases Repository</name>
+            <url>http://nrm.cohorte.tech/repository/cohorte-releases</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
