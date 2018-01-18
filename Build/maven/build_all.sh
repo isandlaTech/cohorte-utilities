@@ -4,6 +4,18 @@ echo
 echo "********************************** init **********************************"
 echo
 
+
+if  [ $# -gt 0 ] && [ $1 = 'no' ]
+then
+	export DEPLOY=""
+	echo "No deployment"
+else
+	export DEPLOY=deploy
+	echo "Deployment in Nexus"
+fi
+
+echo "DEPLOY=${DEPLOY}"
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export P2_LOCAL_REPO=`pwd`/p2-repo/ 
 
@@ -13,16 +25,17 @@ echo
 echo "********************************** cleanup **********************************"
 echo
 
+
 mvn clean install test -P cleanup -DP2_LOCAL_REPO=$P2_LOCAL_REPO
 if test $? -ne 0 ; then
 exit
 fi
 
 echo
-echo "********************************** build_bundles **********************************"
+echo "********************************** build_bundles ($DEPLOY) **********************************"
 echo
 
-mvn clean install deploy -P build_bundles -DP2_LOCAL_REPO=$P2_LOCAL_REPO
+mvn clean install $DEPLOY -P build_bundles -DP2_LOCAL_REPO=$P2_LOCAL_REPO
 if test $? -ne 0 ; then
 exit
 fi
