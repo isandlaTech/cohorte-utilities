@@ -1,0 +1,522 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?metadataRepository version='1.1.0'?>
+<repository name='file:/Users/apisu/Documents/repositories/cohorte/cohorte-utilities/Build/maven/p2-repo/ - metadata' type='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='1'>
+  <properties size='2'>
+    <property name='p2.timestamp' value='1517217507248'/>
+    <property name='p2.compressed' value='false'/>
+  </properties>
+  <units size='11'>
+    <unit id='org.cohorte.libs.com.sun.jna' version='3.3.0' singleton='false'>
+      <update id='org.cohorte.libs.com.sun.jna' range='[0.0.0,3.3.0)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Jna'/>
+        <property name='org.eclipse.equinox.p2.provider' value='SUN'/>
+      </properties>
+      <provides size='5'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='org.cohorte.libs.com.sun.jna' version='3.3.0'/>
+        <provided namespace='osgi.bundle' name='org.cohorte.libs.com.sun.jna' version='3.3.0'/>
+        <provided namespace='java.package' name='org.cohorte.libs.com.sun.jna' version='0.0.0'/>
+        <provided namespace='java.package' name='org.cohorte.libs.com.sun.jna.docs' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='5'>
+        <required namespace='java.package' name='org.osgi.framework' range='1.3.0'/>
+        <required namespace='java.package' name='org.osgi.service.cm' range='1.2.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo' range='[1.12.1,2.0.0)'/>
+        <required namespace='java.package' name='org.osgi.service.log' range='1.3.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo.architecture' range='[1.12.1,2.0.0)'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='org.cohorte.libs.com.sun.jna' version='3.3.0'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-SymbolicName: org.cohorte.libs.com.sun.jna&#xA;Bundle-Version: 3.3.0&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='org.cohorte.utilities.test' version='1.0.1' singleton='false'>
+      <update id='org.cohorte.utilities.test' range='[0.0.0,1.0.1)' severity='0'/>
+      <properties size='1'>
+        <property name='org.eclipse.equinox.p2.name' value='COHORTE :: Utilities :: Test'/>
+      </properties>
+      <provides size='40'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='org.cohorte.utilities.test' version='1.0.1'/>
+        <provided namespace='osgi.bundle' name='org.cohorte.utilities.test' version='1.0.1'/>
+        <provided namespace='java.package' name='junit.extensions' version='0.0.0'/>
+        <provided namespace='java.package' name='junit.framework' version='0.0.0'/>
+        <provided namespace='java.package' name='junit.runner' version='0.0.0'/>
+        <provided namespace='java.package' name='junit.textui' version='0.0.0'/>
+        <provided namespace='java.package' name='org.cohorte.utilities.test' version='0.0.0'/>
+        <provided namespace='java.package' name='org.cohorte.utilities.test.executers' version='0.0.0'/>
+        <provided namespace='java.package' name='org.cohorte.utilities.test.listeners' version='0.0.0'/>
+        <provided namespace='java.package' name='org.cohorte.utilities.test.shell' version='0.0.0'/>
+        <provided namespace='java.package' name='org.hamcrest' version='0.0.0'/>
+        <provided namespace='java.package' name='org.hamcrest.core' version='0.0.0'/>
+        <provided namespace='java.package' name='org.hamcrest.internal' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.experimental' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.experimental.categories' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.experimental.max' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.experimental.results' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.experimental.runners' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.experimental.theories' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.experimental.theories.internal' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.experimental.theories.suppliers' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.internal' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.internal.builders' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.internal.matchers' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.internal.requests' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.internal.runners' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.internal.runners.model' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.internal.runners.rules' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.internal.runners.statements' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.matchers' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.rules' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.runner' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.runner.manipulation' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.runner.notification' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.runners' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.runners.model' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.runners.parameterized' version='0.0.0'/>
+        <provided namespace='java.package' name='org.junit.validator' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='9'>
+        <required namespace='java.package' name='org.osgi.framework' range='1.3.0'/>
+        <required namespace='java.package' name='org.psem2m.isolates.base' range='0.0.0'/>
+        <required namespace='java.package' name='org.osgi.service.cm' range='1.2.0'/>
+        <required namespace='java.package' name='org.psem2m.utilities' range='0.0.0'/>
+        <required namespace='java.package' name='org.psem2m.utilities.logging' range='0.0.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo' range='[1.12.1,2.0.0)'/>
+        <required namespace='java.package' name='org.osgi.service.log' range='1.3.0'/>
+        <required namespace='java.package' name='org.psem2m.utilities.files' range='0.0.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo.architecture' range='[1.12.1,2.0.0)'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='org.cohorte.utilities.test' version='1.0.1'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-SymbolicName: org.cohorte.utilities.test&#xA;Bundle-Version: 1.0.1&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='org.cohorte.utilities.json' version='1.0.5' singleton='false'>
+      <update id='org.cohorte.utilities.json' range='[0.0.0,1.0.5)' severity='0'/>
+      <properties size='1'>
+        <property name='org.eclipse.equinox.p2.name' value='org :: cohorte: utilities.json'/>
+      </properties>
+      <provides size='4'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='org.cohorte.utilities.json' version='1.0.5'/>
+        <provided namespace='osgi.bundle' name='org.cohorte.utilities.json' version='1.0.5'/>
+        <provided namespace='java.package' name='org.cohorte.utilities.json.provider' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='10'>
+        <required namespace='java.package' name='org.osgi.framework' range='0.0.0'/>
+        <required namespace='java.package' name='org.psem2m.utilities' range='0.0.0'/>
+        <required namespace='java.package' name='org.osgi.service.cm' range='1.2.0'/>
+        <required namespace='java.package' name='org.psem2m.utilities.logging' range='0.0.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo' range='[1.12.1,2.0.0)'/>
+        <required namespace='java.package' name='org.osgi.service.log' range='1.3.0'/>
+        <required namespace='java.package' name='org.psem2m.utilities.files' range='0.0.0'/>
+        <required namespace='java.package' name='org.psem2m.utilities.json' range='0.0.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo.architecture' range='[1.12.1,2.0.0)'/>
+        <required namespace='java.package' name='org.psem2m.utilities.rsrc' range='0.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='org.cohorte.utilities.json' version='1.0.5'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-SymbolicName: org.cohorte.utilities.json&#xA;Bundle-Version: 1.0.5&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='org.cohorte.utilities.ui.swing' version='1.0.0' singleton='false'>
+      <update id='org.cohorte.utilities.ui.swing' range='[0.0.0,1.0.0)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='COHORTE :: utilities ui Swing'/>
+        <property name='org.eclipse.equinox.p2.provider' value='COHORTE Technologies'/>
+      </properties>
+      <provides size='5'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='org.cohorte.utilities.ui.swing' version='1.0.0'/>
+        <provided namespace='osgi.bundle' name='org.cohorte.utilities.ui.swing' version='1.0.0'/>
+        <provided namespace='java.package' name='org.cohorte.utilities.ui.swing' version='0.0.0'/>
+        <provided namespace='java.package' name='org.cohorte.utilities.ui.swing.panel' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='25'>
+        <required namespace='java.package' name='javax.swing.colorchooser' range='0.0.0'/>
+        <required namespace='java.package' name='javax.swing.table' range='0.0.0'/>
+        <required namespace='java.package' name='org.psem2m.utilities.logging' range='0.0.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo' range='[1.12.1,2.0.0)'/>
+        <required namespace='java.package' name='javax.swing.filechooser' range='0.0.0'/>
+        <required namespace='java.package' name='org.osgi.service.log' range='1.3.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo.architecture' range='[1.12.1,2.0.0)'/>
+        <required namespace='java.package' name='org.osgi.service.cm' range='1.2.0'/>
+        <required namespace='java.package' name='javax.swing.event' range='0.0.0'/>
+        <required namespace='java.package' name='javax.swing.text' range='0.0.0'/>
+        <required namespace='java.package' name='javax.swing.text.html.parser' range='0.0.0'/>
+        <required namespace='java.package' name='javax.swing.plaf.synth' range='0.0.0'/>
+        <required namespace='java.package' name='org.osgi.framework' range='1.3.0'/>
+        <required namespace='java.package' name='javax.swing.text.rtf' range='0.0.0'/>
+        <required namespace='java.package' name='javax.swing.undo' range='0.0.0'/>
+        <required namespace='java.package' name='javax.swing.plaf' range='0.0.0'/>
+        <required namespace='java.package' name='javax.swing.text.html' range='0.0.0'/>
+        <required namespace='java.package' name='javax.swing.plaf.nimbus' range='0.0.0'/>
+        <required namespace='java.package' name='javax.swing.plaf.multi' range='0.0.0'/>
+        <required namespace='java.package' name='org.psem2m.utilities' range='0.0.0'/>
+        <required namespace='java.package' name='javax.swing.plaf.basic' range='0.0.0'/>
+        <required namespace='java.package' name='javax.swing.border' range='0.0.0'/>
+        <required namespace='java.package' name='javax.swing.plaf.metal' range='0.0.0'/>
+        <required namespace='java.package' name='javax.swing.tree' range='0.0.0'/>
+        <required namespace='java.package' name='javax.swing' range='0.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='org.cohorte.utilities.ui.swing' version='1.0.0'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-SymbolicName: org.cohorte.utilities.ui.swing&#xA;Bundle-Version: 1.0.0&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='org.cohorte.libs.jts-all' version='1.14.1' singleton='false'>
+      <update id='org.cohorte.libs.jts-all' range='[0.0.0,1.14.1)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='jts'/>
+        <property name='org.eclipse.equinox.p2.provider' value='com.vividsolutions'/>
+      </properties>
+      <provides size='60'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='org.cohorte.libs.jts-all' version='1.14.1'/>
+        <provided namespace='osgi.bundle' name='org.cohorte.libs.jts-all' version='1.14.1'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.algorithm' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.algorithm.distance' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.algorithm.locate' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.algorithm.match' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.awt' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.densify' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.dissolve' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.edgegraph' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.geom' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.geom.impl' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.geom.prep' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.geom.util' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.geomgraph' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.geomgraph.index' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.index' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.index.bintree' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.index.chain' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.index.intervalrtree' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.index.kdtree' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.index.quadtree' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.index.strtree' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.index.sweepline' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.io' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.io.gml2' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.io.kml' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.linearref' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.math' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.noding' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.noding.snapround' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.operation' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.operation.buffer' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.operation.buffer.validate' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.operation.distance' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.operation.distance3d' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.operation.linemerge' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.operation.overlay' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.operation.overlay.snap' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.operation.overlay.validate' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.operation.polygonize' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.operation.predicate' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.operation.relate' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.operation.union' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.operation.valid' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.planargraph' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.planargraph.algorithm' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.precision' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.shape' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.shape.fractal' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.shape.random' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.simplify' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.triangulate' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.triangulate.quadedge' version='0.0.0'/>
+        <provided namespace='java.package' name='com.vividsolutions.jts.util' version='0.0.0'/>
+        <provided namespace='java.package' name='org.cohorte.libs.jts_all' version='1.0.0.qualifier'/>
+        <provided namespace='java.package' name='org.wololo.geojson' version='0.0.0'/>
+        <provided namespace='java.package' name='org.wololo.jts2geojson' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='19'>
+        <required namespace='java.package' name='org.w3c.dom.xpath' range='0.0.0'/>
+        <required namespace='java.package' name='org.xml.sax.ext' range='0.0.0'/>
+        <required namespace='java.package' name='org.xml.sax.helpers' range='0.0.0'/>
+        <required namespace='java.package' name='org.w3c.dom' range='0.0.0'/>
+        <required namespace='java.package' name='org.w3c.dom.ls' range='0.0.0'/>
+        <required namespace='java.package' name='org.osgi.service.cm' range='1.2.0'/>
+        <required namespace='java.package' name='org.w3c.dom.stylesheets' range='0.0.0'/>
+        <required namespace='java.package' name='org.w3c.dom.traversal' range='0.0.0'/>
+        <required namespace='java.package' name='org.osgi.framework' range='0.0.0'/>
+        <required namespace='java.package' name='org.w3c.dom.views' range='0.0.0'/>
+        <required namespace='java.package' name='org.w3c.dom.css' range='0.0.0'/>
+        <required namespace='java.package' name='org.w3c.dom.events' range='0.0.0'/>
+        <required namespace='java.package' name='org.xml.sax' range='0.0.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo' range='[1.12.1,2.0.0)'/>
+        <required namespace='java.package' name='org.osgi.service.log' range='1.3.0'/>
+        <required namespace='java.package' name='org.w3c.dom.html' range='0.0.0'/>
+        <required namespace='java.package' name='org.w3c.dom.ranges' range='0.0.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo.architecture' range='[1.12.1,2.0.0)'/>
+        <required namespace='java.package' name='org.w3c.dom.bootstrap' range='0.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='org.cohorte.libs.jts-all' version='1.14.1'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-SymbolicName: org.cohorte.libs.jts-all&#xA;Bundle-Version: 1.14.1&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='org.cohorte.libs.com.github.fge.jsonschema' version='1.0.1' singleton='false'>
+      <update id='org.cohorte.libs.com.github.fge.jsonschema' range='[0.0.0,1.0.1)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='Cohorte :: Iot Pack :: lib jsonschema'/>
+        <property name='org.eclipse.equinox.p2.provider' value='COHORTE'/>
+      </properties>
+      <provides size='4'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='org.cohorte.libs.com.github.fge.jsonschema' version='1.0.1'/>
+        <provided namespace='osgi.bundle' name='org.cohorte.libs.com.github.fge.jsonschema' version='1.0.1'/>
+        <provided namespace='java.package' name='org.cohorte.iot.json.validator.api' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='8'>
+        <required namespace='java.package' name='org.osgi.framework' range='1.3.0'/>
+        <required namespace='java.package' name='org.psem2m.utilities' range='0.0.0'/>
+        <required namespace='java.package' name='org.osgi.service.cm' range='1.2.0'/>
+        <required namespace='java.package' name='org.psem2m.utilities.logging' range='0.0.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo' range='[1.12.1,2.0.0)'/>
+        <required namespace='java.package' name='org.osgi.service.log' range='1.3.0'/>
+        <required namespace='java.package' name='org.psem2m.utilities.json' range='0.0.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo.architecture' range='[1.12.1,2.0.0)'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='org.cohorte.libs.com.github.fge.jsonschema' version='1.0.1'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-SymbolicName: org.cohorte.libs.com.github.fge.jsonschema&#xA;Bundle-Version: 1.0.1&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='org.cohorte.utilities.sql' version='1.0.3' singleton='false'>
+      <update id='org.cohorte.utilities.sql' range='[0.0.0,1.0.3)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='COHORTE :: utilities.sql'/>
+        <property name='org.eclipse.equinox.p2.provider' value='COHORTE TECHNOLOGIES'/>
+      </properties>
+      <provides size='7'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='org.cohorte.utilities.sql' version='1.0.3'/>
+        <provided namespace='osgi.bundle' name='org.cohorte.utilities.sql' version='1.0.3'/>
+        <provided namespace='java.package' name='org.cohorte.utilities.sql' version='0.0.0'/>
+        <provided namespace='java.package' name='org.cohorte.utilities.sql.drivers' version='0.0.0'/>
+        <provided namespace='java.package' name='org.cohorte.utilities.sql.exec' version='0.0.0'/>
+        <provided namespace='java.package' name='org.cohorte.utilities.sql.pool' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='9'>
+        <required namespace='java.package' name='org.osgi.framework' range='1.3.0'/>
+        <required namespace='java.package' name='org.cohorte.utilities.encode' range='0.0.0'/>
+        <required namespace='java.package' name='org.psem2m.utilities' range='0.0.0'/>
+        <required namespace='java.package' name='org.osgi.service.cm' range='1.2.0'/>
+        <required namespace='java.package' name='org.psem2m.utilities.logging' range='0.0.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo' range='[1.12.1,2.0.0)'/>
+        <required namespace='java.package' name='org.osgi.service.log' range='1.3.0'/>
+        <required namespace='java.package' name='org.psem2m.utilities.json' range='0.0.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo.architecture' range='[1.12.1,2.0.0)'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='org.cohorte.utilities.sql' version='1.0.3'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-SymbolicName: org.cohorte.utilities.sql&#xA;Bundle-Version: 1.0.3&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='org.cohorte.utilities.crypto' version='1.0.2' singleton='false'>
+      <update id='org.cohorte.utilities.crypto' range='[0.0.0,1.0.2)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='COHORTE :: Utilities.Crypto'/>
+        <property name='org.eclipse.equinox.p2.provider' value='isandlaTech.com'/>
+      </properties>
+      <provides size='5'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='org.cohorte.utilities.crypto' version='1.0.2'/>
+        <provided namespace='osgi.bundle' name='org.cohorte.utilities.crypto' version='1.0.2'/>
+        <provided namespace='java.package' name='org.cohorte.utilities.crypto' version='0.0.0'/>
+        <provided namespace='java.package' name='sun.security.x509' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='10'>
+        <required namespace='java.package' name='org.osgi.framework' range='1.3.0'/>
+        <required namespace='java.package' name='org.cohorte.utilities.encode' range='0.0.0'/>
+        <required namespace='java.package' name='sun.security.x509' range='0.0.0'/>
+        <required namespace='java.package' name='org.psem2m.utilities' range='0.0.0'/>
+        <required namespace='java.package' name='org.osgi.service.cm' range='1.2.0'/>
+        <required namespace='java.package' name='org.psem2m.utilities.logging' range='0.0.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo' range='[1.12.1,2.0.0)'/>
+        <required namespace='java.package' name='org.osgi.service.log' range='1.3.0'/>
+        <required namespace='java.package' name='org.psem2m.utilities.files' range='0.0.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo.architecture' range='[1.12.1,2.0.0)'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='org.cohorte.utilities.crypto' version='1.0.2'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-SymbolicName: org.cohorte.utilities.crypto&#xA;Bundle-Version: 1.0.2&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='org.cohorte.libs.org.javatuples' version='1.2.0' singleton='false'>
+      <update id='org.cohorte.libs.org.javatuples' range='[0.0.0,1.2.0)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='javatuples'/>
+        <property name='org.eclipse.equinox.p2.provider' value='org.javatuples'/>
+      </properties>
+      <provides size='7'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='org.cohorte.libs.org.javatuples' version='1.2.0'/>
+        <provided namespace='osgi.bundle' name='org.cohorte.libs.org.javatuples' version='1.2.0'/>
+        <provided namespace='java.package' name='org.cohorte.libs.org.javatuples' version='0.0.0'/>
+        <provided namespace='java.package' name='org.cohorte.libs.org.javatuples.docs' version='0.0.0'/>
+        <provided namespace='java.package' name='org.javatuples' version='0.0.0'/>
+        <provided namespace='java.package' name='org.javatuples.valueintf' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='5'>
+        <required namespace='java.package' name='org.osgi.framework' range='1.3.0'/>
+        <required namespace='java.package' name='org.osgi.service.cm' range='1.2.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo' range='[1.12.1,2.0.0)'/>
+        <required namespace='java.package' name='org.osgi.service.log' range='1.3.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo.architecture' range='[1.12.1,2.0.0)'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='org.cohorte.libs.org.javatuples' version='1.2.0'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-SymbolicName: org.cohorte.libs.org.javatuples&#xA;Bundle-Version: 1.2.0&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='org.cohorte.libs.com.mysql' version='5.0.8' singleton='false'>
+      <update id='org.cohorte.libs.com.mysql' range='[0.0.0,5.0.8)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='MySQL Connector/J'/>
+        <property name='org.eclipse.equinox.p2.provider' value='MySQL'/>
+      </properties>
+      <provides size='14'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='org.cohorte.libs.com.mysql' version='5.0.8'/>
+        <provided namespace='osgi.bundle' name='org.cohorte.libs.com.mysql' version='5.0.8'/>
+        <provided namespace='java.package' name='com.mysql.jdbc' version='0.0.0'/>
+        <provided namespace='java.package' name='com.mysql.jdbc.exceptions' version='0.0.0'/>
+        <provided namespace='java.package' name='com.mysql.jdbc.integration.c3p0' version='0.0.0'/>
+        <provided namespace='java.package' name='com.mysql.jdbc.integration.jboss' version='0.0.0'/>
+        <provided namespace='java.package' name='com.mysql.jdbc.jdbc2.optional' version='0.0.0'/>
+        <provided namespace='java.package' name='com.mysql.jdbc.log' version='0.0.0'/>
+        <provided namespace='java.package' name='com.mysql.jdbc.profiler' version='0.0.0'/>
+        <provided namespace='java.package' name='com.mysql.jdbc.util' version='0.0.0'/>
+        <provided namespace='java.package' name='org.cohorte.libs.com.mysql' version='0.0.0'/>
+        <provided namespace='java.package' name='org.cohorte.libs.com.mysql.docs' version='0.0.0'/>
+        <provided namespace='java.package' name='org.gjt.mm.mysql' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='5'>
+        <required namespace='java.package' name='org.osgi.framework' range='1.3.0'/>
+        <required namespace='java.package' name='org.osgi.service.cm' range='1.2.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo' range='[1.12.1,2.0.0)'/>
+        <required namespace='java.package' name='org.osgi.service.log' range='1.3.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo.architecture' range='[1.12.1,2.0.0)'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='org.cohorte.libs.com.mysql' version='5.0.8'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-SymbolicName: org.cohorte.libs.com.mysql&#xA;Bundle-Version: 5.0.8&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='org.cohorte.utilities.webapp' version='1.0.0' singleton='false'>
+      <update id='org.cohorte.utilities.webapp' range='[0.0.0,1.0.0)' severity='0'/>
+      <properties size='1'>
+        <property name='org.eclipse.equinox.p2.name' value='COHORTE :: Utilities :: WebApp'/>
+      </properties>
+      <provides size='5'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='org.cohorte.utilities.webapp' version='1.0.0'/>
+        <provided namespace='osgi.bundle' name='org.cohorte.utilities.webapp' version='1.0.0'/>
+        <provided namespace='java.package' name='org.cohorte.utilities.webapp' version='0.0.0'/>
+        <provided namespace='java.package' name='org.cohorte.utilities.webapp.filters' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='12'>
+        <required namespace='java.package' name='org.osgi.framework' range='1.3.0'/>
+        <required namespace='java.package' name='javax.servlet' range='2.6.0'/>
+        <required namespace='java.package' name='org.psem2m.isolates.base' range='0.0.0'/>
+        <required namespace='java.package' name='javax.servlet.http' range='2.6.0'/>
+        <required namespace='java.package' name='org.osgi.service.cm' range='1.2.0'/>
+        <required namespace='java.package' name='org.psem2m.utilities' range='0.0.0'/>
+        <required namespace='java.package' name='org.psem2m.utilities.logging' range='0.0.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo' range='[1.12.1,2.0.0)'/>
+        <required namespace='java.package' name='org.osgi.service.log' range='1.3.0'/>
+        <required namespace='java.package' name='org.psem2m.utilities.files' range='0.0.0'/>
+        <required namespace='java.package' name='org.apache.felix.ipojo.architecture' range='[1.12.1,2.0.0)'/>
+        <required namespace='java.package' name='org.psem2m.utilities.json' range='0.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='org.cohorte.utilities.webapp' version='1.0.0'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-SymbolicName: org.cohorte.utilities.webapp&#xA;Bundle-Version: 1.0.0&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+  </units>
+</repository>
