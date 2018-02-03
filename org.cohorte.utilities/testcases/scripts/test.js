@@ -51,7 +51,7 @@ TRACER.trace("Test Exception 1 begin");
 
 try{
 	// throw an exception and catch it for test 1
-	var wDouble =  new Double(4 * 2,1);
+	var wDouble =  new Double( 4 * 2,1);
 	TRACER.trace(FORMATER.format("wResult=[%s]",wDouble))
 }catch(e){
 	TRACER.trace("CATCHED ERROR: "+ e);

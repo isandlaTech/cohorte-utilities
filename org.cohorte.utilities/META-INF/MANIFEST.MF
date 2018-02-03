@@ -21,4 +21,5 @@ DynamicImport-Package: *
 Bundle-ClassPath: .
 Bundle-Activator: org.cohorte.utilities.Activator
 Bundle-ActivationPolicy: lazy
-Import-Package: org.osgi.framework
+Import-Package: javax.script,
+ org.osgi.framework

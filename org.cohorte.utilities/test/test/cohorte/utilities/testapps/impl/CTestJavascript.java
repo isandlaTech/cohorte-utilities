@@ -15,7 +15,7 @@ import org.psem2m.utilities.rsrc.CXRsrcUriPath;
 import org.psem2m.utilities.scripting.CXJsEngine;
 import org.psem2m.utilities.scripting.CXJsExcepRhino;
 import org.psem2m.utilities.scripting.CXJsManager;
-import org.psem2m.utilities.scripting.CXJsScriptContext;
+import org.psem2m.utilities.scripting.CXJsRuningContext;
 import org.psem2m.utilities.scripting.CXJsSourceMain;
 import org.psem2m.utilities.scripting.IXjsTracer;
 
@@ -36,9 +36,7 @@ public class CTestJavascript extends CAppConsoleBase {
 		 * @return
 		 */
 		private String getCauseMessagesList(final Throwable e) {
-			return "\t- "
-					+ CXException.eCauseMessagesInString(e).replace(" , ",
-							"\n\t- ");
+			return "\t- " + CXException.eCauseMessagesInString(e).replace(" , ", "\n\t- ");
 		}
 
 		@Override
@@ -64,10 +62,8 @@ public class CTestJavascript extends CAppConsoleBase {
 		}
 
 		@Override
-		public void trace(final Object aObj, final CharSequence aSB,
-				final Throwable e) {
-			pLogger.logInfo(aObj, "jsTrace", "%s\n%s", aSB,
-					getCauseMessagesList(e));
+		public void trace(final Object aObj, final CharSequence aSB, final Throwable e) {
+			pLogger.logInfo(aObj, "jsTrace", "%s\n%s", aSB, getCauseMessagesList(e));
 
 		}
 
@@ -124,24 +120,21 @@ public class CTestJavascript extends CAppConsoleBase {
 
 		final CXJsManager wXJsManager = new CXJsManager("JavaScript");
 
-		final CXJsEngine wXJsEngine = wXJsManager.getScriptEngineFactory()
-				.getScriptEngine();
+		pLogger.logInfo(this, "doCommandRun", "new wXJsManager:\n%s", wXJsManager.toDescription());
+
+		final CXJsEngine wXJsEngine = wXJsManager.getScriptEngineFactory().getScriptEngine();
 
 		// dossier dans lequel on trouve les sources
-		final CXFileDir wDir = new CXFileDir(CXFileDir.getUserDir(),
-				"testcases/scripts/");
-		final CXRsrcProviderFile wProvider = new CXRsrcProviderFile(wDir,
-				Charset.forName(CXBytesUtils.ENCODING_UTF_8));
+		final CXFileDir wDir = new CXFileDir(CXFileDir.getUserDir(), "testcases/scripts/");
+		final CXRsrcProviderFile wProvider = new CXRsrcProviderFile(wDir, Charset.forName(CXBytesUtils.ENCODING_UTF_8));
 
-		pLogger.logInfo(this, "initOneProvider", "new RsrcProvider  for [%s]",
-				wDir.getAbsolutePath());
+		pLogger.logInfo(this, "doCommandRun", "init RsrcProvider  for [%s]", wDir.getAbsolutePath());
 
 		final IXjsTracer wXjsTracer = new CJsTracer();
 
-		final CXJsSourceMain wMain = wXJsManager.getMainSource(wProvider,
-				new CXRsrcUriPath("test.js"), wXjsTracer);
+		final CXJsSourceMain wMain = wXJsManager.getMainSource(wProvider, new CXRsrcUriPath("test.js"), wXjsTracer);
 
-		final CXJsScriptContext wCtx = new CXJsScriptContext(1024);
+		final CXJsRuningContext wCtx = new CXJsRuningContext(1024);
 		wCtx.setAttribute("ENGSCOP", "ENGINE_1", ScriptContext.ENGINE_SCOPE);
 		wCtx.setAttribute("GLOSCOP", "GLOBAL_1", ScriptContext.GLOBAL_SCOPE);
 
@@ -155,11 +148,9 @@ public class CTestJavascript extends CAppConsoleBase {
 			// get the partial source around the line where the error
 
 			String wPartialSource = wMain.getText(wE.getLineNumber(), 5);
-			wPartialSource = "\n\t>> "
-					+ wPartialSource.replace("\n", "\n\t>> ");
+			wPartialSource = "\n\t>> " + wPartialSource.replace("\n", "\n\t>> ");
 
-			pLogger.logSevere(this, "doCommandRun", "ERROR message=[%s] %s",
-					wE.getMessage(), wPartialSource);
+			pLogger.logSevere(this, "doCommandRun", "ERROR message=[%s] %s", wE.getMessage(), wPartialSource);
 
 			pLogger.logSevere(this, "doCommandRun", wMain.toDescription());
 
