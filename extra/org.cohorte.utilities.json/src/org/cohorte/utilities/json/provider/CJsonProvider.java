@@ -111,6 +111,49 @@ public class CJsonProvider implements IJsonProvider {
 		return pInitCacheHandler;
 	}
 
+	public JSONArray getJSONArray(final String currentPath,
+			final JSONArray aUnresolvedJson) throws Exception {
+
+		String aContent = aUnresolvedJson.toString(0);
+		// preprocess content
+
+		// check include content that must be resolve
+		pLogger.logDebug(this, "getJSONObject",
+				"preprocess resolve subcontent ");
+
+		// resolve file and http and call handle for mem cache
+		String wResolvedString = resolveInclude(currentPath, aContent,
+				pInitCacheHandler == null);
+		wResolvedString = checkIsJson(wResolvedString);
+		if (pInitCacheHandler != null) {
+			// call wit memory resolution only
+			wResolvedString = resolveInclude(currentPath, wResolvedString, true);
+			checkIsJson(wResolvedString);
+		}
+
+		return new JSONArray(wResolvedString);
+	}
+
+	public JSONArray getJSONArray(final String aTag, final String aPath,
+			final String aContentId) throws Exception {
+		// get content
+		pLogger.logInfo(this, "getJSONObject", "get content from id %s",
+				aContentId);
+		String wPath = aPath != null ? aPath + File.separatorChar + aContentId
+				: aContentId;
+
+		CXRsrcText wRsrc = pJsonResolver.getContent(aTag, wPath, false);
+		if (wRsrc != null) {
+			String aContent = wRsrc.getContent();
+
+			String wNotComment = removeComment(aContent);
+			wNotComment = checkIsJson(wNotComment);
+			// check include content that must be resolve
+			return getJSONArray(aPath, new JSONArray(wNotComment));
+		}
+		return null;
+	}
+
 	/**
 	 * resolve the JSONObject to remove comment and add subcontent via $file or
 	 * other tag...

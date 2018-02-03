@@ -61,7 +61,7 @@ echo
 echo "********************************** construct_update_site **********************************"
 echo
 
-mvn install -P update_site -DP2_LOCAL_REPO=$P2_LOCAL_REPO -DNEXUS_USER=jenkins -DNEXUS_PASS=isandla38TECH
+mvn install -P update_site -DP2_LOCAL_REPO=$P2_LOCAL_REPO -DNEXUS_USER=$1 -DNEXUS_PASS=$2
 if test $? -ne 0 ; then
 exit
 fi
