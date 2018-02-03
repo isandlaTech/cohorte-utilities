@@ -44,7 +44,7 @@ public class CXQueryString {
 		String wSepKey = aSepKey != null ? aSepKey : "&";
 		String wSepVal = aSepVal != null ? aSepVal : "=";
 
-		final Map<String, List<String>> wQueryPairs = new LinkedHashMap<String, List<String>>();
+		final Map<String, List<String>> wQueryPairs = new LinkedHashMap<>();
 
 		final String[] pairs = aQueryString.split(wSepKey);
 
@@ -95,7 +95,7 @@ public class CXQueryString {
 
 		Map<String, List<String>> wSplit = splitQuery(aQueryString, aSepKey,
 				aSepVal);
-		Map<String, String> wResult = new HashMap<String, String>();
+		Map<String, String> wResult = new HashMap<>();
 		for (String wKey : wSplit.keySet()) {
 			List<String> wVals = wSplit.get(wKey);
 			wResult.put(wKey, CXStringUtils.stringListToString(wVals, "|"));
@@ -155,7 +155,7 @@ public class CXQueryString {
 
 	}
 
-	private final Map<String, List<String>> pQueryPairs = new HashMap<String, List<String>>();
+	private final Map<String, List<String>> pQueryPairs = new HashMap<>();
 
 	/**
 	 *
@@ -172,6 +172,18 @@ public class CXQueryString {
 			throws UnsupportedEncodingException {
 		this();
 		pQueryPairs.putAll(splitQuery(aQueryString));
+	}
+
+	/**
+	 * @param aQueryString
+	 * @param aSepKey
+	 * @param aSepVal
+	 * @throws UnsupportedEncodingException
+	 */
+	public CXQueryString(final String aQueryString, final String aSepKey,
+			final String aSepVal) throws UnsupportedEncodingException {
+		this();
+		pQueryPairs.putAll(splitQuery(aQueryString, aSepKey, aSepVal));
 	}
 
 	/**
@@ -268,7 +280,7 @@ public class CXQueryString {
 
 		List<String> wValues = pQueryPairs.get(aKey);
 		if (wValues == null) {
-			wValues = new ArrayList<String>();
+			wValues = new ArrayList<>();
 			wValues.add(aValue);
 			pQueryPairs.put(aKey, wValues);
 		}
@@ -284,7 +296,7 @@ public class CXQueryString {
 	 */
 	public Map<String, String> toMapOfString() {
 
-		final Map<String, String> wMapOfString = new HashMap<String, String>();
+		final Map<String, String> wMapOfString = new HashMap<>();
 
 		for (final Entry<String, List<String>> wEntry : getInternalMap()
 				.entrySet()) {
@@ -330,7 +342,7 @@ public class CXQueryString {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
