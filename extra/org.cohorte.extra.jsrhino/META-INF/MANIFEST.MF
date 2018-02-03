@@ -1,0 +1,33 @@
+Manifest-Version: 1.0
+Bundle-Activator: org.cohorte.extra.jsrhino.Activator
+Bundle-ManifestVersion: 2
+Bundle-Name: COHORTE :: extra :: Jsrhino
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.cohorte.extra.jsrhino
+Bundle-Version: 1.0.0
+Created-By: iPOJO 1.12.1
+Export-Package: de.christophkraemer.rhino.javascript,de.christophkraem
+ er.rhino.util,org.cohorte.extra.jsrhino
+Import-Package: javax.script, org.apache.felix.ipojo;version="[1.12.1,
+ 2.0.0)", org.apache.felix.ipojo.architecture;version="[1.12.1,2.0.0)"
+ , org.cohorte.remote, org.mozilla.javascript, org.osgi.framework;vers
+ ion=1.3.0, org.osgi.service.cm;version=1.2, org.osgi.service.log;vers
+ ion=1.3, org.psem2m.isolates.base, org.psem2m.utilities, org.psem2m.u
+ tilities.logging
+iPOJO-Components: instance { $name="cohorte-isolate-CCpntJsRhinoRunner
+ " $component="cohorte-isolate-CCpntJsRhinoRunner-Factory" }component 
+ { $name="cohorte-isolate-CCpntJsRhinoRunner-Factory" $classname="org.
+ cohorte.extra.jsrhino.impl.CCpntJsRhinoRunner" provides { $specificat
+ ions="{org.cohorte.extra.jsrhino.IJsRhinoRunner}" property { $name="p
+ elix.remote.export.reject" $field="pBaseXShellCommandsNotRemote" $imm
+ utable="true" }}requires { $field="pLogger" }callback { $transition="
+ invalidate" $method="invalidate" }callback { $transition="validate" $
+ method="validate" }manipulation { $classname="org.cohorte.extra.jsrhi
+ no.impl.CCpntJsRhinoRunner" interface { $name="org.cohorte.extra.jsrh
+ ino.IJsRhinoRunner" }field { $name="pBaseXShellCommandsNotRemote" $ty
+ pe="java.lang.String" }field { $name="pLogger" $type="org.psem2m.isol
+ ates.base.IIsolateLoggerSvc" }method { $name="getEngineFactory" $retu
+ rn="javax.script.ScriptEngineFactory" }method { $name="getManager" $r
+ eturn="javax.script.ScriptEngineManager" }method { $name="invalidate"
+  }method { $name="validate" }}}
+
