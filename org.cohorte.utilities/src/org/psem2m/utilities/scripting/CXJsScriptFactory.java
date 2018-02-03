@@ -74,10 +74,10 @@ public class CXJsScriptFactory extends CXJsObjectBase {
 	// Nom utilise pour instancier le factory
 	private final String pCallName;
 	private boolean pIsMultiThreaded = false;
-	public ArrayList<String> pNamesLowCase = new ArrayList<String>();
+	public ArrayList<String> pNamesLowCase = new ArrayList<>();
 	private int pPoolCapacity = 0;
 	// Pool de scriptEngines
-	private final LinkedList<ScriptEngine> pPoolEngines = new LinkedList<ScriptEngine>();
+	private final LinkedList<ScriptEngine> pPoolEngines = new LinkedList<>();
 	private int pPoolSize = 0;
 
 	private final ScriptEngineFactory pScriptEngineFactory;
@@ -89,6 +89,14 @@ public class CXJsScriptFactory extends CXJsObjectBase {
 	 */
 	public CXJsScriptFactory(ScriptEngineFactory aFactory) {
 		this(aFactory, aFactory.getLanguageName());
+	}
+
+	/**
+	 * @param aFactory
+	 * @param aPoolCapacity
+	 */
+	public CXJsScriptFactory(ScriptEngineFactory aFactory, int aPoolCapacity) {
+		this(aFactory, aFactory.getLanguageName(), aPoolCapacity);
 	}
 
 	/**
@@ -108,9 +116,8 @@ public class CXJsScriptFactory extends CXJsObjectBase {
 		pPoolCapacity = aPoolCapacity > 0 ? aPoolCapacity : POOL_DEFAULT_SIZE;
 		pScriptEngineFactory = aFactory;
 		pThreading = pScriptEngineFactory.getParameter(PARAM_THREADING);
-		pIsMultiThreaded = pThreading != null
-				&& (pThreading.equals(THREADING_STD) || pThreading.equals(THREADING_ISOLATED) || pThreading
-						.equals(THREADING_STATELESS));
+		pIsMultiThreaded = pThreading != null && (pThreading.equals(THREADING_STD)
+				|| pThreading.equals(THREADING_ISOLATED) || pThreading.equals(THREADING_STATELESS));
 		pCallName = aCallName;
 		for (String xName : pScriptEngineFactory.getNames()) {
 			pNamesLowCase.add(xName.toLowerCase());
@@ -120,8 +127,7 @@ public class CXJsScriptFactory extends CXJsObjectBase {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.psem2m.utilities.scripting.CXJsObjectBase#addDescriptionInBuffer(
+	 * @see org.psem2m.utilities.scripting.CXJsObjectBase#addDescriptionInBuffer(
 	 * java.lang.Appendable)
 	 */
 	@Override

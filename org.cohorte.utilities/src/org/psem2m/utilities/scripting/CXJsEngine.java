@@ -143,7 +143,7 @@ public class CXJsEngine extends CXJsObjectBase {
 	public Object eval(CXJsSourceMain aMainModule, Bindings aBinding,
 			IXjsTracer aJsTracer) throws CXJsException {
 
-		final ScriptContext wScriptContext = new CXJsScriptContext(1024,
+		final ScriptContext wScriptContext = new CXJsRuningContext(1024,
 				aBinding);
 
 		return eval(aMainModule, wScriptContext, aJsTracer);

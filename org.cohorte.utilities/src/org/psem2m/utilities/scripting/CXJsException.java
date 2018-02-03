@@ -54,6 +54,27 @@ public class CXJsException extends Exception {
 	}
 
 	/**
+	 * @param format
+	 * @param args
+	 */
+	public CXJsException(final String format, final Object... args) {
+		super(String.format(format, args));
+		pMainSrc = null;
+		pAction = "";
+	}
+
+	/**
+	 * @param aCause
+	 * @param format
+	 * @param args
+	 */
+	public CXJsException(final Throwable aCause, final String format, final Object... args) {
+		super(String.format(format, args), aCause);
+		pMainSrc = null;
+		pAction = "";
+	}
+
+	/**
 	 * @return
 	 */
 	public String getAction() {
@@ -64,8 +85,7 @@ public class CXJsException extends Exception {
 	 * @return
 	 */
 	public CXJsScriptExcepCtx getExcepCtx() {
-		CXJsSourceLocalization wWhere = pMainSrc == null ? null : pMainSrc
-				.findSource(getLineNumber());
+		CXJsSourceLocalization wWhere = pMainSrc == null ? null : pMainSrc.findSource(getLineNumber());
 		return new CXJsScriptExcepCtx(this, pMainSrc, wWhere);
 	}
 

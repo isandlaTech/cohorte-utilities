@@ -115,7 +115,7 @@ public class CXJsCompiledScript extends CXJsObjectBase {
 	public Object eval(Bindings aBinding, IXjsTracer aJsTracer)
 			throws CXJsException {
 
-		final ScriptContext wScriptContext = new CXJsScriptContext(1024,
+		final ScriptContext wScriptContext = new CXJsRuningContext(1024,
 				aBinding);
 
 		return eval(wScriptContext, aJsTracer);
