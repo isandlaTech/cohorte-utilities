@@ -6,20 +6,52 @@ import java.util.Arrays;
 
 import org.psem2m.utilities.scripting.CXJsObjectBase;
 
-
 /**
  * Path d'un URL qui pointe vers une ressource
  * 
  */
 public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 
-	private CXRsrcUriDir pParent = null;
+	// Force l'extension de la ressource si pas d'extension dans aPath
+	public static CXRsrcUriPath newInstanceWithExt(CXRsrcUriDir aParentDir,
+			String aPath, String aDefExt) {
+		CXRsrcUriPath wPath = new CXRsrcUriPath(aParentDir, aPath);
+		if (wPath.isValid() && !wPath.hasExtension() && aDefExt != null)
+			wPath.setExt(aDefExt);
+		return wPath;
+	}
+
+	private String pExt = null;
+	private String pFullPath = null;
+	private CXMimeType pMimeType = null;
 	private String pName = null;
 	private String pNameNoExt = null;
-	private String pFullPath = null;
-	private String pExt = null;
-	private CXMimeType pMimeType = null;
+	private CXRsrcUriDir pParent = null;
+
 	private String[] pPartArray;
+
+	public CXRsrcUriPath(CXRsrcUriDir aParentDir, CXRsrcUriPath aPath) {
+		if (aPath != null && aPath.isValid()) {
+			pName = aPath.getName();
+			pParent = aParentDir == null ? aPath.getParent() : aParentDir
+					.concat(aPath.getParent());
+			pFullPath = pParent.getUrlPath(pName);
+		}
+	}
+
+	public CXRsrcUriPath(CXRsrcUriDir aParentDir, String aPath) {
+		this(aParentDir, new CXRsrcUriPath(aPath));
+	}
+
+	private CXRsrcUriPath(CXRsrcUriPath aPath) {
+		if (aPath != null && isValid()) {
+			pParent = aPath.pParent;
+			pName = aPath.pName;
+			pFullPath = aPath.pFullPath;
+			pExt = aPath.pExt;
+			pMimeType = aPath.pMimeType;
+		}
+	}
 
 	public CXRsrcUriPath(String aPath) {
 		if (aPath != null) {
@@ -47,27 +79,11 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 				new CXRsrcUriPath(aPath));
 	}
 
-	public CXRsrcUriPath(CXRsrcUriDir aParentDir, String aPath) {
-		this(aParentDir, new CXRsrcUriPath(aPath));
-	}
-
-	public CXRsrcUriPath(CXRsrcUriDir aParentDir, CXRsrcUriPath aPath) {
-		if (aPath != null && aPath.isValid()) {
-			pName = aPath.getName();
-			pParent = aParentDir == null ? aPath.getParent() : aParentDir
-					.concat(aPath.getParent());
-			pFullPath = pParent.getUrlPath(pName);
-		}
-	}
-
-	private CXRsrcUriPath(CXRsrcUriPath aPath) {
-		if (aPath != null && isValid()) {
-			pParent = aPath.pParent;
-			pName = aPath.pName;
-			pFullPath = aPath.pFullPath;
-			pExt = aPath.pExt;
-			pMimeType = aPath.pMimeType;
-		}
+	@Override
+	public Appendable addDescriptionInBuffer(Appendable aSB) {
+		aSB = super.addDescriptionInBuffer(aSB);
+		descrAddLine(aSB, "Path", pFullPath == null ? DESCR_NONE : pFullPath);
+		return aSB;
 	}
 
 	@Override
@@ -75,33 +91,30 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 		return new CXRsrcUriPath(this);
 	}
 
-	public URI getURI() throws URISyntaxException {
-		return new URI(pFullPath);
-	}
+	// Get and Set
 
 	// Converti en DIrectory sans l'extension
 	public CXRsrcUriDir clone2Dir() {
 		return pParent.concat(getNameNoExt());
 	}
 
-	// Get and Set
-
-	public boolean isValid() {
-		return pFullPath != null && pParent != null && pParent.isValid()
-				&& pName != null;
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || !(o instanceof CXRsrcUriPath))
+			return false;
+		CXRsrcUriPath oMod = (CXRsrcUriPath) o;
+		if (!oMod.isValid())
+			return false;
+		return pFullPath.equals(oMod.pFullPath);
 	}
 
-	public String getFullPath() {
-		return pFullPath;
-	}
-
-	public boolean hasName() {
-		return pName != null && !pName.isEmpty();
-	}
-
-	// Avec extension
-	public String getName() {
-		return pName;
+	public boolean equalsIgnoreCase(Object o) {
+		if (o == null || !(o instanceof CXRsrcUriPath))
+			return false;
+		CXRsrcUriPath oMod = (CXRsrcUriPath) o;
+		if (!oMod.isValid())
+			return false;
+		return pFullPath.equalsIgnoreCase(oMod.pFullPath);
 	}
 
 	public String getExtension() {
@@ -110,34 +123,8 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 		return pExt;
 	}
 
-	public String getNameNoExt() {
-		if (pNameNoExt == null)
-			splitExt();
-		return pNameNoExt;
-	}
-
-	public boolean hasExtension() {
-		return getExtension() != null;
-	}
-
-	public boolean hasMimeType() {
-		return getMimeType() != null;
-	}
-
-	public CXMimeType getMimeType() {
-		if (pMimeType == null)
-			pMimeType = CXMimeType.getMimeTypeFromExt(getExtension());
-		return pMimeType;
-	}
-
-	public CXRsrcUriDir getParent() {
-		return pParent;
-	}
-
-	// Renvoie le ni�me �l�ment du path
-	public String getPathPart(int aIdx) {
-		int wLen = getNbPart();
-		return aIdx >= 0 && aIdx < wLen ? getPartsArray()[aIdx] : null;
+	public String getFullPath() {
+		return pFullPath;
 	}
 
 	// Si a/b/c/rsrc.ext -> Renvoie c - null sinon
@@ -146,9 +133,47 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 		return wLastIdx > 0 ? getPathPart(wLastIdx) : null;
 	}
 
+	public CXMimeType getMimeType() {
+		if (pMimeType == null)
+			pMimeType = CXMimeType.getMimeTypeFromExt(getExtension());
+		return pMimeType;
+	}
+
+	// Avec extension
+	public String getName() {
+		return pName;
+	}
+
+	public String getNameNoExt() {
+		if (pNameNoExt == null)
+			splitExt();
+		return pNameNoExt;
+	}
+
 	// Renvoie le nombre d'�l�ments du path
 	public int getNbPart() {
 		return getPartsArray().length;
+	}
+
+	public CXRsrcUriDir getParent() {
+		return pParent;
+	}
+
+	// renvoie l'url sous la forme d'un tableau de strings
+	public String[] getPartsArray() {
+		if (pPartArray != null)
+			return pPartArray;
+		String[] wArray = pParent != null ? pParent.getPartsArray(false) : null;
+		pPartArray = wArray != null ? Arrays.copyOf(wArray, wArray.length + 1)
+				: new String[1];
+		pPartArray[pPartArray.length - 1] = pName;
+		return pPartArray;
+	}
+
+	// Renvoie le ni�me �l�ment du path
+	public String getPathPart(int aIdx) {
+		int wLen = getNbPart();
+		return aIdx >= 0 && aIdx < wLen ? getPartsArray()[aIdx] : null;
 	}
 
 	// Renvoie le path de la ressource � partir de la aIdx i�me partir inclue
@@ -182,6 +207,10 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 		return getRsrcPathFromPart(wIdx + 1);
 	}
 
+	public URI getURI() throws URISyntaxException {
+		return new URI(pFullPath);
+	}
+
 	public String getUrlStr(String aAddress) {
 		if (aAddress == null || aAddress.length() == 0)
 			return pFullPath;
@@ -192,6 +221,30 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 	}
 
 	// Private car m�thode doit rester immutable
+
+	public boolean hasExtension() {
+		return getExtension() != null;
+	}
+
+	public boolean hasMimeType() {
+		return getMimeType() != null;
+	}
+
+	public boolean hasName() {
+		return pName != null && !pName.isEmpty();
+	}
+
+	public boolean isValid() {
+		return pFullPath != null && pParent != null && pParent.isValid()
+				&& pName != null;
+	}
+
+	private void setExt(String aDefExt) {
+		pExt = aDefExt;
+		pName = new StringBuilder(pName).append('.').append(aDefExt).toString();
+		pFullPath = new StringBuilder(pFullPath).append('.').append(aDefExt)
+				.toString();
+	}
 
 	private void splitExt() {
 		if (pName != null) {
@@ -208,60 +261,8 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 		}
 	}
 
-	private void setExt(String aDefExt) {
-		pExt = aDefExt;
-		pName = new StringBuilder(pName).append('.').append(aDefExt).toString();
-		pFullPath = new StringBuilder(pFullPath).append('.').append(aDefExt)
-				.toString();
-	}
-
 	@Override
-	public boolean equals(Object o) {
-		if (o == null || !(o instanceof CXRsrcUriPath))
-			return false;
-		CXRsrcUriPath oMod = (CXRsrcUriPath) o;
-		if (!oMod.isValid())
-			return false;
-		return pFullPath.equals(oMod.pFullPath);
-	}
-
-	public boolean equalsIgnoreCase(Object o) {
-		if (o == null || !(o instanceof CXRsrcUriPath))
-			return false;
-		CXRsrcUriPath oMod = (CXRsrcUriPath) o;
-		if (!oMod.isValid())
-			return false;
-		return pFullPath.equalsIgnoreCase(oMod.pFullPath);
-	}
-
-	// renvoie l'url sous la forme d'un tableau de strings
-	public String[] getPartsArray() {
-		if (pPartArray != null)
-			return pPartArray;
-		String[] wArray = pParent != null ? pParent.getPartsArray(false) : null;
-		pPartArray = wArray != null ? Arrays.copyOf(wArray, wArray.length + 1)
-				: new String[1];
-		pPartArray[pPartArray.length - 1] = pName;
-		return pPartArray;
-	}
-
-	// Interface IXtdDescriber
-
-	@Override
-	public Appendable addDescriptionInBuffer(Appendable aSB) {
-		aSB = super.addDescriptionInBuffer(aSB);
-		descrAddLine(aSB, "Path", pFullPath == null ? DESCR_NONE : pFullPath);
-		return aSB;
-	}
-
-	// Static
-
-	// Force l'extension de la ressource si pas d'extension dans aPath
-	public static CXRsrcUriPath newInstanceWithExt(CXRsrcUriDir aParentDir,
-			String aPath, String aDefExt) {
-		CXRsrcUriPath wPath = new CXRsrcUriPath(aParentDir, aPath);
-		if (wPath.isValid() && !wPath.hasExtension() && aDefExt != null)
-			wPath.setExt(aDefExt);
-		return wPath;
+	public String toString() {
+		return getFullPath();
 	}
 }

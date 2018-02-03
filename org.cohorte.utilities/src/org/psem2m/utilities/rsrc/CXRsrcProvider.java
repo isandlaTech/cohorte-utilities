@@ -16,7 +16,8 @@ import org.psem2m.utilities.scripting.CXJsObjectBase;
  * @author ogattaz
  * 
  */
-public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable {
+public abstract class CXRsrcProvider extends CXJsObjectBase implements
+		Cloneable {
 
 	private int pCacheExpires = 0;
 	private int pConnectTimeoutMs = 0;
@@ -47,7 +48,8 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	 * @param aConnectTimeOutMs
 	 * @param aDefCharset
 	 */
-	public CXRsrcProvider(int aReadTimeOutMs, int aConnectTimeOutMs, Charset aDefCharset) {
+	public CXRsrcProvider(int aReadTimeOutMs, int aConnectTimeOutMs,
+			Charset aDefCharset) {
 		this(aReadTimeOutMs, aConnectTimeOutMs, null, aDefCharset);
 	}
 
@@ -57,9 +59,10 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	 * @param aDir
 	 * @param aDefCharset
 	 */
-	public CXRsrcProvider(int aReadTimeOutMs, int aConnectTimeOutMs, CXRsrcUriDir aDir,
-			Charset aDefCharset) {
-		pDefCharset = aDefCharset == null ? Charset.defaultCharset() : aDefCharset;
+	public CXRsrcProvider(int aReadTimeOutMs, int aConnectTimeOutMs,
+			CXRsrcUriDir aDir, Charset aDefCharset) {
+		pDefCharset = aDefCharset == null ? Charset.defaultCharset()
+				: aDefCharset;
 		pReadTimeoutMs = aReadTimeOutMs;
 		pConnectTimeoutMs = aConnectTimeOutMs;
 		setDefaultDirectory(aDir);
@@ -75,10 +78,10 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	@Override
 	public Appendable addDescriptionInBuffer(Appendable aSB) {
 		aSB = aSB == null ? new StringBuilder(1024) : aSB;
-		descrAddLine(aSB, "DefaultDirectory", pDefaultDirectory.getPath());
+		descrAddProp(aSB, "DefaultDirectory", pDefaultDirectory.getPath());
 		descrAddProp(aSB, "ReadTimeout", String.valueOf(pReadTimeoutMs));
 		descrAddProp(aSB, "ConnectTimeout", String.valueOf(pConnectTimeoutMs));
-		descrAddLine(aSB, "CacheExpires", pCacheExpires);
+		descrAddProp(aSB, "CacheExpires", pCacheExpires);
 		return aSB;
 	}
 
@@ -128,12 +131,15 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	 * @return
 	 * @throws Exception
 	 */
-	private CXRsrcUriPath checkUriPath(CXRsrcUriPath aPath, boolean aFulPath) throws Exception {
+	private CXRsrcUriPath checkUriPath(CXRsrcUriPath aPath, boolean aFulPath)
+			throws Exception {
 		if (aPath == null || !aPath.isValid()) {
-			throw new Exception((aPath == null ? "Null" : "empty") + " resource path");
+			throw new Exception((aPath == null ? "Null" : "empty")
+					+ " resource path");
 		}
 		if (!aPath.hasName()) {
-			throw new Exception("Bad resource path[" + aPath.getFullPath() + "]");
+			throw new Exception("Bad resource path[" + aPath.getFullPath()
+					+ "]");
 		}
 		if (!aFulPath && !pDefaultDirectory.isEmpty()) {
 			aPath = new CXRsrcUriPath(pDefaultDirectory, aPath);
@@ -156,21 +162,27 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	protected String connectionToString(URLConnection aCnx) {
 		StringBuilder wBuf = new StringBuilder();
 		wBuf.append("URL [").append(aCnx.getURL().toString()).append("\n");
-		wBuf.append("ModifiedSince [").append(String.valueOf(aCnx.getIfModifiedSince()))
+		wBuf.append("ModifiedSince [")
+				.append(String.valueOf(aCnx.getIfModifiedSince()))
 				.append("]\n");
-		wBuf.append("Expiration [").append(String.valueOf(aCnx.getExpiration())).append("]\n");
-		wBuf.append("LastModified [").append(String.valueOf(aCnx.getLastModified())).append("]\n");
-		wBuf.append("UseCache [").append(String.valueOf(aCnx.getUseCaches())).append("]\n");
-		wBuf.append("ReadTimeout [").append(String.valueOf(aCnx.getReadTimeout())).append("]\n");
-		wBuf.append("ConnectTimeout [").append(String.valueOf(aCnx.getConnectTimeout()))
+		wBuf.append("Expiration [")
+				.append(String.valueOf(aCnx.getExpiration())).append("]\n");
+		wBuf.append("LastModified [")
+				.append(String.valueOf(aCnx.getLastModified())).append("]\n");
+		wBuf.append("UseCache [").append(String.valueOf(aCnx.getUseCaches()))
 				.append("]\n");
-		wBuf.append("Encoding [").append(aCnx.getContentEncoding()).append("]\n");
-		wBuf.append("ContentLength [").append(String.valueOf(aCnx.getContentLength()))
+		wBuf.append("ReadTimeout [")
+				.append(String.valueOf(aCnx.getReadTimeout())).append("]\n");
+		wBuf.append("ConnectTimeout [")
+				.append(String.valueOf(aCnx.getConnectTimeout())).append("]\n");
+		wBuf.append("Encoding [").append(aCnx.getContentEncoding())
 				.append("]\n");
+		wBuf.append("ContentLength [")
+				.append(String.valueOf(aCnx.getContentLength())).append("]\n");
 		wBuf.append("HEADER\n");
 		try {
-			Iterator<Entry<String, List<String>>> wIt = aCnx.getHeaderFields().entrySet()
-					.iterator();
+			Iterator<Entry<String, List<String>>> wIt = aCnx.getHeaderFields()
+					.entrySet().iterator();
 			while (wIt.hasNext()) {
 				Entry<String, List<String>> wEntry = wIt.next();
 				wBuf.append("  ");
@@ -188,8 +200,8 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 		}
 		wBuf.append("PROPERTIES\n");
 		try {
-			Iterator<Entry<String, List<String>>> wIt = aCnx.getRequestProperties().entrySet()
-					.iterator();
+			Iterator<Entry<String, List<String>>> wIt = aCnx
+					.getRequestProperties().entrySet().iterator();
 			while (wIt.hasNext()) {
 				Entry<String, List<String>> wEntry = wIt.next();
 				wBuf.append("  ");
@@ -214,8 +226,8 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	 * @return
 	 */
 	public boolean existsDef(String aPath) {
-		return existsFulPath(pDefaultDirectory.isEmpty() ? new CXRsrcUriPath(aPath)
-				: new CXRsrcUriPath(pDefaultDirectory, aPath));
+		return existsFulPath(pDefaultDirectory.isEmpty() ? new CXRsrcUriPath(
+				aPath) : new CXRsrcUriPath(pDefaultDirectory, aPath));
 	}
 
 	/**
@@ -274,8 +286,8 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	 * @return
 	 */
 	public String getUrlStrDef(String aPath) {
-		return aPath == null ? null : new CXRsrcUriPath(pDefaultDirectory, aPath)
-				.getUrlStr(urlGetAddress());
+		return aPath == null ? null : new CXRsrcUriPath(pDefaultDirectory,
+				aPath).getUrlStr(urlGetAddress());
 	}
 
 	/**
@@ -319,14 +331,15 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrc<?> rsrcRead(CXRsrc<?> aRsrc, boolean aCheckTimeStamp) throws Exception {
+	public CXRsrc<?> rsrcRead(CXRsrc<?> aRsrc, boolean aCheckTimeStamp)
+			throws Exception {
 		assert aRsrc != null : "Null resource";
 		if (aRsrc.isText()) {
-			return rsrcReadTxt(aRsrc.getPath(), aCheckTimeStamp ? aRsrc.getTimeStampSyst() : 0,
-					false, true);
+			return rsrcReadTxt(aRsrc.getPath(),
+					aCheckTimeStamp ? aRsrc.getTimeStampSyst() : 0, false, true);
 		} else {
-			return rsrcReadByte(aRsrc.getPath(), aCheckTimeStamp ? aRsrc.getTimeStampSyst() : 0,
-					false, true);
+			return rsrcReadByte(aRsrc.getPath(),
+					aCheckTimeStamp ? aRsrc.getTimeStampSyst() : 0, false, true);
 		}
 	}
 
@@ -348,8 +361,8 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrc<?> rsrcRead(CXRsrcUriPath aPath, long aTimeStamp, boolean aForceSecondes)
-			throws Exception {
+	public CXRsrc<?> rsrcRead(CXRsrcUriPath aPath, long aTimeStamp,
+			boolean aForceSecondes) throws Exception {
 		return rsrcRead(aPath, aTimeStamp, aForceSecondes, false);
 	}
 
@@ -361,8 +374,8 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	 * @return
 	 * @throws Exception
 	 */
-	private CXRsrc<?> rsrcRead(CXRsrcUriPath aPath, long aTimeStamp, boolean aForceSecondes,
-			boolean aFulPath) throws Exception {
+	private CXRsrc<?> rsrcRead(CXRsrcUriPath aPath, long aTimeStamp,
+			boolean aForceSecondes, boolean aFulPath) throws Exception {
 		if (aPath != null) {
 			CXMimeType wMime = aPath.getMimeType();
 			if (wMime != null && wMime.isText()) {
@@ -371,7 +384,8 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 				return rsrcReadByte(aPath, aTimeStamp, aForceSecondes, aFulPath);
 			}
 		} else {
-			throw new Exception((aPath == null ? "Null" : "empty") + " resource path");
+			throw new Exception((aPath == null ? "Null" : "empty")
+					+ " resource path");
 		}
 	}
 
@@ -395,7 +409,8 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrc<?> rsrcRead(String aRsrcPath, long aTimeStampSyst) throws Exception {
+	public CXRsrc<?> rsrcRead(String aRsrcPath, long aTimeStampSyst)
+			throws Exception {
 		return rsrcRead(aRsrcPath, aTimeStampSyst, false);
 	}
 
@@ -406,9 +421,10 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrc<?> rsrcRead(String aRsrcPath, long aTimeStampSyst, boolean aForceSecond)
-			throws Exception {
-		return rsrcRead(new CXRsrcUriPath(aRsrcPath), aTimeStampSyst, aForceSecond);
+	public CXRsrc<?> rsrcRead(String aRsrcPath, long aTimeStampSyst,
+			boolean aForceSecond) throws Exception {
+		return rsrcRead(new CXRsrcUriPath(aRsrcPath), aTimeStampSyst,
+				aForceSecond);
 	}
 
 	/**
@@ -427,8 +443,8 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrcByte rsrcReadByte(CXRsrcUriPath aPath, long aTimeStamp, boolean aForceSecondes)
-			throws Exception {
+	public CXRsrcByte rsrcReadByte(CXRsrcUriPath aPath, long aTimeStamp,
+			boolean aForceSecondes) throws Exception {
 		return rsrcReadByte(aPath, aTimeStamp, aForceSecondes, false);
 	}
 
@@ -445,8 +461,8 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	 * @return
 	 * @throws Exception
 	 */
-	private CXRsrcByte rsrcReadByte(CXRsrcUriPath aPath, long aTimeStamp, boolean aForceSecondes,
-			boolean aFulPath) throws Exception {
+	private CXRsrcByte rsrcReadByte(CXRsrcUriPath aPath, long aTimeStamp,
+			boolean aForceSecondes, boolean aFulPath) throws Exception {
 		CXRsrcByte wRsrc = null;
 		URL wUrl = null;
 		try {
@@ -464,12 +480,13 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 			if (wCheckTimeStamp && aTimeStamp == wCurTimeStamp) {
 				return null;
 			} else {
-				wRsrc = new CXRsrcByte(aPath, CXRsrcByteReader.readAll(wCnx), wCurTimeStamp);
+				wRsrc = new CXRsrcByte(aPath, CXRsrcByteReader.readAll(wCnx),
+						wCurTimeStamp);
 			}
 		} catch (Exception e) {
 			throwExcepReadByte(
-					aPath == null ? "null" : wUrl == null ? aPath.getFullPath() : wUrl.toString(),
-					e);
+					aPath == null ? "null" : wUrl == null ? aPath.getFullPath()
+							: wUrl.toString(), e);
 		}
 		return wRsrc;
 	}
@@ -491,7 +508,8 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrcByte rsrcReadByte(String aRsrcPath, long aTimeStampSyst) throws Exception {
+	public CXRsrcByte rsrcReadByte(String aRsrcPath, long aTimeStampSyst)
+			throws Exception {
 		return rsrcReadByte(aRsrcPath, aTimeStampSyst, false);
 	}
 
@@ -502,9 +520,10 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrcByte rsrcReadByte(String aRsrcPath, long aTimeStampSyst, boolean aForceSecond)
-			throws Exception {
-		return rsrcReadByte(new CXRsrcUriPath(aRsrcPath), aTimeStampSyst, aForceSecond);
+	public CXRsrcByte rsrcReadByte(String aRsrcPath, long aTimeStampSyst,
+			boolean aForceSecond) throws Exception {
+		return rsrcReadByte(new CXRsrcUriPath(aRsrcPath), aTimeStampSyst,
+				aForceSecond);
 	}
 
 	/**
@@ -523,8 +542,8 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrcText rsrcReadTxt(CXRsrcUriPath aPath, long aTimeStamp, boolean aForceSecondes)
-			throws Exception {
+	public CXRsrcText rsrcReadTxt(CXRsrcUriPath aPath, long aTimeStamp,
+			boolean aForceSecondes) throws Exception {
 		return rsrcReadTxt(aPath, aTimeStamp, aForceSecondes, false);
 	}
 
@@ -536,8 +555,8 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	 * @return
 	 * @throws Exception
 	 */
-	private CXRsrcText rsrcReadTxt(CXRsrcUriPath aPath, long aTimeStamp, boolean aForceSecondes,
-			boolean aFulPath) throws Exception {
+	private CXRsrcText rsrcReadTxt(CXRsrcUriPath aPath, long aTimeStamp,
+			boolean aForceSecondes, boolean aFulPath) throws Exception {
 		CXRsrcText wRsrc = null;
 		URL wUrl = null;
 		try {
@@ -557,13 +576,14 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 			} else {
 				// X3 n'ecrit pas le BOM -> On precise l'encoding - Toujours
 				// Utf8
-				CXRsrcTextReadInfo wInfo = CXRsrcTextUnicodeReader.readAll(wCnx, pDefCharset);
+				CXRsrcTextReadInfo wInfo = CXRsrcTextUnicodeReader.readAll(
+						wCnx, pDefCharset);
 				wRsrc = new CXRsrcText(aPath, wInfo, wCurTimeStamp);
 			}
 		} catch (Exception e) {
 			throwExcepReadText(
-					aPath == null ? "null" : wUrl == null ? aPath.getFullPath() : wUrl.toString(),
-					e);
+					aPath == null ? "null" : wUrl == null ? aPath.getFullPath()
+							: wUrl.toString(), e);
 		}
 		return wRsrc;
 	}
@@ -585,7 +605,8 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrcText rsrcReadTxt(String aRsrcPath, long aTimeStampSyst) throws Exception {
+	public CXRsrcText rsrcReadTxt(String aRsrcPath, long aTimeStampSyst)
+			throws Exception {
 		return rsrcReadTxt(aRsrcPath, aTimeStampSyst, false);
 	}
 
@@ -596,9 +617,10 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrcText rsrcReadTxt(String aRsrcPath, long aTimeStampSyst, boolean aForceSecond)
-			throws Exception {
-		return rsrcReadTxt(new CXRsrcUriPath(aRsrcPath), aTimeStampSyst, aForceSecond);
+	public CXRsrcText rsrcReadTxt(String aRsrcPath, long aTimeStampSyst,
+			boolean aForceSecond) throws Exception {
+		return rsrcReadTxt(new CXRsrcUriPath(aRsrcPath), aTimeStampSyst,
+				aForceSecond);
 	}
 
 	/**
@@ -641,7 +663,8 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	 * @param e
 	 * @throws Exception
 	 */
-	protected void throwExcepReadByte(String aUrl, Exception e) throws Exception {
+	protected void throwExcepReadByte(String aUrl, Exception e)
+			throws Exception {
 		throw new Exception("Error reading byte resource[" + aUrl + "]", e);
 	}
 
@@ -650,8 +673,23 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Cloneable
 	 * @param e
 	 * @throws Exception
 	 */
-	protected void throwExcepReadText(String aUrl, Exception e) throws Exception {
+	protected void throwExcepReadText(String aUrl, Exception e)
+			throws Exception {
 		throw new Exception("Error reading text resource[" + aUrl + "]", e);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		String wStr = urlGetAddress();
+		if (wStr == null) {
+			wStr = getDefDirectory().toString();
+		}
+		return wStr;
 	}
 
 	/**
