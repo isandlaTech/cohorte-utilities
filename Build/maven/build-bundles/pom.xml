@@ -23,8 +23,13 @@
 		<module>../../../ThirdPartiesLibs/org.cohorte.libs.org.javatuples</module>
 		<!-- MOD_250 OG add the building of org.cohorte.libs.com.mysql which contains the mySql 5.0.8 jdbc driver -->
 		<module>../../../ThirdPartiesLibs/org.cohorte.libs.com.mysql</module>
-		<module>../../../extra/org.cohorte.utilities.test</module>
+		
 		<module>../../../ThirdPartiesLibs/org.cohorte.libs.com.sun.jna</module>
+		
+		<!-- MOD_OG #10 -->
+		<module>../../../ThirdPartiesLibs/org.cohorte.libs.org.mozilla.rhino</module>
+
+		<module>../../../extra/org.cohorte.utilities.test</module>
 	
 		<module>../../../extra/org.cohorte.utilities.webapp</module>
 		<module>../../../extra/org.cohorte.utilities.picosoc</module>
