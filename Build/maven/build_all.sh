@@ -22,6 +22,16 @@ export P2_LOCAL_REPO=`pwd`/p2-repo/
 echo "P2_LOCAL_REPO=$P2_LOCAL_REPO"
 
 echo
+echo "********************************** cleanup and build org.cohorte.utilities **********************************"
+echo
+
+cd ../../org.cohorte.utilities/
+mvn clean install deploy 
+
+cd $DIR
+
+
+echo
 echo "********************************** cleanup **********************************"
 echo
 

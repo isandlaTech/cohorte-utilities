@@ -8,6 +8,8 @@ RemoteSystemsTempFiles/
 bin/
 target/
 
+*.class
+
 # Sonar
 .sonar/
 sonar-project.properties
