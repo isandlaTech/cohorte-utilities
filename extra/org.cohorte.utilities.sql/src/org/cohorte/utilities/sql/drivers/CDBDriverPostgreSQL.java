@@ -21,6 +21,14 @@ import org.psem2m.utilities.logging.IActivityLogger;
  */
 public class CDBDriverPostgreSQL extends CDBDriverBase implements IDBDriver {
 
+	private static final int DEFAULT_P0RT = 5432;
+
+	private final static String DRIVER_CLASS_NAME = "org.postgresql.Driver";
+
+	private final static String DRIVER_URL_PROTOCOL = "jdbc:postgresql:";
+
+	private final static String DRIVER_URL_SUFFIX = "";
+
 	/**
 	 *
 	 */
@@ -39,15 +47,25 @@ public class CDBDriverPostgreSQL extends CDBDriverBase implements IDBDriver {
 	@Override
 	public String getClassName() {
 		// TODO Auto-generated method stub
-		return null;
+		return DRIVER_CLASS_NAME;
 	}
 
 	@Override
 	public String getConnectUrl(final String aHost, final int aPort,
-			final String aDbName, final String aUerId, final String aPassword,
+			final String aDbName, final String aUserId, final String aPassword,
 			final String aUrlExtend) {
-		// TODO Auto-generated method stub
-		return null;
+
+		int wPort = (aPort > 0) ? aPort : DEFAULT_P0RT;
+
+		String wUrlExtend = DRIVER_URL_SUFFIX;
+		if (aUrlExtend != null && !aUrlExtend.isEmpty()) {
+			wUrlExtend += aUrlExtend;
+		}
+
+		return String.format("%s//%s:%d/%s?user=%s&password=%s%s",
+				DRIVER_URL_PROTOCOL, aHost, wPort, aDbName, aUserId, aPassword,
+				wUrlExtend);
+
 	}
 
 	@Override

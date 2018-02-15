@@ -11,7 +11,7 @@
 	</parent>
 	<artifactId>org.cohorte.utilities.sql</artifactId>
 	<!-- MOD_0G_20170102 -->
-	<version>1.0.3</version>
+	<version>1.0.4</version>
 	<!--<version>1.0.0.201501211743</version>-->
 	
 	<packaging>eclipse-plugin</packaging>
