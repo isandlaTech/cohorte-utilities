@@ -6,6 +6,8 @@ import org.psem2m.utilities.logging.IActivityLogger;
 import org.psem2m.utilities.rsrc.CXRsrcProvider;
 
 /**
+ * #12 Manage chains of resource providers
+ * 
  * @author IsandlaTech - ogattaz
  * 
  */
@@ -76,6 +78,13 @@ public interface IXJsManager {
 	public IXJsRuningReply runScript(final IActivityLogger aActivityLogger,
 			final String aProviderId, final String aScriptUri,
 			final Map<String, Object> aVariablesMap) throws Exception;
+
+	/**
+	 * @param aScriptUri
+	 * @return
+	 * @throws Exception
+	 */
+	public IXJsRuningReply runScript(final String aScriptUri) throws Exception;
 
 	/**
 	 * @param aScriptUri

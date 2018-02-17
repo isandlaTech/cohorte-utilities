@@ -11,10 +11,12 @@ import javax.script.ScriptException;
 import org.psem2m.utilities.CXTimer;
 
 /**
+ * #12 Manage chains of resource providers
+ * 
  * @author ogattaz
  *
  */
-public class CXJsEngine extends CXJsObjectBase {
+public class CXJsEngine extends CXJsObjectBase implements IXJsConstants {
 
 	private ScriptEngine pEngine;
 	private CXJsScriptFactory pFactory;
@@ -191,10 +193,10 @@ public class CXJsEngine extends CXJsObjectBase {
 			// MOD_OG_20170615 add the TRACER and a FORMATER in the script
 			// context
 			if (wTraceOn) {
-				aScriptContext.setAttribute("TRACER", aJsTracer,
+				aScriptContext.setAttribute(VAR_TRACER_ID, aJsTracer,
 						ScriptContext.ENGINE_SCOPE);
 			}
-			aScriptContext.setAttribute("FORMATER", new CXJsFormater(),
+			aScriptContext.setAttribute(VAR_FORMATTER_ID, new CXJsFormater(),
 					ScriptContext.ENGINE_SCOPE);
 
 			wRes = pEngine.eval(aMainModule.getMergedCode(), aScriptContext);

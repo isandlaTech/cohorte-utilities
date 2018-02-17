@@ -9,15 +9,21 @@ import org.psem2m.utilities.logging.IActivityLogger;
 import org.psem2m.utilities.rsrc.CXRsrcText;
 
 /**
+ * #12 Manage chains of resource providers
+ * 
  * @author ogattaz
  * 
  */
 public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 
 	private final static String RSRC_FORMAT = "name=[%s],timeStamp=[%s]";
-	private static SimpleDateFormat sFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SS");
+
+	private final static SimpleDateFormat sFormat = new SimpleDateFormat(
+			"yyyy/MM/dd HH:mm:ss:SS");
+
 	private final IActivityLogger pActivityLogger;
 	protected CXJsCompiledScript pCompiledScript = null;
+	protected final IXjsTracer pCXjsTracer;
 	protected CXJsEngine pEngine;
 	protected String pId;
 	protected CXJsSourceMain pMain;
@@ -25,7 +31,6 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 	protected CXJsException pRunExcep;
 	protected boolean pRunThread = true;
 	protected CXTimer pTimer = new CXTimer();
-
 	protected long pTimeRefNano = 0;
 
 	/**
@@ -34,11 +39,15 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 	 * @param aId
 	 * @throws CXJsException
 	 */
-	public CXJsRunner(final IActivityLogger aActivityLogger, final CXJsSourceMain aMain, CXJsEngine aEngine, String aId)
+	public CXJsRunner(final IActivityLogger aActivityLogger,
+			final CXJsSourceMain aMain, CXJsEngine aEngine, String aId)
 			throws Exception {
-
 		super();
+
 		pActivityLogger = aActivityLogger;
+
+		pCXjsTracer = CXjsTracerFactory.newJsTracer(pActivityLogger);
+
 		pMain = aMain;
 		pEngine = aEngine;
 		pId = aId;
@@ -55,7 +64,8 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 		boolean wHasResult = (aScriptResult != null);
 		wSB.append(String.format("hasResult=[%b]", wHasResult));
 		if (wHasResult) {
-			wSB.append(String.format(" kingOfResult=[%s]", aScriptResult.getClass().getSimpleName()));
+			wSB.append(String.format(" kingOfResult=[%s]", aScriptResult
+					.getClass().getSimpleName()));
 		}
 		return wSB.toString();
 	}
@@ -86,7 +96,8 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 		CXDescriberUtil.descrAddLine(wSB, getFormatedTitle());
 
 		if (pRunExcep != null)
-			CXDescriberUtil.descrAddIndent(wSB, pRunExcep.getExcepCtx().toDescription());
+			CXDescriberUtil.descrAddIndent(wSB, pRunExcep.getExcepCtx()
+					.toDescription());
 		return wSB.toString();
 	}
 
@@ -167,11 +178,13 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 	public String getTimeStamps() {
 
 		StringBuilder wSB = new StringBuilder();
-		for (CXRsrcText wRsrcText : pCompiledScript.getMainModule().getResources()) {
+		for (CXRsrcText wRsrcText : pCompiledScript.getMainModule()
+				.getResources()) {
 			if (wSB.length() > 0)
 				wSB.append(';');
-			wSB.append(
-					String.format(RSRC_FORMAT, wRsrcText.getPath().getName(), fomatTS(wRsrcText.getTimeStampSyst())));
+			wSB.append(String.format(RSRC_FORMAT,
+					wRsrcText.getPath().getName(),
+					fomatTS(wRsrcText.getTimeStampSyst())));
 		}
 		return wSB.toString();
 	}
@@ -186,7 +199,8 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 	public String getTraceReport() {
 
 		StringBuilder wSB = new StringBuilder();
-		wSB.append("- Run(" + pId + ")=[" + (pRunExcep == null ? "OK" : "KO") + "]");
+		wSB.append("- Run(" + pId + ")=[" + (pRunExcep == null ? "OK" : "KO")
+				+ "]");
 		wSB.append('\n');
 		wSB.append("- Duration=[" + pTimer.getDurationMs() + "ms]");
 		wSB.append('\n');
@@ -200,6 +214,13 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 			wSB.append('\n');
 		}
 		return wSB.toString();
+	}
+
+	/**
+	 * @return
+	 */
+	private boolean hasActivityLogger() {
+		return (pActivityLogger != null);
 	}
 
 	/**
@@ -222,7 +243,8 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 	 */
 	@Override
 	public void logBeginStep(String aFormat, final Object... aArgs) {
-		pActivityLogger.logInfo(this, "logBeginStep", String.format(aFormat, aArgs));
+		pActivityLogger.logInfo(this, "logBeginStep",
+				String.format(aFormat, aArgs));
 
 	}
 
@@ -258,7 +280,8 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 	@Override
 	public void logEndStep(String aFormat, final Object... aArgs) {
 
-		pActivityLogger.logInfo(this, "logEndStep", String.format(aFormat, aArgs));
+		pActivityLogger.logInfo(this, "logEndStep",
+				String.format(aFormat, aArgs));
 	}
 
 	/**
@@ -292,8 +315,10 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 	 *      java.lang.Throwable, java.lang.String, java.lang.Object[])
 	 */
 	@Override
-	public void logSevere(String aWhat, Throwable e, String aFormat, final Object... aArgs) {
-		pActivityLogger.logSevere(this, aWhat, "ERROR: %s %s", String.format(aFormat, aArgs), e);
+	public void logSevere(String aWhat, Throwable e, String aFormat,
+			final Object... aArgs) {
+		pActivityLogger.logSevere(this, aWhat, "ERROR: %s %s",
+				String.format(aFormat, aArgs), e);
 
 	}
 
@@ -316,10 +341,12 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 	 */
 	IXJsRuningContext run(IXJsRuningContext aCtx) throws CXJsException {
 
-		aCtx.setAttrEngine("gScriptId", pId);
-		aCtx.setAttrEngine("gScriptTS", getTimeStamps());
-		aCtx.setAttrEngine("gScriptCtx", aCtx);
-		aCtx.setAttrEngine("gScriptRun", this);
+		aCtx.setAttrEngine(VAR_SCRIPTID_ID, pId);
+		aCtx.setAttrEngine(VAR_SCRIPTTS_ID, getTimeStamps());
+		aCtx.setAttrEngine(VAR_SCRIPTCTX_ID, aCtx);
+		aCtx.setAttrEngine(VAR_SCRIPTRUN_ID, this);
+		aCtx.setAttrEngine(VAR_SCRIPTSOURCE_ID, this.pMain);
+
 		Object wScriptResult = null;
 
 		// ogat - v1.4 - return handle duration and eval duration
@@ -327,13 +354,18 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 		wXtimer.start();
 
 		try {
-			wScriptResult = pCompiledScript.eval(aCtx.start(CXJsRuningContext.ACT_EVAL_COMPILED, pTimeRefNano));
+			wScriptResult = pCompiledScript.eval(aCtx.start(
+					CXJsRuningContext.ACT_EVAL_COMPILED, pTimeRefNano),
+					pCXjsTracer);
 		} catch (CXJsException e) {
 			throw e;
 		} finally {
 			aCtx.stop();
-			pActivityLogger.logDebug(this, "runEnd",
-					String.format("isEndOK=[%b] %s", aCtx.isEndOK(), buildResultInfos(wScriptResult)));
+			if (hasActivityLogger()) {
+				pActivityLogger.logDebug(this, "runEnd", String.format(
+						"isEndOK=[%b] %s", aCtx.isEndOK(),
+						buildResultInfos(wScriptResult)));
+			}
 		}
 
 		// ogat - v1.4 - return handle duration and eval duration

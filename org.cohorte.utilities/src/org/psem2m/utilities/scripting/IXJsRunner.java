@@ -3,10 +3,12 @@ package org.psem2m.utilities.scripting;
 import org.psem2m.utilities.CXTimer;
 
 /**
+ * #12 Manage chains of resource providers
+ * 
  * @author IsandlaTech - ogattaz
  * 
  */
-public interface IXJsRunner {
+public interface IXJsRunner extends IXJsConstants {
 
 	/**
 	 * @param aTS
@@ -42,17 +44,21 @@ public interface IXJsRunner {
 
 	void logBeginStep(final String aFormat, final Object... aArgs);
 
-	void logDebug(final String aWhat, final String aFormat, final Object... aArgs);
+	void logDebug(final String aWhat, final String aFormat,
+			final Object... aArgs);
 
 	void logEndStep();
 
 	void logEndStep(final String aFormat, final Object... aArgs);
 
-	void logInfo(final String aWhat, final String aFormat, final Object... aArgs);
+	void logInfo(final String aWhat, final String aFormat,
+			final Object... aArgs);
 
-	void logSevere(final String aWhat, final String aFormat, final Object... aArgs);
+	void logSevere(final String aWhat, final String aFormat,
+			final Object... aArgs);
 
-	void logSevere(final String aWhat, Throwable e, final String aFormat, final Object... aArgs);
+	void logSevere(final String aWhat, Throwable e, final String aFormat,
+			final Object... aArgs);
 
 	CXTimer newTimer();
 

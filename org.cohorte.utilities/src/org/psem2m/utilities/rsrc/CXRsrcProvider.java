@@ -7,22 +7,27 @@ import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 
 import org.psem2m.utilities.scripting.CXJsObjectBase;
 
 /**
+ * #12 Manage chains of resource providers
+ * 
  * Class Ressource provider
  * 
  * @author ogattaz
  * 
  */
 public abstract class CXRsrcProvider extends CXJsObjectBase implements
-		Cloneable {
+		Iterator<CXRsrcProvider>, Cloneable {
 
 	private int pCacheExpires = 0;
 	private int pConnectTimeoutMs = 0;
 	private CXRsrcUriDir pDefaultDirectory = new CXRsrcUriDir("");
 	private Charset pDefCharset = null;
+	// #12 Manage chains of resource providers
+	private CXRsrcProvider pNext;
 	private int pReadTimeoutMs = 0;
 
 	public CXRsrcProvider(Charset aDefCharset) {
@@ -68,6 +73,19 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements
 		setDefaultDirectory(aDir);
 	}
 
+	/**
+	 * #12 Manage chains of resource providers
+	 * 
+	 * @param aNext
+	 */
+	public void add(final CXRsrcProvider aNext) {
+		if (hasNext()) {
+			next().setNext(aNext);
+		} else {
+			setNext(aNext);
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -82,6 +100,12 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements
 		descrAddProp(aSB, "ReadTimeout", String.valueOf(pReadTimeoutMs));
 		descrAddProp(aSB, "ConnectTimeout", String.valueOf(pConnectTimeoutMs));
 		descrAddProp(aSB, "CacheExpires", pCacheExpires);
+		// #12 Manage chains of resource providers
+		descrAddProp(aSB, "hasNext", hasNext());
+		if (hasNext()) {
+			descrAddText(aSB, "\n");
+			pNext.addDescriptionInBuffer(aSB);
+		}
 		return aSB;
 	}
 
@@ -131,18 +155,20 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements
 	 * @return
 	 * @throws Exception
 	 */
-	private CXRsrcUriPath checkUriPath(CXRsrcUriPath aPath, boolean aFulPath)
-			throws Exception {
+	private CXRsrcUriPath checkUriPath(final CXRsrcUriPath aPath,
+			boolean aFulPath) throws Exception {
 		if (aPath == null || !aPath.isValid()) {
-			throw new Exception((aPath == null ? "Null" : "empty")
-					+ " resource path");
+			throw new Exception("Unable to check a"
+					+ (aPath == null ? "Null" : "empty") + " resource path");
 		}
 		if (!aPath.hasName()) {
-			throw new Exception("Bad resource path[" + aPath.getFullPath()
-					+ "]");
+			throw new Exception(
+					"Unable to check a resource path having no name ["
+							+ aPath.getFullPath() + "]");
 		}
 		if (!aFulPath && !pDefaultDirectory.isEmpty()) {
-			aPath = new CXRsrcUriPath(pDefaultDirectory, aPath);
+			return new CXRsrcUriPath(pDefaultDirectory, aPath);
+
 		}
 		return aPath;
 	}
@@ -291,6 +317,16 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements
 	}
 
 	/**
+	 * #12 Manage chains of resource providers
+	 * 
+	 * @see java.util.Iterator#hasNext()
+	 */
+	@Override
+	public boolean hasNext() {
+		return (pNext != null);
+	}
+
+	/**
 	 * @return True si acces fichier en local du serveur - False si access
 	 *         remote (http)
 	 */
@@ -301,6 +337,19 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements
 	 */
 	public boolean isValid() {
 		return true;
+	}
+
+	/**
+	 * #12 Manage chains of resource providers
+	 * 
+	 * @see java.util.Iterator#next()
+	 */
+	@Override
+	public CXRsrcProvider next() {
+		if (!hasNext()) {
+			throw new NoSuchElementException("no next provider available");
+		}
+		return pNext;
 	}
 
 	/**
@@ -320,6 +369,18 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements
 			wCnx.setConnectTimeout(pConnectTimeoutMs);
 		}
 		return wCnx;
+	}
+
+	/*
+	 * #12 Manage chains of resource providers
+	 * 
+	 * @see java.util.Iterator#remove()
+	 */
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException(
+				"the removing of the next resource provider isn't supported");
+
 	}
 
 	/**
@@ -555,15 +616,16 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements
 	 * @return
 	 * @throws Exception
 	 */
-	private CXRsrcText rsrcReadTxt(CXRsrcUriPath aPath, long aTimeStamp,
+	private CXRsrcText rsrcReadTxt(final CXRsrcUriPath aPath, long aTimeStamp,
 			boolean aForceSecondes, boolean aFulPath) throws Exception {
 		CXRsrcText wRsrc = null;
+		CXRsrcUriPath wPath = null;
 		URL wUrl = null;
 		try {
 			URLConnection wCnx = null;
-			aPath = checkUriPath(aPath, aFulPath);
+			wPath = checkUriPath(aPath, aFulPath);
 			boolean wCheckTimeStamp = aTimeStamp > 0;
-			wUrl = urlNew(aPath);
+			wUrl = urlNew(wPath);
 			wCnx = openConnection(wUrl);
 			long wCurTimeStamp = wCnx.getLastModified();
 			if (aForceSecondes) {
@@ -578,12 +640,18 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements
 				// Utf8
 				CXRsrcTextReadInfo wInfo = CXRsrcTextUnicodeReader.readAll(
 						wCnx, pDefCharset);
-				wRsrc = new CXRsrcText(aPath, wInfo, wCurTimeStamp);
+				wRsrc = new CXRsrcText(wPath, wInfo, wCurTimeStamp);
 			}
 		} catch (Exception e) {
+			if (hasNext()) {
+				return next().rsrcReadTxt(aPath, aTimeStamp, aForceSecondes,
+						aFulPath);
+			}
 			throwExcepReadText(
-					aPath == null ? "null" : wUrl == null ? aPath.getFullPath()
-							: wUrl.toString(), e);
+					"Unable to read "
+							+ ((wPath == null) ? "null"
+									: (wUrl == null) ? aPath.getFullPath()
+											: wUrl.toString()), e);
 		}
 		return wRsrc;
 	}
@@ -652,10 +720,32 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements
 	}
 
 	/**
+	 * #12 Manage chains of resource providers
+	 * 
+	 * @param aNext
+	 */
+	public void setNext(final CXRsrcProvider aNext) {
+		pNext = aNext;
+	}
+
+	/**
 	 * @param aReadTimeOutMs
 	 */
 	public void setReadTimeout(int aReadTimeOutMs) {
 		pReadTimeoutMs = aReadTimeOutMs;
+	}
+
+	/**
+	 * #10
+	 * 
+	 * @return the size of the chain
+	 */
+	public int size() {
+		int wNb = 0;
+		if (hasNext()) {
+			wNb += next().size();
+		}
+		return 1 + wNb;
 	}
 
 	/**
@@ -688,6 +778,9 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements
 		String wStr = urlGetAddress();
 		if (wStr == null) {
 			wStr = getDefDirectory().toString();
+		}
+		if (hasNext()) {
+			wStr += ',' + next().toString();
 		}
 		return wStr;
 	}

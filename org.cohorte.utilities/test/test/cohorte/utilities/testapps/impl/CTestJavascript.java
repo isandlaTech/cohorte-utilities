@@ -1,6 +1,8 @@
 package test.cohorte.utilities.testapps.impl;
 
 import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.script.ScriptContext;
 
@@ -10,6 +12,7 @@ import org.psem2m.utilities.CXException;
 import org.psem2m.utilities.CXJvmUtils;
 import org.psem2m.utilities.CXOSUtils;
 import org.psem2m.utilities.files.CXFileDir;
+import org.psem2m.utilities.rsrc.CXRsrcProvider;
 import org.psem2m.utilities.rsrc.CXRsrcProviderFile;
 import org.psem2m.utilities.rsrc.CXRsrcUriPath;
 import org.psem2m.utilities.scripting.CXJsEngine;
@@ -20,6 +23,8 @@ import org.psem2m.utilities.scripting.CXJsSourceMain;
 import org.psem2m.utilities.scripting.IXjsTracer;
 
 /**
+ * #12 Manage chains of resource providers
+ * 
  * @author ogattaz
  *
  */
@@ -29,14 +34,16 @@ public class CTestJavascript extends CAppConsoleBase {
 	 * @author ogattaz
 	 *
 	 */
-	class CJsTracer implements IXjsTracer {
+	class CTestJsTracerWrapper implements IXjsTracer {
 
 		/**
 		 * @param e
 		 * @return
 		 */
 		private String getCauseMessagesList(final Throwable e) {
-			return "\t- " + CXException.eCauseMessagesInString(e).replace(" , ", "\n\t- ");
+			return "\t- "
+					+ CXException.eCauseMessagesInString(e).replace(" , ",
+							"\n\t- ");
 		}
 
 		@Override
@@ -62,8 +69,10 @@ public class CTestJavascript extends CAppConsoleBase {
 		}
 
 		@Override
-		public void trace(final Object aObj, final CharSequence aSB, final Throwable e) {
-			pLogger.logInfo(aObj, "jsTrace", "%s\n%s", aSB, getCauseMessagesList(e));
+		public void trace(final Object aObj, final CharSequence aSB,
+				final Throwable e) {
+			pLogger.logInfo(aObj, "jsTrace", "%s\n%s", aSB,
+					getCauseMessagesList(e));
 
 		}
 
@@ -118,44 +127,83 @@ public class CTestJavascript extends CAppConsoleBase {
 	private void doCommandRun(final String aCmdeLine) throws Exception {
 		pLogger.logInfo(this, "doCommandRun", "begin");
 
-		final CXJsManager wXJsManager = new CXJsManager("JavaScript");
+		// #12 Manage chains of resource providers
 
-		pLogger.logInfo(this, "doCommandRun", "new wXJsManager:\n%s", wXJsManager.toDescription());
+		// build the resource provider chain : "scripts2" => "scripts1" =>
+		// "scripts0"
+		CXRsrcProviderFile wProviderChain = newRsrcProviderFile(
+				"testcases/scripts0/", null);
+		wProviderChain = newRsrcProviderFile("testcases/scripts1/",
+				wProviderChain);
+		wProviderChain = newRsrcProviderFile("testcases/scripts2/",
+				wProviderChain);
 
-		final CXJsEngine wXJsEngine = wXJsManager.getScriptEngineFactory().getScriptEngine();
+		// prepare the manager
+		final CXJsManager wXJsManager = new CXJsManager(pLogger, "JavaScript");
 
-		// dossier dans lequel on trouve les sources
-		final CXFileDir wDir = new CXFileDir(CXFileDir.getUserDir(), "testcases/scripts/");
-		final CXRsrcProviderFile wProvider = new CXRsrcProviderFile(wDir, Charset.forName(CXBytesUtils.ENCODING_UTF_8));
+		// set the resource provider chain
+		wXJsManager.setRsrcProviderChain(wProviderChain);
 
-		pLogger.logInfo(this, "doCommandRun", "init RsrcProvider  for [%s]", wDir.getAbsolutePath());
+		pLogger.logInfo(this, "doCommandRun", "new wXJsManager:\n%s",
+				wXJsManager.toDescription());
 
-		final IXjsTracer wXjsTracer = new CJsTracer();
+		// prepare a tracer
+		final IXjsTracer wTestjsTracer = new CTestJsTracerWrapper();
 
-		final CXJsSourceMain wMain = wXJsManager.getMainSource(wProvider, new CXRsrcUriPath("test.js"), wXjsTracer);
+		// -------------------- STEP BY STEP CALL --------------------
+
+		final CXJsSourceMain wJsSourceMain = wXJsManager.getMainSource(
+				new CXRsrcUriPath("test.js"), wTestjsTracer);
 
 		final CXJsRuningContext wCtx = new CXJsRuningContext(1024);
-		wCtx.setAttribute("ENGSCOP", "ENGINE_1", ScriptContext.ENGINE_SCOPE);
-		wCtx.setAttribute("GLOSCOP", "GLOBAL_1", ScriptContext.GLOBAL_SCOPE);
+		wCtx.setAttribute("gTestEngineScope", "ENGINE_SCOPE",
+				ScriptContext.ENGINE_SCOPE);
+		wCtx.setAttribute("gTestClobalScope", "GLOBAL_SCOPE",
+				ScriptContext.GLOBAL_SCOPE);
 
 		try {
-			final Object wResult = wXJsEngine.eval(wMain, wCtx, wXjsTracer);
+			final CXJsEngine wXJsEngine = wXJsManager.getScriptEngineFactory()
+					.getScriptEngine();
+
+			final Object wResult = wXJsEngine.eval(wJsSourceMain, wCtx,
+					wTestjsTracer);
 
 			pLogger.logInfo(this, "doCommandRun", "Result=[%s]", wResult);
 
 		} catch (final CXJsExcepRhino wE) {
 
 			// get the partial source around the line where the error
+			String wPartialSource = wJsSourceMain.getText(wE.getLineNumber(),
+					5, "\n\t>> ");
+			// wPartialSource = "\n\t>> "
+			// + wPartialSource.replace("\n", "\n\t>> ");
 
-			String wPartialSource = wMain.getText(wE.getLineNumber(), 5);
-			wPartialSource = "\n\t>> " + wPartialSource.replace("\n", "\n\t>> ");
+			pLogger.logSevere(this, "doCommandRun", "ERROR message=[%s] %s",
+					wE.getMessage(), wPartialSource);
 
-			pLogger.logSevere(this, "doCommandRun", "ERROR message=[%s] %s", wE.getMessage(), wPartialSource);
-
-			pLogger.logSevere(this, "doCommandRun", wMain.toDescription());
+			pLogger.logSevere(this, "doCommandRun",
+					wJsSourceMain.toDescription());
 
 		}
-		pLogger.logInfo(this, "doCommandRun", "End");
+
+		// -------------------- CALL IN ONCE --------------------
+
+		try {
+			Map<String, Object> wVariablesMap = new HashMap<>();
+			wVariablesMap.put("gTestEngineScope", "ENGINE_SCOPE");
+			wVariablesMap.put("gTestClobalScope", "GLOBAL_SCOPE");
+
+			wXJsManager.runScript("test1.js", wVariablesMap);
+
+		} catch (final CXJsExcepRhino wE) {
+			// get the partial source around the line where the error
+			String wPartialSource = wE.getModuleMain().getText(
+					wE.getLineNumber(), 5, "\n\t>> ");
+			pLogger.logSevere(this, "doCommandRun", "ERROR message=[%s] %s",
+					wE.getMessage(), wPartialSource);
+
+		}
+		pLogger.logInfo(this, "doCommandRun", "End Command Run");
 	}
 
 	/*
@@ -168,6 +216,25 @@ public class CTestJavascript extends CAppConsoleBase {
 		if (isCommandX(CMD_RUN)) {
 			doCommandRun(aCmdeLine);
 		}
+	}
+
+	/**
+	 * @param aPath
+	 * @param aNext
+	 * @return
+	 * @throws Exception
+	 */
+	private CXRsrcProviderFile newRsrcProviderFile(final String aPath,
+			final CXRsrcProvider aNext) throws Exception {
+		final CXFileDir wDir0 = new CXFileDir(CXFileDir.getUserDir(), aPath);
+		final CXRsrcProviderFile wProvider = new CXRsrcProviderFile(wDir0,
+				Charset.forName(CXBytesUtils.ENCODING_UTF_8));
+		if (aNext != null) {
+			wProvider.setNext(aNext);
+		}
+		pLogger.logInfo(this, "newRsrcProviderFile", "RsrcProviderFile: %s",
+				wProvider.toDescription());
+		return wProvider;
 	}
 
 	/*

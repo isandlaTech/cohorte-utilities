@@ -1,7 +1,5 @@
 package org.psem2m.utilities.scripting;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.script.ScriptEngine;
@@ -14,6 +12,8 @@ import org.psem2m.utilities.rsrc.CXRsrcProvider;
 import org.psem2m.utilities.rsrc.CXRsrcUriPath;
 
 /**
+ * #12 Manage chains of resource providers
+ * 
  * @author ogattaz
  * 
  */
@@ -55,7 +55,8 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 
 	private boolean pMustCheckTimeStamp = true;
 
-	private final List<CXRsrcProvider> pRsrcProviders = new ArrayList<>();
+	// #12 Manage chains of resource providers
+	private CXRsrcProvider pRsrcProviderChain = null;
 
 	private final CXJsScriptFactory pScriptEngineFactory;
 
@@ -110,6 +111,15 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	}
 
 	/**
+	 * @param aScriptLanguage
+	 * @throws CXJsExcepUnknownLanguage
+	 */
+	public CXJsManager(final IActivityLogger aActivityLogger,
+			final String aScriptLanguage) throws CXJsExcepUnknownLanguage {
+		this(aActivityLogger, new ScriptEngineManager(), aScriptLanguage);
+	}
+
+	/**
 	 * @param aScriptEngineManager
 	 * @param aScriptLanguage
 	 * @throws CXJsExcepUnknownLanguage
@@ -140,10 +150,8 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	public Appendable addDescriptionInBuffer(Appendable aSB) {
 
 		descrAddLine(aSB, "Source providers");
-		descrAddLine(aSB, "Nb providers available", pRsrcProviders.size());
-		for (CXRsrcProvider wProvider : pRsrcProviders) {
-			descrAddIndent(aSB, wProvider.toDescription());
-		}
+		descrAddLine(aSB, "Nb providers available", pRsrcProviderChain.size());
+		descrAddIndent(aSB, pRsrcProviderChain.toDescription());
 
 		descrAddLine(aSB, "Current ScriptEngineFactory");
 		descrAddIndent(aSB, pScriptEngineFactory.toDescription());
@@ -167,7 +175,11 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	@Override
 	public void addProvider(final String aProviderId,
 			final CXRsrcProvider aProvider) {
-		pRsrcProviders.add(aProvider);
+		if (pRsrcProviderChain != null) {
+			pRsrcProviderChain.add(aProvider);
+		} else {
+			pRsrcProviderChain = aProvider;
+		}
 	}
 
 	/**
@@ -282,21 +294,17 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	public CXJsSourceMain getMainSource(CXRsrcUriPath aRelativePath,
 			IXjsTracer tracer) throws CXJsException {
 
-		CXJsExcepLoad wCXJsExcepLoad = null;
-		for (CXRsrcProvider wProvider : pRsrcProviders) {
-			try {
-				return CXJsSourceMain.newInstanceFromFile(wProvider,
-						aRelativePath, getLanguage(), tracer);
-			} catch (CXJsExcepLoad e) {
-				// memo
-				wCXJsExcepLoad = e;
-				// try to find in next provider
-			}
+		try {
+			return CXJsSourceMain.newInstanceFromFile(pRsrcProviderChain,
+					aRelativePath, getLanguage(), tracer);
+		} catch (CXJsExcepLoad e) {
+
+			// can't get main source from all the providers
+			throw new CXJsException(e,
+					"Unable to find [%s] in the list of providers : %s",
+					aRelativePath, pRsrcProviderChain);
 		}
-		// can't get main source from all the providers
-		throw new CXJsException(wCXJsExcepLoad,
-				"Unable to find [%s] in the list of providers [%s]",
-				aRelativePath, pRsrcProviders);
+
 	}
 
 	/**
@@ -374,25 +382,24 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	public CXJsSourceMain getMainSource(String aSource, String aMairSrcRelPath,
 			IXjsTracer tracer) throws CXJsException {
 
-		CXJsExcepLoad wCXJsExcepLoad = null;
-		for (CXRsrcProvider wProvider : pRsrcProviders) {
-			try {
-				return CXJsSourceMain.newInstanceFromSource(wProvider,
-						aMairSrcRelPath, aSource, getLanguage(), tracer);
-			} catch (CXJsExcepLoad e) {
-				// memo
-				wCXJsExcepLoad = e;
-				// try to find in next provider
-			}
+		try {
+			return CXJsSourceMain.newInstanceFromSource(pRsrcProviderChain,
+					aMairSrcRelPath, aSource, getLanguage(), tracer);
+		} catch (CXJsExcepLoad e) {
+			// can't get main source from all the providers
+			throw new CXJsException(e,
+					"Unable to find [%s] in the chain of providers [%s]",
+					aSource, pRsrcProviderChain);
 		}
-		// can't get main source from all the providers
-		throw new CXJsException(wCXJsExcepLoad,
-				"Unable to find [%s] in the list of providers [%s]", aSource,
-				pRsrcProviders);
 	}
 
-	public List<CXRsrcProvider> getProviders() {
-		return pRsrcProviders;
+	/**
+	 * #12 Manage chains of resource providers
+	 * 
+	 * @return
+	 */
+	public CXRsrcProvider getRsrcProviderChain() {
+		return pRsrcProviderChain;
 	}
 
 	/**
@@ -460,13 +467,11 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 */
 	@Override
 	public CXJsRunner newRunner(final IActivityLogger aActivityLogger,
-			final CXJsSourceMain aMain, final CXJsEngine aEngine,
+			final CXJsSourceMain aJsSourceMain, final CXJsEngine aEngine,
 			final String aScriptUri) throws Exception {
 
-		IActivityLogger wActivityLogger = (aActivityLogger != null) ? pActivityLogger
-				: pActivityLogger;
-
-		return new CXJsRunner(wActivityLogger, aMain, aEngine, aScriptUri);
+		return new CXJsRunner(aActivityLogger, aJsSourceMain, aEngine,
+				aScriptUri);
 	}
 
 	/*
@@ -503,39 +508,43 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 * java.lang.String, java.util.Map)
 	 */
 	@Override
-	public IXJsRuningReply runScript(IActivityLogger aActivityLogger,
+	public IXJsRuningReply runScript(final IActivityLogger aActivityLogger,
 			final String aProviderId, final String aScriptUri,
 			final Map<String, Object> aVariablesMap) throws Exception {
 
 		CXJsRunner wRunner = null;
 
+		// find the runner in the cache
 		if (pJsRunnerMap.containsKey(aScriptUri)) {
 			wRunner = pJsRunnerMap.get(aScriptUri);
 		}
-
+		// if the runner exists in the cache
 		if (wRunner != null) {
 			// CheckTimeStamp to invalidate the runner ?
 			if (mustCheckTimeStamp() && !wRunner.checkMainTimeStamp()) {
+				// remove the runner from the cache
 				pJsRunnerMap.remove(aScriptUri);
 				wRunner = null;
 			}
 		}
+		// if the runner doesn't exist in the cache
 		if (wRunner == null) {
 
 			// use the given ActivityLogger of that associated to that manager
-			CXjsTracerActivity wJsTracerActivity = new CXjsTracerActivity(
-					((aActivityLogger != null) ? aActivityLogger
-							: pActivityLogger));
+			IActivityLogger wActivityLogger = (aActivityLogger != null) ? aActivityLogger
+					: pActivityLogger;
 
 			CXJsSourceMain wSourceMain = getMainSource(new CXRsrcUriPath(
-					aScriptUri), wJsTracerActivity);
+					aScriptUri), CXjsTracerFactory.newJsTracer(wActivityLogger));
 
-			wRunner = newRunner(aActivityLogger, wSourceMain,
+			wRunner = newRunner(wActivityLogger, wSourceMain,
 					getScriptEngine(), wSourceMain.getSourceName());
+
 			pJsRunnerMap.put(aScriptUri, wRunner);
 		}
 
 		IXJsRuningContext wCtx = newRuningContext(-1);
+
 		if (aVariablesMap != null && aVariablesMap.size() > 0) {
 			for (Map.Entry<String, Object> wProp : aVariablesMap.entrySet()) {
 				wCtx.setAttrEngine(wProp.getKey(), wProp.getValue());
@@ -562,13 +571,24 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * org.psem2m.utilities.scripting.IXJsManager#runScript(java.lang.String)
+	 */
+	@Override
+	public IXJsRuningReply runScript(String aScriptUri) throws Exception {
+		// runs script whithout explicit map of variables,
+		return runScript(aScriptUri, null);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * org.psem2m.utilities.scripting.IXJsManager#runScript(java.lang.String,
 	 * java.util.Map)
 	 */
 	@Override
 	public IXJsRuningReply runScript(String aScriptUri,
 			Map<String, Object> aVariablesMap) throws Exception {
-
 		// runs script whithout explicit ActivityLogger and ProviderId,
 		return runScript(null, null, aScriptUri, aVariablesMap);
 	}
@@ -594,5 +614,14 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	public void setCheckTimeStamp(boolean aFlag) {
 
 		pMustCheckTimeStamp = aFlag;
+	}
+
+	/**
+	 * #12 Manage chains of resource providers
+	 * 
+	 * @param aRsrcProviderChain
+	 */
+	public void setRsrcProviderChain(final CXRsrcProvider aRsrcProviderChain) {
+		pRsrcProviderChain = aRsrcProviderChain;
 	}
 }

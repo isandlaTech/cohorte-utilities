@@ -11,15 +11,25 @@ import org.psem2m.utilities.rsrc.CXRsrcUriDir;
 import org.psem2m.utilities.rsrc.CXRsrcUriPath;
 
 /**
+ * #12 Manage chains of resource providers
+ * 
  * @author ogattaz
  *
  */
 public class CXJsSourceMain extends CXJsSource {
 
+	/**
+	 * @param aRsrcProviderChain
+	 * @param aRelPath
+	 * @param aLanguage
+	 * @param tracer
+	 * @return
+	 * @throws CXJsException
+	 */
 	public static CXJsSourceMain newInstanceFromFile(
-			CXRsrcProvider aSrcProvider, CXRsrcUriPath aRelPath,
+			CXRsrcProvider aRsrcProviderChain, CXRsrcUriPath aRelPath,
 			String aLanguage, IXjsTracer tracer) throws CXJsException {
-		final CXJsSourceMain wResult = new CXJsSourceMain(aSrcProvider,
+		final CXJsSourceMain wResult = new CXJsSourceMain(aRsrcProviderChain,
 				aLanguage);
 		wResult.loadFromFile(aRelPath, tracer);
 		return wResult;
@@ -30,7 +40,7 @@ public class CXJsSourceMain extends CXJsSource {
 	 * Path relatif par rapport a aSrcProvider pour les includes de aMainSrc
 	 *
 	 *
-	 * @param aSrcProvider
+	 * @param aRsrcProviderChain
 	 * @param aMainSrcRelPath
 	 * @param aMainSrc
 	 *            Root de aSrcProvider si null
@@ -41,10 +51,10 @@ public class CXJsSourceMain extends CXJsSource {
 	 * @throws CXJsException
 	 */
 	public static CXJsSourceMain newInstanceFromSource(
-			CXRsrcProvider aSrcProvider, String aMainSrcRelPath,
+			CXRsrcProvider aRsrcProviderChain, String aMainSrcRelPath,
 			String aMainSrc, String aLanguage, IXjsTracer tracer)
 			throws CXJsException {
-		final CXJsSourceMain wResult = new CXJsSourceMain(aSrcProvider,
+		final CXJsSourceMain wResult = new CXJsSourceMain(aRsrcProviderChain,
 				aLanguage);
 		wResult.loadFromSource(aMainSrc, new CXRsrcUriDir(aMainSrcRelPath),
 				tracer);
@@ -65,22 +75,23 @@ public class CXJsSourceMain extends CXJsSource {
 	private CXRsrcText pFileRsrc;
 	private final String pLanguage;
 	// Modules classes par path en lowCase
-	private HashMap<String, CXJsModule> pListModules = new HashMap<String, CXJsModule>();
+	private HashMap<String, CXJsModule> pListModules = new HashMap<>();
 	private String pMergedCode;
 
-	private final LinkedList<CXJsModule> pOrderedIncludes = new LinkedList<CXJsModule>();
+	private final LinkedList<CXJsModule> pOrderedIncludes = new LinkedList<>();
 
 	private CXRsrcText[] pResources;
 
-	private final CXRsrcProvider pRootRsrc;
+	// #12
+	private final CXRsrcProvider pRsrcProviderChain;
 
 	/**
-	 * @param aSrcProvider
+	 * @param aRsrcProviderChain
 	 * @param aLanguage
 	 */
-	private CXJsSourceMain(CXRsrcProvider aSrcProvider, String aLanguage) {
+	private CXJsSourceMain(CXRsrcProvider aRsrcProviderChain, String aLanguage) {
 		super();
-		pRootRsrc = aSrcProvider;
+		pRsrcProviderChain = aRsrcProviderChain;
 		pLanguage = aLanguage;
 	}
 
@@ -99,8 +110,8 @@ public class CXJsSourceMain extends CXJsSource {
 		} else {
 			descrAddLine(aSB, "Loaded from source");
 		}
-		descrAddLine(aSB, "Root directory");
-		descrAddIndent(aSB, pRootRsrc.toDescription());
+		descrAddLine(aSB, "Resource provider(s):");
+		descrAddIndent(aSB, pRsrcProviderChain.toDescription());
 		if (pResources != null) {
 			descrAddLine(aSB, "Ressources");
 			final StringBuilder wTmp = new StringBuilder();
@@ -126,7 +137,7 @@ public class CXJsSourceMain extends CXJsSource {
 				return true;
 			}
 			for (final CXRsrcText xRsrc : pResources) {
-				if (!pRootRsrc.checkTimeStamp(xRsrc)) {
+				if (!pRsrcProviderChain.checkTimeStamp(xRsrc)) {
 					return false;
 				}
 			}
@@ -146,10 +157,10 @@ public class CXJsSourceMain extends CXJsSource {
 			if (pResources == null) {
 				return null;
 			}
-			final ArrayList<CXRsrcText> wArray = new ArrayList<CXRsrcText>(
+			final ArrayList<CXRsrcText> wArray = new ArrayList<>(
 					pResources.length);
 			for (final CXRsrcText xRsrc : pResources) {
-				if (!pRootRsrc.checkTimeStamp(xRsrc)) {
+				if (!pRsrcProviderChain.checkTimeStamp(xRsrc)) {
 					wArray.add(xRsrc);
 				}
 			}
@@ -228,7 +239,7 @@ public class CXJsSourceMain extends CXJsSource {
 	 * @return
 	 */
 	public CXRsrcProvider getRsrcProvider() {
-		return pRootRsrc;
+		return pRsrcProviderChain;
 	}
 
 	/*
@@ -369,7 +380,7 @@ public class CXJsSourceMain extends CXJsSource {
 	 * @throws CXJsExcepLoad
 	 */
 	protected StringBuilder loadDoBefore() throws CXJsExcepLoad {
-		pListModules = new HashMap<String, CXJsModule>();
+		pListModules = new HashMap<>();
 		return new StringBuilder(10240);
 	}
 
@@ -384,7 +395,7 @@ public class CXJsSourceMain extends CXJsSource {
 			throws CXJsExcepLoad {
 		try {
 			pFilePath = aRelpath;
-			pFileRsrc = pRootRsrc.rsrcReadTxt(aRelpath);
+			pFileRsrc = pRsrcProviderChain.rsrcReadTxt(aRelpath);
 			load(pFileRsrc.getContent(), pFilePath.getParent(), tracer);
 		} catch (final CXJsExcepLoad e) {
 			if (tracer != null) {
