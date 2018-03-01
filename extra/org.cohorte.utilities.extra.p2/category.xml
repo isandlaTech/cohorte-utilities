@@ -9,7 +9,7 @@
    <bundle id="org.cohorte.utilities.json" version="1.0.5">
       <category name="utilities.extra"/>
    </bundle>
-   <bundle id="org.cohorte.utilities.sql" version="1.0.3">
+   <bundle id="org.cohorte.utilities.sql" version="1.0.4">
       <category name="utilities.extra"/>
    </bundle>
    <bundle id="org.cohorte.utilities.ui.swing" version="1.0.0">
