@@ -1,6 +1,11 @@
+1.1.0
+=====
 
-1.0.0  (master)
-==================
+- MOD_BD_20180220
+  - adds dumpServletContext utility method to CWebAppBase
+
+1.0.0
+=====
 
 - MOD_OG_20160126
   - Enhancement of ISvcWebAppProperties to allow property setting
