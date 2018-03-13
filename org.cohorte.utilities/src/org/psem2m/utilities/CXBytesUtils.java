@@ -133,9 +133,10 @@ public final class CXBytesUtils {
 	 * @return
 	 */
 	public static StringBuilder addByte2HexaInSB(final StringBuilder aSB,
-			final byte mybyte) {
-		aSB.append('.');
-		aSB.append('x');
+			final byte mybyte, final String aFormat) {
+		if (aFormat != null) {
+			aSB.append(aFormat);
+		}
 		aSB.append(HEXA_DIGITS[(0x00F0 & mybyte) >> 4]);
 		aSB.append(HEXA_DIGITS[0x000F & mybyte]);
 		return aSB;
@@ -465,6 +466,11 @@ public final class CXBytesUtils {
 		return wSB.toString();
 	}
 
+	public static String bytesToHexaFormatString(final byte[] aBuffer,
+			final String aFormat) {
+		return bytesToHexaString(aBuffer, 0, aBuffer.length, aFormat);
+	}
+
 	/**
 	 * dump d'un buffer sous forme d'une chaine Hexa : .xFF.xFE ...
 	 *
@@ -472,19 +478,21 @@ public final class CXBytesUtils {
 	 * @return
 	 */
 	public static String bytesToHexaString(final byte[] aBuffer) {
-		return bytesToHexaString(aBuffer, 0, aBuffer.length);
+		return bytesToHexaString(aBuffer, 0, aBuffer.length, ".x");
 	}
 
 	/**
-	 * dump d'un buffer sous forme d'une chaine Hexa : .xFF.xFE ...
+	 * dump d'un buffer sous forme d'une chaine Hexa : e.g .xFF.xFE ...
 	 *
 	 * @param aBuffer
 	 * @param aOffset
 	 * @param aLong
+	 * @param aFormat
+	 *            : decribe the prefix of each byte in hexa (e.g .x)
 	 * @return
 	 */
 	public static String bytesToHexaString(final byte[] aBuffer,
-			final int aOffset, final int aLong) {
+			final int aOffset, final int aLong, final String aFormat) {
 
 		if (aLong > aBuffer.length - aOffset) {
 			StringBuilder wMess = new StringBuilder(256);
@@ -496,12 +504,13 @@ public final class CXBytesUtils {
 			return wMess.toString();
 		}
 
-		StringBuilder wSB = new StringBuilder(aLong * 4);
+		StringBuilder wSB = new StringBuilder(aLong
+				* (aFormat != null ? aFormat.length() : 1));
 		int wI = aOffset;
 		int wMax = aOffset + aLong;
 		try {
 			while (wI < wMax) {
-				addByte2HexaInSB(wSB, aBuffer[wI]);
+				addByte2HexaInSB(wSB, aBuffer[wI], aFormat);
 				wI++;
 			}
 		} catch (ArrayIndexOutOfBoundsException e) {
@@ -770,6 +779,7 @@ public final class CXBytesUtils {
 
 	/**
 	 * @param aHexaBuffer
+	 *            : must be like .x0F.x3F ... etc
 	 * @return
 	 * @throws IllegalArgumentException
 	 */
@@ -805,6 +815,49 @@ public final class CXBytesUtils {
 						+ "] in hexaBuffer [" + aHexaBuffer + "]");
 			}
 			wOffsetDot = wOffsetNextDot;
+			wI++;
+		}
+
+		return wBytes;
+	}
+
+	/**
+	 * @param aHexaBuffer
+	 *            : must be like OF340D
+	 * @parm aFormat : format of the hexa string. we describe where the 2 Hexa
+	 *       are describe and teh (manage
+	 * @return
+	 * @throws IllegalArgumentException
+	 */
+	public static byte[] hexaBufferToBytes(final String aHexaBuffer,
+			final String aFormat) throws IllegalArgumentException {
+		/*
+		 * test complet du buffer
+		 */
+		// unformat the string to have only hexa number [0..F] TODO manage
+		// format
+
+		// testHexaBufferBytes(aHexaBuffer, true);
+		int wStreamSize = aHexaBuffer.length() / 2;
+
+		byte[] wBytes = new byte[wStreamSize];
+
+		String wHexa;
+		int wOffsetDot = 0;
+		int wI = 0;
+		while (wI < wStreamSize) {
+
+			wHexa = aHexaBuffer.substring(wOffsetDot, wOffsetDot + 2)
+					.toLowerCase();
+
+			try {
+				wBytes[wI] = (byte) (Integer.parseInt(wHexa, 16) & 0x000000FF);
+			} catch (Exception e) {
+				throw new IllegalArgumentException("Can't parse hexa value ["
+						+ wHexa + "] localized at offset [" + (wOffsetDot + 2)
+						+ "] in hexaBuffer [" + aHexaBuffer + "]");
+			}
+			wOffsetDot += 2;
 			wI++;
 		}
 
