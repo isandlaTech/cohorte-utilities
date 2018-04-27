@@ -10,9 +10,9 @@ import org.psem2m.utilities.rsrc.CXRsrcText;
 
 /**
  * #12 Manage chains of resource providers
- * 
+ *
  * @author ogattaz
- * 
+ *
  */
 public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 
@@ -40,8 +40,8 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 	 * @throws CXJsException
 	 */
 	public CXJsRunner(final IActivityLogger aActivityLogger,
-			final CXJsSourceMain aMain, CXJsEngine aEngine, String aId)
-			throws Exception {
+			final CXJsSourceMain aMain, final CXJsEngine aEngine,
+			final String aId) throws Exception {
 		super();
 
 		pActivityLogger = aActivityLogger;
@@ -58,7 +58,7 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 	 * @param aScriptResult
 	 * @return
 	 */
-	private String buildResultInfos(Object aScriptResult) {
+	private String buildResultInfos(final Object aScriptResult) {
 
 		StringBuilder wSB = new StringBuilder();
 		boolean wHasResult = (aScriptResult != null);
@@ -83,8 +83,9 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 	 */
 	public void checkRunException() throws CXJsException {
 
-		if (pRunExcep != null)
+		if (pRunExcep != null) {
 			throw pRunExcep;
+		}
 	}
 
 	/**
@@ -95,26 +96,27 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 		StringBuilder wSB = new StringBuilder();
 		CXDescriberUtil.descrAddLine(wSB, getFormatedTitle());
 
-		if (pRunExcep != null)
+		if (pRunExcep != null) {
 			CXDescriberUtil.descrAddIndent(wSB, pRunExcep.getExcepCtx()
 					.toDescription());
+		}
 		return wSB.toString();
 	}
 
 	/**
 	 * ATTENTION : CALLED BY THE SCRIPTS
-	 * 
+	 *
 	 * @see org.psem2m.utilities.scripting.IXJsRunner#fomatTS(java.lang.Long)
 	 */
 	@Override
-	public String fomatTS(Long aTS) {
+	public String fomatTS(final Long aTS) {
 
 		return sFormat.format(new Date(aTS));
 	}
 
 	/**
 	 * ATTENTION : CALLED BY THE SCRIPTS
-	 * 
+	 *
 	 * @see com.IXJsRunner.x3.bridge.bundle.extsps.restserver.script.IJsRunner#getDurationNs
 	 *      ()
 	 */
@@ -126,7 +128,7 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 
 	/**
 	 * ATTENTION : CALLED BY THE SCRIPTS
-	 * 
+	 *
 	 * @see org.psem2m.utilities.scripting.IXJsRunner#getfomatedTS()
 	 */
 	@Override
@@ -137,7 +139,7 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 
 	/**
 	 * ATTENTION : CALLED BY THE SCRIPTS
-	 * 
+	 *
 	 * @see org.psem2m.utilities.scripting.IXJsRunner#getFormatedTitle()
 	 */
 	@Override
@@ -148,7 +150,7 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 
 	/**
 	 * ATTENTION : CALLED BY THE SCRIPTS
-	 * 
+	 *
 	 * @see com.IXJsRunner.x3.bridge.bundle.extsps.restserver.script.IJsRunner#getId()
 	 */
 	@Override
@@ -159,7 +161,7 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 
 	/**
 	 * ATTENTION : CALLED BY THE SCRIPTS
-	 * 
+	 *
 	 * @see com.IXJsRunner.x3.bridge.bundle.extsps.restserver.script.IJsRunner#getSourceName
 	 *      ()
 	 */
@@ -171,7 +173,7 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 
 	/**
 	 * ATTENTION : CALLED BY THE SCRIPTS
-	 * 
+	 *
 	 * @see org.psem2m.utilities.scripting.IXJsRunner#getTimeStamps()
 	 */
 	@Override
@@ -180,8 +182,9 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 		StringBuilder wSB = new StringBuilder();
 		for (CXRsrcText wRsrcText : pCompiledScript.getMainModule()
 				.getResources()) {
-			if (wSB.length() > 0)
+			if (wSB.length() > 0) {
 				wSB.append(';');
+			}
 			wSB.append(String.format(RSRC_FORMAT,
 					wRsrcText.getPath().getName(),
 					fomatTS(wRsrcText.getTimeStampSyst())));
@@ -191,7 +194,7 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 
 	/**
 	 * ATTENTION : CALLED BY THE SCRIPTS
-	 * 
+	 *
 	 * @see com.IXJsRunner.x3.bridge.bundle.extsps.restserver.script.IJsRunner#getTraceReport
 	 *      ()
 	 */
@@ -225,7 +228,7 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 
 	/**
 	 * ATTENTION : CALLED BY THE SCRIPTS
-	 * 
+	 *
 	 * @see com.sage.x3.bridge.bundle.extsps.restserver.script.IScriptRunner#logBeginStep
 	 *      (java.lang.String)
 	 */
@@ -237,12 +240,12 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 
 	/**
 	 * ATTENTION : CALLED BY THE SCRIPTS
-	 * 
+	 *
 	 * @see org.psem2m.utilities.scripting.IXJsRunner#logBeginStep(java.lang.String,
 	 *      java.lang.Object[])
 	 */
 	@Override
-	public void logBeginStep(String aFormat, final Object... aArgs) {
+	public void logBeginStep(final String aFormat, final Object... aArgs) {
 		pActivityLogger.logInfo(this, "logBeginStep",
 				String.format(aFormat, aArgs));
 
@@ -250,18 +253,19 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 
 	/**
 	 * ATTENTION : CALLED BY THE SCRIPTS
-	 * 
+	 *
 	 * @see org.psem2m.utilities.scripting.IXJsRunner#logDebug(java.lang.String,
 	 *      java.lang.String, java.lang.Object[])
 	 */
 	@Override
-	public void logDebug(String aWhat, String aFormat, final Object... aArgs) {
+	public void logDebug(final String aWhat, final String aFormat,
+			final Object... aArgs) {
 		pActivityLogger.logInfo(this, aWhat, String.format(aFormat, aArgs));
 	}
 
 	/**
 	 * ATTENTION : CALLED BY THE SCRIPTS
-	 * 
+	 *
 	 * @see com.sage.x3.bridge.bundle.extsps.restserver.script.IScriptRunner#logEndStep
 	 *      ()
 	 */
@@ -273,12 +277,12 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 
 	/**
 	 * ATTENTION : CALLED BY THE SCRIPTS
-	 * 
+	 *
 	 * @see com.sage.x3.bridge.bundle.extsps.restserver.script.IScriptRunner#logEndStep
 	 *      ()
 	 */
 	@Override
-	public void logEndStep(String aFormat, final Object... aArgs) {
+	public void logEndStep(final String aFormat, final Object... aArgs) {
 
 		pActivityLogger.logInfo(this, "logEndStep",
 				String.format(aFormat, aArgs));
@@ -286,37 +290,39 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 
 	/**
 	 * ATTENTION : CALLED BY THE SCRIPTS
-	 * 
+	 *
 	 * @see org.psem2m.utilities.scripting.IXJsRunner#logInfo(java.lang.String,
 	 *      java.lang.String, java.lang.Object[])
 	 */
 	@Override
-	public void logInfo(String aWhat, String aFormat, final Object... aArgs) {
+	public void logInfo(final String aWhat, final String aFormat,
+			final Object... aArgs) {
 		pActivityLogger.logInfo(this, aWhat, String.format(aFormat, aArgs));
 
 	}
 
 	/**
 	 * ATTENTION : CALLED BY THE SCRIPTS
-	 * 
+	 *
 	 * @see org.psem2m.utilities.scripting.IXJsRunner#logSevere(java.lang.String,
 	 *      java.lang.String, java.lang.Object[])
 	 */
 	@Override
-	public void logSevere(String aWhat, String aFormat, final Object... aArgs) {
+	public void logSevere(final String aWhat, final String aFormat,
+			final Object... aArgs) {
 		pActivityLogger.logSevere(this, aWhat, String.format(aFormat, aArgs));
 
 	}
 
 	/**
 	 * ATTENTION : CALLED BY THE SCRIPTS
-	 * 
+	 *
 	 * @see org.psem2m.utilities.scripting.IXJsRunner#logSevere(java.lang.String,
 	 *      java.lang.Throwable, java.lang.String, java.lang.Object[])
 	 */
 	@Override
-	public void logSevere(String aWhat, Throwable e, String aFormat,
-			final Object... aArgs) {
+	public void logSevere(final String aWhat, final Throwable e,
+			final String aFormat, final Object... aArgs) {
 		pActivityLogger.logSevere(this, aWhat, "ERROR: %s %s",
 				String.format(aFormat, aArgs), e);
 
@@ -324,7 +330,7 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 
 	/**
 	 * ATTENTION : CALLED BY THE SCRIPTS
-	 * 
+	 *
 	 * @see com.sage.x3.bridge.bundle.extsps.restserver.script.IScriptRunner#newTimer
 	 *      ()
 	 */
@@ -339,7 +345,7 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 	 * @return
 	 * @throws CXJsException
 	 */
-	IXJsRuningContext run(IXJsRuningContext aCtx) throws CXJsException {
+	IXJsRuningContext run(final IXJsRuningContext aCtx) throws CXJsException {
 
 		aCtx.setAttrEngine(VAR_SCRIPTID_ID, pId);
 		aCtx.setAttrEngine(VAR_SCRIPTTS_ID, getTimeStamps());
@@ -357,6 +363,7 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 			wScriptResult = pCompiledScript.eval(aCtx.start(
 					CXJsRuningContext.ACT_EVAL_COMPILED, pTimeRefNano),
 					pCXjsTracer);
+			aCtx.setScriptResult(wScriptResult);
 		} catch (CXJsException e) {
 			throw e;
 		} finally {
@@ -375,7 +382,7 @@ public class CXJsRunner extends CXJsObjectBase implements IXJsRunner {
 
 	/**
 	 * ATTENTION : CALLED BY THE SCRIPTS
-	 * 
+	 *
 	 * @see org.psem2m.utilities.scripting.IXJsRunner#stringFormat(java.lang.String,
 	 *      java.lang.Object[])
 	 */

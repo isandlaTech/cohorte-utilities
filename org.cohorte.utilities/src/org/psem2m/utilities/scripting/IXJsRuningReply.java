@@ -10,10 +10,12 @@ public interface IXJsRuningReply extends IXDescriber {
 
 	/**
 	 * ogat - v1.4 - return handle duration and eval duration
-	 * 
+	 *
 	 * @return
 	 */
 	public String getEvalDuration();
+
+	public Object getScriptResult();
 
 	/**
 	 * @return

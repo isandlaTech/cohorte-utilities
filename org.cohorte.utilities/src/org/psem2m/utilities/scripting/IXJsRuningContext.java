@@ -9,7 +9,7 @@ import org.psem2m.utilities.CXTimer;
 
 /**
  * @author IsandlaTech - ogattaz
- * 
+ *
  */
 
 public interface IXJsRuningContext extends IXJsRuningReply {
@@ -80,6 +80,8 @@ public interface IXJsRuningContext extends IXJsRuningReply {
 	 */
 	public List<Integer> getScopes();
 
+	public Object getScriptResult();
+
 	/**
 	 * @return
 	 */
@@ -125,6 +127,8 @@ public interface IXJsRuningContext extends IXJsRuningReply {
 	 * @param scope
 	 */
 	public void setAttribute(String name, Object value, int scope);
+
+	public void setScriptResult(Object aObject);
 
 	/**
 	 * @param aAction

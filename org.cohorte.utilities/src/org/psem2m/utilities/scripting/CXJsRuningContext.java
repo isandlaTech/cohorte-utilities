@@ -19,7 +19,8 @@ import org.psem2m.utilities.CXTimer;
  * @author ogattaz
  *
  */
-public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, IXJsRuningContext {
+public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
+		IXJsRuningContext {
 
 	public final static String ACT_EVAL = "eval";
 	public final static String ACT_EVAL_COMPILED = "evalCompiled";
@@ -76,10 +77,11 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 	 * @param aInitSize
 	 * @param aEngineBindings
 	 */
-	public CXJsRuningContext(int aInitSize, final Bindings aEngineBindings) {
+	public CXJsRuningContext(final int aInitSize, final Bindings aEngineBindings) {
 		globalScope = null;
 		pInitSize = aInitSize > 0 ? aInitSize : 8192;
-		engineScope = (aEngineBindings != null) ? aEngineBindings : new SimpleBindings();
+		engineScope = (aEngineBindings != null) ? aEngineBindings
+				: new SimpleBindings();
 		resetWriter();
 	}
 
@@ -87,17 +89,20 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.psem2m.utilities.scripting.CXJsObjectBase#addDescriptionInBuffer(java.
-	 * lang.Appendable)
+	 * org.psem2m.utilities.scripting.CXJsObjectBase#addDescriptionInBuffer(
+	 * java. lang.Appendable)
 	 */
 	@Override
-	public Appendable addDescriptionInBuffer(Appendable aBuffer) {
+	public Appendable addDescriptionInBuffer(final Appendable aBuffer) {
 
-		CXJsObjectBase.descrAddLine(aBuffer, "Output buffer - Size", pBuffer.getBuffer().length());
+		CXJsObjectBase.descrAddLine(aBuffer, "Output buffer - Size", pBuffer
+				.getBuffer().length());
 		CXJsObjectBase.descrAddIndent(aBuffer, pBuffer.getBuffer().toString());
 		if (pErrBuffer != null) {
-			CXJsObjectBase.descrAddLine(aBuffer, "Error buffer - Size", pErrBuffer.getBuffer().length());
-			CXJsObjectBase.descrAddIndent(aBuffer, pErrBuffer.getBuffer().toString());
+			CXJsObjectBase.descrAddLine(aBuffer, "Error buffer - Size",
+					pErrBuffer.getBuffer().length());
+			CXJsObjectBase.descrAddIndent(aBuffer, pErrBuffer.getBuffer()
+					.toString());
 		}
 		return aBuffer;
 	}
@@ -107,7 +112,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 	 */
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.psem2m.utilities.scripting.IXJsRuningContext#descrToString()
 	 */
 	@Override
@@ -117,11 +122,11 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see javax.script.ScriptContext#getAttribute(java.lang.String)
 	 */
 	@Override
-	public Object getAttribute(String name) {
+	public Object getAttribute(final String name) {
 		if (engineScope.containsKey(name)) {
 			return getAttribute(name, ENGINE_SCOPE);
 		} else if (globalScope != null && globalScope.containsKey(name)) {
@@ -132,11 +137,11 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see javax.script.ScriptContext#getAttribute(java.lang.String, int)
 	 */
 	@Override
-	public Object getAttribute(String name, int scope) {
+	public Object getAttribute(final String name, final int scope) {
 		// System.out.println(String.format("getAttribute scope[%d] [%s]",scope,name));
 		switch (scope) {
 		case ENGINE_SCOPE:
@@ -153,11 +158,11 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see javax.script.ScriptContext#getAttributesScope(java.lang.String)
 	 */
 	@Override
-	public int getAttributesScope(String name) {
+	public int getAttributesScope(final String name) {
 		if (engineScope.containsKey(name)) {
 			return ENGINE_SCOPE;
 		} else if (globalScope != null && globalScope.containsKey(name)) {
@@ -169,11 +174,11 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see javax.script.ScriptContext#getBindings(int)
 	 */
 	@Override
-	public Bindings getBindings(int scope) {
+	public Bindings getBindings(final int scope) {
 		// System.out.println(String.format("getBindings scope[%d] ",scope));
 
 		if (scope == ENGINE_SCOPE) {
@@ -206,7 +211,8 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 	 */
 	@Override
 	public String getDurationStrMs() {
-		return new StringBuilder(pAction).append(" - ").append(pTimer.getDurationStrMilliSec()).toString();
+		return new StringBuilder(pAction).append(" - ")
+				.append(pTimer.getDurationStrMilliSec()).toString();
 	}
 
 	@Override
@@ -227,7 +233,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see javax.script.ScriptContext#getErrorWriter()
 	 */
 	@Override
@@ -241,9 +247,9 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 
 	/*
 	 * return handle duration and eval duration
-	 * 
+	 *
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.psem2m.utilities.scripting.IXJsRuningReply#getEvalDuration()
 	 */
 	@Override
@@ -259,7 +265,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see javax.script.ScriptContext#getReader()
 	 */
 	@Override
@@ -273,12 +279,18 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see javax.script.ScriptContext#getScopes()
 	 */
 	@Override
 	public List<Integer> getScopes() {
 		return scopes;
+	}
+
+	@Override
+	public Object getScriptResult() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/**
@@ -294,14 +306,15 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 	 */
 	@Override
 	public String getTimerInfo() {
-		return new StringBuilder().append(pAction).append(" - StartAt[").append(pTimer.getStartAtSecStr())
-				.append("] - StopAt[").append(pTimer.getStopAtSecStr()).append("] - Duration[")
+		return new StringBuilder().append(pAction).append(" - StartAt[")
+				.append(pTimer.getStartAtSecStr()).append("] - StopAt[")
+				.append(pTimer.getStopAtSecStr()).append("] - Duration[")
 				.append(pTimer.getDurationStrMilliSec()).append("]").toString();
 	}
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see javax.script.ScriptContext#getWriter()
 	 */
 	@Override
@@ -312,7 +325,8 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sage.x3.bridge.bundle.extsps.restserver.script.IJsReply#isEndOK()
+	 * @see
+	 * com.sage.x3.bridge.bundle.extsps.restserver.script.IJsReply#isEndOK()
 	 */
 	@Override
 	public boolean isEndOK() {
@@ -332,7 +346,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 	 * @param name
 	 */
 	@Override
-	public void removeAttrEngine(String name) {
+	public void removeAttrEngine(final String name) {
 		removeAttribute(name, ENGINE_SCOPE);
 	}
 
@@ -340,17 +354,17 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 	 * @param name
 	 */
 	@Override
-	public void removeAttrGlobal(String name) {
+	public void removeAttrGlobal(final String name) {
 		removeAttribute(name, GLOBAL_SCOPE);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see javax.script.ScriptContext#removeAttribute(java.lang.String, int)
 	 */
 	@Override
-	public Object removeAttribute(String name, int scope) {
+	public Object removeAttribute(final String name, final int scope) {
 		switch (scope) {
 		case ENGINE_SCOPE:
 			if (getBindings(ENGINE_SCOPE) != null) {
@@ -383,7 +397,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 	 * @param value
 	 */
 	@Override
-	public void setAttrEngine(String name, Object value) {
+	public void setAttrEngine(final String name, final Object value) {
 		setAttribute(name, value, ENGINE_SCOPE);
 	}
 
@@ -392,18 +406,19 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 	 * @param value
 	 */
 	@Override
-	public void setAttrGlobal(String name, Object value) {
+	public void setAttrGlobal(final String name, final Object value) {
 		setAttribute(name, value, GLOBAL_SCOPE);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see javax.script.ScriptContext#setAttribute(java.lang.String,
 	 * java.lang.Object, int)
 	 */
 	@Override
-	public void setAttribute(String name, Object value, int scope) {
+	public void setAttribute(final String name, final Object value,
+			final int scope) {
 		// System.out.println(String.format("setAttribute scope[%d] [%s|%s]
 		// ]",scope,name,value.toString()));
 
@@ -423,11 +438,11 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see javax.script.ScriptContext#setBindings(javax.script.Bindings, int)
 	 */
 	@Override
-	public void setBindings(Bindings bindings, int scope) {
+	public void setBindings(final Bindings bindings, final int scope) {
 		switch (scope) {
 		case ENGINE_SCOPE:
 			if (bindings == null) {
@@ -446,38 +461,45 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 	/**
 	 * @param aEnd
 	 */
-	public void setEndOk(Object aEnd) {
+	public void setEndOk(final Object aEnd) {
 
-		this.pEnd = (aEnd != null && aEnd instanceof String && ((String) aEnd).equalsIgnoreCase("true"));
+		this.pEnd = (aEnd != null && aEnd instanceof String && ((String) aEnd)
+				.equalsIgnoreCase("true"));
 	}
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see javax.script.ScriptContext#setErrorWriter(java.io.Writer)
 	 */
 	@Override
-	public void setErrorWriter(Writer writer) {
+	public void setErrorWriter(final Writer writer) {
 		this.errorWriter = writer;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see javax.script.ScriptContext#setReader(java.io.Reader)
 	 */
 	@Override
-	public void setReader(Reader reader) {
+	public void setReader(final Reader reader) {
 		this.reader = reader;
+	}
+
+	@Override
+	public void setScriptResult(final Object aObject) {
+		// TODO Auto-generated method stub
+
 	}
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see javax.script.ScriptContext#setWriter(java.io.Writer)
 	 */
 	@Override
-	public void setWriter(Writer writer) {
+	public void setWriter(final Writer writer) {
 		this.writer = writer;
 	}
 
@@ -486,7 +508,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 	 * @return
 	 */
 	@Override
-	public CXJsRuningContext start(String aAction) {
+	public CXJsRuningContext start(final String aAction) {
 		return start(aAction, 0);
 	}
 
@@ -496,7 +518,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 	 * @return
 	 */
 	@Override
-	public CXJsRuningContext start(String aAction, long aTimeRef) {
+	public CXJsRuningContext start(final String aAction, final long aTimeRef) {
 		pAction = aAction;
 		pTimer.start(aTimeRef);
 		return this;
@@ -513,7 +535,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext, 
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.psem2m.utilities.scripting.CXJsObjectBase#toDescription()
 	 */
 	@Override
