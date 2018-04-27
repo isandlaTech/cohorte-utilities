@@ -1,8 +1,11 @@
 package org.psem2m.utilities.scripting;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.psem2m.utilities.CXTimer;
 import org.psem2m.utilities.rsrc.CXRsrcProvider;
@@ -12,7 +15,7 @@ import org.psem2m.utilities.rsrc.CXRsrcUriPath;
 
 /**
  * #12 Manage chains of resource providers
- * 
+ *
  * @author ogattaz
  *
  */
@@ -27,12 +30,20 @@ public class CXJsSourceMain extends CXJsSource {
 	 * @throws CXJsException
 	 */
 	public static CXJsSourceMain newInstanceFromFile(
-			CXRsrcProvider aRsrcProviderChain, CXRsrcUriPath aRelPath,
-			String aLanguage, IXjsTracer tracer) throws CXJsException {
-		final CXJsSourceMain wResult = new CXJsSourceMain(aRsrcProviderChain,
-				aLanguage);
-		wResult.loadFromFile(aRelPath, tracer);
-		return wResult;
+			final CXRsrcProvider aRsrcProviderChain,
+			final CXRsrcUriPath aRelPath, final String aLanguage,
+			final IXjsTracer tracer) throws CXJsException {
+		CXJsSourceMain wResult;
+		try {
+			wResult = new CXJsSourceMain(aRsrcProviderChain, aRelPath.getURI()
+					.getPath(), aLanguage);
+
+			wResult.loadFromFile(aRelPath, tracer);
+			return wResult;
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			throw new CXJsException("failed create SourceMain ERROR=%s", e);
+		}
 	}
 
 	/**
@@ -51,14 +62,16 @@ public class CXJsSourceMain extends CXJsSource {
 	 * @throws CXJsException
 	 */
 	public static CXJsSourceMain newInstanceFromSource(
-			CXRsrcProvider aRsrcProviderChain, String aMainSrcRelPath,
-			String aMainSrc, String aLanguage, IXjsTracer tracer)
+			final CXRsrcProvider aRsrcProviderChain,
+			final String aMainSrcRelPath, final String aMainSrc,
+			final String aLanguage, final IXjsTracer tracer)
 			throws CXJsException {
 		final CXJsSourceMain wResult = new CXJsSourceMain(aRsrcProviderChain,
-				aLanguage);
+				aMainSrc, aLanguage);
 		wResult.loadFromSource(aMainSrc, new CXRsrcUriDir(aMainSrcRelPath),
 				tracer);
 		return wResult;
+
 	}
 
 	/**
@@ -67,16 +80,19 @@ public class CXJsSourceMain extends CXJsSource {
 	 * @param aRelPath
 	 * @return
 	 */
-	public static String pathToHashMapKey(String aRelPath) {
+	public static String pathToHashMapKey(final String aRelPath) {
 		return aRelPath == null ? null : aRelPath.toLowerCase();
 	}
 
 	private CXRsrcUriPath pFilePath;
+
 	private CXRsrcText pFileRsrc;
 	private final String pLanguage;
 	// Modules classes par path en lowCase
 	private HashMap<String, CXJsModule> pListModules = new HashMap<>();
 	private String pMergedCode;
+	// #mymeta myvalue...
+	private final Map<String, List<CXJsScriptMetaParameter>> pMetaParameters = new HashMap<>();
 
 	private final LinkedList<CXJsModule> pOrderedIncludes = new LinkedList<>();
 
@@ -85,19 +101,23 @@ public class CXJsSourceMain extends CXJsSource {
 	// #12
 	private final CXRsrcProvider pRsrcProviderChain;
 
+	private final String pScriptUri;
+
 	/**
 	 * @param aRsrcProviderChain
 	 * @param aLanguage
 	 */
-	private CXJsSourceMain(CXRsrcProvider aRsrcProviderChain, String aLanguage) {
+	private CXJsSourceMain(final CXRsrcProvider aRsrcProviderChain,
+			final String aScriptUri, final String aLanguage) {
 		super();
+		pScriptUri = aScriptUri;
 		pRsrcProviderChain = aRsrcProviderChain;
 		pLanguage = aLanguage;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.scripting.CXJsSource#addDescriptionInBuffer(java
 	 * .lang.Appendable)
@@ -125,6 +145,28 @@ public class CXJsSourceMain extends CXJsSource {
 		descrAddLine(aSB, "Source");
 		aSB = super.addDescriptionInBuffer(aSB);
 		return aSB;
+	}
+
+	/**
+	 * add the meta information identified a key (#mykey) and
+	 *
+	 * @param aKey
+	 *            : id of the marquer that starts with '#'
+	 * @param aLineValue
+	 *            : valu of the meta parameter
+	 */
+	void addMetaParameter(final String aKey, final List<String> aLineValues) {
+		List<CXJsScriptMetaParameter> wListMeta = pMetaParameters.get(aKey);
+		if (wListMeta == null) {
+			wListMeta = new ArrayList<>();
+			pMetaParameters.put(aKey, wListMeta);
+		}
+		CXJsScriptMetaParameter wMetaParameter = new CXJsScriptMetaParameter(
+				aKey);
+		for (String aVal : aLineValues) {
+			wMetaParameter.addValues(aVal);
+		}
+		wListMeta.add(wMetaParameter);
 	}
 
 	/**
@@ -174,11 +216,11 @@ public class CXJsSourceMain extends CXJsSource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.psem2m.utilities.scripting.CXJsSource#findSource(int)
 	 */
 	@Override
-	public CXJsSourceLocalization findSource(int aMergeLineNumber) {
+	public CXJsSourceLocalization findSource(final int aMergeLineNumber) {
 		// FDB - Fiche 64829 - pLineNumber>0
 		if (aMergeLineNumber < 0) {
 			return null;
@@ -198,7 +240,7 @@ public class CXJsSourceMain extends CXJsSource {
 	 * @param aColumnNumber
 	 * @return
 	 */
-	public Object getErrReport(int aLineNumber, int aColumnNumber) {
+	public Object getErrReport(final int aLineNumber, final int aColumnNumber) {
 		return null;
 	}
 
@@ -218,9 +260,20 @@ public class CXJsSourceMain extends CXJsSource {
 		return isLoaded() ? pMergedCode : super.getSources();
 	}
 
+	/**
+	 * return the list of meta parameter value line regarding akey (e.g require,
+	 * include ...)
+	 *
+	 * @param aKey
+	 * @return
+	 */
+	public List<CXJsScriptMetaParameter> getMetaParameter(final String aKey) {
+		return pMetaParameters.get(aKey);
+	}
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.psem2m.utilities.scripting.CXJsSource#getNextSibling()
 	 */
 	@Override
@@ -242,9 +295,13 @@ public class CXJsSourceMain extends CXJsSource {
 		return pRsrcProviderChain;
 	}
 
+	public String getScriptUri() {
+		return pScriptUri;
+	}
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.psem2m.utilities.scripting.CXJsSource#getSourceName()
 	 */
 	@Override
@@ -286,7 +343,7 @@ public class CXJsSourceMain extends CXJsSource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.psem2m.utilities.scripting.CXJsSource#isMain()
 	 */
 	@Override
@@ -299,7 +356,7 @@ public class CXJsSourceMain extends CXJsSource {
 	 * @param aSrcRootDir
 	 * @throws CXJsExcepLoad
 	 */
-	protected void load(String aSource, CXRsrcUriDir aSrcRootDir)
+	protected void load(final String aSource, final CXRsrcUriDir aSrcRootDir)
 			throws CXJsExcepLoad {
 		load(aSource, aSrcRootDir, (IXjsTracer) null);
 	}
@@ -310,8 +367,8 @@ public class CXJsSourceMain extends CXJsSource {
 	 * @param tracer
 	 * @throws CXJsExcepLoad
 	 */
-	protected void load(String aSource, CXRsrcUriDir aSrcRootDir,
-			IXjsTracer tracer) throws CXJsExcepLoad {
+	protected void load(final String aSource, final CXRsrcUriDir aSrcRootDir,
+			final IXjsTracer tracer) throws CXJsExcepLoad {
 		final boolean trace = tracer != null;
 		final CXTimer wT = trace ? new CXTimer("loadMainScript", true) : null;
 		try {
@@ -342,7 +399,7 @@ public class CXJsSourceMain extends CXJsSource {
 	 * @param aSB
 	 * @throws CXJsExcepLoad
 	 */
-	protected void loadDoAfter(StringBuilder aSB) throws CXJsExcepLoad {
+	protected void loadDoAfter(final StringBuilder aSB) throws CXJsExcepLoad {
 		int wRsrcSize = pListModules.size();
 		if (pFileRsrc != null) {
 			wRsrcSize += 1;
@@ -391,8 +448,8 @@ public class CXJsSourceMain extends CXJsSource {
 	 * @param tracer
 	 * @throws CXJsExcepLoad
 	 */
-	public void loadFromFile(CXRsrcUriPath aRelpath, IXjsTracer tracer)
-			throws CXJsExcepLoad {
+	public void loadFromFile(final CXRsrcUriPath aRelpath,
+			final IXjsTracer tracer) throws CXJsExcepLoad {
 		try {
 			pFilePath = aRelpath;
 			pFileRsrc = pRsrcProviderChain.rsrcReadTxt(aRelpath);
@@ -418,8 +475,8 @@ public class CXJsSourceMain extends CXJsSource {
 	 * @param tracer
 	 * @throws CXJsExcepLoad
 	 */
-	public void loadFromSource(String aSource, CXRsrcUriDir aDir,
-			IXjsTracer tracer) throws CXJsExcepLoad {
+	public void loadFromSource(final String aSource, final CXRsrcUriDir aDir,
+			final IXjsTracer tracer) throws CXJsExcepLoad {
 		load(aSource, aDir, tracer);
 	}
 
@@ -428,7 +485,7 @@ public class CXJsSourceMain extends CXJsSource {
 	 *
 	 * @param aModule
 	 */
-	protected void loadModuleAdd(CXJsModule aModule) {
+	protected void loadModuleAdd(final CXJsModule aModule) {
 		pListModules.put(pathToHashMapKey(aModule.getPath()), aModule);
 	}
 
@@ -436,19 +493,19 @@ public class CXJsSourceMain extends CXJsSource {
 	 * @param aRelPath
 	 * @return
 	 */
-	protected boolean loadModuleExists(String aRelPath) {
+	protected boolean loadModuleExists(final String aRelPath) {
 		return pListModules.containsKey(pathToHashMapKey(aRelPath));
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.scripting.CXJsSource#loadThrowExcep(org.psem2m.utilities
 	 * .scripting.CXJsSourceMain, java.lang.Throwable)
 	 */
 	@Override
-	protected void loadThrowExcep(CXJsSourceMain aMain, Throwable e)
+	protected void loadThrowExcep(final CXJsSourceMain aMain, final Throwable e)
 			throws CXJsExcepLoad {
 		if (isLoadedFromFile()) {
 			throw new CXJsExcepLoad(aMain, e, "Error main module "
@@ -477,7 +534,7 @@ public class CXJsSourceMain extends CXJsSource {
 	 * @param tracer
 	 * @throws CXJsExcepLoad
 	 */
-	public void reload(IXjsTracer tracer) throws CXJsExcepLoad {
+	public void reload(final IXjsTracer tracer) throws CXJsExcepLoad {
 		if (isLoaded()) {
 			pOrderedIncludes.clear();
 			pListModules.clear();

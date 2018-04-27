@@ -8,16 +8,18 @@ import org.psem2m.utilities.scripting.CXJsObjectBase;
 
 /**
  * Path d'un URL qui pointe vers une ressource
- * 
+ *
  */
 public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 
 	// Force l'extension de la ressource si pas d'extension dans aPath
-	public static CXRsrcUriPath newInstanceWithExt(CXRsrcUriDir aParentDir,
-			String aPath, String aDefExt) {
+	public static CXRsrcUriPath newInstanceWithExt(
+			final CXRsrcUriDir aParentDir, final String aPath,
+			final String aDefExt) {
 		CXRsrcUriPath wPath = new CXRsrcUriPath(aParentDir, aPath);
-		if (wPath.isValid() && !wPath.hasExtension() && aDefExt != null)
+		if (wPath.isValid() && !wPath.hasExtension() && aDefExt != null) {
 			wPath.setExt(aDefExt);
+		}
 		return wPath;
 	}
 
@@ -30,7 +32,8 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 
 	private String[] pPartArray;
 
-	public CXRsrcUriPath(CXRsrcUriDir aParentDir, CXRsrcUriPath aPath) {
+	public CXRsrcUriPath(final CXRsrcUriDir aParentDir,
+			final CXRsrcUriPath aPath) {
 		if (aPath != null && aPath.isValid()) {
 			pName = aPath.getName();
 			pParent = aParentDir == null ? aPath.getParent() : aParentDir
@@ -39,11 +42,11 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 		}
 	}
 
-	public CXRsrcUriPath(CXRsrcUriDir aParentDir, String aPath) {
+	public CXRsrcUriPath(final CXRsrcUriDir aParentDir, final String aPath) {
 		this(aParentDir, new CXRsrcUriPath(aPath));
 	}
 
-	private CXRsrcUriPath(CXRsrcUriPath aPath) {
+	private CXRsrcUriPath(final CXRsrcUriPath aPath) {
 		if (aPath != null && isValid()) {
 			pParent = aPath.pParent;
 			pName = aPath.pName;
@@ -53,12 +56,13 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 		}
 	}
 
-	public CXRsrcUriPath(String aPath) {
+	public CXRsrcUriPath(final String aPath) {
 		if (aPath != null) {
 			String wPath = aPath.trim();
-			if (wPath.indexOf(CXRsrcUriDir.BAD_SEPARATOR) != -1)
+			if (wPath.indexOf(CXRsrcUriDir.BAD_SEPARATOR) != -1) {
 				wPath = wPath.replace(CXRsrcUriDir.BAD_SEPARATOR,
 						CXRsrcUriDir.SEPARATOR);
+			}
 			int wIdx = wPath.lastIndexOf(CXRsrcUriDir.SEPARATOR);
 			if (wIdx == -1) {
 				pName = wPath;
@@ -74,7 +78,7 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 		}
 	}
 
-	public CXRsrcUriPath(String aParentDir, String aPath) {
+	public CXRsrcUriPath(final String aParentDir, final String aPath) {
 		this(aParentDir == null ? null : new CXRsrcUriDir(aParentDir),
 				new CXRsrcUriPath(aPath));
 	}
@@ -99,27 +103,32 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (o == null || !(o instanceof CXRsrcUriPath))
+	public boolean equals(final Object o) {
+		if (o == null || !(o instanceof CXRsrcUriPath)) {
 			return false;
+		}
 		CXRsrcUriPath oMod = (CXRsrcUriPath) o;
-		if (!oMod.isValid())
+		if (!oMod.isValid()) {
 			return false;
+		}
 		return pFullPath.equals(oMod.pFullPath);
 	}
 
-	public boolean equalsIgnoreCase(Object o) {
-		if (o == null || !(o instanceof CXRsrcUriPath))
+	public boolean equalsIgnoreCase(final Object o) {
+		if (o == null || !(o instanceof CXRsrcUriPath)) {
 			return false;
+		}
 		CXRsrcUriPath oMod = (CXRsrcUriPath) o;
-		if (!oMod.isValid())
+		if (!oMod.isValid()) {
 			return false;
+		}
 		return pFullPath.equalsIgnoreCase(oMod.pFullPath);
 	}
 
 	public String getExtension() {
-		if (pNameNoExt == null)
+		if (pNameNoExt == null) {
 			splitExt();
+		}
 		return pExt;
 	}
 
@@ -134,8 +143,9 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 	}
 
 	public CXMimeType getMimeType() {
-		if (pMimeType == null)
+		if (pMimeType == null) {
 			pMimeType = CXMimeType.getMimeTypeFromExt(getExtension());
+		}
 		return pMimeType;
 	}
 
@@ -145,8 +155,9 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 	}
 
 	public String getNameNoExt() {
-		if (pNameNoExt == null)
+		if (pNameNoExt == null) {
 			splitExt();
+		}
 		return pNameNoExt;
 	}
 
@@ -161,8 +172,9 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 
 	// renvoie l'url sous la forme d'un tableau de strings
 	public String[] getPartsArray() {
-		if (pPartArray != null)
+		if (pPartArray != null) {
 			return pPartArray;
+		}
 		String[] wArray = pParent != null ? pParent.getPartsArray(false) : null;
 		pPartArray = wArray != null ? Arrays.copyOf(wArray, wArray.length + 1)
 				: new String[1];
@@ -171,39 +183,44 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 	}
 
 	// Renvoie le ni�me �l�ment du path
-	public String getPathPart(int aIdx) {
+	public String getPathPart(final int aIdx) {
 		int wLen = getNbPart();
 		return aIdx >= 0 && aIdx < wLen ? getPartsArray()[aIdx] : null;
 	}
 
 	// Renvoie le path de la ressource � partir de la aIdx i�me partir inclue
-	public CXRsrcUriPath getRsrcPathFromPart(int aIdx) {
-		if (aIdx < 0)
+	public CXRsrcUriPath getRsrcPathFromPart(final int aIdx) {
+		if (aIdx < 0) {
 			return null;
-		if (aIdx >= getNbPart())
+		}
+		if (aIdx >= getNbPart()) {
 			return new CXRsrcUriPath(pName);
+		}
 		return new CXRsrcUriPath(pParent.getPathFromPart(aIdx), pName);
 	}
 
 	// Renvoie le path de la ressource � partir de la 1ere partie d'url aUrlPart
 	// non inclue
-	public CXRsrcUriPath getRsrcPathFromPart(String aUrlPart) {
+	public CXRsrcUriPath getRsrcPathFromPart(final String aUrlPart) {
 		return getRsrcPathFromPart(aUrlPart, 0);
 	}
 
 	// Renvoie le path de la ressource � partir de la 1ere partie d'url aUrlPart
 	// non inclue
-	public CXRsrcUriPath getRsrcPathFromPart(String aUrlPart, int aOffset) {
+	public CXRsrcUriPath getRsrcPathFromPart(final String aUrlPart,
+			final int aOffset) {
 		int wIdx = pParent.getFirstPartIdx(aUrlPart);
-		if (wIdx == -1)
+		if (wIdx == -1) {
 			return null;
+		}
 		return getRsrcPathFromPart(wIdx + 1 + aOffset);
 	}
 
-	public CXRsrcUriPath getRsrcPathFromPartNotInclude(String aUrlPart) {
+	public CXRsrcUriPath getRsrcPathFromPartNotInclude(final String aUrlPart) {
 		int wIdx = pParent.getFirstPartIdx(aUrlPart);
-		if (wIdx == -1)
+		if (wIdx == -1) {
 			return null;
+		}
 		return getRsrcPathFromPart(wIdx + 1);
 	}
 
@@ -211,12 +228,14 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 		return new URI(pFullPath);
 	}
 
-	public String getUrlStr(String aAddress) {
-		if (aAddress == null || aAddress.length() == 0)
+	public String getUrlStr(final String aAddress) {
+		if (aAddress == null || aAddress.length() == 0) {
 			return pFullPath;
+		}
 		StringBuilder wSB = new StringBuilder().append(aAddress);
-		if (pParent != null)
+		if (pParent != null) {
 			wSB.append(pParent.getPath(true, true));
+		}
 		return wSB.append(pName).toString();
 	}
 
@@ -239,7 +258,7 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 				&& pName != null;
 	}
 
-	private void setExt(String aDefExt) {
+	private void setExt(final String aDefExt) {
 		pExt = aDefExt;
 		pName = new StringBuilder(pName).append('.').append(aDefExt).toString();
 		pFullPath = new StringBuilder(pFullPath).append('.').append(aDefExt)
@@ -251,8 +270,9 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 			int wIdx = pName.lastIndexOf('.');
 			if (wIdx != -1) {
 				pExt = pName.substring(wIdx + 1);
-				if (pExt.isEmpty())
+				if (pExt.isEmpty()) {
 					pExt = null;
+				}
 				pNameNoExt = pName.substring(0, wIdx);
 			} else {
 				pExt = null;

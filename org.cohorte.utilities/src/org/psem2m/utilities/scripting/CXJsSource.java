@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.psem2m.utilities.rsrc.CXRsrcUriDir;
 
@@ -28,7 +30,8 @@ public abstract class CXJsSource extends CXJsObjectBase {
 		 * @param aSourceLineNum
 		 * @param aSrc
 		 */
-		public CXJsSourceLocalization(int aSourceLineNum, CXJsSource aSrc) {
+		public CXJsSourceLocalization(final int aSourceLineNum,
+				final CXJsSource aSrc) {
 			pSourceLineNum = aSourceLineNum;
 			pSrc = aSrc;
 		}
@@ -57,15 +60,23 @@ public abstract class CXJsSource extends CXJsObjectBase {
 
 	// Sources originaux avec les includes
 	private final static String INCLUDE_START = "#include";
+	private final static String META_REGEXP = "#.*";
+	// add managment of meta parameter that start with #<a string>. in order to
+	// be able to return all of meta with name
+	private final static String META_START = "#";
+
 	// Sources avec includes commentes
 	private boolean pLoaded = false;
 	private int pMergeStartLine;
+	// list of meta information defined in the script identified on a comment by
+
 	private ArrayList<CXJsModule> pModules;
 	private CXJsSource pParent;
 	private final CXJsSourceMain pRoot;
 	private String pSources;
 	// Source parent
 	private int pSourcesNbLines;
+
 	// Ordre important pour calcul du source
 	private String pSourcesNoInclude;
 
@@ -81,20 +92,20 @@ public abstract class CXJsSource extends CXJsObjectBase {
 	/**
 	 * @param aParent
 	 */
-	public CXJsSource(CXJsSource aParent) {
+	public CXJsSource(final CXJsSource aParent) {
 		pParent = aParent;
 		pRoot = aParent == null ? (CXJsSourceMain) this : aParent.pRoot;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.scripting.CXJsObjectBase#addDescriptionInBuffer(
 	 * java.lang.Appendable)
 	 */
 	@Override
-	public Appendable addDescriptionInBuffer(Appendable aSB) {
+	public Appendable addDescriptionInBuffer(final Appendable aSB) {
 
 		descrAddLine(aSB, "SourceName", getSourceName());
 		descrAddProp(aSB, "SourcesNbLines", pSourcesNbLines);
@@ -118,7 +129,7 @@ public abstract class CXJsSource extends CXJsObjectBase {
 	 * @param aLine
 	 * @return
 	 */
-	private String extractPath(String aLine) {
+	private String extractPath(final String aLine) {
 		int wPosStart, wPosEnd;
 		if ((wPosStart = aLine.indexOf('\"')) == -1) {
 			wPosStart = aLine.indexOf('\'');
@@ -140,7 +151,7 @@ public abstract class CXJsSource extends CXJsObjectBase {
 	 * @param aMergeLineNumber
 	 * @return
 	 */
-	public CXJsSourceLocalization findSource(int aMergeLineNumber) {
+	public CXJsSourceLocalization findSource(final int aMergeLineNumber) {
 		if (aMergeLineNumber >= pMergeStartLine
 				&& aMergeLineNumber <= (pMergeStartLine + pSourcesNbLines)) {
 			return new CXJsSourceLocalization(aMergeLineNumber
@@ -160,7 +171,7 @@ public abstract class CXJsSource extends CXJsObjectBase {
 	 * @param aModule
 	 * @return
 	 */
-	public int getIdx(CXJsModule aModule) {
+	public int getIdx(final CXJsModule aModule) {
 		if (pModules == null || aModule == null) {
 			return -1;
 		}
@@ -196,7 +207,7 @@ public abstract class CXJsSource extends CXJsObjectBase {
 	 * @param aModule
 	 * @return
 	 */
-	public CXJsModule getNext(CXJsModule aModule) {
+	public CXJsModule getNext(final CXJsModule aModule) {
 		if (pModules == null || aModule == null) {
 			return null;
 		}
@@ -256,7 +267,7 @@ public abstract class CXJsSource extends CXJsObjectBase {
 	 * @param aNbLines
 	 * @return
 	 */
-	public String getText(int aLineNum, int aNbLines) {
+	public String getText(final int aLineNum, final int aNbLines) {
 		return this.getText(aLineNum, aNbLines, null);
 	}
 
@@ -266,7 +277,8 @@ public abstract class CXJsSource extends CXJsObjectBase {
 	 * @param aMark
 	 * @return
 	 */
-	public String getText(int aLineNum, int aNbLines, String aMark) {
+	public String getText(final int aLineNum, final int aNbLines,
+			final String aMark) {
 		final StringBuilder wRes = new StringBuilder(1024);
 		try {
 			// MOD_OG_20170615 Use the method "getSources()" to be able to get
@@ -302,7 +314,7 @@ public abstract class CXJsSource extends CXJsObjectBase {
 	 * @param aModule
 	 * @return
 	 */
-	public boolean hasModule(CXJsModule aModule) {
+	public boolean hasModule(final CXJsModule aModule) {
 		return getIdx(aModule) != -1;
 	}
 
@@ -316,7 +328,7 @@ public abstract class CXJsSource extends CXJsObjectBase {
 	/**
 	 * @param aClearSrc
 	 */
-	protected void initMainReload(boolean aClearSrc) {
+	protected void initMainReload(final boolean aClearSrc) {
 		pSourcesNbLines = 0;
 		pMergeStartLine = 0;
 		pLoaded = false;
@@ -356,7 +368,7 @@ public abstract class CXJsSource extends CXJsObjectBase {
 	 * @param aModule
 	 * @return
 	 */
-	public boolean isMe(CXJsModule aModule) {
+	public boolean isMe(final CXJsModule aModule) {
 		return false;
 	}
 
@@ -391,7 +403,9 @@ public abstract class CXJsSource extends CXJsObjectBase {
 				while ((wLine = wReader.readLine()) != null) {
 					pSourcesNbLines++;
 					boolean wInclude = false;
-					if (wLine.length() > INCLUDE_START.length()) {
+					boolean wMeta = false;
+
+					if (wLine.length() > META_START.length()) {
 						int i = 0;
 						while (i < wLine.length()) {
 							final char wChar = wLine.charAt(i);
@@ -405,7 +419,23 @@ public abstract class CXJsSource extends CXJsObjectBase {
 						final String wTrim = i == 0 ? wLine : wLine
 								.substring(i);
 						wInclude = wTrim.startsWith(INCLUDE_START);
+						if (wTrim.matches(META_REGEXP)) {
+							// add the metaparameter to the root Script
+							List<String> wSplitLine = Arrays.asList(wTrim
+									.split(" "));
+							if (wSplitLine.size() > 1) {
+								String aKey = wSplitLine.get(0).substring(1);
+
+								List<String> aValues = wSplitLine.subList(1,
+										wSplitLine.size());
+								pRoot.addMetaParameter(aKey, aValues);
+							}
+						}
+
 					}
+
+					// if include it's directly manage for loading the include
+					// js
 					if (wInclude) {
 						if (!wHasInclude) {
 							wHasInclude = true;
@@ -440,7 +470,7 @@ public abstract class CXJsSource extends CXJsObjectBase {
 								wCommentInclude = true;
 							}
 							if (pModules == null) {
-								pModules = new ArrayList<CXJsModule>();
+								pModules = new ArrayList<>();
 							}
 							if (!isMe(wModule) && getIdx(wModule) == -1) {
 								pModules.add(wModule);
@@ -451,6 +481,12 @@ public abstract class CXJsSource extends CXJsObjectBase {
 						if (wCommentInclude) {
 							wSB.append("//").append(wLine).append('\n');
 						}
+					} else if (wMeta) {
+						// we got a meta property defined
+
+						// extract parameter name
+						// extract rest of the line
+
 					} else {
 						wSB.append(wLine).append('\n');
 					}
@@ -474,7 +510,7 @@ public abstract class CXJsSource extends CXJsObjectBase {
 	 * @param e
 	 * @throws CXJsExcepLoad
 	 */
-	protected void loadThrowExcep(CXJsSourceMain aMain, Throwable e)
+	protected void loadThrowExcep(final CXJsSourceMain aMain, final Throwable e)
 			throws CXJsExcepLoad {
 		throw new CXJsExcepLoad(aMain, e, "Error reading source '"
 				+ getSourceName() + "'");
@@ -485,7 +521,7 @@ public abstract class CXJsSource extends CXJsObjectBase {
 	 * @param aStartLine
 	 * @return
 	 */
-	protected int merge(StringBuilder aSb, int aStartLine) {
+	protected int merge(final StringBuilder aSb, final int aStartLine) {
 		pMergeStartLine = aStartLine;
 		if (aSb.length() != 0 && aSb.charAt(aSb.length() - 1) != '\n') {
 			aSb.append('\n');
@@ -501,14 +537,14 @@ public abstract class CXJsSource extends CXJsObjectBase {
 	/**
 	 * @param aSources
 	 */
-	protected void setSource(String aSources) {
+	protected void setSource(final String aSources) {
 		pSources = aSources;
 	}
 
 	/**
 	 * @param aSrcRootDir
 	 */
-	protected void setSrcRootDir(CXRsrcUriDir aSrcRootDir) {
+	protected void setSrcRootDir(final CXRsrcUriDir aSrcRootDir) {
 		pSrcRootDir = aSrcRootDir;
 	}
 
@@ -521,7 +557,7 @@ public abstract class CXJsSource extends CXJsObjectBase {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.scripting.CXJsObjectBase#addDescriptionInBuffer(
 	 * java.lang.Appendable)
@@ -531,7 +567,7 @@ public abstract class CXJsSource extends CXJsObjectBase {
 	 * @param aLevel
 	 * @return
 	 */
-	public StringBuilder treeToBuilder(StringBuilder aSB, int aLevel) {
+	public StringBuilder treeToBuilder(final StringBuilder aSB, final int aLevel) {
 		for (int i = 0; i < aLevel; i++) {
 			aSB.append('+');
 		}
