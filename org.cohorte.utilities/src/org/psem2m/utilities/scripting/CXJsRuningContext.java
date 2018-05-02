@@ -44,7 +44,9 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
 	private boolean pEnd = false;
 	private StringWriter pErrBuffer;
 	private final int pInitSize;
+	Object pScriptResult;
 	private final CXTimer pTimer = new CXTimer();
+
 	protected Reader reader;
 
 	protected Writer writer;
@@ -87,7 +89,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.psem2m.utilities.scripting.CXJsObjectBase#addDescriptionInBuffer(
 	 * java. lang.Appendable)
@@ -112,7 +114,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
 	 */
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see org.psem2m.utilities.scripting.IXJsRuningContext#descrToString()
 	 */
 	@Override
@@ -122,7 +124,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#getAttribute(java.lang.String)
 	 */
 	@Override
@@ -137,7 +139,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#getAttribute(java.lang.String, int)
 	 */
 	@Override
@@ -158,7 +160,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#getAttributesScope(java.lang.String)
 	 */
 	@Override
@@ -174,7 +176,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#getBindings(int)
 	 */
 	@Override
@@ -233,7 +235,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#getErrorWriter()
 	 */
 	@Override
@@ -247,9 +249,9 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
 
 	/*
 	 * return handle duration and eval duration
-	 *
+	 * 
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see org.psem2m.utilities.scripting.IXJsRuningReply#getEvalDuration()
 	 */
 	@Override
@@ -265,7 +267,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#getReader()
 	 */
 	@Override
@@ -279,7 +281,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#getScopes()
 	 */
 	@Override
@@ -289,8 +291,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
 
 	@Override
 	public Object getScriptResult() {
-		// TODO Auto-generated method stub
-		return null;
+		return pScriptResult;
 	}
 
 	/**
@@ -314,7 +315,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#getWriter()
 	 */
 	@Override
@@ -324,7 +325,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * com.sage.x3.bridge.bundle.extsps.restserver.script.IJsReply#isEndOK()
 	 */
@@ -360,7 +361,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#removeAttribute(java.lang.String, int)
 	 */
 	@Override
@@ -412,7 +413,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#setAttribute(java.lang.String,
 	 * java.lang.Object, int)
 	 */
@@ -438,7 +439,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#setBindings(javax.script.Bindings, int)
 	 */
 	@Override
@@ -469,7 +470,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#setErrorWriter(java.io.Writer)
 	 */
 	@Override
@@ -479,7 +480,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#setReader(java.io.Reader)
 	 */
 	@Override
@@ -489,13 +490,12 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
 
 	@Override
 	public void setScriptResult(final Object aObject) {
-		// TODO Auto-generated method stub
-
+		pScriptResult = aObject;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.script.ScriptContext#setWriter(java.io.Writer)
 	 */
 	@Override
@@ -535,7 +535,7 @@ public class CXJsRuningContext extends CXJsObjectBase implements ScriptContext,
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see org.psem2m.utilities.scripting.CXJsObjectBase#toDescription()
 	 */
 	@Override
