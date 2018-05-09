@@ -142,7 +142,7 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * org.psem2m.utilities.scripting.CXJsObjectBase#addDescriptionInBuffer(
 	 * java.lang.Appendable)
@@ -151,11 +151,21 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	public Appendable addDescriptionInBuffer(final Appendable aSB) {
 
 		descrAddLine(aSB, "Source providers");
-		descrAddLine(aSB, "Nb providers available", pRsrcProviderChain.size());
-		descrAddIndent(aSB, pRsrcProviderChain.toDescription());
+		if (pRsrcProviderChain != null) {
+			descrAddLine(aSB, "Nb providers available",
+					pRsrcProviderChain.size());
+			descrAddIndent(aSB, pRsrcProviderChain.toDescription());
+		} else {
+			descrAddLine(aSB, "NO PROVIDER available");
+
+		}
 
 		descrAddLine(aSB, "Current ScriptEngineFactory");
-		descrAddIndent(aSB, pScriptEngineFactory.toDescription());
+		if (pScriptEngineFactory != null) {
+			descrAddIndent(aSB, pScriptEngineFactory.toDescription());
+		} else {
+			descrAddLine(aSB, "NO FACTORY available");
+		}
 
 		if (hasEngineManager()) {
 			descrAddLine(aSB, "Script engine manager");
@@ -168,7 +178,7 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * org.psem2m.utilities.scripting.IJsManager#addProvider(java.lang.String,
 	 * org.psem2m.utilities.rsrc.CXRsrcProvider)
@@ -193,7 +203,7 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see org.psem2m.utilities.scripting.IJsManager#clearCache()
 	 */
 	@Override
@@ -452,7 +462,7 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see org.psem2m.utilities.scripting.IJsManager#newRuningContext(int)
 	 */
 	@Override
@@ -463,7 +473,7 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * org.psem2m.utilities.scripting.IJsManager#newRunner(org.psem2m.utilities.
 	 * scripting.CXJsSourceMain, org.psem2m.utilities.scripting.CXJsEngine,
@@ -480,7 +490,7 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * org.psem2m.utilities.scripting.IJsManager#removeProvider(java.lang.String
 	 * )
@@ -556,7 +566,7 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * org.psem2m.utilities.scripting.IJsManager#runScript(java.lang.String,
 	 * java.util.Map)
@@ -570,7 +580,7 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * org.psem2m.utilities.scripting.IJsManager#runScript(java.lang.String,
 	 * java.lang.String, java.util.Map)
@@ -591,7 +601,7 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * org.psem2m.utilities.scripting.IXJsManager#runScript(java.lang.String)
 	 */
@@ -603,7 +613,7 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * org.psem2m.utilities.scripting.IXJsManager#runScript(java.lang.String,
 	 * java.util.Map)
@@ -617,7 +627,7 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * org.psem2m.utilities.scripting.IXJsManager#runScript(java.lang.String,
 	 * java.lang.String, java.util.Map)
