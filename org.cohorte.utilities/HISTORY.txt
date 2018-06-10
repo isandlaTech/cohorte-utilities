@@ -1,4 +1,9 @@
+from 1.0.22 to 1.0.23
+---------------------
+-MOD_OG 
+ - #15 use a LinkedHashMap in the CJSONObject to keep the order of insertions in the json objects.
 
+ 
 from 1.0.19 to 1.0.20
 ---------------------
 

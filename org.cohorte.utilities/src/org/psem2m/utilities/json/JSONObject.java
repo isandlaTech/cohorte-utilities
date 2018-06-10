@@ -19,8 +19,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -468,13 +468,13 @@ public class JSONObject {
 	/**
 	 * The hash map where the JSONObject's properties are kept.
 	 */
-	private final HashMap<String, Object> myHashMap;
+	private final LinkedHashMap<String, Object> myHashMap = new LinkedHashMap<>();
 
 	/**
 	 * Construct an empty JSONObject.
 	 */
 	public JSONObject() {
-		this.myHashMap = new HashMap<String, Object>();
+		super();
 	}
 
 	/**
@@ -557,13 +557,17 @@ public class JSONObject {
 	/**
 	 * Construct a JSONObject from a Map.
 	 *
-	 * @param map
+	 * @param aMap
 	 *            A map object that can be used to initialize the contents of
 	 *            the JSONObject.
 	 */
-	public JSONObject(final Map<String, ? extends Object> map) {
-		this.myHashMap = (map == null) ? new HashMap<String, Object>()
-				: new HashMap<String, Object>(map);
+	public JSONObject(final Map<String, ? extends Object> aMap) {
+
+		myHashMap.clear();
+
+		if (aMap != null && !aMap.isEmpty()) {
+			myHashMap.putAll(aMap);
+		}
 	}
 
 	/**
