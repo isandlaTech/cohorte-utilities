@@ -296,8 +296,13 @@ public class CJsonProvider implements IJsonProvider {
 		wSubContent = removeComment(wSubContent);
 
 		// check if it's json
-		wSubContent = checkIsJson(wSubContent);
-
+		try {
+			wSubContent = checkIsJson(wSubContent);
+		} catch (Exception e) {
+			throw new JSONException(String.format(
+					"bad JSON content Exception=[%s] , content=[%S]", e,
+					wSubContent));
+		}
 		return wSubContent;
 	}
 
@@ -371,7 +376,7 @@ public class CJsonProvider implements IJsonProvider {
 			// $memory
 			Matcher wMatcherFile = wPatternDollarFile.matcher(aContent);
 			while (wMatcherFile.find()) {
-				List<String> wSubNoCommentContent = new ArrayList<String>();
+				List<String> wSubNoCommentContent = new ArrayList<>();
 				String wStr = wMatcherFile.group();
 				if (wStr != null) {
 					JSONObject wJsonSubId = new JSONObject(wStr);
@@ -406,6 +411,7 @@ public class CJsonProvider implements IJsonProvider {
 						} else {
 							wlPath = "";
 						}
+
 						List<String> wListPath = Arrays.asList(wlPath
 								.split(SEP_PATH));
 						for (String wPath : wListPath) {
@@ -430,8 +436,30 @@ public class CJsonProvider implements IJsonProvider {
 								// replace vars in the resolve content
 								wValidContent = CXStringUtils.replaceVariables(
 										wValidContent, replaceVars, "");
+
+								// TODO manage json path
+
 								if (!aUseMemoryProvider) {
 									initMemoryProviderCache(wValidContent, wTag);
+								}
+								JSONObject wSubInclude = new JSONObject(
+										wValidContent);
+								// add query string to subpath in order to get
+								// the replace variable on each level
+								if (replaceVars != null
+										&& wSubInclude.keySet().contains(wTag)) {
+									String wParameterUrl = CXQueryString
+											.urlEncodeUTF8(replaceVars);
+									String wSubIncludeStr = wSubInclude
+											.optString(wTag);
+									String wSubIncludeWithParemter = wSubIncludeStr
+											.contains("?") ? wSubIncludeStr
+											+ "&" + wParameterUrl
+											: wSubIncludeStr + "?"
+													+ wParameterUrl;
+									wSubInclude.put(wTag,
+											wSubIncludeWithParemter);
+									wValidContent = wSubInclude.toString();
 								}
 								wSubNoCommentContent.add(resolveInclude(
 										getSubPath(wTag, wRsrc), wValidContent,
@@ -498,7 +526,7 @@ public class CJsonProvider implements IJsonProvider {
 	 * @return
 	 */
 	private Map<String, String> transformAsKeyValue(final Object aObj) {
-		Map<String, String> wKeyVal = new HashMap<String, String>();
+		Map<String, String> wKeyVal = new HashMap<>();
 
 		if (aObj instanceof JSONObject) {
 			JSONObject wObj = (JSONObject) aObj;
