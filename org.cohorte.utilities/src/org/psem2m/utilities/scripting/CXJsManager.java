@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
 import org.psem2m.utilities.logging.CActivityLoggerNull;
 import org.psem2m.utilities.logging.IActivityLogger;
@@ -226,6 +227,10 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 */
 	public void destroy() {
 		pJsRunnerMap.destroy();
+	}
+
+	public Object evalExpression(final String aString) throws ScriptException {
+		return getScriptEngine().getScriptEngine().eval(aString);
 	}
 
 	/**
@@ -505,7 +510,7 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 		CXJsRunner wRunner = null;
 		String wScriptUri = aSourceMain.getScriptUri();
 		// find the runner in the cache
-		if (pJsRunnerMap.containsKey(wScriptUri)) {
+		if (wScriptUri != null && pJsRunnerMap.containsKey(wScriptUri)) {
 			wRunner = pJsRunnerMap.get(wScriptUri);
 		}
 		// if the runner exists in the cache
@@ -526,8 +531,9 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 
 			wRunner = newRunner(wActivityLogger, aSourceMain,
 					getScriptEngine(), aSourceMain.getSourceName());
-
-			pJsRunnerMap.put(wScriptUri, wRunner);
+			if (wScriptUri != null) {
+				pJsRunnerMap.put(wScriptUri, wRunner);
+			}
 		}
 
 		IXJsRuningContext wCtx = newRuningContext(-1);
@@ -542,7 +548,9 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 			return wRunner.run(wCtx);
 
 		} catch (Exception e) {
-			wRunner = pJsRunnerMap.remove(wScriptUri);
+			if (wScriptUri != null) {
+				wRunner = pJsRunnerMap.remove(wScriptUri);
+			}
 			if (wRunner != null) {
 				getActivityLogger().logDebug(this, "runScript", "JsRunner=",
 						wRunner.pId, "removed.");
