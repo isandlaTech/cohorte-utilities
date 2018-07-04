@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.cohorte.utilities.json.provider.rsrc.CXRsrcGeneratorProvider;
+import org.psem2m.utilities.json.JSONObject;
 import org.psem2m.utilities.rsrc.CXRsrcProvider;
 import org.psem2m.utilities.rsrc.CXRsrcProviderFile;
 import org.psem2m.utilities.rsrc.CXRsrcProviderHttp;
@@ -65,8 +67,8 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 	// identified directly the memory providers due to memory cache init
 
 	public CJsonRsrcResolver() {
-		pListProviderByTag = new Hashtable<String, Map<Integer, CXRsrcProvider>>();
-		pListMemoryProviderByTag = new Hashtable<String, CXRsrcProviderMemory>();
+		pListProviderByTag = new Hashtable<>();
+		pListMemoryProviderByTag = new Hashtable<>();
 	}
 
 	/**
@@ -132,13 +134,14 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 
 	@Override
 	public CXRsrcText getContent(final String aTag, final String aContentId,
-			final boolean aMemoryProvider) throws Exception {
+			final boolean aMemoryProvider, final List<JSONObject> aFatherObject)
+			throws Exception {
 		CXRsrcText wContent = null;
-		List<Exception> wExcept = new ArrayList<Exception>();
+		List<Exception> wExcept = new ArrayList<>();
 
 		if (aMemoryProvider && pListMemoryProviderByTag.get(aTag) != null) {
 			wContent = getContentByProvider(pListMemoryProviderByTag.get(aTag),
-					aContentId);
+					aContentId, aFatherObject);
 		}
 		if (wContent == null && pListProviderByTag.get(aTag) != null) {
 			// look on all provider and return the first elem found
@@ -149,7 +152,8 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 				// and
 				// return the path without the prefix or null if it's not valid
 				try {
-					wContent = getContentByProvider(wProv, aContentId);
+					wContent = getContentByProvider(wProv, aContentId,
+							aFatherObject);
 				} catch (Exception e) {
 					wExcept.add(e);
 				}
@@ -168,18 +172,25 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 	}
 
 	private CXRsrcText getContentByProvider(final CXRsrcProvider aProvider,
-			final String aContentId) throws Exception {
+			final String aContentId, final List<JSONObject> aListFather)
+			throws Exception {
 		String wValidContentId = checkValidProviderAndPath(aProvider,
 				aContentId);
 		if (wValidContentId != null) {
-			return aProvider.rsrcReadTxt(wValidContentId);
+			if (aProvider instanceof CXRsrcGeneratorProvider) {
+				return ((CXRsrcGeneratorProvider) aProvider).rsrcReadTxt(
+						wValidContentId, aListFather);
+
+			} else {
+				return aProvider.rsrcReadTxt(wValidContentId);
+			}
 		}
 		return null;
 	}
 
 	@Override
 	public Set<String> getListTags() {
-		Set<String> wListTag = new HashSet<String>();
+		Set<String> wListTag = new HashSet<>();
 		wListTag.addAll(pListProviderByTag.keySet());
 		wListTag.addAll(pListMemoryProviderByTag.keySet());
 		return wListTag;
@@ -187,7 +198,7 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 
 	@Override
 	public Collection<CXRsrcProvider> getRsrcProvider(final String aTag) {
-		List<CXRsrcProvider> wList = new ArrayList<CXRsrcProvider>();
+		List<CXRsrcProvider> wList = new ArrayList<>();
 		if (pListProviderByTag.get(aTag) != null) {
 			wList.addAll(pListProviderByTag.get(aTag).values());
 		}

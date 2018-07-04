@@ -6,7 +6,7 @@
    <bundle id="org.cohorte.utilities.crypto" version="1.0.2">
       <category name="utilities.extra"/>
    </bundle>
-   <bundle id="org.cohorte.utilities.json" version="1.0.5">
+   <bundle id="org.cohorte.utilities.json" version="1.0.6">
       <category name="utilities.extra"/>
    </bundle>
    <bundle id="org.cohorte.utilities.sql" version="1.0.4">
@@ -19,6 +19,9 @@
       <category name="libs"/>
    </bundle>
    <bundle id="org.cohorte.libs.com.mysql" version="5.0.8">
+      <category name="libs"/>
+   </bundle>
+    <bundle id="org.cohorte.libs.com.jayway.jsonpath" version="2.4.0">
       <category name="libs"/>
    </bundle>
    <bundle id="org.cohorte.libs.com.sun.jna" version="3.3.0">
