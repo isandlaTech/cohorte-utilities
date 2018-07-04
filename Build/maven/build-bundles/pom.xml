@@ -30,7 +30,6 @@
 		<module>../../../ThirdPartiesLibs/org.cohorte.libs.org.mozilla.rhino</module>
 		<!-- MOD AP , add jsonpath and janino for expression eval-->
 		<module>../../../ThirdPartiesLibs/org.cohorte.libs.com.jayway.jsonpath</module>
-		<module>../../../ThirdPartiesLibs/org.cohorte.libs.janino</module>
 
 		<module>../../../extra/org.cohorte.utilities.test</module>
 	
