@@ -13,9 +13,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-
 import org.cohorte.utilities.json.provider.CJsonRsrcResolver.EProviderKind;
 import org.psem2m.utilities.CXQueryString;
 import org.psem2m.utilities.CXStringUtils;
@@ -27,6 +24,8 @@ import org.psem2m.utilities.rsrc.CXRsrcProvider;
 import org.psem2m.utilities.rsrc.CXRsrcProviderHttp;
 import org.psem2m.utilities.rsrc.CXRsrcProviderMemory;
 import org.psem2m.utilities.rsrc.CXRsrcText;
+import org.psem2m.utilities.scripting.CXJsExcepUnknownLanguage;
+import org.psem2m.utilities.scripting.CXJsManager;
 
 public class CJsonProvider implements IJsonProvider {
 
@@ -68,7 +67,7 @@ public class CJsonProvider implements IJsonProvider {
 			Pattern.MULTILINE);
 
 	// use for evaluate condition
-	ScriptEngine pScriptEngine;
+	CXJsManager pScriptRunner;
 
 	public CJsonProvider(final IJsonRsrcResolver aResolver,
 			final IActivityLogger aLogger) {
@@ -87,8 +86,17 @@ public class CJsonProvider implements IJsonProvider {
 		pJsonResolver = aResolver;
 		pIgnoreMissingContent = aIgnoreMissingContent;
 		pListProperties = aListProperties;
-		ScriptEngineManager factory = new ScriptEngineManager();
-		pScriptEngine = factory.getEngineByName("JavaScript");
+
+		try {
+			pScriptRunner = new CXJsManager(pLogger, "JavaScript");
+		} catch (CXJsExcepUnknownLanguage e) {
+			// TODO Auto-generated catch block
+			pLogger.logSevere(
+					this,
+					"CJsonProvider",
+					"can't instanciate JSEngine, no condition will be taken Error=[%s]",
+					e);
+		}
 	}
 
 	/**
@@ -131,18 +139,21 @@ public class CJsonProvider implements IJsonProvider {
 			if (aCondition == null || aCondition.isEmpty()) {
 				return true;
 			}
-			Object wResult = pScriptEngine.eval(aCondition);
-			if (wResult instanceof Boolean) {
-				return ((Boolean) wResult).booleanValue();
+
+			Object wReply = pScriptRunner.evalExpression(aCondition);
+
+			if (wReply instanceof Boolean) {
+				return ((Boolean) wReply).booleanValue();
 			} else {
 				pLogger.logSevere(
 						this,
 						"evaluateCondition",
 						"bad condition! boolean value is expected !,  eval failed condition=[%s], resp=[%s]",
-						aCondition, wResult);
+						aCondition, wReply);
 				return false;
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			pLogger.logSevere(
 					this,
 					"evaluateCondition",
