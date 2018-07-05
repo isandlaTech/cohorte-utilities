@@ -1,45 +1,45 @@
 // description of the hello world component that correspond to a webapp hello world
 {
-	"id":"helloWorld",
+	"id":"tomcat",
 	"type":"docker",
-	"states":[
-		{
+	"states":{
 			"creating":{
-				"dependencies":{
+				"dependencies":[
 					{"mysql":"created"},
 					{"httpd":"created"}
 
-				},
-				"steps":{"$include":"steps/creating_deamon.js"}
+					],
+				"steps":{"$file":"file://steps/creating_tomcat.js"}
 			},
 			
 			"starting":{
-				"dependencies":{
-					{"mysql":"started"}
+				"dependencies":[
+					{"mysql":"started"},
 					{"httpd":"started"}
-					"steps":{"$include":"steps/starting_deamon.js"}
+					],
+					"steps":{"$file":"file://steps/starting_tomcat.js"}
 
-				}
 			},
 			
 			"validating":{
-				"dependencies":{
-					{"mysql":"started"}
+				"dependencies":[
+					{"mysql":"started"},
 					{"httpd":"started"}
-					"steps":{"$include":"steps/validating_deamon.js"}
+					],
+					"steps":{"$file":"file://steps/validating_tomcat.js"}
 
-				}
+					
 			},
 			"updating":{
-				"steps":{"$include":"steps/updating_deamon.js"}
+				"steps":{"$file":"file://steps/updating_tomcat.js"}
 
 			}
 			
-		}
-	],
+	},
 	"docker":{
 		"image":"dimensions/tomcat",
 		"version":"1.0.0",
+		"name":"tomcat",
 		"tyoe":"d",
 		"volume":[
 			{

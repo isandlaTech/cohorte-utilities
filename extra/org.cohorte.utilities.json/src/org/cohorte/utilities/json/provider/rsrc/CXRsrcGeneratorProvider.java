@@ -31,7 +31,8 @@ public class CXRsrcGeneratorProvider extends CXRsrcProvider {
 	private final IActivityLogger pActivityLogger;
 
 	private final Pattern pPatternJsonPath = Pattern.compile(
-			"\\$(\\(\\^?(\\.|\\/)*\\))?(\\.\\w*)*", Pattern.MULTILINE);
+			"\\$(\\(\\^?(\\.|\\/)*\\))?(\\.\\w*(\\[\\d\\])?)*",
+			Pattern.MULTILINE);
 
 	public CXRsrcGeneratorProvider(final IActivityLogger aLogger) {
 		super(Charset.defaultCharset());
@@ -89,12 +90,21 @@ public class CXRsrcGeneratorProvider extends CXRsrcProvider {
 						wReplaceArrayValue.put(applyGenerator(
 								(JSONObject) wElem, aListOfFatherJson));
 					} else if (wElem instanceof String) {
-
-						Pair<String, JSONObject> wTuple = getFather(
-								(String) wElem, aListOfFatherJson);
-						wReplaceArrayValue.put(applyJsonPath(wTuple.getValue1()
-								.toString(), wTuple.getValue0()));
-
+						Matcher wMatcher = pPatternJsonPath
+								.matcher((String) wElem);
+						boolean wHasMatch = false;
+						while (wMatcher.find()) {
+							wHasMatch = true;
+							String wMatch = wMatcher.group();
+							Pair<String, JSONObject> wTuple = getFather(wMatch,
+									aListOfFatherJson);
+							wReplaceArrayValue
+									.put(applyJsonPath(wTuple.getValue1()
+											.toString(), wTuple.getValue0()));
+						}
+						if (!wHasMatch) {// we add the current value
+							wReplaceArrayValue.put(wElem);
+						}
 					}
 				}
 				wApplied.put(aProp, wReplaceArrayValue);

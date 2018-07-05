@@ -18,6 +18,7 @@
 		}
 	},{
 		"$generator":{
+	
 			"id":"create$.id",
 			"component":"$.id",
 			"state":"starting",
@@ -30,8 +31,6 @@
 					],
 					"params":[
 						{"--name":"$.docker.name"},
-						{"-p":"$.docker.port[0]"},
-						{"-p":"$.docker.port[1]"},
 						{"-v":"$.docker.volume[0].container:$.docker.volume[0].host"},
 						{"-v":"$.docker.volume[0].container:$.docker.volume[0].host"}
 	
@@ -42,7 +41,7 @@
 		}
 	},{
 		"$generator":{
-
+	
 			"id":"create$.id",
 			"component":"$.id",
 			"state":"starting",

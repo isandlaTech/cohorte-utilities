@@ -2,44 +2,42 @@
 {
 	"id":"helloWorld",
 	"type":"docker",
-	"states":[
-		{
+	"states":{
 			"creating":{
-				"dependencies":{
+				"dependencies":[
 					{"tomcat":"created"}
-				},
-				"steps":{"$include":"steps/creating_interactive.js"}
+				],
+				"steps":{"$file":"file://steps/creating_helloworld.js"}
 
 			},
 			
 			"starting":{
-				"dependencies":{
+				"dependencies":[
 					{"tomcat":"started"}
-				},
-				"steps":{"$include":"steps/starting_interactive.js"}
+				],
+				"steps":{"$file":"file://steps/starting_helloworld.js"}
 
 			},
 			
 			"validating":{
-				"dependencies":{
+				"dependencies":[
 					{"tomcat":"started"}
-
-				},
-				"steps":{"$include":"steps/validating_interactive.js"}
+				],
+				"steps":{"$file":"file://steps/validating_helloworld.js"}
 
 			},
 			"updating":{
-				"dependencies":{
+				"dependencies":[
 					{"tomcat":"stopped"}
-				},
-				"steps":{"$include":"steps/updating_interactive.js"}
+				],
+				"steps":{"$file":"file://steps/updating_helloworld.js"}
 
 			}
 			
-		}
-	],
+	},
 	"docker":{
 		"image":"dimensions/helloWorld",
+		"name":"helloworld",
 		"version":"1.0.0",
 		"tyoe":"it",
 		"volume":[

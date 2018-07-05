@@ -1,7 +1,7 @@
 [
 	{
 		"$generator":{
-	
+
 			id:"pull$.id",
 			component:"$.id",
 			state :"starting",

@@ -1,27 +1,40 @@
 // tomcat components
 {
-	"id":"tomcat",
+	"id":"mysql",
 	"type":"docker",
 	"states":{
 		"creating":{
-			"steps":{"$include":"steps/creating_deamon.js"}
+			"steps":{"$file":"file://steps/creating_mysql.js"}
 
 		},
 		
 		"starting":{
-			"steps":{"$include":"steps/starting_deamon.js"}
+			"steps":{"$file":"file://steps/starting_mysql.js"}
 
 		},
 		
 		"validating":{
-			"steps":{"$include":"steps/validating_deamon.js"}
+			"steps":{"$file":"file://steps/validating_mysql.js"}
 
 		},
 		
 		"updating":{
-			"steps":{"$include":"steps/updating_deamon.js"}
+			"steps":{"$file":"file://steps/updating_mysql.js"}
 
 		},
 		
+	},
+	"docker":{
+		"image":"dimensions/mysql",
+		"version":"1.0.0",
+		"name":"mysql",
+		"tyoe":"d",
+		
+		"volume":[
+			{
+				"container":"/opt/conf",
+				"host":"/root/grandest/httpd/conf/"
+			}
+		],
 	}
 }

@@ -20,6 +20,7 @@ import org.psem2m.utilities.json.JSONArray;
 import org.psem2m.utilities.json.JSONException;
 import org.psem2m.utilities.json.JSONObject;
 import org.psem2m.utilities.logging.IActivityLogger;
+import org.psem2m.utilities.rsrc.CXListRsrcText;
 import org.psem2m.utilities.rsrc.CXRsrcProvider;
 import org.psem2m.utilities.rsrc.CXRsrcProviderHttp;
 import org.psem2m.utilities.rsrc.CXRsrcProviderMemory;
@@ -97,6 +98,39 @@ public class CJsonProvider implements IJsonProvider {
 					"can't instanciate JSEngine, no condition will be taken Error=[%s]",
 					e);
 		}
+	}
+
+	/**
+	 * add parameter for the next includes to be able to replace on all include
+	 * variable that has been define on the first include
+	 *
+	 * @throws UnsupportedEncodingException
+	 */
+	private void addInheritParameter(final Object aContent,
+			final Map<String, String> aReplaceVars, final String aTag)
+			throws UnsupportedEncodingException {
+
+		if (aContent instanceof JSONObject) {
+			JSONObject wObj = (JSONObject) aContent;
+			if (aReplaceVars != null && wObj.keySet().contains(aTag)) {
+				String wParameterUrl = CXQueryString
+						.urlEncodeUTF8(aReplaceVars);
+				String wSubIncludeStr = wObj.optString(aTag);
+				String wSubIncludeWithParemter = wSubIncludeStr.contains("?") ? wSubIncludeStr
+						+ "&" + wParameterUrl
+						: wSubIncludeStr + "?" + wParameterUrl;
+				wObj.put(aTag, wSubIncludeWithParemter);
+			}
+		} else if (aContent instanceof JSONArray) {
+			JSONArray wArr = (JSONArray) aContent;
+			for (int i = 0; i < wArr.length(); i++) {
+				addInheritParameter(wArr.opt(i), aReplaceVars, aTag);
+			}
+		}
+		// add query string to subpath in order to
+		// get
+		// the replace variable on each level
+
 	}
 
 	/**
@@ -228,14 +262,19 @@ public class CJsonProvider implements IJsonProvider {
 		String wPath = aPath != null ? aPath + File.separatorChar + aContentId
 				: aContentId;
 
-		CXRsrcText wRsrc = pJsonResolver.getContent(aTag, wPath, false, null);
-		if (wRsrc != null) {
-			String aContent = wRsrc.getContent();
+		CXListRsrcText wRsrcs = pJsonResolver.getContent(aTag, wPath, false,
+				null);
+		if (wRsrcs != null && wRsrcs.size() > 0) {
+			JSONArray wArr = new JSONArray();
+			for (CXRsrcText wRsrc : wRsrcs) {
+				String aContent = wRsrc.getContent();
 
-			String wNotComment = removeComment(aContent);
-			Object wNotCommentJson = checkIsJson(wNotComment);
-			// check include content that must be resolve
-			return getJSONArray(aPath, (JSONArray) wNotCommentJson);
+				String wNotComment = removeComment(aContent);
+				Object wNotCommentJson = checkIsJson(wNotComment);
+				// check include content that must be resolve
+				wArr.put(wNotCommentJson);
+			}
+			return getJSONArray(aPath, wArr);
 		}
 		return null;
 	}
@@ -339,8 +378,11 @@ public class CJsonProvider implements IJsonProvider {
 		String wPath = aFatherPath != null ? aFatherPath + File.separatorChar
 				+ aContentId : aContentId;
 
-		CXRsrcText wRsrc = pJsonResolver.getContent(aTag, wPath, false, null);
-		if (wRsrc != null) {
+		CXListRsrcText wRsrcs = pJsonResolver.getContent(aTag, wPath, false,
+				null);
+		if (wRsrcs != null && wRsrcs.size() > 0) {
+			// we get only the first one
+			CXRsrcText wRsrc = wRsrcs.get(0);
 			String aContent = wRsrc.getContent();
 
 			String wNotComment = removeComment(aContent);
@@ -555,51 +597,42 @@ public class CJsonProvider implements IJsonProvider {
 
 							// read the current object . we set the list of the
 							// father
-							CXRsrcText wRsrc = pJsonResolver.getContent(wTag,
-									wPath, aUseMemoryProvider, aFathersContent);
-							if (wRsrc != null) {
-								// resolv subcontent
-								Object wValidContent = getValidContent(wRsrc);
-								// must be a JSONArray or JSONObject
-								// replace vars in the resolve content
-								wValidContent = checkIsJson(CXStringUtils
-										.replaceVariables(
-												wValidContent.toString(),
-												replaceVars, ""));
+							CXListRsrcText wRsrcs = pJsonResolver.getContent(
+									wTag, wPath, aUseMemoryProvider,
+									aFathersContent);
+							if (wRsrcs != null && wRsrcs.size() > 0) {
+								for (CXRsrcText wRsrc : wRsrcs) {
+									// resolv subcontent
+									Object wValidContent = getValidContent(wRsrc);
+									// must be a JSONArray or JSONObject
+									// replace vars in the resolve content
+									wValidContent = checkIsJson(CXStringUtils
+											.replaceVariables(
+													wValidContent.toString(),
+													replaceVars, ""));
 
-								// resolve json path from the father json object
-								// with the json to include
+									// resolve json path from the father json
+									// object
+									// with the json to include
 
-								if (!aUseMemoryProvider) {
-									initMemoryProviderCache(wValidContent, wTag);
+									if (!aUseMemoryProvider) {
+										initMemoryProviderCache(wValidContent,
+												wTag);
+									}
+									addInheritParameter(wValidContent,
+											replaceVars, wTag);
+
+									// we resolve an include so we need to pass
+									// the
+									// list
+									// of father plus the current one that is
+									// his
+									// father
+									wSubNoCommentContent.add(resolveInclude(
+											getSubPath(wTag, wRsrc),
+											wValidContent, aUseMemoryProvider,
+											wFathersContent).toString());
 								}
-
-								JSONObject wSubInclude = (JSONObject) wValidContent;
-								// add query string to subpath in order to get
-								// the replace variable on each level
-								if (replaceVars != null
-										&& wSubInclude.keySet().contains(wTag)) {
-									String wParameterUrl = CXQueryString
-											.urlEncodeUTF8(replaceVars);
-									String wSubIncludeStr = wSubInclude
-											.optString(wTag);
-									String wSubIncludeWithParemter = wSubIncludeStr
-											.contains("?") ? wSubIncludeStr
-											+ "&" + wParameterUrl
-											: wSubIncludeStr + "?"
-													+ wParameterUrl;
-									wSubInclude.put(wTag,
-											wSubIncludeWithParemter);
-									wValidContent = wSubInclude;
-								}
-								// we resolve an include so we need to pass the
-								// list
-								// of father plus the current one that is his
-								// father
-								wSubNoCommentContent.add(resolveInclude(
-										getSubPath(wTag, wRsrc), wValidContent,
-										aUseMemoryProvider, wFathersContent)
-										.toString());
 
 							} else {
 								if (!aUseMemoryProvider) {
@@ -639,8 +672,10 @@ public class CJsonProvider implements IJsonProvider {
 							wMatch.toString(), EMPTYJSON));
 				} else {
 					wResolvContent = checkIsJson(wResolvContentStr.replace(
-							wMatch.toString(), wSubNoCommentContent.stream()
-									.collect(Collectors.joining(","))));
+							wMatch.toString(),
+							"["
+									+ wSubNoCommentContent.stream().collect(
+											Collectors.joining(",")) + "]"));
 				}
 
 			}

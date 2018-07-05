@@ -1,14 +1,20 @@
 package org.psem2m.utilities.rsrc;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.psem2m.utilities.files.CXFileDir;
 import org.psem2m.utilities.scripting.CXJsObjectBase;
 
 /**
@@ -89,7 +95,7 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * org.psem2m.utilities.scripting.CXJsObjectBase#addDescriptionInBuffer(
 	 * java.lang.Appendable)
@@ -177,7 +183,7 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.lang.Object#clone()
 	 */
 	@Override
@@ -374,9 +380,34 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements
 		return wCnx;
 	}
 
+	protected CXRsrcText readRsrcTextContent(final CXRsrcUriPath aPath,
+			long aTimeStamp, final boolean aForceSecondes) throws Exception {
+		URL wUrl = null;
+		URLConnection wCnx = null;
+		boolean wCheckTimeStamp = aTimeStamp > 0;
+		wUrl = urlNew(aPath);
+		wCnx = openConnection(wUrl);
+		long wCurTimeStamp = wCnx.getLastModified();
+		if (aForceSecondes) {
+			wCurTimeStamp = (wCurTimeStamp / 1000) * 1000;
+			aTimeStamp = (aTimeStamp / 1000) * 1000;
+		}
+		wCheckTimeStamp = wCheckTimeStamp && wCurTimeStamp > 0;
+		if (wCheckTimeStamp && aTimeStamp == wCurTimeStamp) {
+			return null;
+		} else {
+			// X3 n'ecrit pas le BOM -> On precise l'encoding - Toujours
+			// Utf8
+			CXRsrcTextReadInfo wInfo = CXRsrcTextUnicodeReader.readAll(wCnx,
+					pDefCharset);
+			CXRsrcText wRsrc = new CXRsrcText(aPath, wInfo, wCurTimeStamp);
+			return wRsrc;
+		}
+	}
+
 	/*
 	 * #12 Manage chains of resource providers
-	 *
+	 * 
 	 * @see java.util.Iterator#remove()
 	 */
 	@Override
@@ -627,33 +658,17 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements
 	 * @return
 	 * @throws Exception
 	 */
-	private CXRsrcText rsrcReadTxt(final CXRsrcUriPath aPath, long aTimeStamp,
-			final boolean aForceSecondes, final boolean aFulPath)
-			throws Exception {
+	private CXRsrcText rsrcReadTxt(final CXRsrcUriPath aPath,
+			final long aTimeStamp, final boolean aForceSecondes,
+			final boolean aFulPath) throws Exception {
 		CXRsrcText wRsrc = null;
 		CXRsrcUriPath wPath = null;
 		URL wUrl = null;
 		try {
-			URLConnection wCnx = null;
 			wPath = checkUriPath(aPath, aFulPath);
-			boolean wCheckTimeStamp = aTimeStamp > 0;
-			wUrl = urlNew(wPath);
-			wCnx = openConnection(wUrl);
-			long wCurTimeStamp = wCnx.getLastModified();
-			if (aForceSecondes) {
-				wCurTimeStamp = (wCurTimeStamp / 1000) * 1000;
-				aTimeStamp = (aTimeStamp / 1000) * 1000;
-			}
-			wCheckTimeStamp = wCheckTimeStamp && wCurTimeStamp > 0;
-			if (wCheckTimeStamp && aTimeStamp == wCurTimeStamp) {
-				return null;
-			} else {
-				// X3 n'ecrit pas le BOM -> On precise l'encoding - Toujours
-				// Utf8
-				CXRsrcTextReadInfo wInfo = CXRsrcTextUnicodeReader.readAll(
-						wCnx, pDefCharset);
-				wRsrc = new CXRsrcText(wPath, wInfo, wCurTimeStamp);
-			}
+
+			wRsrc = readRsrcTextContent(wPath, aTimeStamp, aForceSecondes);
+
 		} catch (Exception e) {
 			if (hasNext()) {
 				return next().rsrcReadTxt(aPath, aTimeStamp, aForceSecondes,
@@ -701,6 +716,87 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements
 			final long aTimeStampSyst, final boolean aForceSecond)
 			throws Exception {
 		return rsrcReadTxt(new CXRsrcUriPath(aRsrcPath), aTimeStampSyst,
+				aForceSecond);
+	}
+
+	public CXListRsrcText rsrcReadTxts(final CXRsrcUriPath aPath,
+			final long aTimeStamp, final boolean aForceSecondes)
+			throws Exception {
+		return rsrcReadTxts(aPath, aTimeStamp, aForceSecondes, false);
+	}
+
+	private CXListRsrcText rsrcReadTxts(final CXRsrcUriPath aPath,
+			final long aTimeStamp, final boolean aForceSecondes,
+			final boolean aFulPath) throws Exception {
+		CXRsrcText wRsrc = null;
+		CXRsrcUriPath wPath = null;
+		URL wUrl = null;
+		CXListRsrcText wListRsrc = new CXListRsrcText();
+
+		try {
+			wPath = checkUriPath(aPath, aFulPath);
+			if (wPath.getFullPath().contains("*")) {
+				String wRegexp = wPath.getName().replaceAll("\\*", "\\.\\*");
+				final Pattern wPattern = Pattern.compile(wRegexp);
+				// look to list of file in that directory
+				CXFileDir wDir = new CXFileDir(wPath.getParent().getPath());
+				List<String> wPaths = Arrays.asList(wDir
+						.list(new FilenameFilter() {
+
+							@Override
+							public boolean accept(final File dir,
+									final String name) {
+								Matcher wMatch = wPattern.matcher(name);
+								return wMatch.find();
+							}
+						}));
+				String wParentPath = wDir.getAbsolutePath();
+
+				for (String aSubFilePath : wPaths) {
+					wListRsrc.add(readRsrcTextContent(new CXRsrcUriPath(
+							wParentPath + File.separatorChar + aSubFilePath),
+							aTimeStamp, aForceSecondes));
+
+				}
+			} else {
+				wRsrc = readRsrcTextContent(wPath, aTimeStamp, aForceSecondes);
+				wListRsrc.add(wRsrc);
+			}
+		} catch (Exception e) {
+			if (hasNext()) {
+				wListRsrc.add(next().rsrcReadTxt(aPath, aTimeStamp,
+						aForceSecondes, aFulPath));
+				return wListRsrc;
+			}
+			throwExcepReadText(
+					"Unable to read "
+							+ ((wPath == null) ? "null"
+									: (wUrl == null) ? aPath.getFullPath()
+											: wUrl.toString()), e);
+		}
+		return wListRsrc;
+	}
+
+	/**
+	 * read list of RsrcTexts
+	 *
+	 * @param aRsrcPath
+	 * @return
+	 * @throws Exception
+	 */
+	public CXListRsrcText rsrcReadTxts(final String aRsrcPath) throws Exception {
+		return rsrcReadTxts(aRsrcPath, 0);
+	}
+
+	public CXListRsrcText rsrcReadTxts(final String aRsrcPath,
+			final long aTimeStampSyst) throws Exception {
+		return rsrcReadTxts(aRsrcPath, aTimeStampSyst, false);
+	}
+
+	public CXListRsrcText rsrcReadTxts(final String aRsrcPath,
+			final long aTimeStampSyst, final boolean aForceSecond)
+			throws Exception {
+		return rsrcReadTxts(new CXRsrcUriPath(aRsrcPath), aTimeStampSyst,
 				aForceSecond);
 	}
 
@@ -783,7 +879,7 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override

@@ -48,7 +48,7 @@ public class CTestProcessJson extends TestCase {
 
 	public static @DataPoints String[][] testFiles = {
 
-	{ "module_empty.js", "empty.js" },
+			{ "module_empty.js", "empty.js" },
 			{ "module_noComment.js", "noComment.js" },
 			{ "module_slashComment.js", "noComment.js" },
 			{ "module_slashStarComment.js", "noComment.js" },
@@ -62,7 +62,12 @@ public class CTestProcessJson extends TestCase {
 			{ "test_condition.js?var=test", "test_condition_true.js" },
 			{ "test_condition.js?var=other", "test_condition_false.js" },
 
-			{ "test_jsonpath_grandfather.js", "test_jsonpath_father.js" } };
+			{ "test_jsonpath_grandfather.js", "test_jsonpath_grandfather.js" },
+
+			{ "deploy_world.js", "deploy_world.js" },
+			{
+					"deploy_world.js?deploy.subdomain=grandest&deploy.ip=80.80.80.80",
+					"deploy_world_with_properties.js" } };
 
 	@BeforeClass
 	public static void setup() {

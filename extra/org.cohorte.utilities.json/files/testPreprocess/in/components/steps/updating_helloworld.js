@@ -31,8 +31,6 @@
 					],
 					"params":[
 						{"--name":"$.docker.name"},
-						{"-p":"$.docker.port[0]"},
-						{"-p":"$.docker.port[1]"},
 						{"-v":"$.docker.volume[0].container:$.docker.volume[0].host"}
 						
 					],
