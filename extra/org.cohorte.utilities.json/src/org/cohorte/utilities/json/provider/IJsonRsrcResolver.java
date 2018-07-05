@@ -1,12 +1,13 @@
 package org.cohorte.utilities.json.provider;
 
-
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
+import org.psem2m.utilities.json.JSONObject;
+import org.psem2m.utilities.rsrc.CXListRsrcText;
 import org.psem2m.utilities.rsrc.CXRsrcProvider;
 import org.psem2m.utilities.rsrc.CXRsrcProviderMemory;
-import org.psem2m.utilities.rsrc.CXRsrcText;
 
 /**
  * defined the interface that have to be implemented to resolv subContent
@@ -23,8 +24,10 @@ public interface IJsonRsrcResolver {
 	 * @param aContentId
 	 * @return
 	 */
-	CXRsrcText getContent(String aTag, String aContentId,
-			boolean aMemoryProvider) throws Exception;
+
+	public CXListRsrcText getContent(final String aTag,
+			final String aContentId, final boolean aMemoryProvider,
+			final List<JSONObject> aFatherObject) throws Exception;
 
 	/**
 	 * return the list of the content id that handle the resolve like $file,

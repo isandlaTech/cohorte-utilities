@@ -2,14 +2,17 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: org :: cohorte: utilities.json
 Bundle-SymbolicName: org.cohorte.utilities.json
-Bundle-Version: 1.0.5
+Bundle-Version: 1.0.6
 Bundle-Activator: org.cohorte.utilities.json.Activator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Import-Package: org.osgi.framework,
+Import-Package: com.jayway.jsonpath,
+ org.javatuples,
+ org.osgi.framework,
  org.psem2m.utilities,
  org.psem2m.utilities.files,
  org.psem2m.utilities.json,
  org.psem2m.utilities.logging,
- org.psem2m.utilities.rsrc
+ org.psem2m.utilities.rsrc,
+ org.psem2m.utilities.scripting
 Export-Package: org.cohorte.utilities.json.provider

@@ -1,0 +1,35 @@
+// description of the hello world component that correspond to a webapp hello world
+{
+	"id":"http",
+	"type":"docker",
+	"states":{
+			"creating":{
+				"steps":{"$file":"file://steps/creating_httpd.js"}
+			},
+			"starting":{
+				"steps":{"$file":"file://steps/starting_httpd.js"}
+			},
+			"validating":{
+				"steps":{"$file":"file://steps/validating_httpd.js"}
+			},
+			"updating":{
+				"steps":{"$file":"file://steps/updating_httpd.js"}
+			}
+	},
+	"docker":{
+		"image":"dimensions/httpd",
+		"version":"1.0.0",
+		"name":"httpd",
+		"tyoe":"d",
+		"port":[
+			"80:80",
+			"443:443"
+		],
+		"volume":[
+			{
+				"container":"/opt/conf",
+				"host":"/root/grandest/httpd/conf/"
+			}
+		],
+	}
+}

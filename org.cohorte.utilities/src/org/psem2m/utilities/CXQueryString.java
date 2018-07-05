@@ -125,7 +125,7 @@ public class CXQueryString {
 
 			if (wValue instanceof List) {
 				for (Object wSubValue : ((List<?>) wValue)) {
-					if (wSubValue != null) {
+					if (wSubValue == null) {
 						wSubValue = "null";
 					}
 					wSB.append(String.format("%s=%s", wKey,
@@ -134,7 +134,7 @@ public class CXQueryString {
 			}
 			//
 			else {
-				if (wValue != null) {
+				if (wValue == null) {
 					wValue = "null";
 				}
 				wSB.append(String.format("%s=%s", wKey,

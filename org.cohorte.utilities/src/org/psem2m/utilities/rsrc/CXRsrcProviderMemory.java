@@ -1,6 +1,5 @@
 package org.psem2m.utilities.rsrc;
 
-
 import java.nio.charset.Charset;
 import java.util.Hashtable;
 import java.util.Map;
@@ -11,7 +10,7 @@ public class CXRsrcProviderMemory extends CXRsrcProvider {
 
 	public CXRsrcProviderMemory() {
 		super(Charset.defaultCharset());
-		pMapMemory = new Hashtable<String, CXRsrcText>();
+		pMapMemory = new Hashtable<>();
 	}
 
 	public void add(final String aKey, final CXRsrcText aContent) {
@@ -38,12 +37,33 @@ public class CXRsrcProviderMemory extends CXRsrcProvider {
 
 	@Override
 	public CXRsrcText rsrcReadTxt(final String aContentId) throws Exception {
-		if (pMapMemory.get(aContentId) != null) {
-			return pMapMemory.get(aContentId);
+		String wContentId = aContentId;
+		if (aContentId.contains("?")) {
+			wContentId = aContentId.substring(0, wContentId.indexOf("?"));
+		}
+		if (pMapMemory.get(wContentId) != null) {
+			return pMapMemory.get(wContentId);
 		} else {
 			throw new Exception(String.format(
 					"not exists %s in memory provider", aContentId));
 		}
+	}
+
+	@Override
+	public CXListRsrcText rsrcReadTxts(final String aContentId)
+			throws Exception {
+		CXListRsrcText wList = new CXListRsrcText();
+		String wContentId = aContentId;
+		if (aContentId.contains("?")) {
+			wContentId = aContentId.substring(0, wContentId.indexOf("?"));
+		}
+		if (pMapMemory.get(wContentId) != null) {
+			wList.add(pMapMemory.get(wContentId));
+		} else {
+			throw new Exception(String.format(
+					"not exists %s in memory provider", aContentId));
+		}
+		return wList;
 	}
 
 	protected void setMap(final Map<String, CXRsrcText> aMapMemory) {

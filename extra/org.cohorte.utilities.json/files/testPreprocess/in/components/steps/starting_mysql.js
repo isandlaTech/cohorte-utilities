@@ -1,0 +1,20 @@
+[
+	{
+		"$generator":{
+	
+			"id":"pull$.id",
+			"component":"$.id",
+			"state":"starting",
+			"type":"exec",
+			"command":{
+				"$generator":{
+					"interpreter":"docker",
+					"args":[
+						"start",
+						"$.docker.name"
+					]
+				}	
+			}
+		}
+	}
+]

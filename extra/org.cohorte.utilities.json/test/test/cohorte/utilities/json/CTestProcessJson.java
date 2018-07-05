@@ -3,10 +3,9 @@ package test.cohorte.utilities.json;
 import java.io.File;
 import java.nio.charset.Charset;
 
-import junit.framework.TestCase;
-
 import org.cohorte.utilities.json.provider.CJsonProvider;
 import org.cohorte.utilities.json.provider.CJsonRsrcResolver;
+import org.cohorte.utilities.json.provider.rsrc.CXRsrcGeneratorProvider;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
@@ -16,7 +15,10 @@ import org.junit.runner.RunWith;
 import org.psem2m.utilities.files.CXFileText;
 import org.psem2m.utilities.json.JSONObject;
 import org.psem2m.utilities.logging.CActivityLoggerBasicConsole;
+import org.psem2m.utilities.logging.CActivityLoggerNull;
 import org.psem2m.utilities.rsrc.CXRsrcProviderFile;
+
+import junit.framework.TestCase;
 
 /**
  * unit test that valid the preprocess of a JSON file that remove comment and
@@ -45,18 +47,36 @@ public class CTestProcessJson extends TestCase {
 	private static CJsonProvider pProvider;
 
 	public static @DataPoints String[][] testFiles = {
-			{ "module_empty", "empty" }, { "module_noComment", "noComment" },
-			{ "module_slashComment", "noComment" },
-			{ "module_slashStarComment", "noComment" },
-			{ "module_allComment", "noComment" },
-			{ "module_testDef", "testDef" },
-			{ "module_allCommentAndFile", "noComment2" },
-			{ "module_allMultiPath", "noCommentMutliPath" } };
+
+			{ "module_empty.js", "empty.js" },
+			{ "module_noComment.js", "noComment.js" },
+			{ "module_slashComment.js", "noComment.js" },
+			{ "module_slashStarComment.js", "noComment.js" },
+			{ "module_allComment.js", "noComment.js" },
+			{ "module_testDef.js", "testDef.js" },
+			{ "module_allCommentAndFile.js", "noComment2.js" },
+			{ "module_allCommentAndFileWithPath.js", "noComment2.js" },
+
+			{ "module_allMultiPath.js", "noCommentMutliPath.js" },
+
+			{ "test_condition.js?var=test", "test_condition_true.js" },
+			{ "test_condition.js?var=other", "test_condition_false.js" },
+
+			{ "test_jsonpath_grandfather.js", "test_jsonpath_grandfather.js" },
+
+			{ "deploy_world.js", "deploy_world.js" },
+			{
+					"deploy_world.js?deploy.subdomain=grandest&deploy.ip=80.80.80.80",
+					"deploy_world_with_properties.js" } };
 
 	@BeforeClass
 	public static void setup() {
 		try {
 			CJsonRsrcResolver wResolver = new CJsonRsrcResolver();
+			wResolver.addRsrcProvider(
+					"$generator",
+					new CXRsrcGeneratorProvider(CActivityLoggerNull
+							.getInstance()));
 			wResolver.addRsrcProvider("$file", new CXRsrcProviderFile(
 					fileTestsIn, Charset.defaultCharset()));
 			wResolver.addRsrcProvider("$file", new CXRsrcProviderFile(
@@ -102,9 +122,8 @@ public class CTestProcessJson extends TestCase {
 		try {
 
 			CXFileText wFileOut = new CXFileText(fileTestsOut
-					+ File.separatorChar + testFiles[1] + ".js");
-			JSONObject in = pProvider.getJSONObject("$file", testFiles[0]
-					+ ".js");
+					+ File.separatorChar + testFiles[1]);
+			JSONObject in = pProvider.getJSONObject("$file", testFiles[0]);
 
 			JSONObject out = new JSONObject(wFileOut.readAll());
 			System.out.println("------");
