@@ -49,6 +49,23 @@ public class CXRsrcProviderMemory extends CXRsrcProvider {
 		}
 	}
 
+	@Override
+	public CXListRsrcText rsrcReadTxts(final String aContentId)
+			throws Exception {
+		CXListRsrcText wList = new CXListRsrcText();
+		String wContentId = aContentId;
+		if (aContentId.contains("?")) {
+			wContentId = aContentId.substring(0, wContentId.indexOf("?"));
+		}
+		if (pMapMemory.get(wContentId) != null) {
+			wList.add(pMapMemory.get(wContentId));
+		} else {
+			throw new Exception(String.format(
+					"not exists %s in memory provider", aContentId));
+		}
+		return wList;
+	}
+
 	protected void setMap(final Map<String, CXRsrcText> aMapMemory) {
 		pMapMemory = aMapMemory;
 	}
