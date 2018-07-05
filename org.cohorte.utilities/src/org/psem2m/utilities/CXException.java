@@ -837,6 +837,7 @@ public class CXException extends Exception implements IXDescriber {
 				// s'il n'y a pas de message on met la classe
 				wList.add(aThrowable.getClass().getName());
 			}
+			wNbMess++;
 		}
 		return wList;
 	}
