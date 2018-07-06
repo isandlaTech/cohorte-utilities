@@ -250,7 +250,7 @@ class CExceptionMessages extends ArrayList<CExceptionMessage> implements
 	 * @return
 	 */
 	public List<String> getListOfMessages(EExceptionMessageTyp... aTyp) {
-		final ArrayList<String> wList = new ArrayList<String>();
+		final ArrayList<String> wList = new ArrayList<>();
 		CExceptionMessage wExceptionMessage;
 		final int wMax = size();
 		int wI = 0;
@@ -810,6 +810,36 @@ public class CXException extends Exception implements IXDescriber {
 			}
 		}
 		return aStack;
+	}
+
+	/**
+	 * @param aThrowable
+	 * @return
+	 * @throws Exception
+	 */
+	public static List<String> getCauseMessages(Throwable aThrowable)
+			throws Exception {
+
+		List<String> wList = new ArrayList<>();
+		int wNbMess = 1;
+		String wMess;
+		while (aThrowable != null) {
+			wMess = aThrowable.getLocalizedMessage();
+			final boolean wHasMess = (wMess != null && wMess.length() > 0);
+
+			if (wHasMess) {
+				if (wNbMess > 1) {
+					wMess = aThrowable.getClass().getSimpleName().concat(":")
+							.concat(wMess);
+				}
+				wList.add(wMess);
+			} else {
+				// s'il n'y a pas de message on met la classe
+				wList.add(aThrowable.getClass().getName());
+			}
+			wNbMess++;
+		}
+		return wList;
 	}
 
 	public static String getCleanedStackOfThrowable(Throwable aThrowable) {
