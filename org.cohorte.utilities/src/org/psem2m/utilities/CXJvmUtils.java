@@ -11,9 +11,15 @@
 package org.psem2m.utilities;
 
 import java.io.File;
+import java.lang.management.ManagementFactory;
 import java.nio.charset.Charset;
+import java.text.NumberFormat;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
@@ -27,7 +33,7 @@ public final class CXJvmUtils {
 	public static Double JAVA_VERSION_6 = new Double(1.6);
 	public static Double JAVA_VERSION_7 = new Double(1.7);
 	public static Double JAVA_VERSION_8 = new Double(1.8);
-	
+
 	private static final int LINE_WITDH = 140;
 	public static final int MASK_INFOS_JAVA = 1;
 	public static final int MASK_INFOS_OS = 2;
@@ -35,10 +41,16 @@ public final class CXJvmUtils {
 
 	public static final int MASK_INFOS_USER = 4;
 	public static final int MASK_OTHER_PROPS = 16;
+	public static final String MEMORY_KIND_ALLOCATED = "allocated";
+
+	public static final String MEMORY_KIND_FREE = "free";
+
+	public static final String MEMORY_KIND_FREE_TOTAL = "total free";
+	public static final String MEMORY_KIND_MAX = "max";
+	public static final String[] MEMORY_KINDS = { MEMORY_KIND_FREE, MEMORY_KIND_ALLOCATED, MEMORY_KIND_MAX,
+			MEMORY_KIND_FREE_TOTAL };
 	public static final char SEP_NUL = (char) 255;
-	
-	private static Double sJavaVersion = retreiveVersion ();
-	
+	private static Double sJavaVersion = retreiveVersion();
 	public static final String SYSPROP_DEFAULT_CHARSET = "defaultCharset";
 	public static final String SYSPROP_JAVA_CLASS_PATH = "java.class.path";
 	public static final String SYSPROP_JAVA_CLASS_VERS = "java.class.version";
@@ -59,14 +71,17 @@ public final class CXJvmUtils {
 	public static final String SYSPROP_LIB_PATH = "java.library.path";
 	public static final String SYSPROP_OS_ARCH = "os.arch";
 	public static final String SYSPROP_OS_NAME = "os.name";
+
 	public static final String SYSPROP_OS_VERS = "os.version";
+
 	public static final String SYSPROP_SUPPORTED_ENCODING = "supported.encodings";
 	public static final String SYSPROP_USER_COUNTRY = "user.country";
+
 	public static final String SYSPROP_USER_DIR = "user.dir";
+
 	public static final String SYSPROP_USER_HOME = "user.home";
 
 	public static final String SYSPROP_USER_LANG = "user.language";
-
 	public static final String SYSPROP_USER_NAME = "user.name";
 	public static final String SYSPROP_USER_REGION = "user.region";
 
@@ -77,18 +92,21 @@ public final class CXJvmUtils {
 			SYSPROP_JAVA_IO_TMPDIR, SYSPROP_JAVA_RUN_NAME, SYSPROP_JAVA_RUN_VERS, SYSPROP_JAVA_VENDOR,
 			SYSPROP_JAVA_VERS, SYSPROP_JAVA_VM_INFO, SYSPROP_JAVA_VM_NAME, SYSPROP_JAVA_VM_VENDOR,
 			SYSPROP_JAVA_VM_VERSION, SYSPROP_LIB_PATH, SYSPROP_OS_ARCH, SYSPROP_OS_NAME, SYSPROP_OS_VERS,
-			SYSPROP_JAVA_SPEC_VERS, SYSPROP_SUPPORTED_ENCODING, SYSPROP_USER_DIR, SYSPROP_USER_HOME,
-			SYSPROP_USER_LANG, SYSPROP_USER_NAME, SYSPROP_USER_COUNTRY, SYSPROP_USER_REGION,
-			SYSPROP_USER_TIMEZONE, SYSPROP_JAVA_VENDOR_URL };
-	
+			SYSPROP_JAVA_SPEC_VERS, SYSPROP_SUPPORTED_ENCODING, SYSPROP_USER_DIR, SYSPROP_USER_HOME, SYSPROP_USER_LANG,
+			SYSPROP_USER_NAME, SYSPROP_USER_COUNTRY, SYSPROP_USER_REGION, SYSPROP_USER_TIMEZONE,
+			SYSPROP_JAVA_VENDOR_URL };
+
 	public static final boolean VALUE_MULTI_LINE = true;
+
 	public static final boolean VALUE_ONE_LINE = false;
-	public static final int VECTOR_FULL_INFOS = MASK_INFOS_JAVA + MASK_INFOS_OS + MASK_INFOS_USER
-			+ MASK_INFOS_PATHS + MASK_OTHER_PROPS;
-	
-	
+
+	public static final int VECTOR_FULL_INFOS = MASK_INFOS_JAVA + MASK_INFOS_OS + MASK_INFOS_USER + MASK_INFOS_PATHS
+			+ MASK_OTHER_PROPS;
+
 	public static final int VECTOR_INFOS_LESS_PATHS = MASK_INFOS_JAVA + MASK_INFOS_OS + MASK_INFOS_USER
 			+ MASK_OTHER_PROPS;
+
+	private static final String[] XARGS_WITH_VALUE = { "Xmx", "Xms", "Xss", "Xmn", "Xbootclasspath" };
 
 	/**
 	 * @param aSB
@@ -100,8 +118,8 @@ public final class CXJvmUtils {
 	 *            a endline character (eg ':' in a list of paths )
 	 * @return
 	 */
-	public static StringBuilder addDescrAlignInSB(final StringBuilder aSB, final String aId,
-			final int aIdSize, final String aValue, final int aValueSize, final char aEndLine) {
+	public static StringBuilder addDescrAlignInSB(final StringBuilder aSB, final String aId, final int aIdSize,
+			final String aValue, final int aValueSize, final char aEndLine) {
 
 		aSB.append(CXStringUtils.strAdjustRight(aId, aIdSize, ' '));
 		aSB.append('=');
@@ -129,7 +147,7 @@ public final class CXJvmUtils {
 		aSB.append(']');
 		return aSB;
 	}
-	
+
 	/**
 	 * @param aSB
 	 * @param aId
@@ -139,29 +157,30 @@ public final class CXJvmUtils {
 
 		return addJavaInfoDescrInSB(aSB, aId, System.getProperty(aId), SEP_NUL);
 	}
-	
+
 	/**
 	 * @param aSB
 	 * @param aId
 	 * @param aEndLine
 	 * @return
 	 */
-	private static StringBuilder addJavaInfoDescrInSB(final StringBuilder aSB, final String aId,
-			final char aEndLine) {
+	private static StringBuilder addJavaInfoDescrInSB(final StringBuilder aSB, final String aId, final char aEndLine) {
 
 		return addJavaInfoDescrInSB(aSB, aId, System.getProperty(aId), aEndLine);
 	}
+
 	/**
 	 * @param aSB
 	 * @param aId
 	 * @param aValue
 	 * @return
 	 */
-	private static StringBuilder addJavaInfoDescrInSB(final StringBuilder aSB, final String aId,
-			final String aValue, final char aEndLine) {
+	private static StringBuilder addJavaInfoDescrInSB(final StringBuilder aSB, final String aId, final String aValue,
+			final char aEndLine) {
 
 		return addDescrAlignInSB(aSB, aId, ID_WITDH, aValue, LINE_WITDH - ID_WITDH, aEndLine);
 	}
+
 	/**
 	 * requete de test du service d'administration
 	 * 
@@ -203,8 +222,8 @@ public final class CXJvmUtils {
 	 * @param aClass
 	 * @param aInterfaceLevel
 	 */
-	private static StringBuilder appendInterfaceInfosInSB(final StringBuilder aRepport,
-			final Class<?> aClass, final int aInterfaceLevel) {
+	private static StringBuilder appendInterfaceInfosInSB(final StringBuilder aRepport, final Class<?> aClass,
+			final int aInterfaceLevel) {
 
 		Class<?>[] wInterfaces = aClass.getInterfaces();
 		if (wInterfaces != null && wInterfaces.length > 0) {
@@ -214,8 +233,8 @@ public final class CXJvmUtils {
 				wInterface = wInterfaces[wInterfaceIdx];
 
 				// MOD_OG_20150409 use getClassLoaderInfos
-				aRepport.append(String.format("\n  Interface(%d.%d)=[%68s from %s]", aInterfaceLevel,
-						wInterfaceIdx, wInterface.getName(), getClassLoaderInfos(wInterface)));
+				aRepport.append(String.format("\n  Interface(%d.%d)=[%68s from %s]", aInterfaceLevel, wInterfaceIdx,
+						wInterface.getName(), getClassLoaderInfos(wInterface)));
 
 				appendInterfaceInfosInSB(aRepport, wInterface, (aInterfaceLevel + 1));
 			}
@@ -280,7 +299,8 @@ public final class CXJvmUtils {
 			addSeparatorInSB(aSB, aSeparator);
 			addJavaInfoDescrInSB(aSB, SYSPROP_JAVA_VERS);
 			addSeparatorInSB(aSB, aSeparator);
-			String wVersInfos = String.format(" JavaVersion=[%s] isJava7=[%s] isJava8=[%s] isLessThanJava8=[%s]", getJavaVersion(),isJava7(),isJava8(),isLessThanJava8());
+			String wVersInfos = String.format(" JavaVersion=[%s] isJava7=[%s] isJava8=[%s] isLessThanJava8=[%s]",
+					getJavaVersion(), isJava7(), isJava8(), isLessThanJava8());
 			addDescrAlignInSB(aSB, "version infos", ID_WITDH, wVersInfos, LINE_WITDH - ID_WITDH, SEP_NUL);
 			addSeparatorInSB(aSB, aSeparator);
 			addJavaInfoDescrInSB(aSB, SYSPROP_JAVA_VM_INFO);
@@ -290,7 +310,7 @@ public final class CXJvmUtils {
 			addJavaInfoDescrInSB(aSB, SYSPROP_JAVA_VM_VENDOR);
 			addSeparatorInSB(aSB, aSeparator);
 			addJavaInfoDescrInSB(aSB, SYSPROP_JAVA_VM_VERSION);
-			
+
 		}
 		if ((aInformationMask & MASK_INFOS_OS) > 0) {
 			if (aSB.length() > 0) {
@@ -327,19 +347,17 @@ public final class CXJvmUtils {
 				addSeparatorInSB(aSB, aSeparator);
 			}
 			appendSepLineInSB(aSB, aSeparator);
-			addJavaInfoDescrInSB(aSB, SYSPROP_JAVA_CLASS_PATH, aValueMultiLine ? File.pathSeparatorChar
-					: SEP_NUL);
+			addJavaInfoDescrInSB(aSB, SYSPROP_JAVA_CLASS_PATH, aValueMultiLine ? File.pathSeparatorChar : SEP_NUL);
 			addSeparatorInSB(aSB, aSeparator);
 			addJavaInfoDescrInSB(aSB, SYSPROP_LIB_PATH, aValueMultiLine ? File.pathSeparatorChar : SEP_NUL);
 			addSeparatorInSB(aSB, aSeparator);
 
-			addJavaInfoDescrInSB(aSB, SYSPROP_DEFAULT_CHARSET, Charset.defaultCharset().displayName(),
-					SEP_NUL);
+			addJavaInfoDescrInSB(aSB, SYSPROP_DEFAULT_CHARSET, Charset.defaultCharset().displayName(), SEP_NUL);
 			addSeparatorInSB(aSB, aSeparator);
 
 			addJavaInfoDescrInSB(aSB, SYSPROP_SUPPORTED_ENCODING,
-					formatEncodings(aValueMultiLine, CXOSUtils.dumpSupportedEncodings()),
-					aValueMultiLine ? ';' : SEP_NUL);
+					formatEncodings(aValueMultiLine, CXOSUtils.dumpSupportedEncodings()), aValueMultiLine ? ';'
+							: SEP_NUL);
 		}
 
 		if ((aInformationMask & MASK_OTHER_PROPS) > 0) {
@@ -396,8 +414,7 @@ public final class CXJvmUtils {
 	 * @param aDefaultSize
 	 * @return
 	 */
-	private static int calcValueSize(final String aValue, final int aPos, final char aEndLine,
-			final int aDefaultSize) {
+	private static int calcValueSize(final String aValue, final int aPos, final char aEndLine, final int aDefaultSize) {
 
 		if (aEndLine == SEP_NUL) {
 			return aDefaultSize;
@@ -416,11 +433,35 @@ public final class CXJvmUtils {
 	}
 
 	/**
+	 * 
+	 * @param aKey
+	 *            eg. "-Xmx1024M" or
+	 *            "-Xbootclasspath/p:/opt/agilium/v3/Agilium/lib/OB.jar" or
+	 *            "-DThreadObserver.on=on"
+	 * @return
+	 */
+	private static String cleanArgKey(String aKey) {
+		if (aKey == null || aKey.isEmpty()) {
+			return aKey;
+		}
+		return aKey.substring(1);
+	}
+
+	/**
+	 * @param aClass
+	 * @return
+	 */
+	public static String dumpClassInfos(final Class<?> aClass) {
+		return dumpClassInfos(new StringBuilder(), aClass).toString();
+	}
+
+	/**
 	 * @param aRepport
 	 * @param aClass
-	 * @param aTargetCastClass
+	 * @return
 	 */
-	public static void dumpClassInfosInSB(final StringBuilder aRepport, final Class<?> aClass) {
+	public static StringBuilder dumpClassInfos(final StringBuilder aRepport, final Class<?> aClass) {
+
 		Class<?> wClass = aClass;
 		int wLevel = 0;
 		while (wClass != null) {
@@ -435,9 +476,8 @@ public final class CXJvmUtils {
 					wInterface = wInterfaces[wInterfaceIdx];
 					int wInterfaceLevel = 0;
 					while (wInterface != null) {
-						aRepport.append(String.format("\n     Interface(%d.%d)=[%70s from %s]",
-								wInterfaceIdx, wInterfaceLevel, wInterface.getName(),
-								wInterface.getClassLoader()));
+						aRepport.append(String.format("\n     Interface(%d.%d)=[%70s from %s]", wInterfaceIdx,
+								wInterfaceLevel, wInterface.getName(), wInterface.getClassLoader()));
 						wInterfaceLevel++;
 						wInterface = wInterface.getSuperclass();
 					}
@@ -446,6 +486,100 @@ public final class CXJvmUtils {
 			wLevel++;
 			wClass = wClass.getSuperclass();
 		}
+		return aRepport;
+	}
+
+	/**
+	 * @param aRepport
+	 * @param aClass
+	 * @param aTargetCastClass
+	 * @deprecated
+	 */
+	@Deprecated
+	public static void dumpClassInfosInSB(final StringBuilder aRepport, final Class<?> aClass) {
+		dumpClassInfos(new StringBuilder(), aClass).toString();
+	}
+
+	/**
+	 * Dump the context of the JVM
+	 * 
+	 * @return the description of the context of the JVM as a name-value pairs
+	 *         table
+	 */
+	public static String dumpJavaContext() {
+		return dumpJavaContext('\n', VECTOR_FULL_INFOS, VALUE_MULTI_LINE);
+
+	}
+
+	/**
+	 * Dump the context of the JVM
+	 * 
+	 * 
+	 * @param aSeparator
+	 *            the separator included between each information
+	 * @param aInformationMask
+	 *            the mask to select information
+	 * @param aValueMultiLineLine
+	 *            accepts format multiline information if true
+	 * @return the description of the context of the JVM as a name-value pairs
+	 *         list separated by the separator
+	 * 
+	 * @see getJavaContext()
+	 */
+	public static String dumpJavaContext(final char aSeparator, final int aInformationMask,
+			final boolean aValueMultiLineLine) {
+
+		return appendJavaContextInSB(new StringBuilder(512), aSeparator, aInformationMask, aValueMultiLineLine)
+				.toString();
+	}
+
+	/**
+	 * <pre>
+	 * -                                 DThreadObserver.on =[          on]
+	 * -                      Dcom.sun.management.jmxremote =[            ]
+	 * -         Dcom.sun.management.jmxremote.authenticate =[       false]
+	 * -                 Dcom.sun.management.jmxremote.port =[        5556]
+	 * -                  Dcom.sun.management.jmxremote.ssl =[       false]
+	 * -                                     Dfile.encoding =[       UTF-8]
+	 * -                                    Djava.io.tmpdir =[/opt/agilium/v3/Agilium/tmp]
+	 * -                                          Duser.dir =[/opt/agilium/v3/Agilium]
+	 * -                                     Dworkspace.loc =[/Users/ogattaz/workspaces/agilium-v3-forge]
+	 * -                                     XX:MaxPermSize =[        256M]
+	 * -                                     Xbootclasspath =[/p:/opt/agilium/v3/Agilium/lib/OB.jar]
+	 * -                                                Xms =[        512M]
+	 * -                                                Xmx =[       1024M]
+	 * </pre>
+	 * 
+	 * @return
+	 */
+	public static String dumpJvmArgs() {
+		StringBuilder wSB = new StringBuilder();
+		for (Entry<String, String> wEntry : getJvmArgsMap().entrySet()) {
+			wSB.append(String.format("\n- %50s =[%12s]", wEntry.getKey(), wEntry.getValue()));
+		}
+		return wSB.toString();
+	}
+
+	/**
+	 * <pre>
+	 * -                                        free memory =[     479,454]
+	 * -                                   allocated memory =[     503,296]
+	 * -                                         max memory =[     932,352]
+	 * -                                  total free memory =[     908,510]
+	 * </pre>
+	 * 
+	 * @return
+	 */
+	public static String dumpMemoryInfos() {
+
+		NumberFormat format = NumberFormat.getInstance();
+		StringBuilder wSB = new StringBuilder();
+		for (Entry<String, Long> wEntry : getMemoryInfosMap().entrySet()) {
+			String wTitle = wEntry.getKey().concat(" memory");
+			String wValue = format.format(wEntry.getValue() / 1024);
+			wSB.append(String.format("\n- %50s =[%12s]", wTitle, wValue));
+		}
+		return wSB.toString();
 	}
 
 	/**
@@ -557,36 +691,30 @@ public final class CXJvmUtils {
 	/**
 	 * Dump the context of the JVM
 	 * 
-	 * <pre> </pre>
-	 * 
 	 * @return the description of the context of the JVM as a name-value pairs
 	 *         table
+	 * @deprecated
+	 * @see dumpJavaContext()
 	 */
+	@Deprecated
 	public static String getJavaContext() {
 
-		return getJavaContext('\n', VECTOR_FULL_INFOS, VALUE_MULTI_LINE);
+		return dumpJavaContext('\n', VECTOR_FULL_INFOS, VALUE_MULTI_LINE);
 	}
 
 	/**
-	 * Dump the context of the JVM
-	 * 
-	 * 
 	 * @param aSeparator
-	 *            the separator included between each information
 	 * @param aInformationMask
-	 *            the mask to select information
 	 * @param aValueMultiLineLine
-	 *            accepts format multiline information if true
-	 * @return the description of the context of the JVM as a name-value pairs
-	 *         list separated by the separator
-	 * 
-	 * @see getJavaContext()
+	 * @return
+	 * @deprecated
+	 * @see dumpJavaContext()
 	 */
+	@Deprecated
 	public static String getJavaContext(final char aSeparator, final int aInformationMask,
 			final boolean aValueMultiLineLine) {
+		return dumpJavaContext(aSeparator, aInformationMask, aValueMultiLineLine);
 
-		return appendJavaContextInSB(new StringBuilder(512), aSeparator, aInformationMask,
-				aValueMultiLineLine).toString();
 	}
 
 	/**
@@ -609,29 +737,86 @@ public final class CXJvmUtils {
 	/**
 	 * @return the version of the current Jvm
 	 */
-	public static Double getJavaVersion () {
+	public static Double getJavaVersion() {
 		return sJavaVersion;
+	}
+
+	/**
+	 * 
+	 * @return the list of the given argument
+	 */
+	public static List<String> getJvmArgsList() {
+		return ManagementFactory.getRuntimeMXBean().getInputArguments();
+	}
+
+	/**
+	 * 
+	 * @return the map of the given argument with their values
+	 */
+	public static Map<String, String> getJvmArgsMap() {
+
+		Map<String, String> wMap = new TreeMap<>();
+
+		for (String wArg : getJvmArgsList()) {
+			String[] wParts = wArg.split("=");
+			String wKey = cleanArgKey(wParts[0]);
+			String wValue = "";
+			if (wParts.length == 1) {
+
+				for (String wXArg : XARGS_WITH_VALUE) {
+					if (wKey.startsWith(wXArg)) {
+						int wPos = wXArg.length();
+						wValue = wKey.substring(wPos);
+						wKey = wKey.substring(0, wPos);
+						break;
+					}
+				}
+			} else {
+				wValue = wParts[1];
+			}
+			wMap.put(wKey, wValue);
+		}
+		return wMap;
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public static Map<String, Long> getMemoryInfosMap() {
+
+		Runtime runtime = Runtime.getRuntime();
+		long wMaxMemory = runtime.maxMemory();
+		long wAllocatedMemory = runtime.totalMemory();
+		long wFreeMemory = runtime.freeMemory();
+
+		Map<String, Long> wMap = new LinkedHashMap<>();
+		wMap.put(MEMORY_KIND_FREE, wFreeMemory);
+		wMap.put(MEMORY_KIND_ALLOCATED, wAllocatedMemory);
+		wMap.put(MEMORY_KIND_MAX, wMaxMemory);
+		wMap.put(MEMORY_KIND_FREE_TOTAL, (wFreeMemory + (wMaxMemory - wAllocatedMemory)));
+		return wMap;
 	}
 
 	/**
 	 * @return true if the version of the current Jvm is Java 7
 	 */
-	public static boolean isJava7(){
-		return JAVA_VERSION_7.equals(getJavaVersion ());
+	public static boolean isJava7() {
+		return JAVA_VERSION_7.equals(getJavaVersion());
 	}
 
 	/**
 	 * @return true if the version of the current Jvm is Java 8
 	 */
-	public static boolean isJava8(){
-		return JAVA_VERSION_8.equals( getJavaVersion ());
+	public static boolean isJava8() {
+		return JAVA_VERSION_8.equals(getJavaVersion());
 	}
 
 	/**
 	 * @return true if the version of the current Jvm is less than Java 8
 	 */
-	public static boolean isLessThanJava8(){
-		return JAVA_VERSION_8 > getJavaVersion ();
+	public static boolean isLessThanJava8() {
+		return JAVA_VERSION_8 > getJavaVersion();
 	}
 
 	/**
@@ -652,15 +837,28 @@ public final class CXJvmUtils {
 	}
 
 	/**
+	 * 
+	 * @param aArgs
+	 */
+	public static void main(String[] aArgs) {
+		try {
+			System.out.println(dumpMemoryInfos());
+			System.out.println(dumpJvmArgs());
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
 	 * java.version=[1.7.0_45]
 	 * 
 	 * @return
 	 */
-	private static Double retreiveVersion () {
-	    String version = System.getProperty("java.version");
-	    int pos = version.indexOf('.');
-	    pos = version.indexOf('.', pos+1);
-	    return Double.parseDouble (version.substring (0, pos));
+	private static Double retreiveVersion() {
+		String version = System.getProperty("java.version");
+		int pos = version.indexOf('.');
+		pos = version.indexOf('.', pos + 1);
+		return Double.parseDouble(version.substring(0, pos));
 	}
 
 	/**
