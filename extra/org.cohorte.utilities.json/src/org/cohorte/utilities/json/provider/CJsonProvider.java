@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.cohorte.utilities.json.provider.CJsonRsrcResolver.EProviderKind;
 import org.psem2m.utilities.CXQueryString;
@@ -419,12 +417,15 @@ public class CJsonProvider implements IJsonProvider {
 		String wSubPath = aRsrc.getFullPath();
 		int wIdx = wSubPath.lastIndexOf(File.separatorChar);
 		wSubPath = wIdx != -1 ? wSubPath.substring(0, wIdx + 1) : wSubPath;
-		Stream<CXRsrcProvider> wProv = pJsonResolver
-				.getRsrcProvider(aTag)
-				.stream()
-				.filter(c -> aRsrc.getFullPath().contains(
-						c.getDefDirectory().getPath()));
-		CXRsrcProvider wProviderUsed = wProv.findFirst().get();
+		CXRsrcProvider wProviderUsed = null;
+		for (CXRsrcProvider aProvider : pJsonResolver.getRsrcProvider(aTag)) {
+			if (wProviderUsed == null
+					&& aRsrc.getFullPath().contains(
+							aProvider.getDefDirectory().getPath())) {
+				wProviderUsed = aProvider;
+			}
+		}
+
 		if (wProviderUsed instanceof CXRsrcProviderMemory
 				|| wProviderUsed instanceof CXRsrcProviderHttp) {
 			// TODO change when we move it to utilities to use polymorphisme
@@ -671,11 +672,15 @@ public class CJsonProvider implements IJsonProvider {
 					wResolvContent = checkIsJson(wResolvContentStr.replace(
 							wMatch.toString(), EMPTYJSON));
 				} else {
+					String wMerge = "";
+					for (String wSubContent : wSubNoCommentContent) {
+						if (!wMerge.isEmpty()) {
+							wMerge = wMerge + ",";
+						}
+						wMerge = wMerge + wSubContent;
+					}
 					wResolvContent = checkIsJson(wResolvContentStr.replace(
-							wMatch.toString(),
-							"["
-									+ wSubNoCommentContent.stream().collect(
-											Collectors.joining(",")) + "]"));
+							wMatch.toString(), "[" + wMerge + "]"));
 				}
 
 			}
