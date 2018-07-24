@@ -16,7 +16,7 @@ public class CXLoggerUtils {
 
 	/**
 	 * <pre>
-	-Djava.util.logging.SimpleFormatter.format=\"%1$tY/%1$tm/%1$td %1$tH-%1$tM-%1$tS.%1$tL|%3$30.30s|%4$8.8s| %5$s%6$s%n\"";
+	 * 	-Djava.util.logging.SimpleFormatter.format=\"%1$tY/%1$tm/%1$td %1$tH-%1$tM-%1$tS.%1$tL|%3$30.30s|%4$8.8s| %5$s%6$s%n\"";
 	 * </pre>
 	 */
 	public static final String SIMPLE_FORMATTER_CONFIG = "%1$tY/%1$tm/%1$td %1$tH-%1$tM-%1$tS.%1$tL|%3$30.30s|%4$8.8s| %5$s%6$s%n";
@@ -84,8 +84,7 @@ public class CXLoggerUtils {
 	 * @return
 	 */
 	public static String logBanner(final IActivityLogger aLogger, final Level aLevel, final Object aWho,
-			final String aWhat, final char aChar, final boolean aInterline, final String aFormat,
-			final Object... aArgs) {
+			final String aWhat, final char aChar, final boolean aInterline, final String aFormat, final Object... aArgs) {
 
 		final String wBanner = CXLoggerUtils.buildBanner(aChar, aInterline, String.format(aFormat, aArgs));
 
@@ -128,7 +127,7 @@ public class CXLoggerUtils {
 	 */
 	public static String logBannerInfo(final IActivityLogger aLogger, final Object aWho, final String aWhat,
 			final char aChar, final boolean aInterline, final String aFormat, final Object... aArgs) {
-		return logBanner(aLogger, Level.INFO, aWho, aWhat, aFormat, aArgs);
+		return logBanner(aLogger, Level.INFO, aWho, aWhat, aChar, aInterline, aFormat, aArgs);
 	}
 
 	/**
@@ -147,15 +146,15 @@ public class CXLoggerUtils {
 
 	/**
 	 * <pre>
-	############################################################################################################################################
-	#
-	# THE SIMPLE FORMATTER ISN'T CONFIFGURED
-	#
-	# You have to set the system property [java.util.logging.SimpleFormatter.format]
-	#
-	# eg. -Djava.util.logging.SimpleFormatter.format="%1$tY/%1$tm/%1$td %1$tH-%1$tM-%1$tS.%1$tL|%3$30.30s|%4$8.8s| %5$s%6$s%n" 
-	#
-	############################################################################################################################################
+	 * 	############################################################################################################################################
+	 * 	#
+	 * 	# THE SIMPLE FORMATTER ISN'T CONFIFGURED
+	 * 	#
+	 * 	# You have to set the system property [java.util.logging.SimpleFormatter.format]
+	 * 	#
+	 * 	# eg. -Djava.util.logging.SimpleFormatter.format="%1$tY/%1$tm/%1$td %1$tH-%1$tM-%1$tS.%1$tL|%3$30.30s|%4$8.8s| %5$s%6$s%n" 
+	 * 	#
+	 * 	############################################################################################################################################
 	 * </pre>
 	 */
 	public static void logBannerSimpleFormatter(final IActivityLogger aLogger, final Object aWho, final String aWhat) {
