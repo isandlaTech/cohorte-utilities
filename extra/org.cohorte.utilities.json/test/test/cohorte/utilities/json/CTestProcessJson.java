@@ -54,6 +54,7 @@ public class CTestProcessJson extends TestCase {
 			{ "module_slashStarComment.js", "noComment.js" },
 			{ "module_allComment.js", "noComment.js" },
 			{ "module_testDef.js", "testDef.js" },
+
 			{ "module_allCommentAndFile.js", "noComment2.js" },
 			{ "module_allCommentAndFileWithPath.js", "noComment2.js" },
 
@@ -67,7 +68,8 @@ public class CTestProcessJson extends TestCase {
 			{ "deploy_world.js", "deploy_world.js" },
 			{
 					"deploy_world.js?deploy.subdomain=grandest&deploy.ip=80.80.80.80",
-					"deploy_world_with_properties.js" } };
+					"deploy_world_with_properties.js" },
+			{ "test_replace_vars.js?var=test", "test_replace_vars.js" } };
 
 	@BeforeClass
 	public static void setup() {

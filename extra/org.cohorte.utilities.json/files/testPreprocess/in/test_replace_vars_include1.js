@@ -2,7 +2,7 @@
 	
 
 	"article" : {
-		"test":"other",
+		"test": "${var}",
 		"GED" :"testGED",
 		"Panoramap" :"testPanoramap",
 		"Planning" :{
@@ -11,6 +11,11 @@
 		}
 	},
 	"detail" : 
-		{}
+		{
+			"$file":{
+				"path":"test_replace_vars_include2.js",
+				"cond":"'${var}' == 'test'"
+			}
+		}
 
 }

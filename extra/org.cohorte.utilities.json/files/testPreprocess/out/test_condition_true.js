@@ -1,5 +1,6 @@
 {
 	"article": {
+		"test":"test",
 		"GED": "testGED",
 		"Panoramap": "testPanoramap",
 		"Planning": {

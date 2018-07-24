@@ -55,14 +55,14 @@ public class CXRsrcGeneratorProvider extends CXRsrcProvider {
 				Matcher wMatcher = pPatternJsonPath.matcher(wReplaceValue);
 				while (wMatcher.find()) {
 					String wMatch = wMatcher.group();
-					pActivityLogger.logInfo(this, "applyGenerator",
+					pActivityLogger.logDebug(this, "applyGenerator",
 							"jsonPath found jsonPath=[%s]", wMatch);
 
 					// preprocess the match to see on which father to apply the
 					// jsonpath
 					String wObj = "";
 					if (aListOfFatherJson == null) {
-						pActivityLogger.logInfo(this, "applyGenerator",
+						pActivityLogger.logDebug(this, "applyGenerator",
 								"no father, apply on current object");
 						// can't be applied no father setted
 						wObj = applyJsonPath(aGenerator.toString(), wMatch);

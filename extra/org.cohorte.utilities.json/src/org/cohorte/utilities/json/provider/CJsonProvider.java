@@ -231,7 +231,8 @@ public class CJsonProvider implements IJsonProvider {
 	}
 
 	public JSONArray getJSONArray(final String currentPath,
-			final JSONArray aUnresolvedJson) throws Exception {
+			final JSONArray aUnresolvedJson,
+			final Map<String, String> aReplaceVars) throws Exception {
 
 		// preprocess content
 
@@ -240,11 +241,12 @@ public class CJsonProvider implements IJsonProvider {
 
 		// resolve file and http and call handle for mem cache
 		Object wResolvedString = resolveInclude(currentPath, aUnresolvedJson,
-				pInitCacheHandler == null, new ArrayList<JSONObject>());
+				pInitCacheHandler == null, new ArrayList<JSONObject>(),
+				aReplaceVars);
 		if (pInitCacheHandler != null) {
 			// call wit memory resolution only
 			wResolvedString = resolveInclude(currentPath, wResolvedString,
-					true, new ArrayList<JSONObject>());
+					true, new ArrayList<JSONObject>(), aReplaceVars);
 		}
 		if (wResolvedString instanceof JSONArray) {
 			return (JSONArray) wResolvedString;
@@ -272,7 +274,7 @@ public class CJsonProvider implements IJsonProvider {
 				// check include content that must be resolve
 				wArr.put(wNotCommentJson);
 			}
-			return getJSONArray(aPath, wArr);
+			return getJSONArray(aPath, wArr, null);
 		}
 		return null;
 	}
@@ -289,7 +291,7 @@ public class CJsonProvider implements IJsonProvider {
 	public JSONObject getJSONObject(final JSONObject aUnresolvedJson)
 			throws Exception {
 
-		return getJSONObject(null, aUnresolvedJson);
+		return getJSONObject(null, aUnresolvedJson, null);
 	}
 
 	/**
@@ -316,7 +318,8 @@ public class CJsonProvider implements IJsonProvider {
 	 * @throws Exception
 	 */
 	public JSONObject getJSONObject(final String currentPath,
-			final JSONObject aUnresolvedJson) throws Exception {
+			final JSONObject aUnresolvedJson, final Map<String, String> wVars)
+			throws Exception {
 
 		// preprocess content
 
@@ -326,10 +329,11 @@ public class CJsonProvider implements IJsonProvider {
 
 		// resolve file and http and call handle for mem cache
 		Object wResolvedObj = resolveInclude(currentPath, aUnresolvedJson,
-				pInitCacheHandler == null, null);
+				pInitCacheHandler == null, null, wVars);
 		if (pInitCacheHandler != null) {
 			// call wit memory resolution only
-			wResolvedObj = resolveInclude(currentPath, wResolvedObj, true, null);
+			wResolvedObj = resolveInclude(currentPath, wResolvedObj, true,
+					null, wVars);
 		}
 		if (wResolvedObj instanceof JSONObject) {
 			return (JSONObject) wResolvedObj;
@@ -392,7 +396,8 @@ public class CJsonProvider implements IJsonProvider {
 			}
 			Object wNotCommentJson = checkIsJson(wNotComment);
 			// check include content that must be resolve
-			return getJSONObject(aFatherPath, (JSONObject) wNotCommentJson);
+			return getJSONObject(aFatherPath, (JSONObject) wNotCommentJson,
+					wVars);
 		}
 		return null;
 	}
@@ -523,7 +528,8 @@ public class CJsonProvider implements IJsonProvider {
 	 */
 	protected Object resolveInclude(final String currentPath,
 			final Object aContent, final boolean aUseMemoryProvider,
-			final List<JSONObject> aFathersContent) throws Exception {
+			final List<JSONObject> aFathersContent,
+			final Map<String, String> aReplaceVars) throws Exception {
 
 		List<JSONObject> wFathersContent = getListFather(aFathersContent,
 				aContent);
@@ -593,7 +599,16 @@ public class CJsonProvider implements IJsonProvider {
 								}
 								pLogger.logInfo(this, "resolveInclude",
 										"retrieve variable to replace from path");
-								replaceVars = getVariableFromPath(wPath);
+								replaceVars = aReplaceVars;
+								Map<String, String> wCurrentReplaceVars = getVariableFromPath(wPath);
+								if (wCurrentReplaceVars != null) {
+									if (replaceVars != null) {
+										replaceVars
+												.putAll(getVariableFromPath(wPath));
+									} else {
+										replaceVars = wCurrentReplaceVars;
+									}
+								}
 							}
 
 							// read the current object . we set the list of the
@@ -632,7 +647,8 @@ public class CJsonProvider implements IJsonProvider {
 									wSubNoCommentContent.add(resolveInclude(
 											getSubPath(wTag, wRsrc),
 											wValidContent, aUseMemoryProvider,
-											wFathersContent).toString());
+											wFathersContent, replaceVars)
+											.toString());
 								}
 
 							} else {
