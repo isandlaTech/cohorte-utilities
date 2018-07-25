@@ -15,4 +15,6 @@ Import-Package: com.jayway.jsonpath,
  org.psem2m.utilities.logging,
  org.psem2m.utilities.rsrc,
  org.psem2m.utilities.scripting
-Export-Package: org.cohorte.utilities.json.provider
+Export-Package: org.cohorte.utilities.json,
+ org.cohorte.utilities.json.provider,
+ org.cohorte.utilities.json.provider.rsrc

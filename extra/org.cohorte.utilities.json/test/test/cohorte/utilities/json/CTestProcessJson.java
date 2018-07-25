@@ -61,6 +61,7 @@ public class CTestProcessJson extends TestCase {
 			{ "module_allMultiPath.js", "noCommentMutliPath.js" },
 
 			{ "test_condition.js?var=test", "test_condition_true.js" },
+
 			{ "test_condition.js?var=other", "test_condition_false.js" },
 
 			{ "test_jsonpath_grandfather.js", "test_jsonpath_grandfather.js" },

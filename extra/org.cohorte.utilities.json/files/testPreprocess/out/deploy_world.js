@@ -15,7 +15,7 @@
 						"type": "exec",
 						"command": {
 							"interpreter": "docker",
-							"args": ["pull", "dimensions/helloWorld", "1.0.0"]
+							"args": ["pull", "dimensions/helloWorld:1.0.0"]
 						}
 					}, {
 						"id": "createhelloWorld",
@@ -41,7 +41,7 @@
 						"type": "exec",
 						"command": {
 							"interpreter": "docker",
-							"args": ["helloworld"],
+							"args": ["ps -a | grep helloworld | wc -l"],
 							"expected": "1"
 						}
 					}]
@@ -87,7 +87,7 @@
 						"type": "exec",
 						"command": {
 							"interpreter": "docker",
-							"args": ["pull", "dimensions/helloWorld", "1.0.0"]
+							"args": ["pull", "dimensions/helloWorld:1.0.0"]
 						}
 					}, {
 						"id": "createhelloWorld",
@@ -137,7 +137,7 @@
 					"type": "exec",
 					"command": {
 						"interpreter": "docker",
-						"args": ["pull", "dimensions/httpd", "1.0.0"]
+						"args": ["pull", "dimensions/httpd:1.0.0"]
 					}
 				}, {
 					"id": "createhttp",
@@ -167,7 +167,7 @@
 					"type": "exec",
 					"command": {
 						"interpreter": "docker",
-						"args": ["httpd"],
+						"args": ["ps -a | grep httpd | wc -l"],
 						"expected": "1"
 					}
 				}]
@@ -204,7 +204,7 @@
 					"type": "exec",
 					"command": {
 						"interpreter": "docker",
-						"args": ["pull", "dimensions/httpd", "1.0.0"]
+						"args": ["pull", "dimensions/httpd:1.0.0"]
 					}
 				}, {
 					"id": "createhttp",
@@ -256,7 +256,7 @@
 					"type": "exec",
 					"command": {
 						"interpreter": "docker",
-						"args": ["pull", "dimensions/tomcat", "1.0.0"]
+						"args": ["pull", "dimensions/tomcat:1.0.0"]
 					}
 				}, {
 					"id": "createtomcat",
@@ -282,7 +282,7 @@
 					"type": "exec",
 					"command": {
 						"interpreter": "docker",
-						"args": ["tomcat"],
+						"args": ["ps -a | grep tomcat | wc -l"],
 						"expected": "1"
 					}
 				}]
@@ -329,7 +329,7 @@
 					"type": "exec",
 					"command": {
 						"interpreter": "docker",
-						"args": ["pull", "dimensions/tomcat", "1.0.0"]
+						"args": ["pull", "dimensions/tomcat:1.0.0"]
 					}
 				}, {
 					"id": "createtomcat",
@@ -378,7 +378,7 @@
 					"type": "exec",
 					"command": {
 						"interpreter": "docker",
-						"args": ["pull", "dimensions/helloWorld", "1.0.0"]
+						"args": ["pull", "dimensions/helloWorld:1.0.0"]
 					}
 				}, {
 					"id": "createhelloWorld",
@@ -404,7 +404,7 @@
 					"type": "exec",
 					"command": {
 						"interpreter": "docker",
-						"args": ["helloworld"],
+						"args": ["ps -a | grep helloworld | wc -l"],
 						"expected": "1"
 					}
 				}]
@@ -450,7 +450,7 @@
 					"type": "exec",
 					"command": {
 						"interpreter": "docker",
-						"args": ["pull", "dimensions/helloWorld", "1.0.0"]
+						"args": ["pull", "dimensions/helloWorld:1.0.0"]
 					}
 				}, {
 					"id": "createhelloWorld",
@@ -493,7 +493,7 @@
 					"type": "exec",
 					"command": {
 						"interpreter": "docker",
-						"args": ["pull", "dimensions/mysql", "1.0.0"]
+						"args": ["pull", "dimensions/mysql:1.0.0"]
 					}
 				}, {
 					"id": "createmysql",
@@ -519,7 +519,7 @@
 					"type": "exec",
 					"command": {
 						"interpreter": "docker",
-						"args": ["mysql"],
+						"args": ["ps -a | grep mysql | wc -l"],
 						"expected": "1"
 					}
 				}]
@@ -556,7 +556,7 @@
 					"type": "exec",
 					"command": {
 						"interpreter": "docker",
-						"args": ["pull", "dimensions/mysql", "1.0.0"]
+						"args": ["pull", "dimensions/mysql:1.0.0"]
 					}
 				}, {
 					"id": "createmysql",

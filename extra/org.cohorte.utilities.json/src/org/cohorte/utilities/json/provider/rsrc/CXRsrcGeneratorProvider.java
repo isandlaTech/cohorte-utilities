@@ -93,17 +93,23 @@ public class CXRsrcGeneratorProvider extends CXRsrcProvider {
 						Matcher wMatcher = pPatternJsonPath
 								.matcher((String) wElem);
 						boolean wHasMatch = false;
+						String wReplaceString = (String) wElem;
 						while (wMatcher.find()) {
 							wHasMatch = true;
 							String wMatch = wMatcher.group();
 							Pair<String, JSONObject> wTuple = getFather(wMatch,
 									aListOfFatherJson);
-							wReplaceArrayValue
-									.put(applyJsonPath(wTuple.getValue1()
-											.toString(), wTuple.getValue0()));
+							wReplaceString = wReplaceString.replace(
+									wMatch,
+									applyJsonPath(
+											wTuple.getValue1().toString(),
+											wTuple.getValue0()));
 						}
 						if (!wHasMatch) {// we add the current value
 							wReplaceArrayValue.put(wElem);
+						} else {
+							wReplaceArrayValue.put(wReplaceString);
+
 						}
 					}
 				}
