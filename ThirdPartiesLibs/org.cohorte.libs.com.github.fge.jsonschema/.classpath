@@ -5,13 +5,15 @@
 	<classpathentry exported="true" kind="lib" path="lib/hamcrest-library-1.3.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="src" path="src/"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry exported="true" kind="lib" path="lib/json-schema-validator-2.2.6-lib.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/automaton-1.11.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/generex-1.0.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/json-core-1.1.0-alpha1-fix.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/json-generator-1.1.0-alpha1-fix.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/json-schema-1.1.0-alpha1-fix.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/json-core-1.1.0-alpha1-fix.jar" sourcepath="/json-core"/>
+	<classpathentry exported="true" kind="lib" path="lib/json-generator-1.1.0-alpha1-fix.jar" sourcepath="/json-generator"/>
+	<classpathentry exported="true" kind="lib" path="lib/json-schema-1.1.0-alpha1-fix.jar" sourcepath="/json-schema"/>
 	<classpathentry exported="true" kind="lib" path="lib/json-wrapper-1.1.0-alpha1-fix.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
