@@ -10,7 +10,7 @@
 	},
 	"detail": {
 		"id": "value",
-		"formatFather": "testGED:testPanoramap and true",
+		"formatFather": "testGED:testPanoramap and true ",
 		"formatGrandFather": "testGED and testPanoramap and true",
 		"test": ["testGED", "testPanoramap"]
 	}

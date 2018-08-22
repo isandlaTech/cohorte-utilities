@@ -122,8 +122,15 @@ public class CXRsrcGeneratorProvider extends CXRsrcProvider {
 	}
 
 	private String applyJsonPath(final String aJson, final String aJsonPath) {
-		Object wObj = JsonPath.read(aJson, aJsonPath);
-		return wObj.toString();
+		try {
+			Object wObj = JsonPath.read(aJson, aJsonPath);
+			return wObj.toString();
+		} catch (Exception e) {
+			pActivityLogger.logWarn(this, "applyJsonPath",
+					"jsonPath can't %s be apply ! return empty string",
+					aJsonPath);
+			return "";
+		}
 	}
 
 	@Override

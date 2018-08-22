@@ -328,8 +328,10 @@ public class CJsonProvider implements IJsonProvider {
 				"preprocess resolve subcontent ");
 
 		// resolve file and http and call handle for mem cache
+		List<JSONObject> wListFather = new ArrayList<>();
+		wListFather.add(aUnresolvedJson);
 		Object wResolvedObj = resolveInclude(currentPath, aUnresolvedJson,
-				pInitCacheHandler == null, null, wVars);
+				pInitCacheHandler == null, wListFather, wVars);
 		if (pInitCacheHandler != null) {
 			// call wit memory resolution only
 			wResolvedObj = resolveInclude(currentPath, wResolvedObj, true,
