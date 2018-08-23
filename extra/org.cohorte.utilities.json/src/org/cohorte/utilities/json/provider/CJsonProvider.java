@@ -392,10 +392,10 @@ public class CJsonProvider implements IJsonProvider {
 			String wNotComment = removeComment(aContent);
 			// replace vars regarding the variable set in the path
 			Map<String, String> wVars = getVariableFromPath(wPath);
-			if (wVars != null) {
-				wNotComment = CXStringUtils.replaceVariables(wNotComment,
-						wVars, "");
-			}
+
+			wNotComment = CXStringUtils
+					.replaceVariables(wNotComment, wVars, "");
+
 			Object wNotCommentJson = checkIsJson(wNotComment);
 			// check include content that must be resolve
 			return getJSONObject(aFatherPath, (JSONObject) wNotCommentJson,
