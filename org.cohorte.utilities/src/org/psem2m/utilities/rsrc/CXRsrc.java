@@ -13,7 +13,7 @@ import org.psem2m.utilities.scripting.CXJsObjectBase;
  */
 public abstract class CXRsrc<ClassContent> extends CXJsObjectBase {
 
-	private ClassContent pContent = null;
+	protected ClassContent pContent = null;
 	// file://fdalbop/d$/Public/ex3subkey.ini ou
 	// http://intradon.ech.adx:1898/index.html
 	private CXRsrcUriPath pPath = null;

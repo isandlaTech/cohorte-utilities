@@ -71,6 +71,9 @@ public class CTestProcessJson extends TestCase {
 					"deploy_world.js?deploy.subdomain=grandest&deploy.ip=80.80.80.80",
 					"deploy_world_with_properties.js" },
 			{ "test_replace_vars.js?var=test", "test_replace_vars.js" },
+
+			{ "test_array_of_array.js", "test_array_of_array.js" },
+
 			{ "test_generator_include.js?var=test", "test_generator_include.js" } };
 
 	@BeforeClass
@@ -130,6 +133,10 @@ public class CTestProcessJson extends TestCase {
 			JSONObject in = pProvider.getJSONObject("$file", testFiles[0]);
 
 			JSONObject out = new JSONObject(wFileOut.readAll());
+			System.out.println("------");
+			System.out.println("in = " + testFiles[0]);
+			System.out.println("out = " + testFiles[1]);
+
 			System.out.println("------");
 
 			System.out.println(in.toString());

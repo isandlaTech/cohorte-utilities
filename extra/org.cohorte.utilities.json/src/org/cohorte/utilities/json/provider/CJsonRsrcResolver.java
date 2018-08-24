@@ -8,14 +8,18 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.cohorte.utilities.json.provider.rsrc.CXRsrcGeneratorProvider;
+import org.psem2m.utilities.json.JSONArray;
 import org.psem2m.utilities.json.JSONObject;
 import org.psem2m.utilities.rsrc.CXListRsrcText;
 import org.psem2m.utilities.rsrc.CXRsrcProvider;
 import org.psem2m.utilities.rsrc.CXRsrcProviderFile;
 import org.psem2m.utilities.rsrc.CXRsrcProviderHttp;
 import org.psem2m.utilities.rsrc.CXRsrcProviderMemory;
+import org.psem2m.utilities.rsrc.CXRsrcText;
 
 public class CJsonRsrcResolver implements IJsonRsrcResolver {
 
@@ -59,12 +63,58 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 		}
 	}
 
+	private static final Pattern pPatternAll = Pattern.compile(
+			"(/\\*+((\n|\\s|\t)*[^\\*][^/](\n|\\s|\t)*)*\\*+/)|(.*//.*$)",
+
+			Pattern.MULTILINE);
+
+	private static final Pattern pPatternCheck = Pattern.compile(
+			"(/\\*+((\n|\\s|\t)*[^\\*][^/](\n|\\s|\t)*)*\\*+/)",
+			Pattern.MULTILINE);
+
+	private static final Pattern pPatternCheckSlash = Pattern.compile(
+			"(\".*//.*\")", Pattern.MULTILINE);
+
+	/**
+	 * return a string where all subcontent that are identified by a specific id
+	 * in aContent are resolved without comment
+	 *
+	 * @param aContent
+	 * @return
+	 */
+
+	protected static String removeComment(final String aContent) {
+
+		String wNoComment = aContent;
+		if (wNoComment != null) {
+			Matcher wMatcher = pPatternAll.matcher(wNoComment);
+
+			while (wMatcher.find()) {
+				for (int i = 0; i < wMatcher.groupCount(); i++) {
+					String wStr = wMatcher.group(i);
+
+					if (wStr != null
+							&& wStr.indexOf("/") != -1
+							&& (!pPatternCheckSlash.matcher(wStr).find() || pPatternCheck
+									.matcher(wStr).find())) {
+						int idx = wStr.indexOf("/");
+						wNoComment = wNoComment.replace(
+								wStr.substring(idx != -1 ? idx : 0), "");
+
+					}
+				}
+			}
+
+		}
+		return wNoComment;
+	}
+
 	// can only have none memory provider by tag
 	private final Map<String, CXRsrcProviderMemory> pListMemoryProviderByTag;
 
-	private final Map<String, Map<Integer, CXRsrcProvider>> pListProviderByTag;
-
 	// identified directly the memory providers due to memory cache init
+
+	private final Map<String, Map<Integer, CXRsrcProvider>> pListProviderByTag;
 
 	public CJsonRsrcResolver() {
 		pListProviderByTag = new Hashtable<>();
@@ -183,9 +233,41 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 				CXListRsrcText wRsrcList = new CXListRsrcText();
 				wRsrcList.add(((CXRsrcGeneratorProvider) aProvider)
 						.rsrcReadTxt(wValidContentId, aListFather));
+				for (int i = 0; i < wRsrcList.size(); i++) {
+					CXRsrcText wRsrc = wRsrcList.get(i);
+					String wCommentedJSON = wRsrc.getContent();
+					String wNoComment = removeComment(wCommentedJSON);
+					wRsrc.setContent(wNoComment);
+				}
 				return wRsrcList;
 			} else {
-				return aProvider.rsrcReadTxts(wValidContentId);
+				// check if we ask for a JSON Array element
+				boolean wWantSubArrayElem = wValidContentId.endsWith("]");
+				CXListRsrcText wList;
+				if (wWantSubArrayElem) {
+					wList = aProvider.rsrcReadTxts(wValidContentId.substring(0,
+							wValidContentId.indexOf("[")));
+				} else {
+					wList = aProvider.rsrcReadTxts(wValidContentId);
+				}
+				// alter content of each RsrcText to only set the
+				// subcontains asked
+				for (int i = 0; i < wList.size(); i++) {
+					CXRsrcText wRsrc = wList.get(i);
+					String wCommentedJSON = wRsrc.getContent();
+					String wNoComment = removeComment(wCommentedJSON);
+					if (wWantSubArrayElem) {
+						int wIndex = Integer.parseInt(wValidContentId
+								.substring(wValidContentId.length() - 2,
+										wValidContentId.length() - 1));
+						JSONArray wJSon = new JSONArray(wNoComment);
+						wNoComment = wJSon.opt(wIndex).toString();
+					}
+
+					wRsrc.setContent(wNoComment);
+				}
+
+				return wList;
 			}
 		}
 		return null;

@@ -31,7 +31,7 @@ public class CXRsrcGeneratorProvider extends CXRsrcProvider {
 	private final IActivityLogger pActivityLogger;
 
 	private final Pattern pPatternJsonPath = Pattern.compile(
-			"\\$(\\(\\^?(\\.|\\/)*\\))?(\\.\\w*(\\[\\d\\])?)*",
+			"\\$(\\(\\^?(\\.|\\/)*\\))?(\\.\\w*(\\[\\d\\])?)+",
 			Pattern.MULTILINE);
 
 	public CXRsrcGeneratorProvider(final IActivityLogger aLogger) {
@@ -50,75 +50,84 @@ public class CXRsrcGeneratorProvider extends CXRsrcProvider {
 		JSONObject wApplied = new JSONObject();
 		for (String aProp : aGenerator.keySet()) {
 			Object wValue = aGenerator.opt(aProp);
-			if (wValue instanceof String) {
-				String wReplaceValue = (String) wValue;
-				Matcher wMatcher = pPatternJsonPath.matcher(wReplaceValue);
-				while (wMatcher.find()) {
-					String wMatch = wMatcher.group();
-					pActivityLogger.logDebug(this, "applyGenerator",
-							"jsonPath found jsonPath=[%s]", wMatch);
-
-					// preprocess the match to see on which father to apply the
-					// jsonpath
-					String wObj = "";
-					if (aListOfFatherJson == null) {
-						pActivityLogger.logDebug(this, "applyGenerator",
-								"no father, apply on current object");
-						// can't be applied no father setted
-						wObj = applyJsonPath(aGenerator.toString(), wMatch);
-					} else {
-						Pair<String, JSONObject> wTuple = getFather(wMatch,
-								aListOfFatherJson);
-						wObj = applyJsonPath(wTuple.getValue1().toString(),
-								wTuple.getValue0());
-
-					}
-					wReplaceValue = wReplaceValue.replace(wMatch, wObj);
-
-				}
-				wApplied.put(aProp, wReplaceValue);
-			} else if (wValue instanceof JSONObject) {
-				wApplied.put(aProp,
-						applyGenerator((JSONObject) wValue, aListOfFatherJson));
-
-			} else if (wValue instanceof JSONArray) {
-				JSONArray wArrayValue = (JSONArray) wValue;
-				JSONArray wReplaceArrayValue = new JSONArray();
-				for (int i = 0; i < wArrayValue.length(); i++) {
-					Object wElem = wArrayValue.opt(i);
-					if (wElem instanceof JSONObject) {
-						wReplaceArrayValue.put(applyGenerator(
-								(JSONObject) wElem, aListOfFatherJson));
-					} else if (wElem instanceof String) {
-						Matcher wMatcher = pPatternJsonPath
-								.matcher((String) wElem);
-						boolean wHasMatch = false;
-						String wReplaceString = (String) wElem;
-						while (wMatcher.find()) {
-							wHasMatch = true;
-							String wMatch = wMatcher.group();
-							Pair<String, JSONObject> wTuple = getFather(wMatch,
-									aListOfFatherJson);
-							wReplaceString = wReplaceString.replace(
-									wMatch,
-									applyJsonPath(
-											wTuple.getValue1().toString(),
-											wTuple.getValue0()));
-						}
-						if (!wHasMatch) {// we add the current value
-							wReplaceArrayValue.put(wElem);
-						} else {
-							wReplaceArrayValue.put(wReplaceString);
-
-						}
-					}
-				}
-				wApplied.put(aProp, wReplaceArrayValue);
-			} else {
-				wApplied.put(aProp, wValue);
-			}
+			applyGeneratorProperties(wApplied, aProp, aGenerator, wValue,
+					aListOfFatherJson);
 		}
 		return wApplied;
+	}
+
+	private void applyGeneratorProperties(final JSONObject aApplied,
+			final String aProp, final JSONObject aGenerator,
+			final Object aValue, final List<JSONObject> aListOfFatherJson)
+			throws JSONException {
+		if (aValue instanceof String) {
+			String wReplaceValue = (String) aValue;
+			Matcher wMatcher = pPatternJsonPath.matcher(wReplaceValue);
+			while (wMatcher.find()) {
+				String wMatch = wMatcher.group();
+				pActivityLogger.logDebug(this, "applyGenerator",
+						"jsonPath found jsonPath=[%s]", wMatch);
+
+				// preprocess the match to see on which father to apply the
+				// jsonpath
+				String wObj = "";
+				if (aListOfFatherJson == null) {
+					pActivityLogger.logDebug(this, "applyGenerator",
+							"no father, apply on current object");
+					// can't be applied no father setted
+					wObj = applyJsonPath(aGenerator.toString(), wMatch);
+				} else {
+					Pair<String, JSONObject> wTuple = getFather(wMatch,
+							aListOfFatherJson);
+					wObj = applyJsonPath(wTuple.getValue1().toString(),
+							wTuple.getValue0());
+
+				}
+				wReplaceValue = wReplaceValue.replace(wMatch, wObj);
+
+			}
+			aApplied.put(aProp, wReplaceValue);
+		} else if (aValue instanceof JSONObject) {
+			aApplied.put(aProp,
+					applyGenerator((JSONObject) aValue, aListOfFatherJson));
+
+		} else if (aValue instanceof JSONArray) {
+			JSONArray wArrayValue = (JSONArray) aValue;
+			JSONArray wReplaceArrayValue = new JSONArray();
+			for (int i = 0; i < wArrayValue.length(); i++) {
+				Object wElem = wArrayValue.opt(i);
+				if (wElem instanceof JSONObject) {
+					wReplaceArrayValue.put(applyGenerator((JSONObject) wElem,
+							aListOfFatherJson));
+				} else if (wElem instanceof JSONArray) {
+					applyGeneratorProperties(aApplied, aProp, aGenerator,
+							wElem, aListOfFatherJson);
+				} else if (wElem instanceof String) {
+					Matcher wMatcher = pPatternJsonPath.matcher((String) wElem);
+					boolean wHasMatch = false;
+					String wReplaceString = (String) wElem;
+					while (wMatcher.find()) {
+						wHasMatch = true;
+						String wMatch = wMatcher.group();
+						Pair<String, JSONObject> wTuple = getFather(wMatch,
+								aListOfFatherJson);
+						wReplaceString = wReplaceString.replace(
+								wMatch,
+								applyJsonPath(wTuple.getValue1().toString(),
+										wTuple.getValue0()));
+					}
+					if (!wHasMatch) {// we add the current value
+						wReplaceArrayValue.put(wElem);
+					} else {
+						wReplaceArrayValue.put(wReplaceString);
+
+					}
+				}
+			}
+			aApplied.put(aProp, wReplaceArrayValue);
+		} else {
+			aApplied.put(aProp, aValue);
+		}
 	}
 
 	private String applyJsonPath(final String aJson, final String aJsonPath) {

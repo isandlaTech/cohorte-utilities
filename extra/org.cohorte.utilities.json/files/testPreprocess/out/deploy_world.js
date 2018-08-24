@@ -121,9 +121,9 @@
 		}]
 	},
 	"deploy": {
-		"subdomain": "${deploy.subdomain}",
-		"fqdn": "${deploy.subdomain}.agilium.cloud",
-		"ip": "${deploy.ip}"
+		"subdomain": "",
+		"fqdn": ".agilium.cloud",
+		"ip": ""
 	},
 	"components": [{
 		"id": "http",

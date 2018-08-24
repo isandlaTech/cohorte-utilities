@@ -17,7 +17,13 @@
 					"path":"test_replace_vars_include1.js?test=$(..).article.ged&test2=$(..).article.ged",
 					"cond":"'${var}' == '$(..).article.test'"
 				}
-			}
+			},
+			
+		},
+	"test":{
+		"$generator":{
+			"test":"$1"
 		}
+	}
 
 }

@@ -8,8 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.cohorte.utilities.json.provider.CJsonRsrcResolver.EProviderKind;
 import org.psem2m.utilities.CXQueryString;
@@ -52,18 +50,6 @@ public class CJsonProvider implements IJsonProvider {
 	List<Properties> pListProperties;
 
 	private final IActivityLogger pLogger;
-
-	private final Pattern pPatternAll = Pattern.compile(
-			"(/\\*+((\n|\\s|\t)*[^\\*][^/](\n|\\s|\t)*)*\\*+/)|(.*//.*$)",
-
-			Pattern.MULTILINE);
-
-	private final Pattern pPatternCheck = Pattern.compile(
-			"(/\\*+((\n|\\s|\t)*[^\\*][^/](\n|\\s|\t)*)*\\*+/)",
-			Pattern.MULTILINE);
-
-	private final Pattern pPatternCheckSlash = Pattern.compile("(\".*//.*\")",
-			Pattern.MULTILINE);
 
 	// use for evaluate condition
 	CXJsManager pScriptRunner;
@@ -269,8 +255,7 @@ public class CJsonProvider implements IJsonProvider {
 			for (CXRsrcText wRsrc : wRsrcs) {
 				String aContent = wRsrc.getContent();
 
-				String wNotComment = removeComment(aContent);
-				Object wNotCommentJson = checkIsJson(wNotComment);
+				Object wNotCommentJson = checkIsJson(aContent);
 				// check include content that must be resolve
 				wArr.put(wNotCommentJson);
 			}
@@ -387,9 +372,8 @@ public class CJsonProvider implements IJsonProvider {
 		if (wRsrcs != null && wRsrcs.size() > 0) {
 			// we get only the first one
 			CXRsrcText wRsrc = wRsrcs.get(0);
-			String aContent = wRsrc.getContent();
+			String wNotComment = wRsrc.getContent();
 
-			String wNotComment = removeComment(aContent);
 			// replace vars regarding the variable set in the path
 			Map<String, String> wVars = getVariableFromPath(wPath);
 
@@ -446,7 +430,6 @@ public class CJsonProvider implements IJsonProvider {
 		String wSubContent = aRsrc.getContent();
 
 		// remove comment
-		wSubContent = removeComment(wSubContent);
 		Object wSubContentObj = null;
 		// check if it's json
 		try {
@@ -482,40 +465,6 @@ public class CJsonProvider implements IJsonProvider {
 			// call the initCache memory
 			pInitCacheHandler.initCache(aValidContent, wMemProv);
 		}
-	}
-
-	/**
-	 * return a string where all subcontent that are identified by a specific id
-	 * in aContent are resolved without comment
-	 *
-	 * @param aContent
-	 * @return
-	 */
-
-	protected String removeComment(final String aContent) {
-
-		String wNoComment = aContent;
-		if (wNoComment != null) {
-			Matcher wMatcher = pPatternAll.matcher(wNoComment);
-
-			while (wMatcher.find()) {
-				for (int i = 0; i < wMatcher.groupCount(); i++) {
-					String wStr = wMatcher.group(i);
-
-					if (wStr != null
-							&& wStr.indexOf("/") != -1
-							&& (!pPatternCheckSlash.matcher(wStr).find() || pPatternCheck
-									.matcher(wStr).find())) {
-						int idx = wStr.indexOf("/");
-						wNoComment = wNoComment.replace(
-								wStr.substring(idx != -1 ? idx : 0), "");
-
-					}
-				}
-			}
-
-		}
-		return wNoComment;
 	}
 
 	/**

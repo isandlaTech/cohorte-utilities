@@ -35,5 +35,8 @@
 				"test": ["testGED", "testPanoramap"]
 			}
 		}
+	},
+	"test":{
+		"test":"$1"
 	}
 }
