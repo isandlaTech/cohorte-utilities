@@ -1,7 +1,6 @@
 package org.cohorte.utilities.json.provider.rsrc;
 
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -185,9 +184,8 @@ public class CXRsrcGeneratorProvider extends CXRsrcProvider {
 			// count how many ../ is present
 			int wFatherOffset = 0; // father offset from the end
 
-			if (wPath.contains("/")) {
-				wFatherOffset = Arrays.asList(wPath.split("/")).size();
-			}
+			wFatherOffset = wPath.length() - 4;
+
 			if (aListOfFather.size() - wFatherOffset >= 0) {
 
 				return Pair.with(wTuple.getValue0(),

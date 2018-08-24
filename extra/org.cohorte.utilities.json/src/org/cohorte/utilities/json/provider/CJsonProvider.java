@@ -526,10 +526,9 @@ public class CJsonProvider implements IJsonProvider {
 						wlPath = wlTagJson.optString(PATH);
 						wMustBeInclude = evaluateCondition(wlTagJson
 								.optString(COND));
-					}
-					if (wlPath == null || wlPath.isEmpty()) {
+					} else {
 						pLogger.logInfo(this, "resolveInclude",
-								"not a file include but another tag. we keep the jsonObject");
+								"not a file include Object but another tag. we keep the jsonObject");
 						wlPath = wlTag.toString();
 					}
 
@@ -541,7 +540,8 @@ public class CJsonProvider implements IJsonProvider {
 							if (!wPath.startsWith(EProviderKind.FILE.toString()
 									+ "/")) {
 								// we include te current path
-								if (currentPath != null) {
+								if (currentPath != null
+										&& !currentPath.isEmpty()) {
 									wPath = wPath.replace(
 											EProviderKind.FILE.toString(),
 											EProviderKind.FILE.toString()
@@ -565,7 +565,8 @@ public class CJsonProvider implements IJsonProvider {
 							// read the current object . we set the list of the
 							// father
 							CXListRsrcText wRsrcs = pJsonResolver.getContent(
-									wTag, wPath, aUseMemoryProvider,
+									wTag, wPath.isEmpty() ? wlTag.toString()
+											: wPath, aUseMemoryProvider,
 									aFathersContent);
 							if (wRsrcs != null && wRsrcs.size() > 0) {
 								for (CXRsrcText wRsrc : wRsrcs) {
@@ -595,8 +596,15 @@ public class CJsonProvider implements IJsonProvider {
 									// of father plus the current one that is
 									// his
 									// father
+									// add to manage the sub current path when
+									// we hae include in genreator (TODO enhance
+									// this mechanism)
+									String wCurrentPathInclude = wPath
+											.isEmpty() && currentPath != null ? currentPath
+											: "";
 									wSubNoCommentContent.add(resolveInclude(
-											getSubPath(wTag, wRsrc),
+											wCurrentPathInclude
+													+ getSubPath(wTag, wRsrc),
 											wValidContent, aUseMemoryProvider,
 											wFathersContent, replaceVars)
 											.toString());

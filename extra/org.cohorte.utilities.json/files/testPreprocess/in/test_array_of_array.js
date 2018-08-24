@@ -9,5 +9,8 @@
 			"$file":"test_array_of_array2.js[1]"
 		}]
 		
+	},
+	"docker":{
+		"name":"test"
 	}
 }

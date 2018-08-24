@@ -1,11 +1,1 @@
-{
-	"article" : {
-		"GED" :"testGED",
-		"Panoramap" :"testPanoramap",
-		"Planning" :
-			[	
-				{"id":"test1"},
-				{"id":"test2"}
-			]
-	}
-}
+{"article":{"GED":"testGED","Panoramap":"testPanoramap","Planning":[{"id":"writeshellcheck","component":"","state":"creating","type":"exec","command":{"interpreter":"file","location":"/root//shells/checktest","lines":["#!/bin/sh","res=`ps -a | grep test | wc -l`","echo res"]}},{"id":"check","component":"","state":"creating","type":"exec","command":{"interpreter":"shell","args":["sh","/root//shells/checktest"],"expected":"1"}}]},"docker":{"name":"test"}}

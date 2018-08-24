@@ -20,7 +20,7 @@
 		},
 		"detail": {
 			"article": {
-				"test": "test",
+				"test": "test2",
 				"GED": "testGED",
 				"Panoramap": "testPanoramap",
 				"Planning": {

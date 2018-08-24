@@ -48,33 +48,32 @@ public class CTestProcessJson extends TestCase {
 
 	public static @DataPoints String[][] testFiles = {
 
-			{ "module_empty.js", "empty.js" },
-			{ "module_noComment.js", "noComment.js" },
-			{ "module_slashComment.js", "noComment.js" },
-			{ "module_slashStarComment.js", "noComment.js" },
-			{ "module_allComment.js", "noComment.js" },
-			{ "module_testDef.js", "testDef.js" },
+	/*
+	 * { "module_empty.js", "empty.js" }, { "module_noComment.js",
+	 * "noComment.js" }, { "module_slashComment.js", "noComment.js" }, {
+	 * "module_slashStarComment.js", "noComment.js" }, { "module_allComment.js",
+	 * "noComment.js" }, { "module_testDef.js", "testDef.js" },
+	 * 
+	 * { "module_allCommentAndFile.js", "noComment2.js" }, {
+	 * "module_allCommentAndFileWithPath.js", "noComment2.js" },
+	 * 
+	 * { "module_allMultiPath.js", "noCommentMutliPath.js" },
+	 * 
+	 * { "test_condition.js?var=test", "test_condition_true.js" },
+	 * 
+	 * { "test_condition.js?var=other", "test_condition_false.js" },
+	 * 
+	 * { "test_jsonpath_grandfather.js", "test_jsonpath_grandfather.js" },
+	 * 
+	 * { "deploy_world.js", "deploy_world.js" }, {
+	 * "deploy_world.js?deploy.subdomain=grandest&deploy.ip=80.80.80.80",
+	 * "deploy_world_with_properties.js" }, { "test_replace_vars.js?var=test",
+	 * "test_replace_vars.js" },
+	 * 
+	 * { "test_array_of_array.js", "test_array_of_array.js" },
+	 */
 
-			{ "module_allCommentAndFile.js", "noComment2.js" },
-			{ "module_allCommentAndFileWithPath.js", "noComment2.js" },
-
-			{ "module_allMultiPath.js", "noCommentMutliPath.js" },
-
-			{ "test_condition.js?var=test", "test_condition_true.js" },
-
-			{ "test_condition.js?var=other", "test_condition_false.js" },
-
-			{ "test_jsonpath_grandfather.js", "test_jsonpath_grandfather.js" },
-
-			{ "deploy_world.js", "deploy_world.js" },
-			{
-					"deploy_world.js?deploy.subdomain=grandest&deploy.ip=80.80.80.80",
-					"deploy_world_with_properties.js" },
-			{ "test_replace_vars.js?var=test", "test_replace_vars.js" },
-
-			{ "test_array_of_array.js", "test_array_of_array.js" },
-
-			{ "test_generator_include.js?var=test", "test_generator_include.js" } };
+	{ "test_generator_include.js?var=test", "test_generator_include.js" } };
 
 	@BeforeClass
 	public static void setup() {

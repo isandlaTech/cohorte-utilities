@@ -13,8 +13,8 @@
 	"detail" : 
 		{
 			"$file":{
-				"path":"file://test_replace_vars_include2.js?var=test2",
-				"cond":"'${var}' == 'test'"
+				"path":"file:///test_jsonpath_son.js",
+				"cond":"'${var}' == 'test2'"
 			}
 		}
 
