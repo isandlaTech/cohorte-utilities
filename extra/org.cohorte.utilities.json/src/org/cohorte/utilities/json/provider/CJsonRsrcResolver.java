@@ -242,7 +242,7 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 				return wRsrcList;
 			} else {
 				// check if we ask for a JSON Array element
-				boolean wWantSubArrayElem = wValidContentId.endsWith("]");
+				boolean wWantSubArrayElem = wValidContentId.contains("]");
 				CXListRsrcText wList;
 				if (wWantSubArrayElem) {
 					wList = aProvider.rsrcReadTxts(wValidContentId.substring(0,
@@ -258,8 +258,8 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 					String wNoComment = removeComment(wCommentedJSON);
 					if (wWantSubArrayElem) {
 						int wIndex = Integer.parseInt(wValidContentId
-								.substring(wValidContentId.length() - 2,
-										wValidContentId.length() - 1));
+								.substring(wValidContentId.indexOf("[") + 1,
+										wValidContentId.indexOf("]")));
 						JSONArray wJSon = new JSONArray(wNoComment);
 						wNoComment = wJSon.opt(wIndex).toString();
 					}
