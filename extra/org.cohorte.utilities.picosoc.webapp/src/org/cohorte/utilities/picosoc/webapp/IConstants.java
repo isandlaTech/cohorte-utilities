@@ -1,7 +1,7 @@
 package org.cohorte.utilities.picosoc.webapp;
 
 public interface IConstants {
-	public final String NAME_SUBDIR_CONFIG_DOCKER = "webappconf";
+	public final String NAME_SUBDIR_CONFIG_DOCKER = "webappsconfs";
 
 	public final String NAME_DIR_CONFIG = "conf";
 	public final String NAME_DIR_CUSTOMERS = "_customer";

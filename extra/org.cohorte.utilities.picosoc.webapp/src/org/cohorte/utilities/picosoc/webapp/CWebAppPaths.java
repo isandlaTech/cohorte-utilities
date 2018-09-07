@@ -111,7 +111,7 @@ public class CWebAppPaths extends CAbstractComponentBase implements ISvcWebAppPa
 		String wConfDir = NAME_DIR_CONFIG + File.separatorChar + NAME_SUBDIR_CONFIG_DOCKER;
 
 		File wDir = new File(getDirDataRoot(), wConfDir);
-		if (wDir != null || !wDir.exists()) {
+		if (wDir == null || !wDir.exists()) {
 			wDir = new File(getDirDataRoot(), NAME_DIR_CONFIG);
 
 		}
