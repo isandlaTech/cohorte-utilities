@@ -35,8 +35,7 @@ import org.cohorte.utilities.picosoc.CComponentLoggerFile;
  * @author ogattaz
  *
  */
-public class CWebAppPaths extends CAbstractComponentBase implements
-		ISvcWebAppPaths {
+public class CWebAppPaths extends CAbstractComponentBase implements ISvcWebAppPaths {
 
 	private final String pPathCatalinaBase;
 	private final String pPathCatalinaHome;
@@ -61,21 +60,19 @@ public class CWebAppPaths extends CAbstractComponentBase implements
 		 */
 		pPathCatalinaBase = getPathFromSysProperty(PARAM_JVM_CATALINA_BASE);
 		/*
-		 * init the path of the Toolroot dir with the value of the system
-		 * property "org.cohorte.utilities.webapp.install.toolroot".
+		 * init the path of the Toolroot dir with the value of the system property
+		 * "org.cohorte.utilities.webapp.install.toolroot".
 		 * 
 		 * if this system property does'nt exist use the CatalinaBase dir
 		 */
-		pPathToolRoot = getPathFromSysProperty(PARAM_JVM_TOOLROOT,
-				getPathCatalinaBase());
+		pPathToolRoot = getPathFromSysProperty(PARAM_JVM_TOOLROOT, getPathCatalinaBase());
 		/*
-		 * init the path of the DataRoot dir with the value of the system
-		 * property "org.cohorte.utilities.webapp.install.dataroot"
+		 * init the path of the DataRoot dir with the value of the system property
+		 * "org.cohorte.utilities.webapp.install.dataroot"
 		 * 
 		 * if this system property does'nt exist use the CatalinaBase dir
 		 */
-		pPathDataRoot = getPathFromSysProperty(PARAM_JVM_DATAROOT,
-				getPathCatalinaBase());
+		pPathDataRoot = getPathFromSysProperty(PARAM_JVM_DATAROOT, getPathCatalinaBase());
 
 		// if OK
 		registerMeAsService(ISvcWebAppPaths.class);
@@ -103,37 +100,47 @@ public class CWebAppPaths extends CAbstractComponentBase implements
 	}
 
 	/*
+	 * MOD APISU - add subdirectory application in case of docker container
 	 * (non-Javadoc)
 	 *
 	 * @see com.isandlatech.webapp.utilities.ISvcX3WebUtils#getDirConfig()
 	 */
 	@Override
 	public File getDirConfig() throws Exception {
-		final File wDir = new File(getDirDataRoot(), NAME_DIR_CONFIG);
 
+		String wConfDir = NAME_DIR_CONFIG + File.separatorChar + NAME_SUBDIR_CONFIG_DOCKER;
+
+		File wDir = new File(getDirDataRoot(), wConfDir);
+		if (wDir != null || wDir.exists()) {
+			wDir = new File(getDirDataRoot(), NAME_DIR_CONFIG);
+
+		}
 		if (wDir == null || !wDir.exists()) {
-			throwUnknwonDir(wDir, NAME_DIR_CONFIG);
+			throwUnknwonDir(wDir, wConfDir);
 		}
 		return wDir;
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.cohorte.utilities.picosoc.webapp.ISvcWebAppPaths#getDirConfig(java.lang.String)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.cohorte.utilities.picosoc.webapp.ISvcWebAppPaths#getDirConfig(java.lang.
+	 * String)
 	 */
 	@Override
 	public File getDirConfig(String... aSubPaths) throws Exception {
-		
-		File wDir = getSubDir(getDirConfig(),aSubPaths);
-		
+
+		File wDir = getSubDir(getDirConfig(), aSubPaths);
+
 		if (!wDir.exists()) {
 			final boolean wDirCreated = wDir.mkdirs();
-			CComponentLoggerFile.logInMain(Level.INFO, CWebAppPaths.class,
-					"getDirConfig", "Dir=[%s] Created=[%b]",
+			CComponentLoggerFile.logInMain(Level.INFO, CWebAppPaths.class, "getDirConfig", "Dir=[%s] Created=[%b]",
 					wDir.getAbsolutePath(), wDirCreated);
 		}
 		return wDir;
 	}
-	
+
 	/**
 	 * @param aDir
 	 * @param aSubPaths
@@ -142,11 +149,10 @@ public class CWebAppPaths extends CAbstractComponentBase implements
 	 */
 	private File getSubDir(File aDir, final String... aSubPaths) throws Exception {
 
-		
 		if (!aDir.isDirectory()) {
-			throw new Exception (String.format("The passed dir isn't a directory", aDir));
+			throw new Exception(String.format("The passed dir isn't a directory", aDir));
 		}
-		
+
 		File wFile = aDir;
 
 		if (aSubPaths != null) {
@@ -159,7 +165,9 @@ public class CWebAppPaths extends CAbstractComponentBase implements
 		return wFile;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.cohorte.utilities.picosoc.webapp.ISvcWebAppPaths#getDirCustomers()
 	 */
 	@Override
@@ -186,8 +194,7 @@ public class CWebAppPaths extends CAbstractComponentBase implements
 	 * @return
 	 * @throws Exception
 	 */
-	private File getDirFromPath(String aPath, String aSyspropId)
-			throws Exception {
+	private File getDirFromPath(String aPath, String aSyspropId) throws Exception {
 
 		final File wFile = new File(aPath);
 		if (wFile == null || !wFile.exists() || !wFile.isDirectory()) {
@@ -207,8 +214,7 @@ public class CWebAppPaths extends CAbstractComponentBase implements
 
 		if (!wDir.exists()) {
 			final boolean wDirCreated = wDir.mkdirs();
-			CComponentLoggerFile.logInMain(Level.INFO, CWebAppPaths.class,
-					"getDirLogs", "Dir=[%s] Created=[%b]",
+			CComponentLoggerFile.logInMain(Level.INFO, CWebAppPaths.class, "getDirLogs", "Dir=[%s] Created=[%b]",
 					wDir.getAbsolutePath(), wDirCreated);
 		}
 		return wDir;
@@ -217,8 +223,7 @@ public class CWebAppPaths extends CAbstractComponentBase implements
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see
-	 * com.isandlatech.webapp.utilities.ISvcX3WebUtils#getDirLogs(java.lang.
+	 * @see com.isandlatech.webapp.utilities.ISvcX3WebUtils#getDirLogs(java.lang.
 	 * String)
 	 */
 	@Override
@@ -227,8 +232,7 @@ public class CWebAppPaths extends CAbstractComponentBase implements
 
 		if (!wDir.exists()) {
 			final boolean wDirCreated = wDir.mkdirs();
-			CComponentLoggerFile.logInMain(Level.INFO, CWebAppPaths.class,
-					"getDirLogs", "Dir=[%s] Created=[%b]",
+			CComponentLoggerFile.logInMain(Level.INFO, CWebAppPaths.class, "getDirLogs", "Dir=[%s] Created=[%b]",
 					wDir.getAbsolutePath(), wDirCreated);
 		}
 		return wDir;
@@ -237,8 +241,7 @@ public class CWebAppPaths extends CAbstractComponentBase implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.cohorte.utilities.picosoc.webapp.ISvcWebAppPaths#getDirLogsTomcat()
+	 * @see org.cohorte.utilities.picosoc.webapp.ISvcWebAppPaths#getDirLogsTomcat()
 	 */
 	@Override
 	public File getDirLogsTomcat() throws Exception {
@@ -257,8 +260,7 @@ public class CWebAppPaths extends CAbstractComponentBase implements
 
 		if (!wDir.exists()) {
 			final boolean wDirCreated = wDir.mkdirs();
-			CComponentLoggerFile.logInMain(Level.INFO, CWebAppPaths.class,
-					"getDirTemp", "Dir=[%s] Created=[%b]",
+			CComponentLoggerFile.logInMain(Level.INFO, CWebAppPaths.class, "getDirTemp", "Dir=[%s] Created=[%b]",
 					wDir.getAbsolutePath(), wDirCreated);
 		}
 		return wDir;
@@ -267,8 +269,7 @@ public class CWebAppPaths extends CAbstractComponentBase implements
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see
-	 * org.cohorte.utilities.picosoc.webapp.ISvcWebAppPaths#getDirTempTomcat()
+	 * @see org.cohorte.utilities.picosoc.webapp.ISvcWebAppPaths#getDirTempTomcat()
 	 */
 	@Override
 	public File getDirTempTomcat() throws Exception {
@@ -276,8 +277,7 @@ public class CWebAppPaths extends CAbstractComponentBase implements
 		final File wDirTemp = new File(getDirTemp(), NAME_DIR_TOMCAT);
 		if (!wDirTemp.exists()) {
 			final boolean wDirCreated = wDirTemp.mkdirs();
-			CComponentLoggerFile.logInMain(Level.INFO, CWebAppPaths.class,
-					"getDirTomcatTemp", "Dir=[%s] Created=[%b]",
+			CComponentLoggerFile.logInMain(Level.INFO, CWebAppPaths.class, "getDirTomcatTemp", "Dir=[%s] Created=[%b]",
 					wDirTemp.getAbsolutePath(), wDirCreated);
 		}
 		return wDirTemp;
@@ -296,8 +296,7 @@ public class CWebAppPaths extends CAbstractComponentBase implements
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see
-	 * com.isandlatech.webapp.utilities.ISvcX3WebUtils#getPathCatalinaBase()
+	 * @see com.isandlatech.webapp.utilities.ISvcX3WebUtils#getPathCatalinaBase()
 	 */
 	@Override
 	public String getPathCatalinaBase() throws Exception {
@@ -307,8 +306,7 @@ public class CWebAppPaths extends CAbstractComponentBase implements
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see
-	 * com.isandlatech.webapp.utilities.ISvcX3WebUtils#getPathCatalinaHome()
+	 * @see com.isandlatech.webapp.utilities.ISvcX3WebUtils#getPathCatalinaHome()
 	 */
 	@Override
 	public String getPathCatalinaHome() throws Exception {
@@ -340,8 +338,7 @@ public class CWebAppPaths extends CAbstractComponentBase implements
 	 * @return
 	 * @throws Exception
 	 */
-	private String getPathFromSysProperty(String aSysPropId, String aDefault)
-			throws Exception {
+	private String getPathFromSysProperty(String aSysPropId, String aDefault) throws Exception {
 
 		final String wServerBasePath = System.getProperty(aSysPropId, aDefault);
 		if (wServerBasePath == null || wServerBasePath.length() == 0) {
@@ -363,8 +360,7 @@ public class CWebAppPaths extends CAbstractComponentBase implements
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see
-	 * com.isandlatech.webapp.utilities.ISvcX3WebUtils#isTomcatPidAvailable()
+	 * @see com.isandlatech.webapp.utilities.ISvcX3WebUtils#isTomcatPidAvailable()
 	 */
 	@Override
 	public boolean isTomcatPidAvailable() throws Exception {
@@ -372,8 +368,7 @@ public class CWebAppPaths extends CAbstractComponentBase implements
 		final File wFile = new File(getDirTempTomcat(), NAME_FILE_PID);
 
 		final boolean wExists = wFile.exists();
-		CComponentLoggerFile.logInMain(Level.INFO, CWebAppPaths.class,
-				"isTomcatPidAvailable", "File=[%s] exists=[%b]",
+		CComponentLoggerFile.logInMain(Level.INFO, CWebAppPaths.class, "isTomcatPidAvailable", "File=[%s] exists=[%b]",
 				wFile.getAbsolutePath(), wExists);
 
 		return wExists;
@@ -384,9 +379,9 @@ public class CWebAppPaths extends CAbstractComponentBase implements
 	 * @throws Exception
 	 */
 	private void throwUnknownSysProp(String aSysPropName) throws Exception {
-		final String wMess = String
-				.format("The System Property [%1$s] is undefined or empty. Check the argument [-D%1$s=...] passed to the jvm ",
-						aSysPropName);
+		final String wMess = String.format(
+				"The System Property [%1$s] is undefined or empty. Check the argument [-D%1$s=...] passed to the jvm ",
+				aSysPropName);
 		throw new Exception(wMess);
 	}
 
@@ -395,12 +390,11 @@ public class CWebAppPaths extends CAbstractComponentBase implements
 	 * @param aSysPropName
 	 * @throws Exception
 	 */
-	private void throwUnknwonDir(File aDir, String aSysPropName)
-			throws Exception {
+	private void throwUnknwonDir(File aDir, String aSysPropName) throws Exception {
 		final String wPath = (aDir != null) ? aDir.getAbsolutePath() : "null";
-		final String wMess = String
-				.format("The path [%s] does'nt exist or is'nt a directory. Check the value of the argument [-D%s=...] passed to the jvm or set the path using the right setter.",
-						wPath, aSysPropName);
+		final String wMess = String.format(
+				"The path [%s] does'nt exist or is'nt a directory. Check the value of the argument [-D%s=...] passed to the jvm or set the path using the right setter.",
+				wPath, aSysPropName);
 		throw new Exception(wMess);
 	}
 

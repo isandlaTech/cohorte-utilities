@@ -7,27 +7,14 @@ import java.io.File;
  * Les arguments de la jvm pris en compte.
  *
  * <pre>
- * -Dcatalina.base == OBLIGATOIRE - Dcatalina.home == OBLIGATOIRE
- * 		- Dorg.cohorte.utilities.webapp.install.toolroot
+ * -Dcatalina.base == OBLIGATOIRE - Dcatalina.home == OBLIGATOIRE - Dorg.cohorte.utilities.webapp.install.toolroot
  * 		- Dorg.cohorte.utilities.webapp.install.dataroot
  * </pre>
  *
  * @author ogattaz
  *
  */
-public interface ISvcWebAppPaths {
-
-	public final static String NAME_DIR_CONFIG = "conf";
-	public final static String NAME_DIR_CUSTOMERS = "_customer";
-	public final static String NAME_DIR_LOGS = "logs";
-	public final static String NAME_DIR_TEMP = "temp";
-
-	public final static String NAME_DIR_TOMCAT = "tomcat";
-	public final static String NAME_FILE_PID = "tomcat.pid";
-	public final static String PARAM_JVM_CATALINA_BASE = "catalina.base";
-	public final static String PARAM_JVM_CATALINA_HOME = "catalina.home";
-	public final static String PARAM_JVM_DATAROOT = "org.cohorte.utilities.webapp.install.dataroot";
-	public final static String PARAM_JVM_TOOLROOT = "org.cohorte.utilities.webapp.install.toolroot";
+public interface ISvcWebAppPaths extends IConstants {
 
 	/**
 	 * @return ex: C:\SAGEX3\WEBV60\WebTools\SERVER_BASE
@@ -51,14 +38,14 @@ public interface ISvcWebAppPaths {
 
 	/**
 	 * @return the File instance of the config dir ex: ${CcatalinaBase}/conf or
-	 *         ${org.cohorte.utilities.webapp.install.dataroot}/conf if it
-	 *         defined
+	 *         ${org.cohorte.utilities.webapp.install.dataroot}/conf if it defined
 	 * @throws Exception
 	 */
 	File getDirConfig() throws Exception;
-	
+
 	/**
-	 * @param aSubPaths an array of 
+	 * @param aSubPaths
+	 *            an array of
 	 * @return
 	 * @throws Exception
 	 */
@@ -80,8 +67,8 @@ public interface ISvcWebAppPaths {
 	File getDirDataRoot() throws Exception;
 
 	/**
-	 * @return a File instance representing the log dir : ${catalina.base}/logs
-	 *         or ${org.cohorte.utilities.webapp.install.dataroot}/logs
+	 * @return a File instance representing the log dir : ${catalina.base}/logs or
+	 *         ${org.cohorte.utilities.webapp.install.dataroot}/logs
 	 *
 	 * @throws Exception
 	 */
@@ -91,8 +78,8 @@ public interface ISvcWebAppPaths {
 	 * @param aSubPaths
 	 * @return a File instance representing the webapp log dir :
 	 *         ${catalina.base}/logs/webapp or
-	 *         ${org.cohorte.utilities.webapp.install.dataroot}/logs/webapp if
-	 *         it defined	 * @throws Exception
+	 *         ${org.cohorte.utilities.webapp.install.dataroot}/logs/webapp if it
+	 *         defined * @throws Exception
 	 */
 	File getDirLogs(final String... aSubPaths) throws Exception;
 
@@ -105,8 +92,7 @@ public interface ISvcWebAppPaths {
 	File getDirLogsTomcat() throws Exception;
 
 	/**
-	 * @return the File instance of the temp dir ex:
-	 *         C:\SAGEX3\WEBV60\WebData\TEMP
+	 * @return the File instance of the temp dir ex: C:\SAGEX3\WEBV60\WebData\TEMP
 	 * @throws Exception
 	 */
 	File getDirTemp() throws Exception;
@@ -119,8 +105,7 @@ public interface ISvcWebAppPaths {
 	File getDirTempTomcat() throws Exception;
 
 	/**
-	 * @return the File instance of the "WebTools" dir ex:
-	 *         C:\SAGEX3\WEBV60\WebTools
+	 * @return the File instance of the "WebTools" dir ex: C:\SAGEX3\WEBV60\WebTools
 	 *
 	 * @see PARAM_JVM_TOOLROOT : "-Dadonix.x3web.install.progroot" =
 	 *      "all.host.installtoolspath" => ex: C:\SAGEX3\WEBV60\WebTools

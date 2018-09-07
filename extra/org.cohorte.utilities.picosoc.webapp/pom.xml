@@ -10,7 +10,7 @@
 		<relativePath>../../Build/maven/build-bundles/pom.xml</relativePath>
 	</parent>
     <artifactId>org.cohorte.utilities.picosoc.webapp</artifactId>
-	<version>1.1.0</version> <!-- MOD_BD_20180220 -->
+	<version>1.1.2</version> <!-- MOD_BD_20180220 -->
     <packaging>jar</packaging>
     
     
