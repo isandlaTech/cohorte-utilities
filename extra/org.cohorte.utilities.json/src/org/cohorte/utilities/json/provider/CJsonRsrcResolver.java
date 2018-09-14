@@ -242,8 +242,14 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 				return wRsrcList;
 			} else {
 				// check if we ask for a JSON Array element
+				// replace potential // in the path
+
 				boolean wWantSubArrayElem = wValidContentId.contains("]");
 				CXListRsrcText wList;
+				if (wValidContentId.indexOf("?") != -1) {
+					wValidContentId = wValidContentId.substring(0,
+							wValidContentId.indexOf("?"));
+				}
 				if (wWantSubArrayElem) {
 					wList = aProvider.rsrcReadTxts(wValidContentId.substring(0,
 							wValidContentId.indexOf("[")));
@@ -257,11 +263,23 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 					String wCommentedJSON = wRsrc.getContent();
 					String wNoComment = removeComment(wCommentedJSON);
 					if (wWantSubArrayElem) {
-						int wIndex = Integer.parseInt(wValidContentId
-								.substring(wValidContentId.indexOf("[") + 1,
-										wValidContentId.indexOf("]")));
+						String wIndex = wValidContentId.substring(
+								wValidContentId.indexOf("[") + 1,
+								wValidContentId.indexOf("]"));
 						JSONArray wJSon = new JSONArray(wNoComment);
-						wNoComment = wJSon.opt(wIndex).toString();
+
+						if (wIndex.equals("*")) {
+							// concat all object of the array
+							wNoComment = "";
+							for (int k = 0; k < wJSon.length(); k++) {
+								String wElem = wJSon.opt(k).toString();
+								wNoComment += k > 0 ? "," + wElem : wElem;
+							}
+						} else {
+							int wIndexInt = Integer.parseInt(wIndex);
+							wNoComment = wJSon.opt(wIndexInt).toString();
+						}
+
 					}
 
 					wRsrc.setContent(wNoComment);

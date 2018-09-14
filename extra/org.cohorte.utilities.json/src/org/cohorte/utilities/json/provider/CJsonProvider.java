@@ -97,13 +97,23 @@ public class CJsonProvider implements IJsonProvider {
 		if (aContent instanceof JSONObject) {
 			JSONObject wObj = (JSONObject) aContent;
 			if (aReplaceVars != null && wObj.keySet().contains(aTag)) {
+
+				String wSubIncludeStr = wObj.optString(aTag);
+				int wIndexParameter = wSubIncludeStr.indexOf("?");
+				if (wSubIncludeStr.contains("?")) {
+					Map<String, String> wReplaceVarsSubInclude = CXQueryString
+							.splitQueryFirst(wSubIncludeStr.substring(
+									wIndexParameter + 1,
+									wSubIncludeStr.length()));
+					aReplaceVars.putAll(wReplaceVarsSubInclude);
+					wSubIncludeStr = wSubIncludeStr.substring(0,
+							wIndexParameter);
+				}
+
 				String wParameterUrl = CXQueryString
 						.urlEncodeUTF8(aReplaceVars);
-				String wSubIncludeStr = wObj.optString(aTag);
-				String wSubIncludeWithParemter = wSubIncludeStr.contains("?") ? wSubIncludeStr
-						+ "&" + wParameterUrl
-						: wSubIncludeStr + "?" + wParameterUrl;
-				wObj.put(aTag, wSubIncludeWithParemter);
+				wSubIncludeStr = wSubIncludeStr + "?" + wParameterUrl;
+				wObj.put(aTag, wSubIncludeStr);
 			}
 		} else if (aContent instanceof JSONArray) {
 			JSONArray wArr = (JSONArray) aContent;
@@ -134,7 +144,7 @@ public class CJsonProvider implements IJsonProvider {
 				return new JSONObject(aJsonString);
 			} else if (indexCurly != -1 && indexSquare == -1) {
 				return new JSONObject(aJsonString);
-			} else if (indexCurly == -1 && indexSquare != 1) {
+			} else if (indexCurly == -1 && indexSquare != -1) {
 				return new JSONArray(aJsonString);
 			} else if (indexCurly > indexSquare) {
 				return new JSONArray(aJsonString);
@@ -377,8 +387,7 @@ public class CJsonProvider implements IJsonProvider {
 			// replace vars regarding the variable set in the path
 			Map<String, String> wVars = getVariableFromPath(wPath);
 
-			wNotComment = CXStringUtils
-					.replaceVariables(wNotComment, wVars, "");
+			wNotComment = CXStringUtils.replaceVariables(wNotComment, wVars);
 
 			Object wNotCommentJson = checkIsJson(wNotComment);
 			// check include content that must be resolve
@@ -542,11 +551,13 @@ public class CJsonProvider implements IJsonProvider {
 								// we include te current path
 								if (currentPath != null
 										&& !currentPath.isEmpty()) {
+
 									wPath = wPath.replace(
 											EProviderKind.FILE.toString(),
 											EProviderKind.FILE.toString()
 													+ currentPath
 													+ File.separatorChar);
+
 								}
 								pLogger.logInfo(this, "resolveInclude",
 										"retrieve variable to replace from path");
@@ -554,8 +565,7 @@ public class CJsonProvider implements IJsonProvider {
 								Map<String, String> wCurrentReplaceVars = getVariableFromPath(wPath);
 								if (wCurrentReplaceVars != null) {
 									if (replaceVars != null) {
-										replaceVars
-												.putAll(getVariableFromPath(wPath));
+										replaceVars.putAll(wCurrentReplaceVars);
 									} else {
 										replaceVars = wCurrentReplaceVars;
 									}
@@ -577,7 +587,7 @@ public class CJsonProvider implements IJsonProvider {
 									wValidContent = checkIsJson(CXStringUtils
 											.replaceVariables(
 													wValidContent.toString(),
-													replaceVars, ""));
+													replaceVars));
 
 									// resolve json path from the father json
 									// object
