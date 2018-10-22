@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import org.cohorte.utilities.json.provider.CJsonProvider;
 import org.cohorte.utilities.json.provider.CJsonRsrcResolver;
 import org.cohorte.utilities.json.provider.rsrc.CXRsrcGeneratorProvider;
+import org.cohorte.utilities.json.provider.rsrc.CXRsrcTextFileProvider;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
@@ -48,18 +49,18 @@ public class CTestProcessJson extends TestCase {
 
 	public static @DataPoints String[][] testFiles = {
 
-			/*
-			 * { "module_empty.js", "empty.js" }, { "module_noComment.js",
-			 * "noComment.js" }, { "module_slashComment.js", "noComment.js" }, {
-			 * "module_slashStarComment.js", "noComment.js" }, {
-			 * "module_allComment.js", "noComment.js" }, { "module_testDef.js",
-			 * "testDef.js" },
-			 * 
-			 * { "module_allCommentAndFile.js", "noComment2.js" }, {
-			 * "module_allCommentAndFileWithPath.js", "noComment2.js" },
-			 * 
-			 * { "module_allMultiPath.js", "noCommentMutliPath.js" },
-			 */
+			{ "module_empty.js", "empty.js" },
+			{ "module_noComment.js", "noComment.js" },
+			{ "module_slashComment.js", "noComment.js" },
+			{ "module_slashStarComment.js", "noComment.js" },
+			{ "module_allComment.js", "noComment.js" },
+			{ "module_testDef.js", "testDef.js" },
+
+			{ "module_allCommentAndFile.js", "noComment2.js" },
+			{ "module_allCommentAndFileWithPath.js", "noComment2.js" },
+
+			{ "module_allMultiPath.js", "noCommentMutliPath.js" },
+
 			{ "test_condition.js?var=test", "test_condition_true.js" },
 
 			{ "test_condition.js?var=other", "test_condition_false.js" },
@@ -73,8 +74,7 @@ public class CTestProcessJson extends TestCase {
 			{ "test_replace_vars.js?var=test", "test_replace_vars.js" },
 
 			{ "test_array_of_array.js", "test_array_of_array.js" },
-			// { "test_generator_include.js?var=test",
-			// "test_generator_include.js" },
+			{ "test_include_file_text.js", "test_include_file_text.js" },
 
 			{ "test_jsonpath_condition.js", "test_jsonpath_condition.js" } };
 
@@ -87,6 +87,8 @@ public class CTestProcessJson extends TestCase {
 					"$generator",
 					new CXRsrcGeneratorProvider(CActivityLoggerNull
 							.getInstance()));
+			wResolver.addRsrcProvider("$textFile", new CXRsrcTextFileProvider(
+					fileTestsIn, CActivityLoggerNull.getInstance()));
 			wResolver.addRsrcProvider("$file", new CXRsrcProviderFile(
 					fileTestsIn, Charset.defaultCharset()));
 			wResolver.addRsrcProvider("$file", new CXRsrcProviderFile(

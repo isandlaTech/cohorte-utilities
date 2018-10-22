@@ -21,8 +21,8 @@ import org.psem2m.utilities.rsrc.CXRsrcProvider;
 import org.psem2m.utilities.rsrc.CXRsrcProviderHttp;
 import org.psem2m.utilities.rsrc.CXRsrcProviderMemory;
 import org.psem2m.utilities.rsrc.CXRsrcText;
-import org.psem2m.utilities.scripting.CXJsExcepUnknownLanguage;
-import org.psem2m.utilities.scripting.CXJsManager;
+
+import de.christophkraemer.rhino.javascript.RhinoScriptEngine;
 
 public class CJsonProvider implements IJsonProvider {
 
@@ -52,7 +52,7 @@ public class CJsonProvider implements IJsonProvider {
 	private final IActivityLogger pLogger;
 
 	// use for evaluate condition
-	CXJsManager pScriptRunner;
+	RhinoScriptEngine pRhinoScriptEngine;
 
 	public CJsonProvider(final IJsonRsrcResolver aResolver,
 			final IActivityLogger aLogger) {
@@ -72,16 +72,8 @@ public class CJsonProvider implements IJsonProvider {
 		pIgnoreMissingContent = aIgnoreMissingContent;
 		pListProperties = aListProperties;
 
-		try {
-			pScriptRunner = new CXJsManager(pLogger, "JavaScript");
-		} catch (CXJsExcepUnknownLanguage e) {
-			// TODO Auto-generated catch block
-			pLogger.logSevere(
-					this,
-					"CJsonProvider",
-					"can't instanciate JSEngine, no condition will be taken Error=[%s]",
-					e);
-		}
+		pRhinoScriptEngine = new RhinoScriptEngine();
+
 	}
 
 	/**
@@ -167,8 +159,12 @@ public class CJsonProvider implements IJsonProvider {
 			if (aCondition == null || aCondition.isEmpty()) {
 				return true;
 			}
+			pLogger.logInfo(this, "evaluateCondition", "eval condition %s ",
+					aCondition);
 
-			Object wReply = pScriptRunner.evalExpression(aCondition);
+			Object wReply = pRhinoScriptEngine.eval(aCondition);
+			pLogger.logInfo(this, "evaluateCondition",
+					"eval condition %s , result=%s", aCondition, wReply);
 
 			if (wReply instanceof Boolean) {
 				return ((Boolean) wReply).booleanValue();
@@ -420,6 +416,7 @@ public class CJsonProvider implements IJsonProvider {
 		CXRsrcProvider wProviderUsed = null;
 		for (CXRsrcProvider aProvider : pJsonResolver.getRsrcProvider(aTag)) {
 			if (wProviderUsed == null
+					&& aProvider != null
 					&& aRsrc.getFullPath().contains(
 							aProvider.getDefDirectory().getPath())) {
 				wProviderUsed = aProvider;
@@ -427,7 +424,8 @@ public class CJsonProvider implements IJsonProvider {
 		}
 
 		if (wProviderUsed instanceof CXRsrcProviderMemory
-				|| wProviderUsed instanceof CXRsrcProviderHttp) {
+				|| wProviderUsed instanceof CXRsrcProviderHttp
+				|| wProviderUsed == null) {
 			// TODO change when we move it to utilities to use polymorphisme
 			return "";
 		}

@@ -42,6 +42,24 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- Add iPOJO annotations to class path -->
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-compiler-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+					<extraClasspathElements>
+						<!-- iPOJO Annotations are not in a bundle -->
+						<extraClasspathElement>
+							<groupId>org.apache.felix</groupId>
+							<artifactId>org.apache.felix.ipojo.annotations</artifactId>
+							<version>${ipojo-version}</version>
+						</extraClasspathElement>
+					</extraClasspathElements>
+				</configuration>
+			</plugin>		
 			<!-- Generates sources jar -->
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>

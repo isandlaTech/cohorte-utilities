@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.cohorte.utilities.json.provider.rsrc.CXRsrcGeneratorProvider;
+import org.cohorte.utilities.json.provider.rsrc.CXRsrcTextFileProvider;
 import org.psem2m.utilities.json.JSONArray;
 import org.psem2m.utilities.json.JSONObject;
 import org.psem2m.utilities.rsrc.CXListRsrcText;
@@ -240,6 +241,13 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 					wRsrc.setContent(wNoComment);
 				}
 				return wRsrcList;
+			} else if (aProvider instanceof CXRsrcTextFileProvider) {
+
+				CXListRsrcText wRsrcList = new CXListRsrcText();
+				wRsrcList.add(aProvider.rsrcReadTxt(wValidContentId));
+
+				return wRsrcList;
+
 			} else {
 				// check if we ask for a JSON Array element
 				// replace potential // in the path
@@ -305,7 +313,10 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 		if (pListProviderByTag.get(aTag) != null) {
 			wList.addAll(pListProviderByTag.get(aTag).values());
 		}
-		wList.add(getRsrcProviderMemory(aTag));
+		CXRsrcProvider wMemory = getRsrcProviderMemory(aTag);
+		if (wMemory != null) {
+			wList.add(wMemory);
+		}
 		return wList;
 	}
 
