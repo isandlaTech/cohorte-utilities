@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='utf-8'?>
+<racine>
+	<encyclopedie nom="Wikipedia"
+		site="http://fr.wikipedia.org/">
+		<article nom="XPath">
+			<auteurs>
+				<auteur id="first">Dupont</auteur>
+				<auteur id="second">Dubois</auteur>
+			</auteurs>
+		</article>
+	</encyclopedie>
+</racine>

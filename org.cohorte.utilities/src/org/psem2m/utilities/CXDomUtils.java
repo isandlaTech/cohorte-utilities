@@ -54,11 +54,9 @@ public class CXDomUtils implements ErrorHandler {
 
 	public static final boolean INDENT = true;
 
-	private static DocumentBuilderFactory pBuilderFactory = DocumentBuilderFactory
-			.newInstance();
+	private static DocumentBuilderFactory pBuilderFactory = DocumentBuilderFactory.newInstance();
 
-	private static TransformerFactory pTransformerFactory = TransformerFactory
-			.newInstance();
+	private static TransformerFactory pTransformerFactory = TransformerFactory.newInstance();
 
 	public static final boolean WITH_SUB_TREE = true;
 
@@ -82,8 +80,7 @@ public class CXDomUtils implements ErrorHandler {
 	 * @param aInteger
 	 * @return
 	 */
-	public static Element appendIntChildElmt(Element aElmt, String aChildName,
-			int aInteger) {
+	public static Element appendIntChildElmt(Element aElmt, String aChildName, int aInteger) {
 
 		Element wChild = appendChildElmt(aElmt, aChildName);
 		appendTextNode(wChild, String.valueOf(aInteger));
@@ -96,8 +93,7 @@ public class CXDomUtils implements ErrorHandler {
 	 * @param aBool
 	 * @return
 	 */
-	public static Element appendOkKoChildElmt(Element aElmt, String aChildName,
-			boolean aBool) {
+	public static Element appendOkKoChildElmt(Element aElmt, String aChildName, boolean aBool) {
 
 		Element wChild = appendChildElmt(aElmt, aChildName);
 		appendTextNode(wChild, CXStringUtils.boolToOkKo(aBool));
@@ -110,8 +106,7 @@ public class CXDomUtils implements ErrorHandler {
 	 * @param aBool
 	 * @return
 	 */
-	public static Element appendOnOffChildElmt(Element aElmt,
-			String aChildName, boolean aBool) {
+	public static Element appendOnOffChildElmt(Element aElmt, String aChildName, boolean aBool) {
 
 		Element wChild = appendChildElmt(aElmt, aChildName);
 		appendTextNode(wChild, CXStringUtils.boolToOnOff(aBool));
@@ -124,8 +119,7 @@ public class CXDomUtils implements ErrorHandler {
 	 * @param aText
 	 * @return
 	 */
-	public static Element appendTextChildElmt(Element aElmt, String aChildName,
-			String aText) {
+	public static Element appendTextChildElmt(Element aElmt, String aChildName, String aText) {
 
 		Element wChild = appendChildElmt(aElmt, aChildName);
 		if (aText == null || aText.length() != 0) {
@@ -154,8 +148,7 @@ public class CXDomUtils implements ErrorHandler {
 	 * @param aBool
 	 * @return
 	 */
-	public static Element appendTrueFalseChildElmt(Element aElmt,
-			String aChildName, boolean aBool) {
+	public static Element appendTrueFalseChildElmt(Element aElmt, String aChildName, boolean aBool) {
 
 		Element wChild = appendChildElmt(aElmt, aChildName);
 		appendTextNode(wChild, CXStringUtils.boolToTrueFalse(aBool));
@@ -168,8 +161,7 @@ public class CXDomUtils implements ErrorHandler {
 	 * @param aBool
 	 * @return
 	 */
-	public static Element appendYesNoChildElmt(Element aElmt,
-			String aChildName, boolean aBool) {
+	public static Element appendYesNoChildElmt(Element aElmt, String aChildName, boolean aBool) {
 
 		Element wChild = appendChildElmt(aElmt, aChildName);
 		appendTextNode(wChild, CXStringUtils.boolToYesNo(aBool));
@@ -184,8 +176,7 @@ public class CXDomUtils implements ErrorHandler {
 	 * @param aRootDest
 	 *            - Root sous laquelle seront rattachés les fils de aRootSource
 	 */
-	public static void attachChildElements(Element aRootSource,
-			Element aRootDest) {
+	public static void attachChildElements(Element aRootSource, Element aRootDest) {
 
 		if (aRootSource != null && aRootDest != null) {
 			if (aRootSource.getOwnerDocument() == aRootDest.getOwnerDocument()) {
@@ -197,8 +188,7 @@ public class CXDomUtils implements ErrorHandler {
 					wChild = wCNextChild;
 				}
 			} else {
-				Node wImported = aRootDest.getOwnerDocument().importNode(
-						aRootSource, true);
+				Node wImported = aRootDest.getOwnerDocument().importNode(aRootSource, true);
 				Element wChild = CXDomUtils.getFirstChildElmt(wImported);
 				Element wCNextChild;
 				while (wChild != null) {
@@ -224,8 +214,7 @@ public class CXDomUtils implements ErrorHandler {
 			if (aRootSource.getOwnerDocument() == aRootDest.getOwnerDocument()) {
 				aRootDest.appendChild(aRootSource);
 			} else {
-				aRootDest.appendChild(aRootDest.getOwnerDocument().importNode(
-						aRootSource, true));
+				aRootDest.appendChild(aRootDest.getOwnerDocument().importNode(aRootSource, true));
 			}
 		}
 	}
@@ -283,8 +272,7 @@ public class CXDomUtils implements ErrorHandler {
 	 * @param aCloneSubTree
 	 * @return
 	 */
-	public static Element cloneElement(CXDomUtils aDestDom, Element aElmt,
-			boolean aCloneSubTree) {
+	public static Element cloneElement(CXDomUtils aDestDom, Element aElmt, boolean aCloneSubTree) {
 
 		return cloneElement(aDestDom.getDom(), aElmt, aCloneSubTree);
 	}
@@ -299,8 +287,7 @@ public class CXDomUtils implements ErrorHandler {
 	 *            =true --> duplique la sous-arborescence
 	 * @return
 	 */
-	public static Element cloneElement(Document aDestDom, Element aElmt,
-			boolean aCloneSubTree) {
+	public static Element cloneElement(Document aDestDom, Element aElmt, boolean aCloneSubTree) {
 
 		// 16w_000 - Fiche 45147 - Corrections des utilitaires SHARED
 		if (aDestDom != null && aElmt != null) {
@@ -318,8 +305,7 @@ public class CXDomUtils implements ErrorHandler {
 	public static Element cloneElement(Element aElmt, boolean aCloneSubTree) {
 
 		if (aElmt != null) {
-			return (Element) aElmt.getOwnerDocument().importNode(aElmt,
-					aCloneSubTree);
+			return (Element) aElmt.getOwnerDocument().importNode(aElmt, aCloneSubTree);
 		} else {
 			return null;
 		}
@@ -339,8 +325,7 @@ public class CXDomUtils implements ErrorHandler {
 	 * @param aElement
 	 * @return
 	 */
-	public static StringBuilder dumpAttributesInSB(final StringBuilder aSB,
-			final Element aElement) {
+	public static StringBuilder dumpAttributesInSB(final StringBuilder aSB, final Element aElement) {
 
 		aSB.append('{');
 		NamedNodeMap wAtributes = aElement.getAttributes();
@@ -350,8 +335,7 @@ public class CXDomUtils implements ErrorHandler {
 				aSB.append(',');
 			}
 			Node wAttrNode = wAtributes.item(wIdx);
-			aSB.append(String.format("%s=[%s]", wAttrNode.getNodeName(),
-					wAttrNode.getTextContent()));
+			aSB.append(String.format("%s=[%s]", wAttrNode.getNodeName(), wAttrNode.getTextContent()));
 		}
 		aSB.append('}');
 		return aSB;
@@ -384,8 +368,7 @@ public class CXDomUtils implements ErrorHandler {
 		if (aElmt == null) {
 			return aDefValue;
 		} else {
-			return CXStringUtils.strToInt(aElmt.getAttribute(aAttrib),
-					aDefValue);
+			return CXStringUtils.strToInt(aElmt.getAttribute(aAttrib), aDefValue);
 		}
 	}
 
@@ -398,7 +381,7 @@ public class CXDomUtils implements ErrorHandler {
 		if (aElement == null) {
 			return null;
 		}
-		List<Element> wElmts = new ArrayList<Element>();
+		List<Element> wElmts = new ArrayList<>();
 		NodeList wList = aElement.getChildNodes();
 		for (int wI = 0; wI < wList.getLength(); wI++) {
 			if (wList.item(wI).getNodeType() == Node.ELEMENT_NODE) {
@@ -413,13 +396,12 @@ public class CXDomUtils implements ErrorHandler {
 	 * @param aTagName
 	 * @return
 	 */
-	public static List<Element> getElementsByTagName(Element aElement,
-			String aTagName) {
+	public static List<Element> getElementsByTagName(Element aElement, String aTagName) {
 
 		if (aElement == null) {
 			return null;
 		}
-		List<Element> wElmts = new ArrayList<Element>();
+		List<Element> wElmts = new ArrayList<>();
 		NodeList wList = aElement.getElementsByTagName(aTagName);
 		for (int wI = 0; wI < wList.getLength(); wI++) {
 			if (wList.item(wI).getNodeType() == Node.ELEMENT_NODE) {
@@ -457,9 +439,7 @@ public class CXDomUtils implements ErrorHandler {
 			return null;
 		}
 		Node wNode = aNode.getFirstChild();
-		if (wNode == null
-				|| (wNode.getNodeType() == Node.ELEMENT_NODE && wNode
-						.getNodeName().equals(aTagName))) {
+		if (wNode == null || (wNode.getNodeType() == Node.ELEMENT_NODE && wNode.getNodeName().equals(aTagName))) {
 			return (Element) wNode;
 		} else {
 			return getFirstSiblingElmtByTag(wNode, aTagName);
@@ -473,22 +453,19 @@ public class CXDomUtils implements ErrorHandler {
 	 * @param aAttrValue
 	 * @return
 	 */
-	public static Element getFirstChildElmtByTagAndAttribut(Node aNode,
-			String aTagName, String aAttrId, String aAttrValue) {
+	public static Element getFirstChildElmtByTagAndAttribut(Node aNode, String aTagName, String aAttrId,
+			String aAttrValue) {
 
-		if (aNode == null || aTagName == null || aAttrId == null
-				|| aAttrValue == null) {
+		if (aNode == null || aTagName == null || aAttrId == null || aAttrValue == null) {
 			return null;
 		}
 		Node wNode = aNode.getFirstChild();
 		if (wNode == null
-				|| (wNode.getNodeType() == Node.ELEMENT_NODE
-						&& wNode.getNodeName().equals(aTagName) && aAttrValue
-							.equals(((Element) wNode).getAttribute(aAttrId)))) {
+				|| (wNode.getNodeType() == Node.ELEMENT_NODE && wNode.getNodeName().equals(aTagName) && aAttrValue
+						.equals(((Element) wNode).getAttribute(aAttrId)))) {
 			return (Element) wNode;
 		} else {
-			return getFirstSiblingElmtByTagAndAttribut(wNode, aTagName,
-					aAttrId, aAttrValue);
+			return getFirstSiblingElmtByTagAndAttribut(wNode, aTagName, aAttrId, aAttrValue);
 		}
 	}
 
@@ -501,11 +478,9 @@ public class CXDomUtils implements ErrorHandler {
 	 * @param aId
 	 * @return
 	 */
-	public static Element getFirstChildElmtByTagAndId(Node aNode,
-			String aTagName, String aIdValue) {
+	public static Element getFirstChildElmtByTagAndId(Node aNode, String aTagName, String aIdValue) {
 
-		return getFirstChildElmtByTagAndAttribut(aNode, aTagName, ATTR_ID,
-				aIdValue);
+		return getFirstChildElmtByTagAndAttribut(aNode, aTagName, ATTR_ID, aIdValue);
 	}
 
 	/**
@@ -534,8 +509,7 @@ public class CXDomUtils implements ErrorHandler {
 	 * @param aTagName
 	 * @return
 	 */
-	public static Element getFirstDescElmtByTag(Element aElement,
-			String aTagName) {
+	public static Element getFirstDescElmtByTag(Element aElement, String aTagName) {
 
 		Element wRes = null;
 		NodeList wList = aElement.getElementsByTagName(aTagName);
@@ -555,15 +529,14 @@ public class CXDomUtils implements ErrorHandler {
 	 * @param aValue
 	 * @return
 	 */
-	public static Element getFirstDescElmtByTagAndAttribut(Element aElement,
-			String aTagName, String aAttName, String aValue) {
+	public static Element getFirstDescElmtByTagAndAttribut(Element aElement, String aTagName, String aAttName,
+			String aValue) {
 
 		Element wRes = null;
 		NodeList wList = aElement.getElementsByTagName(aTagName);
 		for (int wI = 0; wI < wList.getLength() && wRes == null; wI++) {
 			if (wList.item(wI).getNodeType() == Node.ELEMENT_NODE
-					&& ((Element) wList.item(wI)).getAttribute(aAttName)
-							.equals(aValue)) {
+					&& ((Element) wList.item(wI)).getAttribute(aAttName).equals(aValue)) {
 				wRes = (Element) wList.item(wI);
 			}
 		}
@@ -597,9 +570,7 @@ public class CXDomUtils implements ErrorHandler {
 			return null;
 		}
 		Node wNode = aNode.getParentNode();
-		while (wNode != null
-				&& (wNode.getNodeType() != Node.ELEMENT_NODE || !wNode
-						.getNodeName().equals(aTagName))) {
+		while (wNode != null && (wNode.getNodeType() != Node.ELEMENT_NODE || !wNode.getNodeName().equals(aTagName))) {
 			wNode = wNode.getParentNode();
 		}
 		return (Element) wNode;
@@ -632,9 +603,7 @@ public class CXDomUtils implements ErrorHandler {
 			return null;
 		}
 		Node wNode = aNode.getNextSibling();
-		while (wNode != null
-				&& (wNode.getNodeType() != Node.ELEMENT_NODE || !wNode
-						.getNodeName().equals(aTagName))) {
+		while (wNode != null && (wNode.getNodeType() != Node.ELEMENT_NODE || !wNode.getNodeName().equals(aTagName))) {
 			wNode = wNode.getNextSibling();
 		}
 		return (Element) wNode;
@@ -647,18 +616,16 @@ public class CXDomUtils implements ErrorHandler {
 	 * @param aAttrValue
 	 * @return
 	 */
-	public static Element getFirstSiblingElmtByTagAndAttribut(Node aNode,
-			String aTagName, String aAttrId, String aAttrValue) {
+	public static Element getFirstSiblingElmtByTagAndAttribut(Node aNode, String aTagName, String aAttrId,
+			String aAttrValue) {
 
-		if (aNode == null || aTagName == null || aAttrId == null
-				|| aAttrValue == null) {
+		if (aNode == null || aTagName == null || aAttrId == null || aAttrValue == null) {
 			return null;
 		}
 		Node wNode = aNode.getNextSibling();
 		while (wNode != null
-				&& (wNode.getNodeType() != Node.ELEMENT_NODE
-						|| !wNode.getNodeName().equals(aTagName) || !aAttrValue
-							.equals(((Element) wNode).getAttribute(aAttrId)))) {
+				&& (wNode.getNodeType() != Node.ELEMENT_NODE || !wNode.getNodeName().equals(aTagName) || !aAttrValue
+						.equals(((Element) wNode).getAttribute(aAttrId)))) {
 			wNode = wNode.getNextSibling();
 		}
 		return (Element) wNode;
@@ -670,11 +637,9 @@ public class CXDomUtils implements ErrorHandler {
 	 * @param aAttrIdValue
 	 * @return
 	 */
-	public static Element getFirstSiblingElmtByTagAndId(Node aNode,
-			String aTagName, String aAttrIdValue) {
+	public static Element getFirstSiblingElmtByTagAndId(Node aNode, String aTagName, String aAttrIdValue) {
 
-		return getFirstSiblingElmtByTagAndAttribut(aNode, aTagName, ATTR_ID,
-				aAttrIdValue);
+		return getFirstSiblingElmtByTagAndAttribut(aNode, aTagName, ATTR_ID, aAttrIdValue);
 	}
 
 	/**
@@ -873,8 +838,7 @@ public class CXDomUtils implements ErrorHandler {
 	 * @return
 	 * @throws Exception
 	 */
-	public static String toXml(final Node aNode,
-			final boolean aOmitXmlDeclaration) throws Exception {
+	public static String toXml(final Node aNode, final boolean aOmitXmlDeclaration) throws Exception {
 		return toXml(aNode, 0, aOmitXmlDeclaration);
 	}
 
@@ -884,8 +848,7 @@ public class CXDomUtils implements ErrorHandler {
 	 * @return
 	 * @throws Exception
 	 */
-	public static String toXml(final Node aNode, final int aIndentAmount)
-			throws Exception {
+	public static String toXml(final Node aNode, final int aIndentAmount) throws Exception {
 		return toXml(aNode, aIndentAmount, false);
 	}
 
@@ -896,8 +859,7 @@ public class CXDomUtils implements ErrorHandler {
 	 * @return
 	 * @throws Exception
 	 */
-	public static String toXml(Node aNode, int aIndentAmount,
-			final boolean aOmitXmlDeclaration) throws Exception {
+	public static String toXml(Node aNode, int aIndentAmount, final boolean aOmitXmlDeclaration) throws Exception {
 
 		if (aNode == null) {
 			return CXStringUtils.EMPTY;
@@ -910,9 +872,7 @@ public class CXDomUtils implements ErrorHandler {
 
 		if (aIndentAmount > 0 && aIndentAmount < 8) {
 			wProcessor.setOutputProperty(OutputKeys.INDENT, YES);
-			wProcessor.setOutputProperty(
-					"{http://xml.apache.org/xslt}indent-amount",
-					String.valueOf(aIndentAmount));
+			wProcessor.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", String.valueOf(aIndentAmount));
 		}
 		StreamResult wResult = new StreamResult(new StringWriter());
 		wProcessor.transform(new DOMSource(aNode), wResult);
@@ -996,15 +956,13 @@ public class CXDomUtils implements ErrorHandler {
 		try {
 			CXDomUtils wDomUtils = new CXDomUtils();
 
-			Element wElmt = CXDomUtils.cloneElement(wDomUtils.pDom,
-					pDom.getDocumentElement(), true);
+			Element wElmt = CXDomUtils.cloneElement(wDomUtils.pDom, pDom.getDocumentElement(), true);
 
 			wDomUtils.pDom.appendChild(wElmt);
 
 			return wDomUtils;
 		} catch (Exception e) {
-			throw new CloneNotSupportedException("Can't clone CXDomUtils \n"
-					+ CXException.eMiniInString(e));
+			throw new CloneNotSupportedException("Can't clone CXDomUtils \n" + CXException.eMiniInString(e));
 		}
 	}
 
@@ -1036,8 +994,7 @@ public class CXDomUtils implements ErrorHandler {
 	@Override
 	public void fatalError(SAXParseException aExcep) throws SAXException {
 
-		throw new SAXException("DOM parsing fatal error. "
-				+ saxEcepToStr(aExcep));
+		throw new SAXException("DOM parsing fatal error. " + saxEcepToStr(aExcep));
 	}
 
 	/**
@@ -1093,11 +1050,9 @@ public class CXDomUtils implements ErrorHandler {
 	 * @param aXPath
 	 * @return
 	 */
-	public Node getNodeByTagNameAndOneAtt(String aTagName, String aAttribId,
-			String aAttribValue) {
+	public Node getNodeByTagNameAndOneAtt(String aTagName, String aAttribId, String aAttribValue) {
 
-		String wXPath = "//" + aTagName + "[@" + aAttribId + "=\""
-				+ aAttribValue + "\"]";
+		String wXPath = "//" + aTagName + "[@" + aAttribId + "=\"" + aAttribValue + "\"]";
 
 		// Set up an identity transformer to use as serializer.
 		// This one can write input to output stream
@@ -1106,6 +1061,20 @@ public class CXDomUtils implements ErrorHandler {
 			XPathFactory factory = XPathFactory.newInstance();
 			XPath xpath = factory.newXPath();
 			return (Node) xpath.evaluate(wXPath, getDom(), XPathConstants.NODE);
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+
+	public Node getNodeByXPath(String aXPath) {
+
+		// Set up an identity transformer to use as serializer.
+		// This one can write input to output stream
+
+		try {
+			XPathFactory factory = XPathFactory.newInstance();
+			XPath xpath = factory.newXPath();
+			return (Node) xpath.evaluate(aXPath, getDom(), XPathConstants.NODE);
 		} catch (Exception ex) {
 			return null;
 		}
@@ -1194,8 +1163,7 @@ public class CXDomUtils implements ErrorHandler {
 			wMsg.append(" Line[").append(aExcep.getLineNumber()).append("]");
 		}
 		if (aExcep.getColumnNumber() != -1) {
-			wMsg.append(" Column[").append(aExcep.getColumnNumber())
-					.append("]");
+			wMsg.append(" Column[").append(aExcep.getColumnNumber()).append("]");
 		}
 		if (aExcep.getSystemId() != null) {
 			wMsg.append(" SystemId[").append(aExcep.getSystemId()).append("]");
@@ -1269,8 +1237,7 @@ public class CXDomUtils implements ErrorHandler {
 	 * @return
 	 * @throws Exception
 	 */
-	public String toXml(int aIndentAmount, final boolean aOmitXmlDeclaration)
-			throws Exception {
+	public String toXml(int aIndentAmount, final boolean aOmitXmlDeclaration) throws Exception {
 		return toXml(getRootElmt(), aIndentAmount, aOmitXmlDeclaration);
 	}
 
@@ -1353,8 +1320,7 @@ class CXmlTextLines {
 									wMaxIdx = wColIdx - wMinIdx + (wMaxLen / 2);
 									wMinIdx = 0;
 								}
-								wMaxIdx = (wMaxIdx >= wLen) ? wLen - 1
-										: wMaxIdx;
+								wMaxIdx = (wMaxIdx >= wLen) ? wLen - 1 : wMaxIdx;
 								for (int i = wMinIdx; i <= wMaxIdx; i++) {
 									char wChar = wLineStr.charAt(i);
 									if (Character.isISOControl(wChar)) {
