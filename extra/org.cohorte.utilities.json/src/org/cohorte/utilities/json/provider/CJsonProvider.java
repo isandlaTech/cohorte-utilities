@@ -2,6 +2,7 @@ package org.cohorte.utilities.json.provider;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -640,9 +641,13 @@ public class CJsonProvider implements IJsonProvider {
 								"subfile not found {%s]", e.getMessage());
 
 					} else {
-						throw new JSONException(String.format(
-								"can't resolve JSON=[%s], cause=[%s]",
-								wResolvContent, e.getMessage()));
+						if (e instanceof IOException) {
+							throw new JSONException(String.format(
+									"can't resolve JSON=[%s], cause=[%s]",
+									wResolvContent, e.getMessage()));
+						} else {
+							throw e;
+						}
 
 					}
 
