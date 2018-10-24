@@ -640,8 +640,10 @@ public class CJsonProvider implements IJsonProvider {
 								"subfile not found {%s]", e.getMessage());
 
 					} else {
-						// raise e
-						throw e;
+						throw new JSONException(String.format(
+								"can't resolve JSON=[%s], cause=[%s]",
+								wResolvContent, e.getMessage()));
+
 					}
 
 				}
