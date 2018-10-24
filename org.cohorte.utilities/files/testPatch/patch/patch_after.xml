@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<patch>
+	<location where='after'>
+		<line># line to catch on location</line>
+	</location>
+	<text>
+		<line>line added after</line>
+	</text>
+</patch>

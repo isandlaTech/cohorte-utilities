@@ -27,8 +27,7 @@ public class CXFileTextPatcher {
 	/**
 	 * @param aFileText
 	 */
-	public CXFileTextPatcher(final CXFileText aFileToBePatched,
-			final CXFileText aFileToSaveOriginal)
+	public CXFileTextPatcher(final CXFileText aFileToBePatched, final CXFileText aFileToSaveOriginal)
 			throws IllegalArgumentException {
 		this(aFileToBePatched, aFileToSaveOriginal, null);
 	}
@@ -37,18 +36,15 @@ public class CXFileTextPatcher {
 	 * @param aFileText
 	 * @param aLogger
 	 */
-	public CXFileTextPatcher(final CXFileText aFileToBePatched,
-			final CXFileText aFileToSaveOriginal,
+	public CXFileTextPatcher(final CXFileText aFileToBePatched, final CXFileText aFileToSaveOriginal,
 			final IActivityLoggerBase aLogger) throws IllegalArgumentException {
 		super();
 
 		pFileToBePatched = validFileToBePatched(aFileToBePatched);
 		pFileToSaveOriginal = validSavedFileText(aFileToSaveOriginal);
 
-		pLogger = (aLogger != null) ? aLogger : CActivityLoggerNull
-				.getInstance();
-		pLogger.logInfo(this, "<init>",
-				"instanciated FileToBePatched=[%s] FileToSaveOriginal=[%s]",
+		pLogger = (aLogger != null) ? aLogger : CActivityLoggerNull.getInstance();
+		pLogger.logInfo(this, "<init>", "instanciated FileToBePatched=[%s] FileToSaveOriginal=[%s]",
 				pFileToBePatched.getName(), pFileToSaveOriginal.getName());
 	}
 
@@ -56,8 +52,7 @@ public class CXFileTextPatcher {
 	 * @param aTarget
 	 * @throws IllegalArgumentException
 	 */
-	public CXFileTextPatcher(final CXFileTextPatchTarget aTarget)
-			throws IllegalArgumentException {
+	public CXFileTextPatcher(final CXFileTextPatchTarget aTarget) throws IllegalArgumentException {
 		this(aTarget, Charset.defaultCharset().toString(), null);
 	}
 
@@ -66,8 +61,8 @@ public class CXFileTextPatcher {
 	 * @param aLogger
 	 * @throws IllegalArgumentException
 	 */
-	public CXFileTextPatcher(final CXFileTextPatchTarget aTarget,
-			final IActivityLoggerBase aLogger) throws IllegalArgumentException {
+	public CXFileTextPatcher(final CXFileTextPatchTarget aTarget, final IActivityLoggerBase aLogger)
+			throws IllegalArgumentException {
 		this(aTarget, Charset.defaultCharset().toString(), aLogger);
 	}
 
@@ -77,11 +72,9 @@ public class CXFileTextPatcher {
 	 * @param aLogger
 	 * @throws IllegalArgumentException
 	 */
-	public CXFileTextPatcher(final CXFileTextPatchTarget aTarget,
-			final String aEncoding, final IActivityLoggerBase aLogger)
-			throws IllegalArgumentException {
-		this(aTarget.getFileTextToBePatched(aEncoding), aTarget
-				.getFileTextToSaveOriginal(aEncoding), aLogger);
+	public CXFileTextPatcher(final CXFileTextPatchTarget aTarget, final String aEncoding,
+			final IActivityLoggerBase aLogger) throws IllegalArgumentException {
+		this(aTarget.getFileTextToBePatched(aEncoding), aTarget.getFileTextToSaveOriginal(aEncoding), aLogger);
 
 		pTargetOptions = aTarget.getOptions();
 	}
@@ -91,8 +84,7 @@ public class CXFileTextPatcher {
 	 * @param aLine
 	 * @param aPrefix
 	 */
-	private void addLine(final List<String> aListLines, final String aLine,
-			final String aPrefix) {
+	private void addLine(final List<String> aListLines, final String aLine, final String aPrefix) {
 		if (aPrefix != null) {
 			aListLines.add(String.format("%s%s", aPrefix, aLine));
 		} else {
@@ -106,58 +98,77 @@ public class CXFileTextPatcher {
 	 * @return
 	 * @throws Exception
 	 */
-	private List<String> applyOnePatch(final CXFileTextPatch aPatch,
-			final List<String> aLinesToBePatched) throws Exception {
+	private List<String> applyOnePatch(final CXFileTextPatch aPatch, final List<String> aLinesToBePatched)
+			throws Exception {
 
-		pLogger.logInfo(this, "applyOnePatch",
-				"LinesToBePatched size=[%d] Patch:%s",
-				(aLinesToBePatched != null) ? aLinesToBePatched.size() : -1,
-				aPatch);
+		pLogger.logInfo(this, "applyOnePatch", "LinesToBePatched size=[%d] Patch:%s",
+				(aLinesToBePatched != null) ? aLinesToBePatched.size() : -1, aPatch);
 
 		// test if the patch is not already in place
 		testIfPatchable(aLinesToBePatched, aPatch);
 
-		List<String> wLinesPatched = new ArrayList<String>();
+		List<String> wLinesPatched = new ArrayList<>();
 
 		// find the location
 		int wPatchStartLineIdx = findLocation(aLinesToBePatched, aPatch);
 
 		if (wPatchStartLineIdx < 0) {
-			throw new Exception(
-					String.format(
-							"Unable to find the location lines of the patch [%s]",
-							CXStringUtils.stringListToString(aPatch
-									.getLocationLines())));
+			throw new Exception(String.format("Unable to find the location lines of the patch [%s]",
+					CXStringUtils.stringListToString(aPatch.getLocationLines())));
 		}
 
-		pLogger.logInfo(this, "applyOnePatch", "PatchStartLineIdx=[%d]",
-				wPatchStartLineIdx);
+		pLogger.logInfo(this, "applyOnePatch", "PatchStartLineIdx=[%d]", wPatchStartLineIdx);
 
-		if (aPatch.isAfter()) {
-			wPatchStartLineIdx += aPatch.getNbLocationLines();
-		}
-
-		// copies lines before
-		for (int wIdx = 0; wIdx < wPatchStartLineIdx; wIdx++) {
-			addLine(wLinesPatched, aLinesToBePatched.get(wIdx),
-					calcPrefix(wLinesPatched, "before"));
-		}
-
-		// copies the lines of the patch
-		for (String wLine : aPatch.getTextLines()) {
-
-			if (pTargetOptions != null && pTargetOptions.mustReplaceVariables()
-					&& hasReplacementVariables()) {
-				wLine = replaceVariablesInLine(wLine,
-						pTargetOptions.getVariablesdDelimiter());
+		if (aPatch.isAlterLineAfter()) {
+			// copies lines before
+			for (int wIdx = 0; wIdx < wPatchStartLineIdx; wIdx++) {
+				addLine(wLinesPatched, aLinesToBePatched.get(wIdx), calcPrefix(wLinesPatched, "before"));
 			}
-			addLine(wLinesPatched, wLine, calcPrefix(wLinesPatched, "patch"));
-		}
+			// alter current patch line to add element in it
+			// add in the current line all string to be added if it doesn't
+			// exists
+			String wLineToPach = aLinesToBePatched.get(wPatchStartLineIdx);
 
-		// copies lines after
-		for (int wIdx = wPatchStartLineIdx; wIdx < aLinesToBePatched.size(); wIdx++) {
-			addLine(wLinesPatched, aLinesToBePatched.get(wIdx),
-					calcPrefix(wLinesPatched, "after"));
+			int wStartAlter = wLineToPach.indexOf(aPatch.getAlterLinStart()) + aPatch.getAlterLinStart().length();
+			String wLineToPachNew = "";
+			for (String wStringToReplace : aPatch.getTextLines()) {
+				if (!wLinesPatched.contains(wStringToReplace)) {
+					wLineToPachNew = wLineToPach.substring(0, wStartAlter) + wStringToReplace;
+					if (!wLineToPach.substring(wStartAlter).startsWith(aPatch.getAlterLineEnd())) {
+						wLineToPachNew += aPatch.getAlterLineSeparator();
+					}
+					wLineToPachNew += wLineToPach.substring(wStartAlter);
+
+				}
+				addLine(wLinesPatched, wLineToPachNew, calcPrefix(wLinesPatched, "alter"));
+
+			}
+
+			// copies lines after
+			for (int wIdx = wPatchStartLineIdx + 1; wIdx < aLinesToBePatched.size(); wIdx++) {
+				addLine(wLinesPatched, aLinesToBePatched.get(wIdx), calcPrefix(wLinesPatched, "after"));
+			}
+
+		} else {
+			if (aPatch.isAfter()) {
+				wPatchStartLineIdx += aPatch.getNbLocationLines();
+			}
+			// copies lines before
+			for (int wIdx = 0; wIdx < wPatchStartLineIdx; wIdx++) {
+				addLine(wLinesPatched, aLinesToBePatched.get(wIdx), calcPrefix(wLinesPatched, "before"));
+			}
+			// copies the lines of the patch
+			for (String wLine : aPatch.getTextLines()) {
+
+				if (pTargetOptions != null && pTargetOptions.mustReplaceVariables() && hasReplacementVariables()) {
+					wLine = replaceVariablesInLine(wLine, pTargetOptions.getVariablesdDelimiter());
+				}
+				addLine(wLinesPatched, wLine, calcPrefix(wLinesPatched, "patch"));
+			}
+			// copies lines after
+			for (int wIdx = wPatchStartLineIdx; wIdx < aLinesToBePatched.size(); wIdx++) {
+				addLine(wLinesPatched, aLinesToBePatched.get(wIdx), calcPrefix(wLinesPatched, "after"));
+			}
 		}
 
 		return wLinesPatched;
@@ -168,10 +179,9 @@ public class CXFileTextPatcher {
 	 * @param aSavedFileText
 	 * @throws Exception
 	 */
-	public List<String> applyPatches(final List<CXFileTextPatch> aListOfPaches)
-			throws Exception {
-		pLogger.logInfo(this, "applyPatches", "ListOfPaches size=[%d]",
-				(aListOfPaches != null) ? aListOfPaches.size() : -1);
+	public List<String> applyPatches(final List<CXFileTextPatch> aListOfPaches) throws Exception {
+		pLogger.logInfo(this, "applyPatches", "ListOfPaches size=[%d]", (aListOfPaches != null) ? aListOfPaches.size()
+				: -1);
 
 		// remove old result and the old patches
 		resetPatchedLines();
@@ -196,8 +206,7 @@ public class CXFileTextPatcher {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<String> applyPatchesAndSave(
-			final List<CXFileTextPatch> aListOfPaches) throws Exception {
+	public List<String> applyPatchesAndSave(final List<CXFileTextPatch> aListOfPaches) throws Exception {
 
 		pLogger.logInfo(this, "applyAndSavePatches", "ListOfPaches size=[%d]",
 				(aListOfPaches != null) ? aListOfPaches.size() : -1);
@@ -211,10 +220,8 @@ public class CXFileTextPatcher {
 	 * @param aPrefix
 	 * @return
 	 */
-	private String calcPrefix(final List<String> aListLines,
-			final String aPrefix) {
-		return (pApplyWithPrefix) ? String.format("%4d %6s >",
-				aListLines.size(), aPrefix) : null;
+	private String calcPrefix(final List<String> aListLines, final String aPrefix) {
+		return (pApplyWithPrefix) ? String.format("%4d %6s >", aListLines.size(), aPrefix) : null;
 	}
 
 	/**
@@ -222,11 +229,9 @@ public class CXFileTextPatcher {
 	 * @param aLocationLines
 	 * @return
 	 */
-	private int findLocation(final List<String> aLinesToBePatched,
-			final CXFileTextPatch aPatch) {
+	private int findLocation(final List<String> aLinesToBePatched, final CXFileTextPatch aPatch) {
 
-		pLogger.logInfo(this, "findLocation", "Nb Lines to find=[%d]", aPatch
-				.getLocationLines().size());
+		pLogger.logInfo(this, "findLocation", "Nb Lines to find=[%d]", aPatch.getLocationLines().size());
 
 		int wFoundStartIdx = -1;
 		int wNbFoundLines = 0;
@@ -237,15 +242,12 @@ public class CXFileTextPatcher {
 		for (String wLineToBePatched : aLinesToBePatched) {
 
 			if (wLocationLine == null) {
-				wLocationLine = aPatch
-						.getLoweredTrimedLocationLine(wNbFoundLines);
+				wLocationLine = aPatch.getLoweredTrimedLocationLine(wNbFoundLines);
 			}
 
-			if (wLineToBePatched != null
-					&& wLineToBePatched.toLowerCase().contains(wLocationLine)) {
+			if (wLineToBePatched != null && wLineToBePatched.toLowerCase().contains(wLocationLine)) {
 				wNbFoundLines++;
-				pLogger.logInfo(this, "findLocation", "NbFoundLines=[%d][%s]",
-						wNbFoundLines, wLocationLine);
+				pLogger.logInfo(this, "findLocation", "NbFoundLines=[%d][%s]", wNbFoundLines, wLocationLine);
 				wLocationLine = null;
 				if (wFoundStartIdx == -1) {
 					wFoundStartIdx = wLineToBePatchedIdx;
@@ -310,8 +312,7 @@ public class CXFileTextPatcher {
 	 * @return
 	 */
 	public boolean hasReplacementVariables() {
-		return pReplacementVariables != null
-				&& pReplacementVariables.size() > 0;
+		return pReplacementVariables != null && pReplacementVariables.size() > 0;
 	}
 
 	/**
@@ -326,8 +327,7 @@ public class CXFileTextPatcher {
 	 * @param aVariableDelimiter
 	 * @return
 	 */
-	private String replaceVariablesInLine(final String aLine,
-			final String aVariableDelimiter) {
+	private String replaceVariablesInLine(final String aLine, final String aVariableDelimiter) {
 
 		if (aLine == null || aLine.isEmpty()) {
 			return aLine;
@@ -336,25 +336,22 @@ public class CXFileTextPatcher {
 		if (wPosDelimStart == -1) {
 			return aLine;
 		}
-		int wPosDelimEnd = aLine.indexOf(aVariableDelimiter, wPosDelimStart
-				+ aVariableDelimiter.length());
+		int wPosDelimEnd = aLine.indexOf(aVariableDelimiter, wPosDelimStart + aVariableDelimiter.length());
 		if (wPosDelimEnd == -1) {
 			return aLine;
 		}
-		String wVariableName = aLine.substring(wPosDelimStart
-				+ aVariableDelimiter.length(), wPosDelimEnd);
+		String wVariableName = aLine.substring(wPosDelimStart + aVariableDelimiter.length(), wPosDelimEnd);
 
 		String wValue = pReplacementVariables.getProperty(wVariableName);
 		if (wValue == null) {
 			return aLine;
 		}
-		if (pTargetOptions != null && pTargetOptions.isRuleForceSlashOn()){
-			//replacing all occurrences of oldChars
+		if (pTargetOptions != null && pTargetOptions.isRuleForceSlashOn()) {
+			// replacing all occurrences of oldChars
 			wValue = wValue.replace('\\', '/');
 		}
-		String wNewLine = aLine.replace(
-				aLine.substring(wPosDelimStart, wPosDelimEnd
-						+ aVariableDelimiter.length()), wValue);
+		String wNewLine = aLine.replace(aLine.substring(wPosDelimStart, wPosDelimEnd + aVariableDelimiter.length()),
+				wValue);
 
 		if (!wNewLine.contains(aVariableDelimiter)) {
 			return wNewLine;
@@ -393,18 +390,15 @@ public class CXFileTextPatcher {
 	 */
 	private void saveResult(final List<String> aPatchedLines) throws Exception {
 
-		if (pFileToSaveOriginal.exists()){
+		if (pFileToSaveOriginal.exists()) {
 			boolean wDeleted = pFileToSaveOriginal.delete();
-			pLogger.logInfo(this, "saveResult", "DeletePreviousOriginal=[%s]",
-					wDeleted);
+			pLogger.logInfo(this, "saveResult", "DeletePreviousOriginal=[%s]", wDeleted);
 		}
 		pFileToBePatched.renameTo(pFileToSaveOriginal);
-		pLogger.logInfo(this, "saveResult", "SavedOriginal=[%s]",
-				pFileToSaveOriginal.getAbsolutePath());
+		pLogger.logInfo(this, "saveResult", "SavedOriginal=[%s]", pFileToSaveOriginal.getAbsolutePath());
 
 		pFileToBePatched.writeAll(aPatchedLines);
-		pLogger.logInfo(this, "saveResult", "  PatchedFile=[%s]",
-				pFileToBePatched.getAbsolutePath());
+		pLogger.logInfo(this, "saveResult", "  PatchedFile=[%s]", pFileToBePatched.getAbsolutePath());
 	}
 
 	/**
@@ -483,8 +477,8 @@ public class CXFileTextPatcher {
 	 *         be patched
 	 * @throws Exception
 	 */
-	private boolean testIfPatchable(final List<String> aLinesToBePatched,
-			final CXFileTextPatch aPatch) throws Exception {
+	private boolean testIfPatchable(final List<String> aLinesToBePatched, final CXFileTextPatch aPatch)
+			throws Exception {
 
 		try {
 			int wIdxPatchTextLine = 0;
@@ -492,14 +486,10 @@ public class CXFileTextPatcher {
 				int wIdxLineToBePatched = 0;
 				for (String wLineToBePatched : aLinesToBePatched) {
 
-					if (wLineToBePatched != null
-							&& wLineToBePatched.contains(wPatchTextLine.trim())) {
-						throw new Exception(
-								String.format(
-										"the line (%d)[%s] of the patch is already present in the line of the target (%d)[%s]",
-										wIdxPatchTextLine,
-										wPatchTextLine.trim(),
-										wIdxLineToBePatched, wLineToBePatched));
+					if (wLineToBePatched != null && wLineToBePatched.contains(wPatchTextLine.trim())) {
+						throw new Exception(String.format(
+								"the line (%d)[%s] of the patch is already present in the line of the target (%d)[%s]",
+								wIdxPatchTextLine, wPatchTextLine.trim(), wIdxLineToBePatched, wLineToBePatched));
 					}
 					wIdxLineToBePatched++;
 				}
@@ -507,9 +497,7 @@ public class CXFileTextPatcher {
 			}
 			return true;
 		} catch (Exception e) {
-			throw new Exception(
-					"One line of the patch is already present in the file to be patched",
-					e);
+			throw new Exception("One line of the patch is already present in the file to be patched", e);
 		}
 	}
 
@@ -518,24 +506,20 @@ public class CXFileTextPatcher {
 	 * @throws IllegalArgumentException
 	 *             if the passed File is not an existing file
 	 */
-	private CXFileText validFileToBePatched(final CXFileText aFileToBePatched)
-			throws IllegalArgumentException {
+	private CXFileText validFileToBePatched(final CXFileText aFileToBePatched) throws IllegalArgumentException {
 
 		if (aFileToBePatched == null) {
-			throw new IllegalArgumentException(
-					"Unable to instanciate a CXFilePatcher using a null CXFileText");
+			throw new IllegalArgumentException("Unable to instanciate a CXFilePatcher using a null CXFileText");
 		}
 		if (!aFileToBePatched.exists()) {
-			throw new IllegalArgumentException(
-					String.format(
-							"Unable to instanciate a CXFilePatcher using a unexisting CXFileText [%s]",
-							aFileToBePatched.getAbsolutePath()));
+			throw new IllegalArgumentException(String.format(
+					"Unable to instanciate a CXFilePatcher using a unexisting CXFileText [%s]",
+					aFileToBePatched.getAbsolutePath()));
 		}
 		if (!aFileToBePatched.isFile()) {
-			throw new IllegalArgumentException(
-					String.format(
-							"Unable to instanciate a CXFilePatcher using a non file CXFileText [%s]",
-							aFileToBePatched.getAbsolutePath()));
+			throw new IllegalArgumentException(String.format(
+					"Unable to instanciate a CXFilePatcher using a non file CXFileText [%s]",
+					aFileToBePatched.getAbsolutePath()));
 		}
 		return aFileToBePatched;
 	}
@@ -545,18 +529,15 @@ public class CXFileTextPatcher {
 	 * @return
 	 * @throws IllegalArgumentException
 	 */
-	private CXFileText validSavedFileText(final CXFileText aSavedFileText)
-			throws IllegalArgumentException {
+	private CXFileText validSavedFileText(final CXFileText aSavedFileText) throws IllegalArgumentException {
 		if (aSavedFileText == null) {
-			throw new IllegalArgumentException(
-					"Unable to save original file, the passed CXFileText is null ");
+			throw new IllegalArgumentException("Unable to save original file, the passed CXFileText is null ");
 		}
 		if (aSavedFileText.exists()) {
 			if (!aSavedFileText.isFile()) {
-				throw new IllegalArgumentException(
-						String.format(
-								"Unable to save original file, the passed CXFileText [%s] is'nt a file",
-								aSavedFileText.getAbsolutePath()));
+				throw new IllegalArgumentException(String.format(
+						"Unable to save original file, the passed CXFileText [%s] is'nt a file",
+						aSavedFileText.getAbsolutePath()));
 			}
 		}
 		return aSavedFileText;

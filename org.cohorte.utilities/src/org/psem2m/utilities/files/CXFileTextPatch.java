@@ -40,35 +40,44 @@ public class CXFileTextPatch {
 	 * @return
 	 * @throws Exception
 	 */
-	public static CXFileTextPatch parse(final Element wPatchElmt,
-			final Map<String, String> aReplacements) throws Exception {
+	public static CXFileTextPatch parse(final Element wPatchElmt, final Map<String, String> aReplacements)
+			throws Exception {
 		CXFileTextPatch wPatch = new CXFileTextPatch();
 
-		Element wLocationElmt = CXDomUtils.getFirstChildElmtByTag(wPatchElmt,
-				"location");
+		Element wLocationElmt = CXDomUtils.getFirstChildElmtByTag(wPatchElmt, "location");
 		if (wLocationElmt == null) {
-			throw new Exception(
-					"There's no [location] element in the [patch] element");
+			throw new Exception("There's no [location] element in the [patch] element");
 		}
-		List<Element> wLocationLineElemts = CXDomUtils.getElementsByTagName(
-				wLocationElmt, "line");
+		List<Element> wLocationLineElemts = CXDomUtils.getElementsByTagName(wLocationElmt, "line");
 		if (wLocationLineElemts.size() < 1) {
-			throw new Exception(
-					"There's no [line] element as child of the [location] element");
+			throw new Exception("There's no [line] element as child of the [location] element");
 		}
 
-		Element wTextElmt = CXDomUtils.getFirstChildElmtByTag(wPatchElmt,
-				"text");
+		Element wTextElmt = CXDomUtils.getFirstChildElmtByTag(wPatchElmt, "text");
 		if (wTextElmt == null) {
-			throw new Exception(
-					"There's no [text] element in the [text] element");
+			throw new Exception("There's no [text] element in the [text] element");
 		}
 
-		List<Element> wTextLineElemts = CXDomUtils.getElementsByTagName(
-				wTextElmt, "line");
+		List<Element> wAlterLine = CXDomUtils.getElementsByTagName(wLocationElmt, "alterLine");
+		if (wAlterLine.size() == 1) {
+			Element wStartAlterLine = CXDomUtils.getFirstChildElmtByTag(wAlterLine.get(0), "start");
+			wPatch.setAlterLinStart(CXDomUtils.getTextNode(wStartAlterLine));
+
+			Element wEndAlterLine = CXDomUtils.getFirstChildElmtByTag(wAlterLine.get(0), "end");
+			wPatch.setAlterLineEnd(CXDomUtils.getTextNode(wEndAlterLine));
+
+			Element wEndAlterSep = CXDomUtils.getFirstChildElmtByTag(wAlterLine.get(0), "sep");
+			wPatch.setAlterLineSeparator(CXDomUtils.getTextNode(wEndAlterSep));
+		} else {
+			wPatch.setAlterLinStart("");
+			wPatch.setAlterLineSeparator(",");
+			wPatch.setAlterLineEnd("");
+
+		}
+
+		List<Element> wTextLineElemts = CXDomUtils.getElementsByTagName(wTextElmt, "line");
 		if (wTextLineElemts.size() < 1) {
-			throw new Exception(
-					"There's no [line] element as child of the [text] element");
+			throw new Exception("There's no [line] element as child of the [text] element");
 		}
 
 		String wWhere = wLocationElmt.getAttribute("where");
@@ -94,17 +103,22 @@ public class CXFileTextPatch {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<CXFileTextPatch> parse(final List<Element> aPatchElmts,
-			final Map<String, String> aReplacements) throws Exception {
-		List<CXFileTextPatch> wPatches = new ArrayList<CXFileTextPatch>();
+	public static List<CXFileTextPatch> parse(final List<Element> aPatchElmts, final Map<String, String> aReplacements)
+			throws Exception {
+		List<CXFileTextPatch> wPatches = new ArrayList<>();
 		for (Element wPatchElmt : aPatchElmts) {
 			wPatches.add(parse(wPatchElmt, aReplacements));
 		}
 		return wPatches;
 	}
 
-	private final List<String> pLocationLines = new ArrayList<String>();
-	private final List<String> pTextLines = new ArrayList<String>();
+	private String pAlterLineEnd = null;
+	private String pAlterLineSep = null;
+	private String pAlterLineStart = null;
+
+	private final List<String> pLocationLines = new ArrayList<>();
+
+	private final List<String> pTextLines = new ArrayList<>();
 	public EPatchWhere pWhere = EPatchWhere.AFTER;
 
 	/**
@@ -112,6 +126,27 @@ public class CXFileTextPatch {
 	 */
 	public CXFileTextPatch() {
 		super();
+	}
+
+	/**
+	 * return the character that identify the first character of the string that
+	 * den
+	 * 
+	 * @return
+	 */
+	public String getAlterLineEnd() {
+		return pAlterLineEnd;
+	}
+
+	/**
+	 * return on alter line a separator between multiple value if it's necessary
+	 */
+	public String getAlterLineSeparator() {
+		return pAlterLineSep;
+	}
+
+	public String getAlterLinStart() {
+		return pAlterLineStart;
 	}
 
 	/**
@@ -165,10 +200,35 @@ public class CXFileTextPatch {
 	}
 
 	/**
+	 * alter the current line after the last character expressed in line to to
+	 * be patch
+	 * 
+	 * @return
+	 */
+	public boolean isAlterLineAfter() {
+		return pWhere == EPatchWhere.ALTERLINEAFTER;
+	}
+
+	/**
 	 * @return
 	 */
 	public boolean isBefore() {
 		return pWhere == EPatchWhere.BEFORE;
+	}
+
+	public void setAlterLineEnd(String aStr) {
+		pAlterLineEnd = aStr;
+	}
+
+	/**
+	 * return on alter line a separator between multiple value if it's necessary
+	 */
+	public void setAlterLineSeparator(String aStr) {
+		pAlterLineSep = aStr;
+	}
+
+	public void setAlterLinStart(String aStr) {
+		pAlterLineStart = aStr;
 	}
 
 	/**
@@ -203,10 +263,8 @@ public class CXFileTextPatch {
 	public String toString() {
 		StringBuilder wSB = new StringBuilder();
 		CXStringUtils.appendKeyValInBuff(wSB, "Where", pWhere.name());
-		CXStringUtils.appendKeyValInBuff(wSB, "LocationLines.size",
-				pLocationLines.size());
-		CXStringUtils.appendKeyValInBuff(wSB, "TextLines.size",
-				pTextLines.size());
+		CXStringUtils.appendKeyValInBuff(wSB, "LocationLines.size", pLocationLines.size());
+		CXStringUtils.appendKeyValInBuff(wSB, "TextLines.size", pTextLines.size());
 		return wSB.toString();
 	}
 }
@@ -216,5 +274,5 @@ public class CXFileTextPatch {
  * 
  */
 enum EPatchWhere {
-	AFTER, BEFORE;
+	AFTER, ALTERLINEAFTER, BEFORE;
 }

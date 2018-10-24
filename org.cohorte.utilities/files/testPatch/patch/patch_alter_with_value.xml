@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8'?>
+<patch>
+	<location where='alterlineafter'>
+		<line>myline&gt;</line>
+		<alterLine>
+			<start>&gt;</start>
+			<end>&lt;</end>
+			<separator>,</separator>
+		</alterLine>
+	</location>
+	<text>
+		<line>new</line>
+	</text>
+</patch>

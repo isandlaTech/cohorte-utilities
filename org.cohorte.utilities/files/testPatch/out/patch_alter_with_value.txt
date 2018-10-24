@@ -1,0 +1,3 @@
+﻿first unit test of patch after 
+
+<myline>new,test,test2</myline>
