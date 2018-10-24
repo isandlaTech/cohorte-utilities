@@ -3,6 +3,7 @@ package org.psem2m.utilities;
 import java.io.IOException;
 
 import org.psem2m.utilities.files.CXFileUtf8;
+import org.psem2m.utilities.files.CXFileUtf8WithoutBom;
 import org.w3c.dom.Node;
 
 /**
@@ -13,6 +14,10 @@ import org.w3c.dom.Node;
  *
  */
 public class CXPathUtils {
+	public static boolean WITH_BOM = false;
+
+	public static boolean WITHOUT_BOM = true;
+
 	/**
 	 * add in the xml store in path aXmlFilePath the value in the node
 	 * identified by the XPath
@@ -33,6 +38,7 @@ public class CXPathUtils {
 				wNode.setTextContent(wCurrentContent = wCurrentContent + aSeparator + aValue);
 			}
 		}
+		aXmlFile.delete();
 		// write the file in
 		aXmlFile.writeAll(wDom.toXml());
 	}
@@ -51,9 +57,9 @@ public class CXPathUtils {
 	 *            : separator to add if we already have data in the node
 	 * @throws Exception
 	 */
-	public static void appendTextInNode(String aXmlFilePath, String aXPath, String aValue, String aSeparator)
-			throws Exception {
-		CXFileUtf8 wFile = new CXFileUtf8(aXmlFilePath);
+	public static void appendTextInNode(String aXmlFilePath, String aXPath, String aValue, String aSeparator,
+			boolean aWithoutBom) throws Exception {
+		CXFileUtf8 wFile = aWithoutBom ? new CXFileUtf8WithoutBom(aXmlFilePath) : new CXFileUtf8(aXmlFilePath);
 		if (!wFile.exists()) {
 			throw new IOException(String.format("file %s not found ", aXmlFilePath));
 		}
@@ -116,6 +122,7 @@ public class CXPathUtils {
 				wNode.setTextContent(aValue);
 			}
 		}
+		aXmlFile.delete();
 		// write the file in
 		aXmlFile.writeAll(wDom.toXml());
 	}
@@ -134,8 +141,9 @@ public class CXPathUtils {
 	 *            : separator to add if we already have data in the node
 	 * @throws Exception
 	 */
-	public static void replaceTextInNode(String aXmlFilePath, String aXPath, String aValue) throws Exception {
-		CXFileUtf8 wFile = new CXFileUtf8(aXmlFilePath);
+	public static void replaceTextInNode(String aXmlFilePath, String aXPath, String aValue, boolean aWithOutBom)
+			throws Exception {
+		CXFileUtf8 wFile = aWithOutBom ? new CXFileUtf8WithoutBom(aXmlFilePath) : new CXFileUtf8(aXmlFilePath);
 		if (!wFile.exists()) {
 			throw new IOException(String.format("file %s not found ", aXmlFilePath));
 		}

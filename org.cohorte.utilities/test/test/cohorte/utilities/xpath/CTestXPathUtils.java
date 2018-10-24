@@ -9,6 +9,7 @@ import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 import org.psem2m.utilities.CXPathUtils;
 import org.psem2m.utilities.files.CXFileUtf8;
+import org.psem2m.utilities.files.CXFileUtf8WithoutBom;
 
 import junit.framework.TestCase;
 
@@ -44,12 +45,14 @@ public class CTestXPathUtils extends TestCase {
 		String wFileCheckPath = fileTestsOut + File.separatorChar + testFiles[0];
 
 		try {
-			CXFileUtf8 wIn = new CXFileUtf8(wFileInPath);
-			CXFileUtf8 wResult = new CXFileUtf8(wFileResultPath);
+			CXFileUtf8 wIn = new CXFileUtf8WithoutBom(wFileInPath);
+			CXFileUtf8 wResult = new CXFileUtf8WithoutBom(wFileResultPath);
+			wResult.delete();
 			wResult.writeAll(wIn.readAll());
 			String wData = CXPathUtils.readTextFromXPath(wFileInPath, testFiles[1]);
 			assertEquals(wData, testFiles[2]);
-			CXPathUtils.appendTextInNode(wFileResultPath, testFiles[1], testFiles[3], testFiles[4]);
+			CXPathUtils.appendTextInNode(wFileResultPath, testFiles[1], testFiles[3], testFiles[4],
+					CXPathUtils.WITHOUT_BOM);
 			CXFileUtf8 wFileResult = new CXFileUtf8(wFileResultPath);
 			CXFileUtf8 wFileCheck = new CXFileUtf8(wFileCheckPath);
 
