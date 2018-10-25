@@ -545,29 +545,26 @@ public class CJsonProvider implements IJsonProvider {
 								.split(SEP_PATH));
 						for (String wPath : wListPath) {
 							// if file we are allowed to put relative path
-							if (!wPath.startsWith(EProviderKind.FILE.toString()
-									+ "/")) {
-								// we include te current path
-								if (currentPath != null
-										&& !currentPath.isEmpty()) {
 
-									wPath = wPath.replace(
-											EProviderKind.FILE.toString(),
-											EProviderKind.FILE.toString()
-													+ currentPath
-													+ File.separatorChar);
+							// we include te current path
+							if (currentPath != null && !currentPath.isEmpty()) {
 
-								}
-								pLogger.logInfo(this, "resolveInclude",
-										"retrieve variable to replace from path");
-								replaceVars = aReplaceVars;
-								Map<String, String> wCurrentReplaceVars = getVariableFromPath(wPath);
-								if (wCurrentReplaceVars != null) {
-									if (replaceVars != null) {
-										replaceVars.putAll(wCurrentReplaceVars);
-									} else {
-										replaceVars = wCurrentReplaceVars;
-									}
+								wPath = wPath.replace(
+										EProviderKind.FILE.toString(),
+										EProviderKind.FILE.toString()
+												+ currentPath
+												+ File.separatorChar);
+
+							}
+							pLogger.logInfo(this, "resolveInclude",
+									"retrieve variable to replace from path");
+							replaceVars = aReplaceVars;
+							Map<String, String> wCurrentReplaceVars = getVariableFromPath(wPath);
+							if (wCurrentReplaceVars != null) {
+								if (replaceVars != null) {
+									replaceVars.putAll(wCurrentReplaceVars);
+								} else {
+									replaceVars = wCurrentReplaceVars;
 								}
 							}
 
@@ -576,7 +573,7 @@ public class CJsonProvider implements IJsonProvider {
 							CXListRsrcText wRsrcs = pJsonResolver.getContent(
 									wTag, wPath.isEmpty() ? wlTag.toString()
 											: wPath, aUseMemoryProvider,
-									aFathersContent);
+									wFathersContent);
 							if (wRsrcs != null && wRsrcs.size() > 0) {
 								for (CXRsrcText wRsrc : wRsrcs) {
 									// resolv subcontent
@@ -643,7 +640,7 @@ public class CJsonProvider implements IJsonProvider {
 					} else {
 						if (e instanceof IOException) {
 							throw new JSONException(String.format(
-									"can't resolve JSON=[%s], cause=[%s]",
+									"can't resolve JSON=[%s]\n cause=[%s]",
 									wResolvContent, e.getMessage()));
 						} else {
 							throw e;
