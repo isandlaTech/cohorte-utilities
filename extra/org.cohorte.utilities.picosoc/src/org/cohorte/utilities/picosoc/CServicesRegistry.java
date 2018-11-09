@@ -13,9 +13,9 @@ import java.util.logging.Level;
 public class CServicesRegistry extends CAbstractComponentBase implements
 		ISvcServiceRegistry {
 
-	private static CServicesRegistry sServicesRegistry;
-
 	private static final boolean SEARCH_MODE_STRICT = true;
+
+	private static CServicesRegistry sServicesRegistry;
 
 	/**
 	 * @return
@@ -39,7 +39,7 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 		return new CServicesRegistry();
 	}
 
-	private final Map<CServiceKey<?>, CServicReference<?>> pServicesRegistry = new HashMap<CServiceKey<?>, CServicReference<?>>();
+	private final Map<CServiceKey<?>, CServicReference<?>> pServicesRegistry = new HashMap<>();
 
 	/**
 	 * 
@@ -74,12 +74,13 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	public <T> boolean contains(Class<? extends T> aSpecification,
 			final Map<String, String> aProperties) {
 
-		return pServicesRegistry.containsKey(new CServiceKey<T>(aSpecification,
+		return pServicesRegistry.containsKey(new CServiceKey<>(aSpecification,
 				aProperties));
 	}
 
 	/**
-	 * MOD_OG_20151224 Dump format enhancement 
+	 * MOD_OG_20151224 Dump format enhancement
+	 * 
 	 * @return
 	 */
 	@Override
@@ -147,7 +148,7 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 				aProperties, SEARCH_MODE_STRICT);
 		if (wServicReference == null) {
 			throw new Exception(String.format("Unable to get the service [%s]",
-					new CServiceKey<T>(aSpecification, aProperties).toString()));
+					new CServiceKey<>(aSpecification, aProperties).toString()));
 		}
 
 		return wServicReference.getService();
@@ -170,7 +171,7 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 
 		if (wWebAppServicRef == null) {
 			throw new Exception(String.format("Unable to get the service [%s]",
-					new CServiceKey<T>(aSpecification, aProperties)));
+					new CServiceKey<>(aSpecification, aProperties)));
 		}
 		log(Level.FINE, this, "getServiceRef",
 				"specification=[%s] Service=[%s]",
@@ -191,9 +192,9 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	public <T> List<CServicReference<T>> getServiceRefs(
 			Class<? extends T> aSpecification, Map<String, String> aProperties) {
 
-		CServiceKey<T> wSearchedKey = new CServiceKey<T>(aSpecification,
+		CServiceKey<T> wSearchedKey = new CServiceKey<>(aSpecification,
 				aProperties);
-		List<CServicReference<T>> wServiceRefs = new ArrayList<CServicReference<T>>();
+		List<CServicReference<T>> wServiceRefs = new ArrayList<>();
 
 		synchronized (this) {
 			for (Map.Entry<CServiceKey<?>, CServicReference<?>> wEntry : pServicesRegistry
@@ -232,7 +233,7 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 			final Map<String, String> aProperties, final T aService)
 			throws Exception {
 
-		CServicReference<T> wWebAppServicRef = new CServicReference<T>(
+		CServicReference<T> wWebAppServicRef = new CServicReference<>(
 				aSpecification, aProperties, aService);
 
 		if (pServicesRegistry.containsKey(wWebAppServicRef.getServiceKey())) {
@@ -244,7 +245,7 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 		pServicesRegistry.put(wWebAppServicRef.getServiceKey(),
 				wWebAppServicRef);
 
-		log(Level.INFO, this, "registerService",
+		log(Level.FINER, this, "registerService",
 				"ServiceKey=[%s] Service=[%s] ServiceRef=[%s]",
 				wWebAppServicRef.getServiceKey(),
 				wWebAppServicRef.getService(), wWebAppServicRef);
@@ -291,7 +292,7 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 			final Map<String, String> aProperties,
 			final boolean aSearchModeStrict) {
 
-		CServiceKey<T> wSearchedKey = new CServiceKey<T>(aSpecification,
+		CServiceKey<T> wSearchedKey = new CServiceKey<>(aSpecification,
 				aProperties);
 
 		CServicReference<T> wServiceRef = (CServicReference<T>) pServicesRegistry

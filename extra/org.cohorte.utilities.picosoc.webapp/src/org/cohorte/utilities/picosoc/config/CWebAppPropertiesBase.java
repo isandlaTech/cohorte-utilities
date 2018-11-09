@@ -8,8 +8,10 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.TreeMap;
 
 import org.cohorte.utilities.IXResourceLocator;
 import org.cohorte.utilities.encode.CBase64Decoder;
@@ -51,6 +53,8 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 	 *            le location of the config files
 	 * @param aConfigName
 	 *            the prefix of the nbame of the confif files
+	 * @param aConfigResourceName
+	 *            the ???
 	 * @param aResourceLoaderClass
 	 *            aClass giving the package path and the classloader allowing
 	 *            the loadeing of the models of the config files
@@ -124,7 +128,7 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * org.cohorte.utilities.picosoc.webapp.ISvcWebAppProperties#dumpProperties
 	 * ()
@@ -135,9 +139,13 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 		final StringBuilder wSB = new StringBuilder();
 		wSB.append(String.format("nbPropoerties=[%d]", size()));
 		int wIdx = 0;
-		for (final Entry<Object, Object> wProperty : getProperties().entrySet()) {
-			wSB.append(String.format("\n(%2d)%40s=[%s]", wIdx, wProperty.getKey().toString(),
-					wProperty.getValue().toString()));
+
+		// MOD_OG_20181109 Dump sorted properties
+		Map<Object, Object> wSortedProperties = new TreeMap<>(getProperties());
+
+		for (final Entry<Object, Object> wProperty : wSortedProperties.entrySet()) {
+			wSB.append(String.format("\n(%2d)%40s=[%s]", wIdx, wProperty.getKey().toString(), wProperty.getValue()
+					.toString()));
 			wIdx++;
 		}
 		return wSB.toString();
@@ -158,7 +166,7 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see org.cohorte.utilities.picosoc.webapp.ISvcWebAppProperties#
 	 * getConfigBaseFile ()
 	 */
@@ -169,7 +177,7 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see org.cohorte.utilities.picosoc.webapp.ISvcWebAppProperties#
 	 * getConfigBaseFileName()
 	 */
@@ -194,7 +202,7 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * org.cohorte.utilities.picosoc.webapp.ISvcWebAppProperties#getConfigDir()
 	 */
@@ -205,7 +213,7 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * org.cohorte.utilities.picosoc.webapp.ISvcWebAppProperties#getConfigFile()
 	 */
@@ -216,13 +224,13 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see org.cohorte.utilities.picosoc.webapp.ISvcWebAppProperties#
 	 * getConfigFileName ()
 	 */
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see org.cohorte.utilities.picosoc.webapp.ISvcWebAppProperties#
 	 * getConfigFileName ()
 	 */
@@ -270,7 +278,7 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * org.cohorte.utilities.picosoc.webapp.ISvcWebAppProperties#getProperties()
 	 */
@@ -281,7 +289,7 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * com.isandlatech.x3.loadbalancer.ISvcWebAppListener#getWebAppProperty(
 	 * java.lang.String)
@@ -293,7 +301,7 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * com.isandlatech.x3.loadbalancer.ISvcWebAppListener#getWebAppProperty(
 	 * java.lang.String, java.lang.String)
@@ -303,8 +311,9 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 		String wValue = pProperties.getProperty(aPropertyName);
 		if (wValue == null) {
-			getLogger().logDebug("getWebAppProperty", "Property [%s] doesn't exist. Default value=[%s]", aPropertyName,
-					aDefault);
+			// MOD_OG_20181109
+			getLogger().logDebug(this, "getProperty", "Property [%s] doesn't exist, returns default=[%s]",
+					aPropertyName, aDefault);
 			wValue = aDefault;
 		}
 		return wValue;
@@ -312,7 +321,7 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see org.cohorte.utilities.picosoc.webapp.ISvcWebAppProperties#
 	 * getPropertyArray (java.lang.String, java.lang.String)
 	 */
@@ -324,7 +333,7 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see org.cohorte.utilities.picosoc.webapp.ISvcWebAppProperties#
 	 * getPropertyArray (java.lang.String, java.lang.String, java.lang.String[])
 	 */
@@ -338,7 +347,7 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * com.isandlatech.webapp.utilities.ISvcWebApp#getWebAppPropertyBool(java
 	 * .lang.String)
@@ -350,7 +359,7 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * org.cohorte.utilities.picosoc.webapp.ISvcWebAppProperties#getPropertyB64
 	 * (java.lang.String, java.lang.String)
@@ -364,7 +373,7 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * com.isandlatech.webapp.utilities.ISvcWebApp#getWebAppPropertyBool(java
 	 * .lang.String)
@@ -376,7 +385,7 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * com.isandlatech.webapp.utilities.ISvcWebApp#getWebAppPropertyBool(java
 	 * .lang.String, java.lang.String)
@@ -390,7 +399,7 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * com.isandlatech.x3.loadbalancer.ISvcWebAppListener#getWebAppPropertyInt
 	 * (java.lang.String)
@@ -402,7 +411,7 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * com.isandlatech.x3.loadbalancer.ISvcWebAppListener#getWebAppPropertyInt
 	 * (java.lang.String, java.lang.String)
@@ -477,8 +486,8 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 		// Load CURRENT config file
 		final Properties wProperties = readPropertiesXmlFile(getConfigFile());
 		if (wProperties != null) {
-			getLogger().logInfo(this, "init", "Read [%2d] properties from CURRENT config file [%s]", wProperties.size(),
-					wConfigFile);
+			getLogger().logInfo(this, "init", "Read [%2d] properties from CURRENT config file [%s]",
+					wProperties.size(), wConfigFile);
 
 			pProperties.putAll(wProperties);
 		}
@@ -533,7 +542,7 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * org.cohorte.utilities.picosoc.config.ISvcWebAppProperties#setPropertyB64
 	 * (java.lang.String, java.lang.String)
@@ -546,7 +555,7 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see org.cohorte.utilities.picosoc.webapp.ISvcWebAppProperties#size()
 	 */
 	@Override
@@ -556,7 +565,7 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override

@@ -8,7 +8,7 @@
 	</parent>
     <artifactId>org.cohorte.utilities.picosoc</artifactId>
     <!-- MOD_BD_20180117 -->
-	<version>1.0.1</version>
+	<version>1.0.2</version>
     <!--<version>1.0.0.201501211743</version>-->
     <packaging>jar</packaging>
 	

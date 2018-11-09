@@ -1,4 +1,12 @@
 
+1.0.1 to 1.0.2 (master)
+==================
+
+
+- MOD_OG_20181109 
+  - Trace level and trace line content adjustements
+
+
 1.0.0 to 1.0.1 (master)
 ==================
 
