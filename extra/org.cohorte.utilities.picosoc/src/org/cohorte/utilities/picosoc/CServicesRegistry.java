@@ -74,7 +74,7 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	public <T> boolean contains(Class<? extends T> aSpecification,
 			final Map<String, String> aProperties) {
 
-		return pServicesRegistry.containsKey(new CServiceKey<>(aSpecification,
+		return pServicesRegistry.containsKey(new CServiceKey<T>(aSpecification,
 				aProperties));
 	}
 
@@ -148,7 +148,7 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 				aProperties, SEARCH_MODE_STRICT);
 		if (wServicReference == null) {
 			throw new Exception(String.format("Unable to get the service [%s]",
-					new CServiceKey<>(aSpecification, aProperties).toString()));
+					new CServiceKey<T>(aSpecification, aProperties).toString()));
 		}
 
 		return wServicReference.getService();
@@ -171,7 +171,7 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 
 		if (wWebAppServicRef == null) {
 			throw new Exception(String.format("Unable to get the service [%s]",
-					new CServiceKey<>(aSpecification, aProperties)));
+					new CServiceKey<T>(aSpecification, aProperties)));
 		}
 		log(Level.FINE, this, "getServiceRef",
 				"specification=[%s] Service=[%s]",
@@ -192,7 +192,7 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	public <T> List<CServicReference<T>> getServiceRefs(
 			Class<? extends T> aSpecification, Map<String, String> aProperties) {
 
-		CServiceKey<T> wSearchedKey = new CServiceKey<>(aSpecification,
+		CServiceKey<T> wSearchedKey = new CServiceKey<T>(aSpecification,
 				aProperties);
 		List<CServicReference<T>> wServiceRefs = new ArrayList<>();
 
@@ -292,7 +292,7 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 			final Map<String, String> aProperties,
 			final boolean aSearchModeStrict) {
 
-		CServiceKey<T> wSearchedKey = new CServiceKey<>(aSpecification,
+		CServiceKey<T> wSearchedKey = new CServiceKey<T>(aSpecification,
 				aProperties);
 
 		CServicReference<T> wServiceRef = (CServicReference<T>) pServicesRegistry
