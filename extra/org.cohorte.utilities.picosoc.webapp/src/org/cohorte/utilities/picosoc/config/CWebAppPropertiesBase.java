@@ -141,7 +141,7 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 		int wIdx = 0;
 
 		// MOD_OG_20181109 Dump sorted properties
-		Map<Object, Object> wSortedProperties = new TreeMap<>(getProperties());
+		Map<Object, Object> wSortedProperties = new TreeMap<Object, Object>(getProperties());
 
 		for (final Entry<Object, Object> wProperty : wSortedProperties.entrySet()) {
 			wSB.append(String.format("\n(%2d)%40s=[%s]", wIdx, wProperty.getKey().toString(), wProperty.getValue()
