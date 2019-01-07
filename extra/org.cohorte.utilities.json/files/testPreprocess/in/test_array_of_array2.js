@@ -11,7 +11,7 @@
 					"location":"/root/${deploy.subdomain}/shells/check$(..).docker.name",
 					"lines":[// list of line to write in the file 
 						"#!/bin/sh",
-						'res=`ps -a | grep $.docker.name | wc -l`',
+						'res=`ps -a | grep $(..).docker.name | wc -l`',
 						'echo res'
 					]
 				}	

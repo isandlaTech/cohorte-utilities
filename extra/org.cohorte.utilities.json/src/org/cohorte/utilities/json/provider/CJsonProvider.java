@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.cohorte.utilities.json.provider.CJsonRsrcResolver.EProviderKind;
+import org.psem2m.utilities.CXException;
 import org.psem2m.utilities.CXQueryString;
 import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.json.JSONArray;
@@ -493,7 +494,8 @@ public class CJsonProvider implements IJsonProvider {
 		List<JSONObject> wFathersContent = getListFather(aFathersContent,
 				aContent);
 		Object wResolvContent = aContent;
-
+		wResolvContent = CJsonResolvTernary.resultTernary(wResolvContent,
+				pRhinoScriptEngine);
 		for (String wTag : pJsonResolver.getListTags()) {
 			// regexp that allow to catch the strings like
 
@@ -584,9 +586,6 @@ public class CJsonProvider implements IJsonProvider {
 											.replaceVariables(
 													wValidContent.toString(),
 													replaceVars);
-									wResolvVariable = CJsonResolvTernary
-											.resultTernary(wResolvVariable,
-													pRhinoScriptEngine);
 
 									wValidContent = checkIsJson(wResolvVariable);
 
@@ -647,7 +646,7 @@ public class CJsonProvider implements IJsonProvider {
 						if (e instanceof IOException) {
 							throw new JSONException(String.format(
 									"can't resolve JSON=[%s]\n cause=[%s]",
-									wResolvContent, e.getMessage()));
+									wResolvContent, CXException.eInString(e)));
 						} else {
 							throw e;
 						}
