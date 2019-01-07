@@ -8,6 +8,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: com.jayway.jsonpath,
  de.christophkraemer.rhino.javascript,
+ de.christophkraemer.rhino.util,
  org.javatuples,
  org.mozilla.javascript,
  org.osgi.framework,
@@ -20,7 +21,3 @@ Import-Package: com.jayway.jsonpath,
 Export-Package: org.cohorte.utilities.json,
  org.cohorte.utilities.json.provider,
  org.cohorte.utilities.json.provider.rsrc
-Bundle-ClassPath: libs/rhino-1.7.8-javadoc.jar,
- libs/rhino-1.7.8-sources.jar,
- libs/rhino-1.7.8.jar,
- .

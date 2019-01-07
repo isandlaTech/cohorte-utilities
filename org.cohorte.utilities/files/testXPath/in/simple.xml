@@ -2,8 +2,8 @@
 	<encyclopedie nom="Wikipedia" site="http://fr.wikipedia.org/">
 		<article nom="XPath">
 			<auteurs>
-				<auteur id="first">Dupont</auteur>
-				<auteur id="second">Dubois</auteur>
+				<auteur id="first.test">Dupont</auteur>
+				<auteur id="second.test">Dubois</auteur>
 			</auteurs>
 		</article>
 	</encyclopedie>

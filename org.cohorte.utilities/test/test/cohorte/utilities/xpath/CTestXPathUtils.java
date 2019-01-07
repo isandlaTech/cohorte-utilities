@@ -31,7 +31,7 @@ public class CTestXPathUtils extends TestCase {
 	 */
 	public static @DataPoints String[][] testFiles = {
 
-	{ "simple.xml", "//auteur[@id='second']", "Dubois", "Bertrand", "," } };
+	{ "simple.xml", "//auteur[@id='second.test']", "Dubois", "Bertrand", "," } };
 
 	@BeforeClass
 	public static void setup() {
