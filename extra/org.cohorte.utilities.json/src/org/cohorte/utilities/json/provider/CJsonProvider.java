@@ -580,11 +580,17 @@ public class CJsonProvider implements IJsonProvider {
 									Object wValidContent = getValidContent(wRsrc);
 									// must be a JSONArray or JSONObject
 									// replace vars in the resolve content
-									wValidContent = checkIsJson(CXStringUtils
+									String wResolvVariable = CXStringUtils
 											.replaceVariables(
 													wValidContent.toString(),
-													replaceVars));
+													replaceVars);
+									wResolvVariable = CJsonResolvTernary
+											.resultTernary(wResolvVariable,
+													pRhinoScriptEngine);
 
+									wValidContent = checkIsJson(wResolvVariable);
+
+									// call ternary resolve
 									// resolve json path from the father json
 									// object
 									// with the json to include
