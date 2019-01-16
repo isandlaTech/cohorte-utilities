@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 import javax.script.ScriptException;
 
+import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.json.JSONArray;
 import org.psem2m.utilities.json.JSONException;
 import org.psem2m.utilities.json.JSONObject;
@@ -27,7 +28,7 @@ import de.christophkraemer.rhino.javascript.RhinoScriptEngine;
 public class CJsonResolvTernary {
 
 	private static final Pattern sPattern = Pattern
-			.compile("\\(([\\=|<|>|<=|>=|\\!|\\$|\\(|\\)|\\s|\\w|\\{|\\}]*)\\)\\s*\\?([\\s|\\$|\\w|\\\\\\\"|'||\\(|\\)]*):([\\s|\\$|\\w|\\\\\\\"|'||\\(|\\)]*);");
+			.compile("\\(([\\=|<|>|<=|>=|\\!|\\$|\\(|\\)|\\s|\\w|\\{|\\}]*)\\)\\s*\\?([\\s|\\$|\\{|\\}|\\w|\\\\\\\"|'||\\(|\\)]*):([\\s|\\$|\\w|\\\\\\\"|'||\\{|\\}|\\(|\\)]*);");
 
 	public static Object resultTernary(final Object aContent,
 			final RhinoScriptEngine wRhinoScriptEngine) throws ScriptException,
@@ -113,12 +114,26 @@ public class CJsonResolvTernary {
 				try {
 					String wTrueResolved = wRhinoScriptEngine.eval(wTrueResult)
 							.toString();
-					wResult = wResult.replace(wFullMatch, wTrueResolved);
+					if (CXStringUtils.isFloat(wTrueResult)
+							|| CXStringUtils.isNumeric(wTrueResult)) {
+						wResult = wResult.replace("\"" + wFullMatch + "\"",
+								wTrueResult);
+					} else {
+						wResult = wResult.replace(wFullMatch, wTrueResolved);
 
+					}
 				} catch (Exception e) {
 					// no an expression to evaluate . it's not
 					// javascript
-					wResult = wResult.replace(wFullMatch, wTrueResult);
+					if (CXStringUtils.isFloat(wTrueResult)
+							|| CXStringUtils.isNumeric(wTrueResult)) {
+						wResult = wResult.replace("\"" + wFullMatch + "\"",
+								wTrueResult);
+
+					} else {
+						wResult = wResult.replace(wFullMatch, wTrueResult);
+
+					}
 
 				}
 			} else {
