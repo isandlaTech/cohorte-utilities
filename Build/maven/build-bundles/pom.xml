@@ -28,20 +28,9 @@
 		
 		<!-- MOD_OG #10 -->
 		<module>../../../ThirdPartiesLibs/org.cohorte.libs.org.mozilla.rhino</module>
-		<!-- MOD AP ,
-
-
-
-
-
-
-
-
-
-
-
- add jsonpath and janino for expression eval-->
+		<!-- MOD AP ,add jsonpath and janino for expression eval-->
 		<module>../../../ThirdPartiesLibs/org.cohorte.libs.com.jayway.jsonpath</module>
+		<module>../../../ThirdPartiesLibs/org.cohorte.libs.com.github.json2flat</module>
 
 		<module>../../../extra/org.cohorte.utilities.test</module>
 	
