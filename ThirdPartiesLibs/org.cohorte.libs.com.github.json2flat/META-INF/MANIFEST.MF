@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Json2flat
-Bundle-SymbolicName: org.cohorte.utilities.libs.com.github.json2flat
+Bundle-SymbolicName: org.cohorte.libs.com.github.json2flat
 Bundle-Version: 1.0.4
 Automatic-Module-Name: org.cohorte.utilities.libs.com.github.json2flat
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
