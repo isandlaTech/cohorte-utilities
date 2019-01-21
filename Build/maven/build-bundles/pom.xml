@@ -31,6 +31,7 @@
 		<!-- MOD AP ,add jsonpath and janino for expression eval-->
 		<module>../../../ThirdPartiesLibs/org.cohorte.libs.com.jayway.jsonpath</module>
 		<module>../../../ThirdPartiesLibs/org.cohorte.libs.com.github.json2flat</module>
+		<module>../../../ThirdPartiesLibs/org.cohorte.libs.javax.mail</module>
 
 		<module>../../../extra/org.cohorte.utilities.test</module>
 	

@@ -21,7 +21,7 @@
    <bundle id="org.cohorte.libs.com.mysql" version="5.0.8">
       <category name="libs"/>
    </bundle>
-    <bundle id="org.cohorte.libs.com.jayway.jsonpath" version="2.4.0">
+   <bundle id="org.cohorte.libs.com.jayway.jsonpath" version="2.4.0">
       <category name="libs"/>
    </bundle>
    <bundle id="org.cohorte.libs.com.sun.jna" version="3.3.0">
@@ -45,6 +45,7 @@
    <bundle id="org.cohorte.utilities.test" version="1.0.1">
       <category name="utilities.extra"/>
    </bundle>
+   <bundle id="org.cohorte.libs.javax.mail" version="1.4.0"/>
    <category-def name="utilities.extra" label="utilities.extra"/>
    <category-def name="libs" label="libs"/>
 </site>
