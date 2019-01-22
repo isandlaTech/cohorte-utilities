@@ -6,7 +6,8 @@ Bundle-Version: 1.4
 Automatic-Module-Name: org.cohorte.libs.javax.mail
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: libs/mail-1.4.jar,
- .
+ .,
+ libs/activation-1.1.1.jar
 Export-Package: com.sun.mail.handlers,
  com.sun.mail.iap,
  com.sun.mail.imap,
