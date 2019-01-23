@@ -550,12 +550,14 @@ public class CJsonProvider implements IJsonProvider {
 
 							// we include te current path
 							if (currentPath != null && !currentPath.isEmpty()) {
-
-								wPath = wPath.replace(
-										EProviderKind.FILE.toString(),
-										EProviderKind.FILE.toString()
-												+ currentPath
-												+ File.separatorChar);
+								if (!wPath.startsWith(EProviderKind.FILE
+										.toString() + "/")) {
+									wPath = wPath.replace(
+											EProviderKind.FILE.toString(),
+											EProviderKind.FILE.toString()
+													+ currentPath
+													+ File.separatorChar);
+								}
 
 							}
 							pLogger.logInfo(this, "resolveInclude",
