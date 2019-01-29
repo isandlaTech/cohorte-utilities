@@ -28,7 +28,7 @@ import de.christophkraemer.rhino.javascript.RhinoScriptEngine;
 public class CJsonResolvTernary {
 
 	private static final Pattern sPattern = Pattern
-			.compile("\\(([\\=|<|>|\\[|\\]|<=|>=|\\!|\\.|'|\\$|\\(|\\)|\\s|\\w|\\{|\\}]*)\\)\\s*\\?([\\s|\\[|\\]|\\$|\\/|\\{|\\}|\\w|\\.|\\\\\\\"|'||\\(|\\)]*):([\\s|\\[|\\]|\\$|\\w|\\\\\\\"|'|\\.|\\/||\\{|\\}|\\(|\\)]*);");
+			.compile("\\(([\\=|<|>|\\/|\\[|\\]|<=|>=|\\!|\\.|'|\\$|\\(|\\)|\\s|\\w|\\{|\\}]*)\\)\\s*\\?([\\s|\\[|\\]|\\$|\\/|\\{|\\}|\\w|\\.|\\\\\\\"|'||\\(|\\)]*):([\\s|\\[|\\]|\\$|\\w|\\\\\\\"|'|\\.|\\/||\\{|\\}|\\(|\\)]*);");
 
 	public static Object resultTernary(final Object aContent,
 			final RhinoScriptEngine wRhinoScriptEngine) throws ScriptException,
