@@ -1,0 +1,47 @@
+{
+	"$and":[
+		{
+			"myvalue":{
+				"$ne":"test"
+			}
+		},
+		{
+			"myvalue2":{
+				"$gte":1
+			}
+		},
+		{
+			"$or":[
+				{
+					"testF":"testV"
+				},
+				{
+					"foo":{
+						"$in":["myin1","myin2"]
+					}
+				}
+			]
+		},
+		{
+			"testlte":{
+				"$lte":10
+			}
+		},
+		{
+			"testlt":{
+				"$lt":10
+			}
+		},
+		{
+			"testgt":{
+				"$gt":10
+			}
+		},
+		{
+			"testlt":{
+				"$nin":["noin1","noin2"]
+			}
+		}
+		
+	]
+}
