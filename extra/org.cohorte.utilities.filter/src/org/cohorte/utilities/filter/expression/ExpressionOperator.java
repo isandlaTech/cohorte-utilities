@@ -9,7 +9,7 @@ import java.util.List;
  * @author apisu
  *
  */
-public enum EOperator {
+public enum ExpressionOperator {
 
 	EQ(new String[] { "$eq", "" }, true, false),
 
@@ -21,18 +21,18 @@ public enum EOperator {
 	private boolean pIsOperandArray;
 	private boolean pHasField;
 
-	EOperator() {
+	ExpressionOperator() {
 		pValues = new ArrayList<>();
 	}
 
-	EOperator(String aValues, boolean aIsHasField, boolean isOperandArray) {
+	ExpressionOperator(String aValues, boolean aIsHasField, boolean isOperandArray) {
 		this();
 		pValues.add(aValues);
 		pIsOperandArray = isOperandArray;
 		pHasField = aIsHasField;
 	}
 
-	EOperator(String[] aValues, boolean aIsHasField, boolean isOperandArray) {
+	ExpressionOperator(String[] aValues, boolean aIsHasField, boolean isOperandArray) {
 		this();
 		if (aValues != null) {
 			for (String wVal : aValues) {
@@ -61,8 +61,8 @@ public enum EOperator {
 	 * @param aValue
 	 * @return
 	 */
-	public static EOperator getEnum(String value) {
-		for (EOperator v : values())
+	public static ExpressionOperator getEnum(String value) {
+		for (ExpressionOperator v : values())
 			if (v.getValues().contains(value))
 				return v;
 		return null;

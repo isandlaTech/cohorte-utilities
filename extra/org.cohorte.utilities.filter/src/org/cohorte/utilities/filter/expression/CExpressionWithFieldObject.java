@@ -22,7 +22,7 @@ public class CExpressionWithFieldObject extends CExpressionWithField implements 
 		this.pValue = pValue;
 	}
 
-	public CExpressionWithFieldObject(String aField, EOperator aOperator) {
+	public CExpressionWithFieldObject(String aField, ExpressionOperator aOperator) {
 		super(aField, aOperator);
 	}
 

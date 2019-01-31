@@ -1,1 +1,1 @@
- (  'myvalue'  !=  'test'  AND  'myvalue2'  >=  1  AND  (  'testF'  =  'testV'  OR  'foo'  IN  (  'myin1' , 'myin2'  )  )  AND  'testlte'  <=  10  AND  'testlt'  <  10  AND  'testgt'  >  10  AND  'testlt'  NOT IN  (  'noin1' , 'noin2'  )  ) 
+ ( myvalue != 'test' AND myvalue2 >= 1 AND ( testF = 'testV' OR foo IN ('myin1','myin2') ) AND testlte <= 10 AND testlt < 10 AND testgt > 10 AND testlt NOT IN ('noin1','noin2') ) 

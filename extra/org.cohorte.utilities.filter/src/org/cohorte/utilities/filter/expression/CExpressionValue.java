@@ -12,7 +12,7 @@ public class CExpressionValue extends CExpressionWithField implements IExpressio
 
 	private Object pValue;
 
-	public CExpressionValue(String aField, EOperator aOperator, Object aValue) {
+	public CExpressionValue(String aField, ExpressionOperator aOperator, Object aValue) {
 		super(aField, aOperator);
 		pValue = aValue;
 	}

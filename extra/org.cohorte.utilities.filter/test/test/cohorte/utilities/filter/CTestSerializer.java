@@ -4,7 +4,7 @@ import java.io.File;
 
 import org.cohorte.utilities.filter.expression.CExpression;
 import org.cohorte.utilities.filter.parser.CParser;
-import org.cohorte.utilities.filter.serializer.CSQLTranslator;
+import org.cohorte.utilities.filter.serializer.CSQLStringTranslator;
 import org.cohorte.utilities.filter.serializer.CSerializer;
 import org.junit.BeforeClass;
 import org.junit.experimental.theories.DataPoints;
@@ -27,13 +27,14 @@ public class CTestSerializer extends TestCase {
 	public static @DataPoints String[][] testFiles = { { "filter_empty.js", "filter_empty.out" },
 			{ "filter_eq.js", "filter_eq.out" }, { "filter_and.js", "filter_and.out" } };
 
-	private static CSQLTranslator pSqlTranslator;
+	private static CSQLStringTranslator pSqlTranslator;
+	private static CSerializer<String> pSerializer;
 
 	@BeforeClass
 	public static void setup() {
 
-		pSqlTranslator = new CSQLTranslator();
-
+		pSqlTranslator = new CSQLStringTranslator(null);
+		pSerializer = new CSerializer<>();
 	}
 
 	/**
@@ -54,10 +55,11 @@ public class CTestSerializer extends TestCase {
 			System.out.println("------");
 
 			CExpression wExpression = CParser.parse(in);
-			String wResult = CSerializer.serializer(wExpression, pSqlTranslator);
 			if (wExpression == null && wOut.isEmpty()) {
 				assertTrue(true);
 			} else {
+				String wResult = String.join(" ", pSerializer.serializer(wExpression, pSqlTranslator));
+
 				System.out.println(wResult);
 				System.out.println(wOut);
 

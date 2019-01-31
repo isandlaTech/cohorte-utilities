@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface IExpressionArray {
 
-	public List<Object> getListValue();
+	public List<IExpression> getListValue();
 }

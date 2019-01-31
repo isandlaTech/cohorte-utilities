@@ -14,28 +14,24 @@ import org.psem2m.utilities.CXStringUtils;
  */
 public class CExpressionArray extends CExpression implements IExpressionArray {
 
-	private final List<Object> pListExpression;
+	private final List<IExpression> pListExpression;
 
-	public CExpressionArray(EOperator aOperator) {
+	public CExpressionArray(ExpressionOperator aOperator) {
 		super(aOperator);
 		pListExpression = new ArrayList<>();
 	}
 
-	public List<Object> getListValue() {
+	public List<IExpression> getListValue() {
 		return pListExpression;
 	}
 
-	public void addExpression(CExpressionWithField aExpression) {
+	public void addExpression(IExpression aExpression) {
 		pListExpression.add(aExpression);
 	}
 
-	public void setValues(List<Object> aListExpressions) {
+	public void setValues(List<IExpression> aListExpressions) {
 		pListExpression.clear();
 		pListExpression.addAll(aListExpressions);
-	}
-
-	public void addValue(String aValue) {
-		pListExpression.add(aValue);
 	}
 
 	@Override
@@ -44,7 +40,6 @@ public class CExpressionArray extends CExpression implements IExpressionArray {
 		CXStringUtils.appendKeyValInBuff(aBuffer, "expressions_size", pListExpression.size());
 
 		for (Object wItem : pListExpression) {
-			CXStringUtils.appendKeyValInBuff(aBuffer, "isExpression", wItem instanceof CExpression);
 			CXStringUtils.appendKeyValInBuff(aBuffer, "value",
 					wItem instanceof CExpression ? ((CExpression) wItem).toDescription() : wItem.toString());
 

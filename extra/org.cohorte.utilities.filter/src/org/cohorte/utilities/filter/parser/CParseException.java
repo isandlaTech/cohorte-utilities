@@ -8,6 +8,10 @@ public class CParseException extends CXException {
 		super(aMessage);
 	}
 
+	public CParseException(Throwable aThrow, String aMessage) {
+		super(aThrow, aMessage);
+	}
+
 	/**
 	 * 
 	 */

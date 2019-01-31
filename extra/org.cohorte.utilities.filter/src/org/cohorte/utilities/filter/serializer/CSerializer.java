@@ -3,16 +3,12 @@ package org.cohorte.utilities.filter.serializer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.cohorte.utilities.filter.expression.CExpression;
-import org.cohorte.utilities.filter.expression.CExpressionArray;
-import org.cohorte.utilities.filter.expression.CExpressionWithField;
-import org.cohorte.utilities.filter.expression.CExpressionWithFieldArray;
-import org.cohorte.utilities.filter.expression.EOperator;
+import org.cohorte.utilities.filter.expression.IExpression;
 import org.cohorte.utilities.filter.expression.IExpressionArray;
-import org.cohorte.utilities.filter.expression.IExpressionObject;
+import org.cohorte.utilities.filter.expression.IExpressionFieldArray;
 import org.cohorte.utilities.filter.expression.IExpressionValue;
 
-public class CSerializer {
+public class CSerializer<T> {
 	/**
 	 * serialize the expression regarding the kind of serialization asked and using
 	 * the translator
@@ -21,70 +17,38 @@ public class CSerializer {
 	 * @param aTranslator
 	 * @return
 	 */
-	public static String serializer(CExpression aExpression, ITranslator aTranslator) throws CSerializeException {
+	public List<T> serializer(IExpression aExpression, ITranslator<T> aTranslator) throws CSerializeException {
 		// browser the expression
 		if (aExpression == null || aTranslator == null) {
-			return "";
+			return null;
 		}
-		String wCondition = "";
-		EOperator wOperator = aExpression.getOperator();
-		String wTranslatedOperator = null;
-		String wTranslateField = null;
-		String wTranslateOperande = null;
-		// in that case we have field operator and subexpression
+		List<T> wListCondition = new ArrayList<>();
+		return serializer(wListCondition, aExpression, aTranslator);
 
-		if (aExpression instanceof CExpressionArray) {
-			CExpressionArray wExp = (CExpressionArray) aExpression;
-			List<String> wSubExp = serializer((IExpressionArray) wExp, aTranslator);
-			wTranslateOperande = aTranslator.getStartCondition()
-					+ String.join(aTranslator.translateOperator(wOperator), wSubExp) + aTranslator.getEndCondition();
-		} else {
-			wTranslatedOperator = aTranslator.translateOperator(wOperator);
-			if (aExpression instanceof CExpressionWithFieldArray) {
-				CExpressionWithFieldArray wExp = (CExpressionWithFieldArray) aExpression;
-				List<String> wSubExp = serializer((IExpressionArray) wExp, aTranslator);
-				wTranslateOperande = aTranslator.getStartCondition()
-						+ String.join(aTranslator.getFieldSeparator(), wSubExp) + aTranslator.getEndCondition();
-
-			}
-			if (aExpression instanceof IExpressionValue) {
-				IExpressionValue wExp = (IExpressionValue) aExpression;
-				wTranslateOperande = aTranslator.translateOperande(wExp.getValue());
-			} else if (aExpression instanceof IExpressionObject) {
-				IExpressionObject wExp = (IExpressionObject) aExpression;
-				wTranslateOperande = serializer(wExp.getValue(), aTranslator);
-
-			}
-		}
-		if (aExpression instanceof CExpressionWithField) {
-			CExpressionWithField wExprField = (CExpressionWithField) aExpression;
-			wTranslateField = aTranslator.translateOperande(wExprField.getField());
-		}
-		for (EArgumentOrder wArg : aTranslator.getOrderArgument()) {
-			if (wArg == EArgumentOrder.FIELD && wTranslateField != null) {
-				wCondition += wTranslateField;
-			} else if (wArg == EArgumentOrder.OPERATOR && wTranslatedOperator != null) {
-				wCondition += wTranslatedOperator;
-
-			} else if (wArg == EArgumentOrder.OPERANDE && wTranslateOperande != null) {
-				wCondition += wTranslateOperande;
-
-			}
-		}
-		return wCondition;
 	}
 
-	public static List<String> serializer(IExpressionArray aExpression, ITranslator aTranslator)
+	private List<T> serializer(List<T> aListCondition, IExpression aExpression, ITranslator<T> aTranslator)
 			throws CSerializeException {
-		List<String> wListSubExp = new ArrayList<>();
-		for (Object wVal : aExpression.getListValue()) {
-			if (wVal instanceof CExpression) {
-				wListSubExp.add(serializer((CExpression) wVal, aTranslator));
-			} else {
-				wListSubExp.add(aTranslator.translateOperande(wVal));
+
+		// in that case we have field operator and subexpression
+
+		if (aExpression instanceof IExpressionArray) {
+			List<T> wArrListCondition = new ArrayList<>();
+			IExpressionArray wExp = (IExpressionArray) aExpression;
+			List<IExpression> wListObj = wExp.getListValue();
+			for (IExpression wVal : wListObj) {
+				serializer(wArrListCondition, wVal, aTranslator);
 			}
+			aListCondition.add(aTranslator.translateExpression(aExpression.getOperator(), wArrListCondition));
+
+		} else if (aExpression instanceof IExpressionFieldArray) {
+			aListCondition.add(aTranslator.translateExpression((IExpressionFieldArray) aExpression));
+		} else if (aExpression instanceof IExpressionValue) {
+			aListCondition.add(aTranslator.translateExpression((IExpressionValue) aExpression));
 		}
-		return wListSubExp;
+
+		return aListCondition;
+
 	}
 
 }

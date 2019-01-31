@@ -1,63 +1,22 @@
 package org.cohorte.utilities.filter.serializer;
 
-import org.cohorte.utilities.filter.expression.EOperator;
+import java.util.List;
 
-public interface ITranslator {
+import org.cohorte.utilities.filter.expression.ExpressionOperator;
+import org.cohorte.utilities.filter.expression.IExpressionFieldArray;
+import org.cohorte.utilities.filter.expression.IExpressionValue;
 
-	/**
-	 * translate the field
-	 * 
-	 * @param aExpressionField
-	 * @return
-	 */
-	public String getStartCondition();
-
-	public String getFieldSeparator();
-
-	/**
-	 * translate the field
-	 * 
-	 * @param aExpressionField
-	 * @return
-	 */
-	public String getEndCondition();
-
-	/**
-	 * translate the field
-	 * 
-	 * @param aExpressionField
-	 * @return
-	 */
-	public String translateField(String aExpressionField, IFunction<String, String> aTansformField);
+public interface ITranslator<T> {
 
 	/**
 	 * 
-	 * @param aExpressionField
+	 * @param aExpression
 	 * @return
 	 */
-	public String translateField(String aExpressionField);
+	public T translateExpression(IExpressionValue aExpression);
 
-	/**
-	 * tranlate the operator
-	 * 
-	 * @param aOperator
-	 * @return
-	 */
-	public String translateOperator(EOperator aOperator);
+	public T translateExpression(IExpressionFieldArray aExpression);
 
-	/**
-	 * translate the value
-	 * 
-	 * @param aValue
-	 * @return
-	 */
-	public String translateOperande(Object aValue);
+	public T translateExpression(ExpressionOperator aOperator, List<T> aListOfExpression);
 
-	/**
-	 * return the order to serialize the argument (e.g in SQL field operator
-	 * operande or expression operator expression ....)
-	 * 
-	 * @return
-	 */
-	public EArgumentOrder[] getOrderArgument();
 }

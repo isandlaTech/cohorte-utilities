@@ -3,14 +3,14 @@ package org.cohorte.utilities.filter.expression;
 import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.IXDescriber;
 
-public abstract class CExpression implements IXDescriber {
-	private EOperator pOperator;
+public abstract class CExpression implements IXDescriber, IExpression {
+	private ExpressionOperator pOperator;
 
-	public EOperator getOperator() {
+	public ExpressionOperator getOperator() {
 		return pOperator;
 	}
 
-	public CExpression(EOperator aOperator) {
+	public CExpression(ExpressionOperator aOperator) {
 		pOperator = aOperator;
 
 	}

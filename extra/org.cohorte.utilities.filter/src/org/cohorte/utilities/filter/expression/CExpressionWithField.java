@@ -10,7 +10,7 @@ public abstract class CExpressionWithField extends CExpression {
 		return pField;
 	}
 
-	public CExpressionWithField(String aField, EOperator aOperator) {
+	public CExpressionWithField(String aField, ExpressionOperator aOperator) {
 		super(aOperator);
 		pField = aField;
 

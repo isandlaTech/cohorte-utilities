@@ -9,43 +9,40 @@ import org.psem2m.utilities.CXStringUtils;
  * desrcibe an expression that admit only an array that admit a field and an
  * array as operator
  * 
+ * operator that contains only values
+ * 
  * @author apisu
  *
  */
-public class CExpressionWithFieldArray extends CExpressionWithField implements IExpressionArray {
+public class CExpressionWithFieldArray extends CExpressionWithField implements IExpressionFieldArray {
 
-	private final List<Object> pListExpression;
+	private final List<Object> pListObject;
 
-	public CExpressionWithFieldArray(String aField, EOperator aOperator) {
+	public CExpressionWithFieldArray(String aField, ExpressionOperator aOperator) {
 		super(aField, aOperator);
-		pListExpression = new ArrayList<>();
+		pListObject = new ArrayList<>();
 	}
 
 	public List<Object> getListValue() {
-		return pListExpression;
-	}
-
-	public void addExpression(CExpression aExpression) {
-		pListExpression.add(aExpression);
+		return pListObject;
 	}
 
 	public void setValues(List<Object> aListExpressions) {
-		pListExpression.clear();
-		pListExpression.addAll(aListExpressions);
+		pListObject.clear();
+		pListObject.addAll(aListExpressions);
 	}
 
 	public void addValue(String aValue) {
-		pListExpression.add(aValue);
+		pListObject.add(aValue);
 	}
 
 	@Override
 	public Appendable addDescriptionInBuffer(Appendable aBuffer) {
 		super.addDescriptionInBuffer(aBuffer);
 
-		CXStringUtils.appendKeyValInBuff(aBuffer, "expressions_size", pListExpression.size());
+		CXStringUtils.appendKeyValInBuff(aBuffer, "value_size", pListObject.size());
 
-		for (Object wItem : pListExpression) {
-			CXStringUtils.appendKeyValInBuff(aBuffer, "isExpression", wItem instanceof CExpression);
+		for (Object wItem : pListObject) {
 			CXStringUtils.appendKeyValInBuff(aBuffer, "value",
 					wItem instanceof CExpression ? ((CExpression) wItem).toDescription() : wItem.toString());
 
