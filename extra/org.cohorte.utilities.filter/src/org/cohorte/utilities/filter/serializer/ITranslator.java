@@ -10,7 +10,7 @@ public interface ITranslator<T> {
 
 	/**
 	 * translate List of Expression and operator
-	 * 
+	 *
 	 * @param aOperator
 	 * @param aListOfExpression
 	 * @return
@@ -19,7 +19,7 @@ public interface ITranslator<T> {
 
 	/**
 	 * translate Expression Field Array that admit field, operator, array of object
-	 * 
+	 *
 	 * @param aExpression
 	 * @return
 	 */
@@ -28,7 +28,7 @@ public interface ITranslator<T> {
 	/**
 	 * translate Expression value that admit field, operator, object and not
 	 * expression
-	 * 
+	 *
 	 * @param aExpression
 	 * @return
 	 */

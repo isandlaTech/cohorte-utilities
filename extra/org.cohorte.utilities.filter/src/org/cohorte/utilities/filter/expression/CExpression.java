@@ -3,6 +3,11 @@ package org.cohorte.utilities.filter.expression;
 import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.IXDescriber;
 
+/**
+ * abtract class that modelize an Expression
+ * @author apisu
+ *
+ */
 public abstract class CExpression implements IXDescriber, IExpression {
 	private ExpressionOperator pOperator;
 

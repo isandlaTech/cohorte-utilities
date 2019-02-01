@@ -29,6 +29,10 @@ public class CExpressionArray extends CExpression implements IExpressionArray {
 		pListExpression.add(aExpression);
 	}
 
+	/**
+	 * set list of expression
+	 * @param aListExpressions
+	 */
 	public void setValues(List<IExpression> aListExpressions) {
 		pListExpression.clear();
 		pListExpression.addAll(aListExpressions);

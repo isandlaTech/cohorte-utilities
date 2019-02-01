@@ -12,12 +12,13 @@ public class CSerializer<T> {
 	/**
 	 * serialize the expression regarding the kind of serialization asked and using
 	 * the translator
-	 * 
+	 *
 	 * @param aExpression
 	 * @param aTranslator
 	 * @return
 	 */
-	public List<T> serializer(IExpression aExpression, ITranslator<T> aTranslator) throws CSerializeException {
+	public List<T> serializer(final IExpression aExpression, final ITranslator<T> aTranslator)
+			throws CSerializeException {
 		// browser the expression
 		if (aExpression == null || aTranslator == null) {
 			return null;
@@ -27,8 +28,8 @@ public class CSerializer<T> {
 
 	}
 
-	private List<T> serializer(List<T> aListCondition, IExpression aExpression, ITranslator<T> aTranslator)
-			throws CSerializeException {
+	private List<T> serializer(final List<T> aListCondition, final IExpression aExpression,
+			final ITranslator<T> aTranslator) throws CSerializeException {
 
 		// in that case we have field operator and subexpression
 

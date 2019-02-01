@@ -17,55 +17,17 @@ import org.psem2m.utilities.json.JSONObject;
 /**
  * parse the Json that correspond to filters and create CFilters object that
  * represent it
- * 
+ *
  * @author apisu
  *
  */
 public class CParser {
-	private static List<Object> parseValue(JSONArray aArray) throws CParseException {
-		List<Object> wValues = new ArrayList<>();
-		for (int i = 0; i < aArray.length(); i++) {
-			Object wItem = aArray.opt(i);
-			if (wItem instanceof JSONObject) {
-				wValues.add(parse((JSONObject) wItem));
-			} else if (wItem instanceof JSONArray) {
-				throw new CParseException("");
-			} else {
-				wValues.add(wItem);
-			}
-		}
-		return wValues;
-	}
 
-	private static List<IExpression> parseExpressions(JSONArray aArray) throws CParseException {
-		List<IExpression> wValues = new ArrayList<>();
-		for (int i = 0; i < aArray.length(); i++) {
-			Object wItem = aArray.opt(i);
-			if (wItem instanceof JSONObject) {
-				wValues.add(parse((JSONObject) wItem));
-			} else {
-				throw new CParseException("");
-			}
-		}
-		return wValues;
-	}
-
-	public static CExpression parse(JSONObject aObject) throws CParseException {
+	public static CExpression parse(final JSONObject aObject) throws CParseException {
 		return parse(aObject, null);
 	}
 
-	public static CExpression parse(String aFilter) throws CParseException {
-		JSONObject wObject;
-		try {
-			wObject = new JSONObject(aFilter);
-			return parse(wObject, null);
-
-		} catch (JSONException e) {
-			throw new CParseException(e, "can't parse Filter");
-		}
-	}
-
-	public static CExpression parse(JSONObject aObject, String aField) throws CParseException {
+	public static CExpression parse(final JSONObject aObject, final String aField) throws CParseException {
 		ExpressionOperator wOperator = null;
 		String wField = aField;
 		CExpression wExp = null;
@@ -121,5 +83,44 @@ public class CParser {
 		}
 
 		return wExp;
+	}
+
+	public static CExpression parse(final String aFilter) throws CParseException {
+		JSONObject wObject;
+		try {
+			wObject = new JSONObject(aFilter);
+			return parse(wObject, null);
+
+		} catch (JSONException e) {
+			throw new CParseException(e, "can't parse Filter");
+		}
+	}
+
+	private static List<IExpression> parseExpressions(final JSONArray aArray) throws CParseException {
+		List<IExpression> wValues = new ArrayList<>();
+		for (int i = 0; i < aArray.length(); i++) {
+			Object wItem = aArray.opt(i);
+			if (wItem instanceof JSONObject) {
+				wValues.add(parse((JSONObject) wItem));
+			} else {
+				throw new CParseException("");
+			}
+		}
+		return wValues;
+	}
+
+	private static List<Object> parseValue(final JSONArray aArray) throws CParseException {
+		List<Object> wValues = new ArrayList<>();
+		for (int i = 0; i < aArray.length(); i++) {
+			Object wItem = aArray.opt(i);
+			if (wItem instanceof JSONObject) {
+				wValues.add(parse((JSONObject) wItem));
+			} else if (wItem instanceof JSONArray) {
+				throw new CParseException("");
+			} else {
+				wValues.add(wItem);
+			}
+		}
+		return wValues;
 	}
 }

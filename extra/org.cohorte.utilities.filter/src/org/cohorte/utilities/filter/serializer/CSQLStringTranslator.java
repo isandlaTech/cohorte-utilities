@@ -42,6 +42,7 @@ public class CSQLStringTranslator implements ITranslator<String> {
 		pMapOperator.put(ExpressionOperator.LTE.toString(), "<=");
 		pMapOperator.put(ExpressionOperator.NIN.toString(), "NOT IN");
 		pMapOperator.put(ExpressionOperator.EXISTS.toString(), "IS %s NULL");
+		pMapOperator.put(ExpressionOperator.REGEXP.toString(), "LIKE");
 
 	}
 
@@ -91,7 +92,7 @@ public class CSQLStringTranslator implements ITranslator<String> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.cohorte.utilities.filter.serializer.ITranslator#translateExpression(org.
 	 * cohorte.utilities.filter.expression.IExpressionValue)
