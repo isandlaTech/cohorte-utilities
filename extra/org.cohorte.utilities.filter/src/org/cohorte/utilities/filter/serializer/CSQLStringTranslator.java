@@ -17,16 +17,16 @@ public class CSQLStringTranslator implements ITranslator<String> {
 	private final Map<String, String> pMapOperator;
 	IFunction<String, String> pTansformField = null;
 
-	public CSQLStringTranslator(IFunction<String, String> aTansformField) {
+	public CSQLStringTranslator() {
+		this(null);
+
+	}
+
+	public CSQLStringTranslator(final IFunction<String, String> aTansformField) {
 		pMapOperator = new HashMap<>();
 
 		pTansformField = aTansformField;
 		initOperatorMap();
-
-	}
-
-	public CSQLStringTranslator() {
-		this(null);
 
 	}
 
@@ -41,33 +41,33 @@ public class CSQLStringTranslator implements ITranslator<String> {
 		pMapOperator.put(ExpressionOperator.LT.toString(), "<");
 		pMapOperator.put(ExpressionOperator.LTE.toString(), "<=");
 		pMapOperator.put(ExpressionOperator.NIN.toString(), "NOT IN");
+		pMapOperator.put(ExpressionOperator.EXISTS.toString(), "IS %s NULL");
 
 	}
 
 	/*
-	 * @Override public String translateE(String aExpressionField) { String wResult
-	 * = aExpressionField; if (pTansformField != null) { wResult =
-	 * pTansformField.call(aExpressionField); } return SPACE + wResult + SPACE; }
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.cohorte.utilities.filter.serializer.ITranslator#translateExpression(org.
+	 * cohorte.utilities.filter.expression.ExpressionOperator, java.util.List)
 	 */
-
 	@Override
-	public String translateExpression(IExpressionValue aExpression) {
-		String wField = aExpression.getField();
-		String wOperator = pMapOperator.get(aExpression.getOperator().toString());
-		String wValue = aExpression.getValue() instanceof String ? String.format("'%s'", aExpression.getValue())
-				: aExpression.getValue().toString();
-		return String.format(" %s %s %s ", wField, wOperator, wValue);
-	}
-
-	@Override
-	public String translateExpression(ExpressionOperator aOperator, List<String> aListOfExpression) {
+	public String translateExpression(final ExpressionOperator aOperator, final List<String> aListOfExpression) {
 		String wOperator = pMapOperator.get(aOperator.toString());
 
 		return " (" + String.join(wOperator, aListOfExpression) + ") ";
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.cohorte.utilities.filter.serializer.ITranslator#translateExpression(org.
+	 * cohorte.utilities.filter.expression.IExpressionFieldArray)
+	 */
 	@Override
-	public String translateExpression(IExpressionFieldArray aExpression) {
+	public String translateExpression(final IExpressionFieldArray aExpression) {
 		String wField = aExpression.getField();
 		String wOperator = pMapOperator.get(aExpression.getOperator().toString());
 		String wValue = "(";
@@ -87,6 +87,31 @@ public class CSQLStringTranslator implements ITranslator<String> {
 		}
 		wValue += ")";
 		return String.format(" %s %s %s ", wField, wOperator, wValue);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.cohorte.utilities.filter.serializer.ITranslator#translateExpression(org.
+	 * cohorte.utilities.filter.expression.IExpressionValue)
+	 */
+	@Override
+	public String translateExpression(final IExpressionValue aExpression) {
+		String wField = aExpression.getField();
+		if (aExpression.getOperator() == ExpressionOperator.EXISTS) {
+			if (aExpression.getValue() instanceof Boolean && ((Boolean) aExpression.getValue()).booleanValue()) {
+				return String.format(" %s IS NOT NULL ", wField);
+
+			} else {
+				return String.format(" %s IS NULL ", wField);
+			}
+		} else {
+			String wOperator = pMapOperator.get(aExpression.getOperator().toString());
+			String wValue = aExpression.getValue() instanceof String ? String.format("'%s'", aExpression.getValue())
+					: aExpression.getValue().toString();
+			return String.format(" %s %s %s ", wField, wOperator, wValue);
+		}
 	}
 
 }

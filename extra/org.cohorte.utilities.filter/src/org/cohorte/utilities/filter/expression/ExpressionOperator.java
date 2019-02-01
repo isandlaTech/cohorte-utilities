@@ -14,8 +14,8 @@ public enum ExpressionOperator {
 	EQ(new String[] { "$eq", "" }, true, false),
 
 	IN("$in", true, true), GTE("$gte", true, false), GT("$gt", true, false), LTE("$lte", true, false), LT("$lt", true,
-			false), NE("$ne", true, false), NIN("$nin", true, true), AND("$and", false,
-					true), OR("$or", false, true), NOR("$nor", false, true), NOT("$not", false, false);
+			false), NE("$ne", true, false), NIN("$nin", true, true), AND("$and", false, true), OR("$or", false,
+					true), NOR("$nor", false, true), NOT("$not", false, false), EXISTS("$exists", true, false);
 
 	private final List<String> pValues;
 	private boolean pIsOperandArray;
