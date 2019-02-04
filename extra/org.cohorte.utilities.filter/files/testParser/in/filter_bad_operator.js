@@ -1,0 +1,5 @@
+{
+	"myvalue":{
+		"eq":"test"
+	}
+}

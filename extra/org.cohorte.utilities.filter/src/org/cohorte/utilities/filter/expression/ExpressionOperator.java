@@ -7,7 +7,7 @@ import java.util.List;
  * describe an operator of a expression list operator supported
  * https://docs.mongodb.com/manual/reference/operator/query-comparison/ and
  * https://docs.mongodb.com/manual/reference/operator/query-logical/
- * 
+ *
  * @author apisu
  *
  */
@@ -33,7 +33,16 @@ public enum ExpressionOperator {
 		return null;
 	}
 
+	public static String listAll() {
+		List<String> wListOpStr = new ArrayList<>();
+		for (ExpressionOperator wOp : values()) {
+			wListOpStr.addAll(wOp.getValues());
+		}
+		return wListOpStr.toString();
+	}
+
 	private boolean pHasField;
+
 	private boolean pIsOperandArray;
 
 	private final List<String> pValues;

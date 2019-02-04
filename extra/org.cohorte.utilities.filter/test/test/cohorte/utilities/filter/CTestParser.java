@@ -3,7 +3,9 @@ package test.cohorte.utilities.filter;
 import java.io.File;
 
 import org.cohorte.utilities.filter.expression.CExpression;
+import org.cohorte.utilities.filter.parser.CParseException;
 import org.cohorte.utilities.filter.parser.CParser;
+import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
@@ -22,7 +24,7 @@ public class CTestParser extends TestCase {
 			+ File.separatorChar + "testParser" + File.separatorChar + "out" + File.separatorChar;
 
 	public static @DataPoints String[][] testFiles = { { "filter_empty.js", "filter_empty.out" },
-			{ "filter_eq.js", "filter_eq.out" }, { "filter_and.js", "filter_and.out" } };
+			{ "filter_eq.js", "filter_eq.out" }, { "filter_and.js", "filter_and.out" }, };
 
 	/**
 	 * test preprocess json to remove all kind of comment
@@ -51,6 +53,34 @@ public class CTestParser extends TestCase {
 
 				assertEquals(wExpression.toString(), wOut.toString());
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			wThrowable = true;
+		}
+		assertEquals(wThrowable, false);
+
+	}
+
+	@Test
+	public void testParserError() {
+		boolean wThrowable = false;
+		try {
+			CXFileText wFileIn = new CXFileText(fileTestsIn + File.separatorChar + "filter_bad_operator.js");
+
+			JSONObject in = new JSONObject(wFileIn.readAll());
+			System.out.println("------");
+			System.out.println("in = " + testFiles[0]);
+			System.out.println("out = " + testFiles[1]);
+			System.out.println("------");
+			try {
+				CParser.parse(in);
+			} catch (Exception e) {
+				assertEquals((e instanceof CParseException), true);
+				assertEquals(e.getMessage(),
+						"Operator not found expected=[[$and, $eq, , $exists, $gt, $gte, $in, $lt, $lte, $ne, $nin, $nor, $not, $or, $regexp]], found=[eq]");
+
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			wThrowable = true;
