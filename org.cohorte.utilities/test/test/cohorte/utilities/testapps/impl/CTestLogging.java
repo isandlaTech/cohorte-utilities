@@ -3,9 +3,8 @@
  */
 package test.cohorte.utilities.testapps.impl;
 
-import org.psem2m.utilities.CXJvmUtils;
-import org.psem2m.utilities.CXOSUtils;
 import org.psem2m.utilities.logging.CActivityLoggerBasicConsole;
+import org.psem2m.utilities.logging.CXJulUtils;
 import org.psem2m.utilities.logging.IActivityLogger;
 
 /**
@@ -51,15 +50,32 @@ public class CTestLogging {
 	 */
 	private void doTest() {
 
-		pLogger.logInfo(this, "doTest", CXOSUtils.getEnvContext());
-		pLogger.logInfo(this, "doTest", CXJvmUtils.getJavaContext());
+		pLogger.logInfo(this, "doTest", "SimpleFormatter current format=[%s]",
+				CXJulUtils.getSimpleFormatterCurrentFormat());
 
-		pLogger.logInfo(this, "doTest", "Ligne log info");
-		pLogger.logDebug(this, "doTest", "Ligne log debug");
-		pLogger.logWarn(this, "doTest", "Ligne log warning");
-		pLogger.logSevere(this, "doTest", "Ligne log erreur: %s",
-				new Exception("Message de l'exception"));
-		pLogger.logInfo(this, "doTest", "Ligne log info");
+		pLogger.logInfo(this, "doTest", "SimpleFormatter jvm property  =[%s]",
+				CXJulUtils.getSimpleFormatterJvmProperty());
+
+		pLogger.logInfo(this, "doTest", "SimpleFormatter Jvm property def sample: %s",
+				CXJulUtils.getSimpleFormaterJvmParameterSample());
+
+		CActivityLoggerBasicConsole wLoggerBasicConsole = (CActivityLoggerBasicConsole) CActivityLoggerBasicConsole
+				.getInstance();
+
+		java.util.logging.Logger wJulLogger = wLoggerBasicConsole.getJulLogger();
+
+		pLogger.logInfo(this, "doTest", "IsSimpleFormatterFormatValid=[%b] / JulLogger: Name=[%s] Level=[%s] ",
+				wLoggerBasicConsole.IsSimpleFormatterFormatValid(), wJulLogger.getName(), wJulLogger.getLevel()
+						.getName());
+
+		// pLogger.logInfo(this, "doTest", CXOSUtils.getEnvContext());
+		// pLogger.logInfo(this, "doTest", CXJvmUtils.dumpJavaContext());
+
+		pLogger.logInfo(this, "doTest", "logInfo: Ligne log info");
+		pLogger.logDebug(this, "doTest", "logDebug: Ligne log debug");
+		pLogger.logWarn(this, "doTest", "logWarn: Ligne log warning");
+		pLogger.logSevere(this, "doTest", "logSevere: Ligne log erreur: %s", new Exception("Message de l'exception"));
+		pLogger.logInfo(this, "doTest", "logInfo: Ligne log info");
 
 		try {
 			doTestLevel2();

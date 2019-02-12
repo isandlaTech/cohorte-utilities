@@ -1,5 +1,6 @@
 package org.psem2m.utilities.logging;
 
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -24,6 +25,10 @@ public class CXJulUtils {
 	public static final String FILTER_JUL_NAME_JETTY = "org.eclipse.jetty*";
 	public static final String FILTER_JUL_NAME_SHIRO = "org.apache.shiro*";
 	public static final String NO_FILTER = null;
+
+	// issue #29
+	public static final String SIMPLE_FORMATTER_FORMAT = "%1$tY/%1$tm/%1$td; %1$tH:%1$tM:%1$tS:%1$tL; %4$7.7s; %3$16.016s; %2$54.54s; %5$s%6$s%n";
+	public static final String SIMPLE_FORMATTER_FORMAT_PROPERTY = "java.util.logging.SimpleFormatter.format";
 
 	protected static SimpleFormatter sSimpleFormatter = new SimpleFormatter();
 
@@ -65,8 +70,7 @@ public class CXJulUtils {
 			aSB.append(" - LOGGER IS NULL");
 		} else {
 
-			aSB.append(
-					String.format(" Level:[%-7s]", (aLogger.getLevel() != null) ? aLogger.getLevel().getName() : "?"));
+			aSB.append(String.format(" Level:[%-7s]", (aLogger.getLevel() != null) ? aLogger.getLevel().getName() : "?"));
 
 			aSB.append(String.format(" UseParentH=[%b]", aLogger.getUseParentHandlers()));
 
@@ -85,8 +89,8 @@ public class CXJulUtils {
 					if (wFormatter != null) {
 						wFormatterClassName = wFormatter.getClass().getSimpleName();
 					}
-					aSB.append(String.format("\n\t- Handler=[%25s] Formatter=[%s_]",
-							wHandler.getClass().getSimpleName(), wFormatterClassName));
+					aSB.append(String.format("\n\t- Handler=[%25s] Formatter=[%s_]", wHandler.getClass()
+							.getSimpleName(), wFormatterClassName));
 				}
 			}
 		}
@@ -159,8 +163,8 @@ public class CXJulUtils {
 
 	/**
 	 * @param aLoggerNameFilter
-	 *            The filter to apply. Test the string equality by default. If the
-	 *            last char is a star "*", the filter is used as prefix.
+	 *            The filter to apply. Test the string equality by default. If
+	 *            the last char is a star "*", the filter is used as prefix.
 	 * @return
 	 */
 	public static String dumpCurrentLoggers(final String aLoggerNameFilter) {
@@ -170,8 +174,8 @@ public class CXJulUtils {
 	/**
 	 * @param aLoggerName
 	 * @param aLoggerNameFilter
-	 *            The filter to apply. Test the string equality by default. If the
-	 *            last char is a star "*", the filter is used as prefix.
+	 *            The filter to apply. Test the string equality by default. If
+	 *            the last char is a star "*", the filter is used as prefix.
 	 * @return
 	 */
 	private static boolean filterLogger(final String aLoggerName, final String aLoggerNameFilter) {
@@ -203,8 +207,8 @@ public class CXJulUtils {
 
 	/**
 	 * @param aLoggerNameFilter
-	 *            The filter to apply. Test the string equality by default. If the
-	 *            last char is a star "*", the filter is used as prefix.
+	 *            The filter to apply. Test the string equality by default. If
+	 *            the last char is a star "*", the filter is used as prefix.
 	 * @return The sorted list of the names of the Jul loggers
 	 */
 	public static List<String> getLoggerNames(final String aLoggerNameFilter) {
@@ -235,6 +239,61 @@ public class CXJulUtils {
 	 */
 	public static Logger getRootLogger() {
 		return getLogManager().getLogger("");
+	}
+
+	/**
+	 * issue #29
+	 * <pre>
+	 * SimpleFormat=[%1$tY/%1$tm/%1$td; %1$tH:%1$tM:%1$tS:%1$tL; %4$7.7s; %3$16.016s; %2$54.54s; %5$s%6$s%n]
+	 * </pre>
+	 * 
+	 * @return the jvm parameter declaration
+	 */
+	public static String getSimpleFormaterJvmParameterSample() {
+		return String.format("-D%s=\"%s\"", SIMPLE_FORMATTER_FORMAT_PROPERTY, SIMPLE_FORMATTER_FORMAT);
+	}
+
+	/**
+	 * @return
+	 */
+	public static String getSimpleFormatterCurrentFormat() {
+
+		//
+		// format string for printing the log record
+		// private static final String format
+		try {
+			Field wFormatField = getSimpleFormatterFormatField();
+			// static field: instance is null
+			return String.valueOf(wFormatField.get(null));
+		} catch (Exception e) {
+			return String.format("ERROR: %s", CXException.eCauseMessagesInString(e));
+		}
+	}
+
+	/**
+	 * retreive the static private field "format" of the class "SimpleFormatter"
+	 * 
+	 * <pre>
+	 * // format string for printing the log record
+	 * private static final String format = LoggingSupport.getSimpleFormat();
+	 * </pre>
+	 * 
+	 * @return
+	 * @throws NoSuchFieldException
+	 * @throws SecurityException
+	 */
+	private static Field getSimpleFormatterFormatField() throws NoSuchFieldException, SecurityException {
+		Field wFormatField = SimpleFormatter.class.getDeclaredField("format");
+		wFormatField.setAccessible(true);
+		return wFormatField;
+	}
+
+	/**
+	 * @return
+	 */
+	public static String getSimpleFormatterJvmProperty() {
+
+		return System.getProperty(SIMPLE_FORMATTER_FORMAT_PROPERTY);
 	}
 
 	/**
@@ -269,10 +328,10 @@ public class CXJulUtils {
 	 *
 	 * "%1$tY/%1$tm/%1$td %1$tH-%1$tM-%1$tS.%1$tL|%3$46s|%4$14s| %5$s%6$s%n";
 	 *
-	 * @see http
+	 * @see http 
 	 *      ://docs.oracle.com/javase/7/docs/api/java/util/logging/SimpleFormatter
 	 *      .html#formatting
-	 * @see http
+	 * @see http 
 	 *      ://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html#syntax
 	 *
 	 *
@@ -307,16 +366,16 @@ public class CXJulUtils {
 
 						} else if (wHandler instanceof FileHandler) {
 							wHandler.setFormatter(sSimpleFormatter);
-							wSB.append(String.format("\n(%3d) [%s] setSimpleFormatter=[%b]", wHandlerIdx, "FileHandler",
-									true));
+							wSB.append(String.format("\n(%3d) [%s] setSimpleFormatter=[%b]", wHandlerIdx,
+									"FileHandler", true));
 						}
 						wHandlerIdx++;
 					}
 				}
 
 			} catch (final Exception e) {
-				final Exception wEx = new Exception(
-						String.format("Unable to set the formater of the main logger [%s]", wMainLogger.getName()), e);
+				final Exception wEx = new Exception(String.format("Unable to set the formater of the main logger [%s]",
+						wMainLogger.getName()), e);
 				wSB.append(String.format("\nERROR: %s", CXException.eInString(wEx)));
 			}
 
@@ -376,6 +435,13 @@ public class CXJulUtils {
 	public static String toString(final Logger aLogger) {
 		final String wLoggerName = (aLogger != null) ? aLogger.getName() : "logger null";
 		return addDescriptionInSB(new StringBuilder(), wLoggerName, aLogger).toString();
+	}
+
+	/**issue #29
+	 * @return
+	 */
+	public static boolean validSimpleFormaterConfig() {
+		return SIMPLE_FORMATTER_FORMAT.equals(getSimpleFormatterCurrentFormat());
 	}
 
 }
