@@ -48,9 +48,7 @@
    <bundle id="org.cohorte.libs.javax.mail" version="1.4.0">
       <category name="libs"/>
    </bundle>
-   <bundle id="org.cohorte.utilities.filter" version="1.0.0">
-      <category name="utilities.extra"/>
-   </bundle>
+  
    <category-def name="utilities.extra" label="utilities.extra"/>
    <category-def name="libs" label="libs"/>
 </site>
