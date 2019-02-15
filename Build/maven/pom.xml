@@ -19,7 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
        	<!-- Versions -->
        	<tycho-version>0.26.0</tycho-version>
-       	<cohorte-version>1.3.0-SNAPSHOT</cohorte-version>
+       	<cohorte-version>1.3.2</cohorte-version>
 		<osgi-version>5.0.0</osgi-version>
 		<ipojo-version>1.12.1</ipojo-version>
 	</properties>

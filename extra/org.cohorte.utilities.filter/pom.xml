@@ -137,7 +137,7 @@
   <repositories>
   		<repository>
             <id>cohorte.p2</id>
-            <url>https://nrm.cohorte.tech/repository/cohorte-p2/1.2.0/</url>
+            <url>https://nrm.cohorte.tech/repository/cohorte-p2/${cohorte-version}</url>
             <layout>p2</layout>
         </repository>
   		<repository>
