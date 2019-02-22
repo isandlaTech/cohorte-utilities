@@ -2,7 +2,7 @@
 from 1.0.27 to 1.0.28
 ---------------------
 -MOD_OG 
- - #30 Addition of utilities to build and clone easily the JSONArray and JSONObject. Reorganize the tests of the json stuffs as Junit tests
+ - #30 Addition of utilities to build and clone easily the JSONArray and JSONObject. Reorganization the tests of the json utilities as Junit tests.
 
 
 CXJsonUtils
