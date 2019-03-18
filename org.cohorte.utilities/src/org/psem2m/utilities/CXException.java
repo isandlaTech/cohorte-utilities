@@ -111,8 +111,7 @@ class CExceptionMessage implements IXDescriber {
 	 */
 	@Override
 	public String toDescription() {
-		return addDescriptionInBuffer(
-				new StringBuilder(calcDescriptionLength())).toString();
+		return addDescriptionInBuffer(new StringBuilder(calcDescriptionLength())).toString();
 	}
 
 	/*
@@ -130,8 +129,7 @@ class CExceptionMessage implements IXDescriber {
  * @author ogattaz
  *
  */
-class CExceptionMessages extends ArrayList<CExceptionMessage> implements
-		IXDescriber {
+class CExceptionMessages extends ArrayList<CExceptionMessage> implements IXDescriber {
 
 	private final static String LABEL_SIZE = "Size";
 
@@ -174,8 +172,7 @@ class CExceptionMessages extends ArrayList<CExceptionMessage> implements
 	 * @param aSeparator
 	 * @return
 	 */
-	StringBuilder addMessagesInSB(StringBuilder aSB, EExceptionMessageTyp aTyp,
-			char aSeparator) {
+	StringBuilder addMessagesInSB(StringBuilder aSB, EExceptionMessageTyp aTyp, char aSeparator) {
 		CExceptionMessage wExceptionMessage;
 		final int wMax = size();
 		int wI = 0;
@@ -290,8 +287,7 @@ class CExceptionMessages extends ArrayList<CExceptionMessage> implements
 	 * @return
 	 */
 	String getMessages(EExceptionMessageTyp aTyp, char aSeparator) {
-		return addMessagesInSB(new StringBuilder(256 * size()), aTyp,
-				aSeparator).toString();
+		return addMessagesInSB(new StringBuilder(256 * size()), aTyp, aSeparator).toString();
 	}
 
 	/*
@@ -301,8 +297,7 @@ class CExceptionMessages extends ArrayList<CExceptionMessage> implements
 	 */
 	@Override
 	public String toDescription() {
-		return addDescriptionInBuffer(
-				new StringBuilder(calcDescriptionLength())).toString();
+		return addDescriptionInBuffer(new StringBuilder(calcDescriptionLength())).toString();
 	}
 }
 
@@ -381,8 +376,7 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param aThrowable
 	 * @return
 	 */
-	public static Appendable addECauseMessagesInBuffer(Appendable wSB,
-			Throwable aThrowable) throws Exception {
+	public static Appendable addECauseMessagesInBuffer(Appendable wSB, Throwable aThrowable) throws Exception {
 		String wMess;
 		int wNbMess = 1;
 		while (aThrowable != null) {
@@ -398,8 +392,7 @@ public class CXException extends Exception implements IXDescriber {
 
 			if (wHasMess) {
 				if (wNbMess > 1) {
-					wSB.append(aThrowable.getClass().getSimpleName()).append(
-							':');
+					wSB.append(aThrowable.getClass().getSimpleName()).append(':');
 				}
 				wSB.append(wMess);
 			} else {
@@ -419,8 +412,7 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param aThrowable
 	 * @return
 	 */
-	public static Appendable addEClassAndMessInBuffer(Appendable wSB,
-			Throwable aThrowable) throws Exception {
+	public static Appendable addEClassAndMessInBuffer(Appendable wSB, Throwable aThrowable) throws Exception {
 		final String wMess = aThrowable.getMessage();
 		final boolean wHasMess = (wMess != null && wMess.length() > 0);
 		if (wHasMess) {
@@ -438,10 +430,8 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param e
 	 * @return
 	 */
-	private static Appendable addEClassInBuffer(Appendable aSB, Throwable e)
-			throws Exception {
-		return aSB.append(PREFIX_CLASS).append('=').append('[')
-				.append(e.getClass().getName()).append(']');
+	private static Appendable addEClassInBuffer(Appendable aSB, Throwable e) throws Exception {
+		return aSB.append(PREFIX_CLASS).append('=').append('[').append(e.getClass().getName()).append(']');
 	}
 
 	/**
@@ -449,8 +439,7 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param e
 	 * @return
 	 */
-	public static Appendable addEDescrFullInBuffer(Appendable aSB, Throwable e)
-			throws Exception {
+	public static Appendable addEDescrFullInBuffer(Appendable aSB, Throwable e) throws Exception {
 		return addEDescrFullInBuffer(aSB, e, SEPARATOR_COMA);
 	}
 
@@ -460,8 +449,7 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param aSeparator
 	 * @return
 	 */
-	public static Appendable addEDescrFullInBuffer(Appendable aSB, Throwable e,
-			char aSeparator) throws Exception {
+	public static Appendable addEDescrFullInBuffer(Appendable aSB, Throwable e, char aSeparator) throws Exception {
 		if (aSeparator == SEPARATOR_LINE) {
 			aSB.append(aSeparator);
 		}
@@ -483,15 +471,13 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param e
 	 * @return
 	 */
-	public static Appendable addEDescrMiniInSB(Appendable aSB,
-			Throwable aThrowable) {
+	public static Appendable addEDescrMiniInSB(Appendable aSB, Throwable aThrowable) {
 		try {
 			addEClassAndMessInBuffer(aSB, aThrowable);
 			aSB.append(PART_SEPARATOR);
 
 			if (aThrowable instanceof CXException) {
-				addWhyStrAndNumInBuffer(aSB, (CXException) aThrowable).append(
-						PART_SEPARATOR);
+				addWhyStrAndNumInBuffer(aSB, (CXException) aThrowable).append(PART_SEPARATOR);
 			}
 			aSB.append(getFirstLineOfStack(aThrowable));
 		} catch (final Exception e) {
@@ -507,8 +493,7 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param e
 	 * @return
 	 */
-	private static Appendable addEMessInBuffer(Appendable aSB, Throwable e,
-			char aSeparator) throws Exception {
+	private static Appendable addEMessInBuffer(Appendable aSB, Throwable e, char aSeparator) throws Exception {
 		if (e instanceof CXException) {
 			final CXException wE = (CXException) e;
 
@@ -555,10 +540,9 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param e
 	 * @return
 	 */
-	private static Appendable addEStackInBuffer(Appendable aSB, Throwable e,
-			char aSeparator) throws Exception {
-		return aSB.append(PREFIX_STACK).append('=').append('[')
-				.append(getCleanedStackOfThrowable(e, aSeparator)).append(']');
+	private static Appendable addEStackInBuffer(Appendable aSB, Throwable e, char aSeparator) throws Exception {
+		return aSB.append(PREFIX_STACK).append('=').append('[').append(getCleanedStackOfThrowable(e, aSeparator))
+				.append(']');
 	}
 
 	/**
@@ -570,8 +554,7 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param e
 	 * @return
 	 */
-	private static Appendable addEWhyInBuffer(Appendable aSB, CXException e)
-			throws Exception {
+	private static Appendable addEWhyInBuffer(Appendable aSB, CXException e) throws Exception {
 		if (e != null && !e.isWhy(WHY_UNSPECIFIED)) {
 			aSB.append(PREFIX_WHY);
 			aSB.append('=');
@@ -587,14 +570,12 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param aThrowable
 	 * @return
 	 */
-	public static Appendable addUserMessagesInBuffer(Appendable wSB,
-			Throwable aThrowable) throws Exception {
+	public static Appendable addUserMessagesInBuffer(Appendable wSB, Throwable aThrowable) throws Exception {
 		if (aThrowable != null) {
 			if (aThrowable instanceof CXException) {
 				final CXException wException = (CXException) aThrowable;
 				CExceptionMessage wExceptionMessage;
-				final CExceptionMessages wMessages = wException
-						.getExceptionMessages(EExceptionMessageTyp.USER);
+				final CExceptionMessages wMessages = wException.getExceptionMessages(EExceptionMessageTyp.USER);
 				final int wMax = wMessages.size();
 				int wI = 0;
 				while (wI < wMax) {
@@ -618,8 +599,7 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param e
 	 * @return
 	 */
-	private static Appendable addWhyStrAndNumInBuffer(Appendable aSB,
-			CXException e) throws Exception {
+	private static Appendable addWhyStrAndNumInBuffer(Appendable aSB, CXException e) throws Exception {
 		if (e != null && !e.isWhy(WHY_UNSPECIFIED)) {
 			aSB.append(e.getWhyString());
 			aSB.append(SEPARATOR_COMA);
@@ -633,21 +613,17 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param aDumpedThrowable
 	 * @return
 	 */
-	private static String buildExceptionDumpErrorMess(Exception e,
-			Throwable aDumpedThrowable) {
+	private static String buildExceptionDumpErrorMess(Exception e, Throwable aDumpedThrowable) {
 		final StringBuilder wSB = new StringBuilder();
 		wSB.append(LIB_THROWABLE_DUMP_ERROR);
 		if (e != null) {
-			wSB.append(String.format(FORMAT_EXCEPTION, e.getClass()
-					.getSimpleName()));
+			wSB.append(String.format(FORMAT_EXCEPTION, e.getClass().getSimpleName()));
 			wSB.append(String.format(FORMAT_MESAGE, e.getMessage()));
 			wSB.append(CXException.getFirstLineOfStack(e));
 		}
 		if (aDumpedThrowable != null) {
-			wSB.append(String.format(FORMAT_THROWABLE, aDumpedThrowable
-					.getClass().getSimpleName()));
-			wSB.append(String.format(FORMAT_MESAGE,
-					aDumpedThrowable.getMessage()));
+			wSB.append(String.format(FORMAT_THROWABLE, aDumpedThrowable.getClass().getSimpleName()));
+			wSB.append(String.format(FORMAT_MESAGE, aDumpedThrowable.getMessage()));
 			wSB.append(CXException.getCleanedStackOfThrowable(aDumpedThrowable));
 		}
 		return wSB.toString();
@@ -658,8 +634,7 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param e
 	 * @return
 	 */
-	private static String buildStackExceptionMessage(String aContext,
-			Throwable e, boolean aWithStack) {
+	private static String buildStackExceptionMessage(String aContext, Throwable e, boolean aWithStack) {
 		final StringBuilder wMess = new StringBuilder(256);
 		wMess.append(aContext);
 		wMess.append(' ');
@@ -690,8 +665,7 @@ public class CXException extends Exception implements IXDescriber {
 	 */
 	public static String eCauseMessagesInString(Throwable aThrowable) {
 		try {
-			return addECauseMessagesInBuffer(new StringBuilder(128), aThrowable)
-					.toString();
+			return addECauseMessagesInBuffer(new StringBuilder(128), aThrowable).toString();
 		} catch (final Exception e) {
 			return buildExceptionDumpErrorMess(e, aThrowable);
 		}
@@ -703,8 +677,7 @@ public class CXException extends Exception implements IXDescriber {
 	 */
 	public static String eClassAndMessInString(Throwable aThrowable) {
 		try {
-			return addEClassAndMessInBuffer(new StringBuilder(128), aThrowable)
-					.toString();
+			return addEClassAndMessInBuffer(new StringBuilder(128), aThrowable).toString();
 		} catch (final Exception e) {
 			return buildExceptionDumpErrorMess(e, aThrowable);
 		}
@@ -728,8 +701,7 @@ public class CXException extends Exception implements IXDescriber {
 	 */
 	public static String eInString(Throwable aThrowable, char aSeparator) {
 		try {
-			return addEDescrFullInBuffer(new StringBuilder(512), aThrowable,
-					aSeparator).toString();
+			return addEDescrFullInBuffer(new StringBuilder(512), aThrowable, aSeparator).toString();
 		} catch (final Exception e) {
 			return buildExceptionDumpErrorMess(e, aThrowable);
 		}
@@ -744,8 +716,7 @@ public class CXException extends Exception implements IXDescriber {
 	 */
 	public static String eMiniInString(Throwable aThrowable) {
 		try {
-			return addEDescrMiniInSB(new StringBuilder(128), aThrowable)
-					.toString();
+			return addEDescrMiniInSB(new StringBuilder(128), aThrowable).toString();
 		} catch (final Exception e) {
 			return buildExceptionDumpErrorMess(e, aThrowable);
 		}
@@ -774,8 +745,7 @@ public class CXException extends Exception implements IXDescriber {
 	 */
 	public static String eUserMessagesInString(Throwable aThrowable) {
 		try {
-			return addUserMessagesInBuffer(new StringBuilder(128), aThrowable)
-					.toString();
+			return addUserMessagesInBuffer(new StringBuilder(128), aThrowable).toString();
 		} catch (final Exception e) {
 			return buildExceptionDumpErrorMess(e, aThrowable);
 		}
@@ -817,20 +787,18 @@ public class CXException extends Exception implements IXDescriber {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<String> getCauseMessages(Throwable aThrowable)
-			throws Exception {
+	public static List<String> getCauseMessages(Throwable aThrowable) throws Exception {
 
 		List<String> wList = new ArrayList<>();
 		int wNbMess = 1;
 		String wMess;
 		while (aThrowable != null) {
 			wMess = aThrowable.getLocalizedMessage();
-			final boolean wHasMess = (wMess != null && wMess.length() > 0);
+			final boolean wHasMess = (wMess != null && !wMess.isEmpty());
 
 			if (wHasMess) {
 				if (wNbMess > 1) {
-					wMess = aThrowable.getClass().getSimpleName().concat(":")
-							.concat(wMess);
+					wMess = aThrowable.getClass().getSimpleName().concat(":").concat(wMess);
 				}
 				wList.add(wMess);
 			} else {
@@ -842,6 +810,10 @@ public class CXException extends Exception implements IXDescriber {
 		return wList;
 	}
 
+	/**
+	 * @param aThrowable
+	 * @return
+	 */
 	public static String getCleanedStackOfThrowable(Throwable aThrowable) {
 		return getCleanedStackOfThrowable(aThrowable, SEPARATOR_COMA);
 	}
@@ -850,8 +822,7 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param e
 	 * @return
 	 */
-	private static String getCleanedStackOfThrowable(Throwable aThrowable,
-			char aSeparator) {
+	private static String getCleanedStackOfThrowable(Throwable aThrowable, char aSeparator) {
 		String wCleanedStack = EMPTY;
 		try {
 			wCleanedStack = putStackInString(aThrowable);
@@ -860,8 +831,7 @@ public class CXException extends Exception implements IXDescriber {
 				wCleanedStack = wCleanedStack.replace('\n', aSeparator);
 			}
 		} catch (final Exception e) {
-			System.out.println(buildStackExceptionMessage(MESS_CANT_CLEAN, e,
-					MESS_WHITH_STACK));
+			System.out.println(buildStackExceptionMessage(MESS_CANT_CLEAN, e, MESS_WHITH_STACK));
 		}
 		return wCleanedStack;
 	}
@@ -925,8 +895,7 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param aThrowable
 	 * @return
 	 */
-	private static StackTraceElement getFirstPsem2mStackElement(
-			Throwable aThrowable) {
+	private static StackTraceElement getFirstPsem2mStackElement(Throwable aThrowable) {
 		final StackTraceElement[] wStackElements = aThrowable.getStackTrace();
 		StackTraceElement wStackElement = null;
 		final int wMax = wStackElements.length;
@@ -935,8 +904,7 @@ public class CXException extends Exception implements IXDescriber {
 			while (wI < wMax) {
 				wStackElement = wStackElements[wI];
 
-				if (wStackElement.getMethodName().contains(
-						PSEM2M_CLASSES_PREFIX)) {
+				if (wStackElement.getMethodName().contains(PSEM2M_CLASSES_PREFIX)) {
 					break;
 				}
 
@@ -944,6 +912,47 @@ public class CXException extends Exception implements IXDescriber {
 			}
 		}
 		return wStackElement;
+	}
+
+	/**
+	 * @param aThrowable
+	 * @return
+	 */
+	public static int getNbCause(Throwable aThrowable) {
+		int wNbCause = 0;
+		Throwable wCause = aThrowable.getCause();
+		while (wCause != null) {
+			wNbCause++;
+			wCause = wCause.getCause();
+		}
+		return wNbCause;
+	}
+
+	/**
+	 * @param aThrowable
+	 * @return
+	 */
+	public static boolean hasCause(Throwable aThrowable) {
+		return aThrowable.getCause() != null;
+	}
+
+	/**
+	 * Find the last exception of the chain to set the cause
+	 * 
+	 * @param aThrowable
+	 * @param aCause
+	 * @return
+	 */
+	public static Throwable initCauseLast(final Throwable aThrowable, final Throwable aCause) {
+		if (aThrowable != null && aCause != null) {
+			Throwable wTarget = aThrowable;
+
+			while (wTarget.getCause() != null) {
+				wTarget = wTarget.getCause();
+			}
+			wTarget.initCause(aCause);
+		}
+		return aThrowable;
 	}
 
 	/**
@@ -987,8 +996,7 @@ public class CXException extends Exception implements IXDescriber {
 		try {
 			putStackOfThrowableInSB(wRoughStack, aThrowable);
 		} catch (final Exception e) {
-			System.out.println(buildStackExceptionMessage(MESS_CANT_GET, e,
-					!MESS_WHITH_STACK));
+			System.out.println(buildStackExceptionMessage(MESS_CANT_GET, e, !MESS_WHITH_STACK));
 		}
 		return wRoughStack.toString();
 	}
@@ -997,8 +1005,7 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param aMessage
 	 * @param e
 	 */
-	private static StringBuilder putStackOfThrowableInSB(StringBuilder aSB,
-			Throwable e) {
+	private static StringBuilder putStackOfThrowableInSB(StringBuilder aSB, Throwable e) {
 		final StackTraceElement[] wStackElements = e.getStackTrace();
 		StackTraceElement wStackElement;
 		final int wMax = wStackElements.length;
@@ -1095,8 +1102,7 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param aFormat
 	 * @param aArgs
 	 */
-	public CXException(int aWhy, Throwable aComplement, String aFormat,
-			Object... aArgs) {
+	public CXException(int aWhy, Throwable aComplement, String aFormat, Object... aArgs) {
 		this(aWhy, aComplement, String.format(aFormat, aArgs));
 	}
 
@@ -1128,8 +1134,7 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param aFormat
 	 * @param aArgs
 	 */
-	public CXException(final Throwable aComplement, final String aFormat,
-			final Object... aArgs) {
+	public CXException(final Throwable aComplement, final String aFormat, final Object... aArgs) {
 		this(WHY_UNSPECIFIED, aComplement, String.format(aFormat, aArgs));
 	}
 
@@ -1149,20 +1154,16 @@ public class CXException extends Exception implements IXDescriber {
 		if (aComplement != null) {
 			if (aComplement instanceof CXException) {
 				final CXException wException = ((CXException) aComplement);
-				pMessages
-						.addAll(wException.getExceptionMessages(
-								EExceptionMessageTyp.USER,
-								EExceptionMessageTyp.DETAIL));
-				setCauseWhy((wException.hasCauseWhy()) ? wException
-						.getCauseWhy() : wException.getWhy());
+				pMessages.addAll(wException
+						.getExceptionMessages(EExceptionMessageTyp.USER, EExceptionMessageTyp.DETAIL));
+				setCauseWhy((wException.hasCauseWhy()) ? wException.getCauseWhy() : wException.getWhy());
 			} else {
 				final StringBuilder wSB = new StringBuilder();
 				wSB.append(aComplement.getClass().getSimpleName());
 				wSB.append(':');
 				wSB.append(aComplement.getLocalizedMessage());
 				pMessages.addUserMessage(wSB.toString());
-				pMessages
-						.addDetailMessage(throwableComplementToString(aComplement));
+				pMessages.addDetailMessage(throwableComplementToString(aComplement));
 			}
 		}
 	}
@@ -1205,8 +1206,7 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param aFormat
 	 * @return
 	 */
-	public StringBuilder addFormatedMessagesInSB(StringBuilder aSB,
-			String aFormat) {
+	public StringBuilder addFormatedMessagesInSB(StringBuilder aSB, String aFormat) {
 		int wI = 0;
 		final int wMax = pMessages.size();
 		while (wI < wMax) {
@@ -1221,8 +1221,7 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param aSeparator
 	 * @return
 	 */
-	public Appendable addMessagesInBuffer(Appendable aSB, char aSeparator)
-			throws Exception {
+	public Appendable addMessagesInBuffer(Appendable aSB, char aSeparator) throws Exception {
 
 		int wI = 0;
 		final int wMax = pMessages.size();
@@ -1243,15 +1242,13 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param aThrowable
 	 * @return
 	 */
-	private StringBuilder addThrowableComplementInSB(StringBuilder wSB,
-			Throwable aThrowable) {
+	private StringBuilder addThrowableComplementInSB(StringBuilder wSB, Throwable aThrowable) {
 
 		wSB.append(MESS_DETAIL_PREFIX);
 		wSB.append(aThrowable.getClass().getSimpleName());
 
 		if (aThrowable instanceof CXException) {
-			wSB.append(PART_SEPARATOR).append(
-					((CXException) aThrowable).getWhyString());
+			wSB.append(PART_SEPARATOR).append(((CXException) aThrowable).getWhyString());
 		}
 
 		wSB.append(PART_SEPARATOR);
@@ -1297,8 +1294,7 @@ public class CXException extends Exception implements IXDescriber {
 	 * @return
 	 */
 	public CExceptionMessages getComplementMessages() {
-		return pMessages.getMessages(EExceptionMessageTyp.TECHNICAL,
-				EExceptionMessageTyp.USER);
+		return pMessages.getMessages(EExceptionMessageTyp.TECHNICAL, EExceptionMessageTyp.USER);
 	}
 
 	/**
@@ -1312,8 +1308,7 @@ public class CXException extends Exception implements IXDescriber {
 	 * @param aType
 	 * @return
 	 */
-	public CExceptionMessages getExceptionMessages(
-			EExceptionMessageTyp... aType) {
+	public CExceptionMessages getExceptionMessages(EExceptionMessageTyp... aType) {
 		return pMessages.getMessages(aType);
 	}
 
@@ -1347,8 +1342,7 @@ public class CXException extends Exception implements IXDescriber {
 	 * @return
 	 */
 	public String getMessages(char aSeparator) throws Exception {
-		return addMessagesInBuffer(new StringBuilder(32 * pMessages.size()),
-				aSeparator).toString();
+		return addMessagesInBuffer(new StringBuilder(32 * pMessages.size()), aSeparator).toString();
 	}
 
 	/**
@@ -1421,11 +1415,9 @@ public class CXException extends Exception implements IXDescriber {
 	public boolean match(String aWhy) {
 		if (this.getClass().getName() == aWhy) {
 			return true;
-		} else if (CXStringUtils.isNumeric(aWhy)
-				&& this.getWhy() == Integer.parseInt(aWhy)) {
+		} else if (CXStringUtils.isNumeric(aWhy) && this.getWhy() == Integer.parseInt(aWhy)) {
 			return true;
-		} else if (this.getCause() != null
-				&& this.getCause() instanceof CXException) {
+		} else if (this.getCause() != null && this.getCause() instanceof CXException) {
 			return ((CXException) this.getCause()).match(aWhy);
 		} else {
 			if (this.getCause() != null) {
@@ -1458,8 +1450,7 @@ public class CXException extends Exception implements IXDescriber {
 	 * @return
 	 */
 	private String throwableComplementToString(Throwable aThrowable) {
-		return addThrowableComplementInSB(new StringBuilder(256), aThrowable)
-				.toString();
+		return addThrowableComplementInSB(new StringBuilder(256), aThrowable).toString();
 	}
 
 	/*
@@ -1469,8 +1460,7 @@ public class CXException extends Exception implements IXDescriber {
 	 */
 	@Override
 	public String toDescription() {
-		return addDescriptionInBuffer(
-				new StringBuilder(calcDescriptionLength())).toString();
+		return addDescriptionInBuffer(new StringBuilder(calcDescriptionLength())).toString();
 	}
 
 	/**
