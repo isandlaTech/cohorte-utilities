@@ -9,6 +9,7 @@ Bundle-ActivationPolicy: lazy
 Import-Package: com.jayway.jsonpath,
  de.christophkraemer.rhino.javascript,
  de.christophkraemer.rhino.util,
+ org.cohorte.utilities.junit,
  org.javatuples,
  org.mozilla.javascript,
  org.osgi.framework,
