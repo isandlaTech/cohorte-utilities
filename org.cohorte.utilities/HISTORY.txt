@@ -1,4 +1,17 @@
 
+
+from 1.0.28 to 1.1.0
+---------------------
+-MOD_OG 
+ - #31 Major enhancement of the Json tooling :
+   - Convert JSONException to be a RuntimeException
+   - JSONObject and JSONArray implement clonable
+   - new JSONBuilder
+   - new Junit tests
+  - #32 New Junit tooling package 
+  - #33 New methods to manipulate the cause
+
+ 
 from 1.0.27 to 1.0.28
 ---------------------
 -MOD_OG 
