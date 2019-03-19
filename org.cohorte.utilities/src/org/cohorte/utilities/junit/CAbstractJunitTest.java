@@ -13,8 +13,6 @@ import org.psem2m.utilities.logging.CXLoggerUtils;
 import org.psem2m.utilities.logging.IActivityLogger;
 import org.psem2m.utilities.logging.IActivityLoggerJul;
 
-import test.cohorte.utilities.json.CJunitTestJSONBuiilder;
-
 /**
  * @author ogattaz
  * @since 1.1.0 (#32)
@@ -99,15 +97,15 @@ public class CAbstractJunitTest {
 
 		StringBuilder wBannerLines = new StringBuilder();
 
-		wBannerLines.append(String.format("BEGIN OF TEST %s . NbTest=[%s]", aClassTest.getSimpleName(),
-				getNbtestsMap(aClassTest)));
+		wBannerLines.append(
+				String.format("BEGIN OF TEST %s . NbTest=[%s]", aClassTest.getSimpleName(), getNbtestsMap(aClassTest)));
 
 		boolean wIsSimpleFormatterConfigured = (System.getProperty(ID_PARAM_SIMPLE_FORMATTER) != null);
 
 		if (!wIsSimpleFormatterConfigured) {
-			wBannerLines.append(String.format(
-					"\nThe Simpleformatter must be configured using the property[%s] .\neg. %s",
-					ID_PARAM_SIMPLE_FORMATTER, PARAM_SIMPLE_FORMATTER_DEF));
+			wBannerLines
+					.append(String.format("\nThe Simpleformatter must be configured using the property[%s] .\neg. %s",
+							ID_PARAM_SIMPLE_FORMATTER, PARAM_SIMPLE_FORMATTER_DEF));
 		}
 
 		CXLoggerUtils.logBannerInfo(sLogger, aClassTest, "initialize", wBannerLines.toString());
@@ -118,7 +116,7 @@ public class CAbstractJunitTest {
 
 		((IActivityLoggerJul) sLogger).getJulLogger().setLevel(Level.ALL);
 
-		sLogger.logInfo(CJunitTestJSONBuiilder.class, "initialize", "Logger=[%s] Level=[%s]", sLogger.toDescription(),
+		sLogger.logInfo(aClassTest, "initialize", "Logger=[%s] Level=[%s]", sLogger.toDescription(),
 				sLogger.getLevel().getName());
 
 	}
@@ -220,8 +218,8 @@ public class CAbstractJunitTest {
 	 * @param aArgs
 	 * @throws Exception
 	 */
-	protected void logBeginMultipleKO(final CAbstractJunitTest aTest, final String aMethodName,
-			final String aRunningId, final String aMessage, final Throwable aException) throws Exception {
+	protected void logBeginMultipleKO(final CAbstractJunitTest aTest, final String aMethodName, final String aRunningId,
+			final String aMessage, final Throwable aException) throws Exception {
 
 		getTestsRegistry().setTestKO(aMethodName, aRunningId, aMessage, aException);
 
@@ -237,8 +235,8 @@ public class CAbstractJunitTest {
 	 * @param aArgs
 	 * @throws Exception
 	 */
-	protected void logBeginMultipleOK(final CAbstractJunitTest aTest, final String aMethodName,
-			final String aRunningId, final String aLineFormat, final Object... aArgs) throws Exception {
+	protected void logBeginMultipleOK(final CAbstractJunitTest aTest, final String aMethodName, final String aRunningId,
+			final String aLineFormat, final Object... aArgs) throws Exception {
 
 		getTestsRegistry().setTestOK(aMethodName, aRunningId);
 

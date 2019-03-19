@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.junit.Test;
-import org.junit.experimental.theories.Theory;
 import org.psem2m.utilities.CXException;
 
 /**
@@ -181,8 +180,8 @@ class CTestRunning {
 	 * @return
 	 */
 	public String getFinishedOkState() {
-		return isFinishedOK() ? "finished OK" : (isStarted() ? "error : " + getErrorMessage() + " "
-				+ getExceptionMessages() : "");
+		return isFinishedOK() ? "finished OK"
+				: (isStarted() ? "error : " + getErrorMessage() + " " + getExceptionMessages() : "");
 	}
 
 	/**
@@ -318,13 +317,25 @@ public class CTestsRegistry {
 	/**
 	 * @param aTesClass
 	 */
+	@SuppressWarnings("unchecked")
 	private void initialize(final Class<? extends CAbstractJunitTest> aTesClass) {
 		for (Method wMethod : aTesClass.getDeclaredMethods()) {
 
 			// compliance with Java 7
 			Annotation wAnnotation = wMethod.getAnnotation(Test.class);
 			if (wAnnotation == null) {
-				wAnnotation = wMethod.getAnnotation(Theory.class);
+				// issue with tychos to compilation with Theory. this class cannot be found
+				Class<? extends Annotation> wTheoryClass;
+				try {
+					wTheoryClass = (Class<? extends Annotation>) Class
+							.forName("org.junit.experimental.theories.Theory");
+					if (wTheoryClass != null) {
+						wAnnotation = wMethod.getAnnotation(wTheoryClass);
+					}
+				} catch (ClassNotFoundException e) {
+					wAnnotation = null;
+				}
+
 			}
 
 			if (wAnnotation != null) {
