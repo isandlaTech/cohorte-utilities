@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="libs/rest-assured/activation-1.1.1.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/commons-codec-1.9-sources.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/commons-codec-1.9.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/commons-lang3-3.4.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/commons-logging-1.2-sources.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/groovy-2.4.15-sources.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/groovy-2.4.15.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/groovy-json-2.4.15-sources.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/groovy-json-2.4.15.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/groovy-xml-2.4.15-sources.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/groovy-xml-2.4.15.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/hamcrest-core-1.3-sources.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/hamcrest-core-1.3.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/hamcrest-library-1.3.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/httpclient-4.5.3-sources.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/httpclient-4.5.3.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/httpcore-4.4.6-sources.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/httpcore-4.4.6.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/httpmime-4.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/httpmime-4.5.1.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/jaxb-api-2.2.12.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/jaxb-osgi-2.2.10.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/json-path-3.2.0-sources.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/json-path-3.2.0.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/org.apache.sling.javax.activation-0.1.0.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/rest-assured-3.2.0-sources.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/rest-assured-3.2.0.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/rest-assured-common-3.2.0.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/tagsoup-1.2.1-sources.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/tagsoup-1.2.1.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/xml-path-3.2.0-sources.jar"/>
+	<classpathentry kind="lib" path="libs/rest-assured/xml-path-3.2.0.jar"/>
+	<classpathentry kind="lib" path="libs/org.cohorte.utilities-1.1.0.jar" sourcepath="libs/org.cohorte.utilities-1.1.0-sources.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
