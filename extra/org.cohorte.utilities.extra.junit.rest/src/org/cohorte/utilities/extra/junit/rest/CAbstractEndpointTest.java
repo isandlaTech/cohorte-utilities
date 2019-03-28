@@ -249,6 +249,16 @@ public class CAbstractEndpointTest extends CAbstractJunitTest {
 				aJsonBodyObj, 201, aExpectedBodyEqualTos);
 	}
 
+	protected void test30GenericPost(final String aMethodName,
+			final String aDimensionApiUri, final JSONObject aJsonBodyObj,
+			final int aHttpStatus,
+			final CExpectedBodyEqualTo... aExpectedBodyEqualTos)
+			throws Exception {
+
+		test30GenericPost(aMethodName, aDimensionApiUri, NO_PATH_PARTS,
+				aJsonBodyObj, aHttpStatus, aExpectedBodyEqualTos);
+	}
+
 	/**
 	 * @param aMethodName
 	 * @param aDimensionApiUri

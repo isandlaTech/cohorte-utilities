@@ -83,8 +83,8 @@ iPOJO-Components: component { $name="Cohorte-CCpntDefaultTestExecuter-
  te.utilities.test.IShellCommand" }field { $name="pBundleContext" $typ
  e="org.osgi.framework.BundleContext" }field { $name="pCommands" $type
  ="java.lang.String[]" }field { $name="pExecuter" $type="org.cohorte.u
- tilities.test.ITestExecuter" }field { $name="pLogger" $type="org.psem
- 2m.isolates.base.IIsolateLoggerSvc" }field { $name="pRejectExport" $t
- ype="java.lang.String" }field { $name="pScope" $type="java.lang.Strin
- g" }method { $name="test" }}}
+ tilities.test.ITestExecuter" }field { $name="pLogger" $type="IIsolate
+ LoggerSvc" }field { $name="pRejectExport" $type="java.lang.String" }f
+ ield { $name="pScope" $type="java.lang.String" }method { $name="test"
+  }}}
 
