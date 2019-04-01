@@ -250,6 +250,43 @@ public class CXOSCommand extends CXOSRunner implements IXOSCommand {
 		return runDoAfter();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.system.IXOSCommand#run(long, java.io.File,
+	 * java.util.Map)
+	 */
+	@Override
+	public boolean runAntWait(final long aTimeOut, final File aUserDir, String aCharacterEnd,
+			final Map<String, String> aEnv) {
+		// protection
+		File wUserDir = (aUserDir != null) ? aUserDir : CXFileDir.getUserDir();
+
+		if (pLogger.isLogDebugOn()) {
+			boolean wChangeUserDir = !CXFileDir.getUserDir().equals(wUserDir.getAbsolutePath());
+			pLogger.logDebug(this, "runAntWait", "TimeOut=[%s] wChangeUserDir=[%b]", aTimeOut, wChangeUserDir);
+		}
+		try {
+			if (runDoBefore(aTimeOut)) {
+				CXOSLauncher wCXOSLauncher = new CXOSLauncher(pLogger, this);
+				pCommandState = wCXOSLauncher.launch(aTimeOut, wUserDir, aEnv, getCmdLineArgs());
+				if (aCharacterEnd != null) {
+					// wait if characterEnd is setted
+					pLogger.logDebug(this, "runAntWait", "wait characterEnd %s", aCharacterEnd);
+					while (!getRunStdOut().contains(aCharacterEnd)) {
+						CXOSLauncher.sleep(50);
+					}
+					pLogger.logDebug(this, "runAntWait", "characterEnd %s found ", aCharacterEnd);
+
+				}
+				pLogger.logDebug(this, "run", "CommandState=[%s]", pCommandState.name());
+			}
+		} catch (Exception e) {
+			setRunException(e);
+		}
+		return runDoAfter();
+	}
+
 	/**
 	 * @param aTimeOut
 	 * @return
