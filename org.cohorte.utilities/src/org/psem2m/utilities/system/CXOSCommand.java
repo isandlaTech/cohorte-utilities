@@ -272,8 +272,9 @@ public class CXOSCommand extends CXOSRunner implements IXOSCommand {
 				pCommandState = wCXOSLauncher.launch(aTimeOut, wUserDir, aEnv, getCmdLineArgs());
 				if (aCharacterEnd != null) {
 					// wait if characterEnd is setted
-					pLogger.logDebug(this, "runAntWait", "wait characterEnd %s", aCharacterEnd);
-					while (!getRunStdOut().contains(aCharacterEnd)) {
+					pLogger.logDebug(this, "runAntWait", "wait characterEnd %s, out=[%s]", aCharacterEnd,
+							getRunStdOut());
+					while (!getStdOutBuffer().toString().contains(aCharacterEnd)) {
 						CXOSLauncher.sleep(50);
 					}
 					pLogger.logDebug(this, "runAntWait", "characterEnd %s found ", aCharacterEnd);
