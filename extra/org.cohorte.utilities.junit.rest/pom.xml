@@ -5,7 +5,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.cohorte.utilities.extra</groupId>
-	<artifactId>org.cohorte.utilities.extra.junit.rest</artifactId>
+	<artifactId>org.cohorte.utilities.junit.rest</artifactId>
 	<version>1.0.0</version>   <!-- ATTENSION : doit être le même que celui du MANIFEST -->
 
 
@@ -173,13 +173,13 @@
 		<repository>
 			<id>cohorte-nexus</id>
 			<name>Cohorte Releases Repository</name>
-			<url>https://nrm.cohorte.tech/repository/cohorte-releases/</url>
+			<url>https://pinea.cohorte.tech/nexus/repository/utilities-extra-releases/</url>
 			<layout>default</layout>
 		</repository>
 		<snapshotRepository>
 			<id>cohorte-nexus</id>
 			<name>Cohorte Snapshots Repository</name>
-			<url>https://nrm.coorte.tech/repository/cohorte-snapshots/</url>
+			<url>https://pinea.cohorte.tech/nexus/repository/utilities-extra-snapshots/</url>
 			<uniqueVersion>true</uniqueVersion>
 			<layout>default</layout>
 		</snapshotRepository>
