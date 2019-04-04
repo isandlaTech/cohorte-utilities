@@ -616,7 +616,7 @@ public class CAbstractEndpointTest extends CAbstractJunitTest {
 
 		try {
 			Response wResponse = given()
-					.contentType(ContentType.URLENC.withCharset("UTF-8"))
+					.contentType(ContentType.JSON.withCharset("UTF-8"))
 					.cookie(getCookie()).log().all(true)
 					//
 					.expect()
