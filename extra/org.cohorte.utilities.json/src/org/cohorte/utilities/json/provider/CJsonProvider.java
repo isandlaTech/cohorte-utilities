@@ -1,6 +1,5 @@
 package org.cohorte.utilities.json.provider;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -253,8 +252,7 @@ public class CJsonProvider implements IJsonProvider {
 		// get content
 		pLogger.logInfo(this, "getJSONObject", "get content from id %s",
 				aContentId);
-		String wPath = aPath != null ? aPath + File.separatorChar + aContentId
-				: aContentId;
+		String wPath = aPath != null ? aPath + "/" + aContentId : aContentId;
 
 		CXListRsrcText wRsrcs = pJsonResolver.getContent(aTag, wPath, false,
 				null);
@@ -372,8 +370,8 @@ public class CJsonProvider implements IJsonProvider {
 		// get content
 		pLogger.logInfo(this, "getJSONObject", "get content from id %s",
 				aContentId);
-		String wPath = aFatherPath != null ? aFatherPath + File.separatorChar
-				+ aContentId : aContentId;
+		String wPath = aFatherPath != null ? aFatherPath + "/" + aContentId
+				: aContentId;
 
 		CXListRsrcText wRsrcs = pJsonResolver.getContent(aTag, wPath, false,
 				null);
@@ -563,8 +561,7 @@ public class CJsonProvider implements IJsonProvider {
 									wPath = wPath.replace(
 											EProviderKind.FILE.toString(),
 											EProviderKind.FILE.toString()
-													+ currentPath
-													+ File.separatorChar);
+													+ currentPath + "/");
 								}
 
 							}
