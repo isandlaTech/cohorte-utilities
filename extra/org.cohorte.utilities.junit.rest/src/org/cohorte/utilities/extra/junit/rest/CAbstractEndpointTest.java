@@ -4,6 +4,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
 import java.net.URL;
+import java.util.Map;
 
 import org.cohorte.utilities.junit.CAbstractJunitTest;
 import org.psem2m.utilities.CXBytesUtils;
@@ -13,6 +14,7 @@ import org.psem2m.utilities.json.JSONObject;
 import io.restassured.http.ContentType;
 import io.restassured.http.Cookie;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 
 /**
@@ -114,6 +116,13 @@ public class CAbstractEndpointTest extends CAbstractJunitTest {
 
 	}
 
+	protected void test00GenericLogin(final String aTestMethodName,
+			final String aDimensionApiUri, final String aUserId,
+			final String aPassword) throws Exception {
+		test00GenericLogin(aTestMethodName, aDimensionApiUri, aUserId,
+				aPassword, null);
+	}
+
 	/**
 	 * @param aDimensionApiUri
 	 * @param aUserId
@@ -122,17 +131,25 @@ public class CAbstractEndpointTest extends CAbstractJunitTest {
 	 */
 	protected void test00GenericLogin(final String aTestMethodName,
 			final String aDimensionApiUri, final String aUserId,
-			final String aPassword) throws Exception {
+			final String aPassword, final Map<String, String> aFormListParam)
+			throws Exception {
 		logBegin(this, aTestMethodName, "login %s", aUserId);
 		try {
-
-			Response wResponse = given()
+			RequestSpecification wSpecReq = given()
 					.contentType(ContentType.URLENC.withCharset("UTF-8"))
 					//
 					.formParam("user", aUserId)
 					//
-					.formParam("password", aPassword).log().all()
-					//
+					.formParam("password", aPassword);
+
+			if (aFormListParam != null) {
+				for (String aKey : aFormListParam.keySet()) {
+					wSpecReq = wSpecReq.formParam(aKey,
+							aFormListParam.get(aKey));
+				}
+			}
+			Response wResponse = wSpecReq.log().all()
+			//
 					.post(builURL(aDimensionApiUri, "login/v3"));
 
 			//

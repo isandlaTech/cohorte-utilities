@@ -411,9 +411,17 @@ public class CJsonProvider implements IJsonProvider {
 		return wFathersContent;
 	}
 
+	/**
+	 * return the path of the directory for the current resource aRsrc
+	 *
+	 * @param aTag
+	 * @param aRsrc
+	 * @return
+	 */
 	private String getSubPath(final String aTag, final CXRsrcText aRsrc) {
 		String wSubPath = aRsrc.getFullPath();
-		int wIdx = wSubPath.lastIndexOf(File.separatorChar);
+		// always used / even on windows. the path are always define with /
+		int wIdx = wSubPath.lastIndexOf("/");
 		wSubPath = wIdx != -1 ? wSubPath.substring(0, wIdx + 1) : wSubPath;
 		CXRsrcProvider wProviderUsed = null;
 		for (CXRsrcProvider aProvider : pJsonResolver.getRsrcProvider(aTag)) {
