@@ -33,6 +33,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.psem2m.utilities.CXStringUtils;
+
 /**
  * A JSONArray is an ordered sequence of values. Its external text form is a
  * string wrapped in square brackets with commas separating the values. The
@@ -80,11 +82,16 @@ import java.util.Map;
  * be ignored.</li>
  * </ul>
  *
+ *
+ * FDB - Add toString (..,aSorted) et @SuppressWarnings
+ * 
+ * OG - #31
+ * 
  * @author JSON.org
- * @version 2
+ * @version 3
  */
-// FDB - Add toString (..,aSorted) et @SuppressWarnings
-public class JSONArray {
+
+public class JSONArray implements Cloneable {
 
 	/**
 	 * The arrayList where the JSONArray's properties are kept.
@@ -95,7 +102,7 @@ public class JSONArray {
 	 * Construct an empty JSONArray.
 	 */
 	public JSONArray() {
-		this.myArrayList = new ArrayList<Object>();
+		this.myArrayList = new ArrayList<>();
 	}
 
 	/**
@@ -105,8 +112,7 @@ public class JSONArray {
 	 *            A Collection.
 	 */
 	public JSONArray(Collection<Object> collection) {
-		this.myArrayList = (collection == null) ? new ArrayList<Object>()
-				: new ArrayList<Object>(collection);
+		this.myArrayList = (collection == null) ? new ArrayList<>() : new ArrayList<>(collection);
 	}
 
 	/**
@@ -164,8 +170,7 @@ public class JSONArray {
 				this.put(Array.get(array, i));
 			}
 		} else {
-			throw new JSONException(
-					"JSONArray initial value should be a string or collection or array.");
+			throw new JSONException("JSONArray initial value should be a string or collection or array.");
 		}
 	}
 
@@ -181,6 +186,33 @@ public class JSONArray {
 	 */
 	public JSONArray(String source) throws JSONException {
 		this(new JSONTokener(source));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#clone()
+	 */
+	@Override
+	public JSONArray clone() throws JSONException {
+		JSONArray wNewJsonArray = new JSONArray();
+		int wIdx = 0;
+		for (Object wEntry : this.getEntries(Object.class)) {
+			try {
+				if (wEntry instanceof JSONObject) {
+					wEntry = ((JSONObject) wEntry).clone();
+				}
+				//
+				else if (wEntry instanceof JSONArray) {
+					wEntry = ((JSONArray) wEntry).clone();
+				}
+				wNewJsonArray.put(wEntry);
+				wIdx++;
+			} catch (Exception e) {
+				throw new JSONException(e, "Unable to put the [%s]th value in the cloned JsonArray", wIdx);
+			}
+		}
+		return wNewJsonArray;
 	}
 
 	/**
@@ -213,13 +245,9 @@ public class JSONArray {
 	 */
 	public boolean getBoolean(int index) throws JSONException {
 		final Object o = get(index);
-		if (o.equals(Boolean.FALSE)
-				|| (o instanceof String && ((String) o)
-						.equalsIgnoreCase("false"))) {
+		if (o.equals(Boolean.FALSE) || (o instanceof String && ((String) o).equalsIgnoreCase("false"))) {
 			return false;
-		} else if (o.equals(Boolean.TRUE)
-				|| (o instanceof String && ((String) o)
-						.equalsIgnoreCase("true"))) {
+		} else if (o.equals(Boolean.TRUE) || (o instanceof String && ((String) o).equalsIgnoreCase("true"))) {
 			return true;
 		}
 		throw new JSONException("JSONArray[" + index + "] is not a Boolean.");
@@ -238,8 +266,7 @@ public class JSONArray {
 	public double getDouble(int index) throws JSONException {
 		final Object o = get(index);
 		try {
-			return o instanceof Number ? ((Number) o).doubleValue() : Double
-					.valueOf((String) o).doubleValue();
+			return o instanceof Number ? ((Number) o).doubleValue() : Double.valueOf((String) o).doubleValue();
 		} catch (final Exception e) {
 			throw new JSONException("JSONArray[" + index + "] is not a number.");
 		}
@@ -252,7 +279,7 @@ public class JSONArray {
 	 * @return a list containing the casted entries according the given classe
 	 */
 	public <T> List<T> getEntries(Class<T> aClass) {
-		final List<T> wList = new ArrayList<T>();
+		final List<T> wList = new ArrayList<>();
 		for (final Object wEntry : myArrayList) {
 			wList.add(aClass.cast(wEntry));
 		}
@@ -271,8 +298,7 @@ public class JSONArray {
 	 */
 	public int getInt(int index) throws JSONException {
 		final Object o = get(index);
-		return o instanceof Number ? ((Number) o).intValue()
-				: (int) getDouble(index);
+		return o instanceof Number ? ((Number) o).intValue() : (int) getDouble(index);
 	}
 
 	/**
@@ -323,8 +349,67 @@ public class JSONArray {
 	 */
 	public long getLong(int index) throws JSONException {
 		final Object o = get(index);
-		return o instanceof Number ? ((Number) o).longValue()
-				: (long) getDouble(index);
+		return o instanceof Number ? ((Number) o).longValue() : (long) getDouble(index);
+	}
+
+	/**
+	 * @param aPath
+	 *            eg. "myArray[4].myProp"
+	 * @return the value of the leaf identified by the path.
+	 */
+	public <T extends Object> T getObject(final String aPath, final Class<T> aExpectedClass) {
+
+		String[] wPathParts = JSONObject.buildPathParts(aPath);
+
+		Object wValue = getObject(wPathParts, 0);
+
+		String wFoundClassName = (wValue != null) ? wValue.getClass().getName() : null;
+		if (!aExpectedClass.getName().equals(wFoundClassName)) {
+			throw new JSONException("The class [%s] of the value having the path [%s] isn't an instance of [%s]",
+					wFoundClassName, aPath, aExpectedClass.getSimpleName());
+		}
+
+		return (T) wValue;
+	}
+
+	/**
+	 * @param aPathParts
+	 *            The splited path (eg. "myArray","4]","myProp" ).
+	 * @param aCurrentPartIdx
+	 *            the level of the current path part.
+	 * @return the found value
+	 */
+	Object getObject(final String[] aPathParts, final int aCurrentPartIdx) {
+		Object wValue = null;
+
+		String wPathPart = aPathParts[aCurrentPartIdx];
+
+		int wPosLastSquareBracket = wPathPart.lastIndexOf(']');
+		if (wPosLastSquareBracket == -1) {
+			throw new JSONException("The  part(%d) [%s] isn't index for a JSONArray : can't go deeper (full path:%s",
+					aCurrentPartIdx + 1, wPathPart, CXStringUtils.stringTableToString(aPathParts));
+		}
+		int wIdx = Integer.parseInt(wPathPart.substring(0, wPosLastSquareBracket));
+
+		wValue = this.opt(wIdx);
+		// if it's not the last part of the path => go deeper
+		if (aCurrentPartIdx < aPathParts.length - 1) {
+			// if the current object is an JSONObject
+			if (wValue instanceof JSONObject) {
+				wValue = ((JSONObject) wValue).getObject(aPathParts, aCurrentPartIdx + 1);
+			}
+			// if the current object is an JSONArray
+			else if (wValue instanceof JSONArray) {
+				wValue = ((JSONArray) wValue).getObject(aPathParts, aCurrentPartIdx + 1);
+			}
+			// else, error
+			else {
+				throw new JSONException(
+						"The object of the part [%s] isn't a JSONObject or a JSONArray : can't go deeper");
+			}
+		}
+
+		return wValue;
 	}
 
 	/**
@@ -392,8 +477,7 @@ public class JSONArray {
 	 * @return An object value, or null if there is no object at that index.
 	 */
 	public Object opt(int index) {
-		return (index < 0 || index >= length()) ? null : this.myArrayList
-				.get(index);
+		return (index < 0 || index >= length()) ? null : this.myArrayList.get(index);
 	}
 
 	/**
@@ -662,8 +746,7 @@ public class JSONArray {
 	 * @throws JSONException
 	 *             If the index is negative or if the value is not finite.
 	 */
-	public JSONArray put(int index, Collection<Object> value)
-			throws JSONException {
+	public JSONArray put(int index, Collection<Object> value) throws JSONException {
 		put(index, new JSONArray(value));
 		return this;
 	}
@@ -735,8 +818,7 @@ public class JSONArray {
 	 *             If the index is negative or if the the value is an invalid
 	 *             number.
 	 */
-	public JSONArray put(int index, Map<Object, Object> value)
-			throws JSONException {
+	public JSONArray put(int index, Map<Object, Object> value) throws JSONException {
 		put(index, new JSONObject(value));
 		return this;
 	}
@@ -872,8 +954,7 @@ public class JSONArray {
 	}
 
 	// FDB - AJOUT
-	public String toString(int indentFactor, boolean aStorted)
-			throws JSONException {
+	public String toString(int indentFactor, boolean aStorted) throws JSONException {
 		return toString(indentFactor, 0, aStorted);
 	}
 
@@ -890,8 +971,7 @@ public class JSONArray {
 	 * @throws JSONException
 	 */
 	// FDB - Add Sorted
-	String toString(int indentFactor, int indent, boolean aSorted)
-			throws JSONException {
+	String toString(int indentFactor, int indent, boolean aSorted) throws JSONException {
 		final int len = length();
 		if (len == 0) {
 			return "[]";
@@ -899,8 +979,7 @@ public class JSONArray {
 		int i;
 		final StringBuffer sb = new StringBuffer("[");
 		if (len == 1) {
-			sb.append(JSONObject.valueToString(this.myArrayList.get(0),
-					indentFactor, indent, aSorted));
+			sb.append(JSONObject.valueToString(this.myArrayList.get(0), indentFactor, indent, aSorted));
 		} else {
 			final int newindent = indent + indentFactor;
 			sb.append('\n');
@@ -911,8 +990,7 @@ public class JSONArray {
 				for (int j = 0; j < newindent; j += 1) {
 					sb.append(' ');
 				}
-				sb.append(JSONObject.valueToString(this.myArrayList.get(i),
-						indentFactor, newindent, aSorted));
+				sb.append(JSONObject.valueToString(this.myArrayList.get(i), indentFactor, newindent, aSorted));
 			}
 			sb.append('\n');
 			for (i = 0; i < indent; i += 1) {
@@ -956,7 +1034,7 @@ public class JSONArray {
 			writer.write(']');
 			return writer;
 		} catch (final IOException e) {
-			throw new JSONException(e);
+			throw new JSONException(e, "Unable to write the jsonArray [%d]", this.hashCode());
 		}
 	}
 }

@@ -2,13 +2,14 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: org :: cohorte: utilities.json
 Bundle-SymbolicName: org.cohorte.utilities.json
-Bundle-Version: 1.0.14
+Bundle-Version: 1.0.15
 Bundle-Activator: org.cohorte.utilities.json.Activator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: com.jayway.jsonpath,
  de.christophkraemer.rhino.javascript,
  de.christophkraemer.rhino.util,
+ org.cohorte.utilities.junit,
  org.javatuples,
  org.mozilla.javascript,
  org.osgi.framework,

@@ -2,12 +2,13 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: COHORTE :: Utilities
 Bundle-SymbolicName: org.cohorte.utilities
-Bundle-Version: 1.0.28
+Bundle-Version: 1.1.0
 Bundle-Vendor: isandlaTech.com
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: javax.script,
  org.cohorte.utilities,
  org.cohorte.utilities.encode,
+ org.cohorte.utilities.junit,
  org.cohorte.utilities.tests,
  org.psem2m.utilities,
  org.psem2m.utilities.files,
