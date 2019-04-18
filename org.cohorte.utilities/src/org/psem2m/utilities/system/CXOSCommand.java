@@ -25,8 +25,7 @@ public class CXOSCommand extends CXOSRunner implements IXOSCommand {
 	 * @param aCommandLine
 	 * @param aExitValueOk
 	 */
-	public CXOSCommand(final EXCommandState aExitValueOk,
-			final String... aCommandLine) {
+	public CXOSCommand(final EXCommandState aExitValueOk, final String... aCommandLine) {
 		this(CActivityLoggerNull.getInstance(), aExitValueOk, aCommandLine);
 	}
 
@@ -36,13 +35,12 @@ public class CXOSCommand extends CXOSRunner implements IXOSCommand {
 	 *            Valeur renvoyee par la commande si OK (0 par defaut)
 	 * @param aCommandLine
 	 */
-	public CXOSCommand(final IActivityLoggerBase aLogger,
-			final EXCommandState aExitStateOk, final String... aCommandLine) {
+	public CXOSCommand(final IActivityLoggerBase aLogger, final EXCommandState aExitStateOk,
+			final String... aCommandLine) {
 		super(aLogger, aCommandLine);
 
 		pRunExitStateOk = aExitStateOk;
-		pLogger.logDebug(this, "<init>", "CommandLine nbParts=[%s]",
-				aCommandLine.length);
+		pLogger.logDebug(this, "<init>", "CommandLine nbParts=[%s]", aCommandLine.length);
 
 	}
 
@@ -50,8 +48,7 @@ public class CXOSCommand extends CXOSRunner implements IXOSCommand {
 	 * @param aTracer
 	 * @param aCommandLine
 	 */
-	public CXOSCommand(final IActivityLoggerBase aTracer,
-			final String... aCommandLine) {
+	public CXOSCommand(final IActivityLoggerBase aTracer, final String... aCommandLine) {
 		this(aTracer, EXCommandState.CMD_RUN_OK, aCommandLine);
 	}
 
@@ -116,10 +113,8 @@ public class CXOSCommand extends CXOSRunner implements IXOSCommand {
 
 		StringBuilder wExitInfos = new StringBuilder(2048);
 		wExitInfos.append("--> isExitOk    =").append(isExitOk()).append('\n');
-		wExitInfos.append("--> ExitValue   =").append(getRunExitString())
-				.append('\n');
-		return shiftTextLines(buildRepport(aParts, wExitInfos.toString()),
-				"#OSCommand > ");
+		wExitInfos.append("--> ExitValue   =").append(getRunExitString()).append('\n');
+		return shiftTextLines(buildRepport(aParts, wExitInfos.toString()), "#OSCommand > ");
 	}
 
 	/**
@@ -175,9 +170,7 @@ public class CXOSCommand extends CXOSRunner implements IXOSCommand {
 	 */
 	@Override
 	public boolean isRunOk() {
-		return isLaunched()
-				&& isExitOk()
-				&& !(hasRunException() || isRunTimeOutDetected() || hasRunStdOutputErr());
+		return isLaunched() && isExitOk() && !(hasRunException() || isRunTimeOutDetected() || hasRunStdOutputErr());
 	}
 
 	/**
@@ -237,22 +230,57 @@ public class CXOSCommand extends CXOSRunner implements IXOSCommand {
 	 * java.util.Map)
 	 */
 	@Override
-	public boolean run(final long aTimeOut, final File aUserDir,
+	public boolean run(final long aTimeOut, final File aUserDir, final Map<String, String> aEnv) {
+		// protection
+		File wUserDir = (aUserDir != null) ? aUserDir : CXFileDir.getUserDir();
+
+		if (pLogger.isLogDebugOn()) {
+			boolean wChangeUserDir = !CXFileDir.getUserDir().equals(wUserDir.getAbsolutePath());
+			pLogger.logDebug(this, "run", "TimeOut=[%s] wChangeUserDir=[%b]", aTimeOut, wChangeUserDir);
+		}
+		try {
+			if (runDoBefore(aTimeOut)) {
+				CXOSLauncher wCXOSLauncher = new CXOSLauncher(pLogger, this);
+				pCommandState = wCXOSLauncher.launch(aTimeOut, wUserDir, aEnv, getCmdLineArgs());
+				pLogger.logDebug(this, "run", "CommandState=[%s]", pCommandState.name());
+			}
+		} catch (Exception e) {
+			setRunException(e);
+		}
+		return runDoAfter();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.psem2m.utilities.system.IXOSCommand#run(long, java.io.File,
+	 * java.util.Map)
+	 */
+	@Override
+	public boolean runAntWait(final long aTimeOut, final File aUserDir, String aCharacterEnd,
 			final Map<String, String> aEnv) {
 		// protection
 		File wUserDir = (aUserDir != null) ? aUserDir : CXFileDir.getUserDir();
 
 		if (pLogger.isLogDebugOn()) {
-			boolean wChangeUserDir = !CXFileDir.getUserDir().equals(
-					wUserDir.getAbsolutePath());
-			pLogger.logDebug(this, "run", "TimeOut=[%s] wChangeUserDir=[%b]",
-					aTimeOut, wChangeUserDir);
+			boolean wChangeUserDir = !CXFileDir.getUserDir().equals(wUserDir.getAbsolutePath());
+			pLogger.logDebug(this, "runAntWait", "TimeOut=[%s] wChangeUserDir=[%b]", aTimeOut, wChangeUserDir);
 		}
 		try {
 			if (runDoBefore(aTimeOut)) {
 				CXOSLauncher wCXOSLauncher = new CXOSLauncher(pLogger, this);
-				pCommandState = wCXOSLauncher.launch(aTimeOut, wUserDir, aEnv,
-						getCmdLineArgs());
+				pCommandState = wCXOSLauncher.launch(aTimeOut, wUserDir, aEnv, getCmdLineArgs());
+				if (aCharacterEnd != null) {
+					// wait if characterEnd is setted
+					pLogger.logDebug(this, "runAntWait", "wait characterEnd %s, out=[%s]", aCharacterEnd,
+							getRunStdOut());
+					while (!getStdOutBuffer().toString().contains(aCharacterEnd)) {
+						CXOSLauncher.sleep(50);
+					}
+					pLogger.logDebug(this, "runAntWait", "characterEnd %s found ", aCharacterEnd);
+
+				}
+				pLogger.logDebug(this, "run", "CommandState=[%s]", pCommandState.name());
 			}
 		} catch (Exception e) {
 			setRunException(e);

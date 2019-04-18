@@ -44,7 +44,8 @@ public interface IXOSCommand extends IXOSRunner {
 	 *            a set of variables added in the context of the command
 	 * @return true if all is OK
 	 */
-	boolean run(final long aTimeOut, final File aUserDir,
-			final Map<String, String> aEnv);
+	boolean run(final long aTimeOut, final File aUserDir, final Map<String, String> aEnv);
 
+	public boolean runAntWait(final long aTimeOut, final File aUserDir, String aCharacterEnd,
+			final Map<String, String> aEnv);
 }
