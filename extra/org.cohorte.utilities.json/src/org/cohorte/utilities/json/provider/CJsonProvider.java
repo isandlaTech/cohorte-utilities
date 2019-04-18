@@ -1,6 +1,5 @@
 package org.cohorte.utilities.json.provider;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -253,8 +252,7 @@ public class CJsonProvider implements IJsonProvider {
 		// get content
 		pLogger.logInfo(this, "getJSONObject", "get content from id %s",
 				aContentId);
-		String wPath = aPath != null ? aPath + File.separatorChar + aContentId
-				: aContentId;
+		String wPath = aPath != null ? aPath + "/" + aContentId : aContentId;
 
 		CXListRsrcText wRsrcs = pJsonResolver.getContent(aTag, wPath, false,
 				null);
@@ -372,8 +370,8 @@ public class CJsonProvider implements IJsonProvider {
 		// get content
 		pLogger.logInfo(this, "getJSONObject", "get content from id %s",
 				aContentId);
-		String wPath = aFatherPath != null ? aFatherPath + File.separatorChar
-				+ aContentId : aContentId;
+		String wPath = aFatherPath != null ? aFatherPath + "/" + aContentId
+				: aContentId;
 
 		CXListRsrcText wRsrcs = pJsonResolver.getContent(aTag, wPath, false,
 				null);
@@ -411,9 +409,17 @@ public class CJsonProvider implements IJsonProvider {
 		return wFathersContent;
 	}
 
+	/**
+	 * return the path of the directory for the current resource aRsrc
+	 *
+	 * @param aTag
+	 * @param aRsrc
+	 * @return
+	 */
 	private String getSubPath(final String aTag, final CXRsrcText aRsrc) {
 		String wSubPath = aRsrc.getFullPath();
-		int wIdx = wSubPath.lastIndexOf(File.separatorChar);
+		// always used / even on windows. the path are always define with /
+		int wIdx = wSubPath.lastIndexOf("/");
 		wSubPath = wIdx != -1 ? wSubPath.substring(0, wIdx + 1) : wSubPath;
 		CXRsrcProvider wProviderUsed = null;
 		for (CXRsrcProvider aProvider : pJsonResolver.getRsrcProvider(aTag)) {
@@ -555,8 +561,7 @@ public class CJsonProvider implements IJsonProvider {
 									wPath = wPath.replace(
 											EProviderKind.FILE.toString(),
 											EProviderKind.FILE.toString()
-													+ currentPath
-													+ File.separatorChar);
+													+ currentPath + "/");
 								}
 
 							}
