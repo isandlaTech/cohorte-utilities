@@ -242,7 +242,10 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 				}
 				return wRsrcList;
 			} else if (aProvider instanceof CXRsrcTextFileProvider) {
-
+				if (wValidContentId.indexOf("?") != -1) {
+					wValidContentId = wValidContentId.substring(0,
+							wValidContentId.indexOf("?"));
+				}
 				CXListRsrcText wRsrcList = new CXListRsrcText();
 				wRsrcList.add(aProvider.rsrcReadTxt(wValidContentId));
 
