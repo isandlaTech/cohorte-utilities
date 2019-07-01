@@ -500,8 +500,7 @@ public class CJsonProvider implements IJsonProvider {
 		List<JSONObject> wFathersContent = getListFather(aFathersContent,
 				aContent);
 		Object wResolvContent = aContent;
-		wResolvContent = CJsonResolvTernary.resultTernary(wResolvContent,
-				pRhinoScriptEngine);
+
 		for (String wTag : pJsonResolver.getListTags()) {
 			// regexp that allow to catch the strings like
 
@@ -685,6 +684,8 @@ public class CJsonProvider implements IJsonProvider {
 			}
 
 		}
+		wResolvContent = CJsonResolvTernary.resultTernary(pLogger,
+				wResolvContent, pRhinoScriptEngine);
 		return wResolvContent;
 
 	}

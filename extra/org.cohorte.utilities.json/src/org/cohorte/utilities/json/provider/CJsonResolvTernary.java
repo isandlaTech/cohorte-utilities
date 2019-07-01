@@ -3,12 +3,11 @@ package org.cohorte.utilities.json.provider;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.script.ScriptException;
-
 import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.json.JSONArray;
 import org.psem2m.utilities.json.JSONException;
 import org.psem2m.utilities.json.JSONObject;
+import org.psem2m.utilities.logging.IActivityLogger;
 
 import de.christophkraemer.rhino.javascript.RhinoScriptEngine;
 
@@ -30,9 +29,9 @@ public class CJsonResolvTernary {
 	private static final Pattern sPattern = Pattern
 			.compile("\\(([\\=|<|>|\\/|\\[|\\]|<=|>=|\\!|\\.|'|\\$|\\(|\\)|\\s|\\w|\\{|\\}\\-]*)\\)\\s*\\?([\\s|\\[|\\]|\\$|\\/|\\{|\\}|\\w|\\.|\\\\\\\\\"|'||\\(|\\)|\\-]*):([\\s|\\[|\\]|\\$|\\w|\\\\\\\\\"|'|\\.|\\/||\\{|\\}|\\(|\\)|\\-]*);");
 
-	public static Object resultTernary(final Object aContent,
-			final RhinoScriptEngine wRhinoScriptEngine) throws ScriptException,
-			JSONException {
+	public static Object resultTernary(final IActivityLogger aLogger,
+			final Object aContent, final RhinoScriptEngine wRhinoScriptEngine)
+			throws JSONException {
 		String wResult = aContent.toString();
 		Matcher wMatcher = sPattern.matcher(wResult);
 		while (wMatcher.find()) {
@@ -46,31 +45,39 @@ public class CJsonResolvTernary {
 			String wFullMatch = wMatcher.group(0);
 			// apply it only if all variable are resolved
 			Object wCondResult;
+			try {
+				aLogger.logInfo(CJsonResolvTernary.class, "resultTernary",
+						"evaluation condition %s", wCondition);
+				wCondResult = wRhinoScriptEngine.eval(wCondition);
 
-			wCondResult = wRhinoScriptEngine.eval(wCondition);
+				if (wCondResult instanceof Boolean
+						&& ((Boolean) wCondResult).booleanValue()) {
+					try {
+						String wTrueResolved = wRhinoScriptEngine.eval(
+								wTrueResult).toString();
+						wResult = wResult.replace(wFullMatch, wTrueResolved);
 
-			if (wCondResult instanceof Boolean
-					&& ((Boolean) wCondResult).booleanValue()) {
-				try {
-					String wTrueResolved = wRhinoScriptEngine.eval(wTrueResult)
-							.toString();
-					wResult = wResult.replace(wFullMatch, wTrueResolved);
+					} catch (Exception e) {
+						// no an expression to evaluate . it's not
+						// javascript
+						wResult = wResult.replace(wFullMatch, wTrueResult);
 
-				} catch (Exception e) {
-					// no an expression to evaluate . it's not
-					// javascript
-					wResult = wResult.replace(wFullMatch, wTrueResult);
+					}
+				} else {
+					try {
+						String wFalseResolved = wRhinoScriptEngine.eval(
+								wFalseResult).toString();
+						wResult = wResult.replace(wFullMatch, wFalseResolved);
 
+					} catch (Exception e) {
+						wResult = wResult.replace(wFullMatch, wFalseResult);
+					}
 				}
-			} else {
-				try {
-					String wFalseResolved = wRhinoScriptEngine.eval(
-							wFalseResult).toString();
-					wResult = wResult.replace(wFullMatch, wFalseResolved);
+			} catch (Exception e) {
+				// can't resolve ternary expression do nothin
+				aLogger.logInfo(CJsonResolvTernary.class, "resultTernary",
+						"fail to evaluate condition %s", wCondition);
 
-				} catch (Exception e) {
-					wResult = wResult.replace(wFullMatch, wFalseResult);
-				}
 			}
 
 		}
@@ -91,8 +98,9 @@ public class CJsonResolvTernary {
 	 * @param aContent
 	 * @return
 	 */
-	public static String resultTernary(final String aContent,
-			final RhinoScriptEngine wRhinoScriptEngine) throws ScriptException {
+	public static String resultTernary(final IActivityLogger aLogger,
+			final String aContent, final RhinoScriptEngine wRhinoScriptEngine)
+			throws JSONException {
 		String wResult = aContent;
 		Matcher wMatcher = sPattern.matcher(aContent);
 		while (wMatcher.find()) {
@@ -106,47 +114,53 @@ public class CJsonResolvTernary {
 			String wFullMatch = wMatcher.group(0);
 			// apply it only if all variable are resolved
 			Object wCondResult;
+			try {
+				wCondResult = wRhinoScriptEngine.eval(wCondition);
 
-			wCondResult = wRhinoScriptEngine.eval(wCondition);
+				if (wCondResult instanceof Boolean
+						&& ((Boolean) wCondResult).booleanValue()) {
+					try {
+						String wTrueResolved = wRhinoScriptEngine.eval(
+								wTrueResult).toString();
+						if (CXStringUtils.isFloat(wTrueResult)
+								|| CXStringUtils.isNumeric(wTrueResult)) {
+							wResult = wResult.replace("\"" + wFullMatch + "\"",
+									wTrueResult);
+						} else {
+							wResult = wResult
+									.replace(wFullMatch, wTrueResolved);
 
-			if (wCondResult instanceof Boolean
-					&& ((Boolean) wCondResult).booleanValue()) {
-				try {
-					String wTrueResolved = wRhinoScriptEngine.eval(wTrueResult)
-							.toString();
-					if (CXStringUtils.isFloat(wTrueResult)
-							|| CXStringUtils.isNumeric(wTrueResult)) {
-						wResult = wResult.replace("\"" + wFullMatch + "\"",
-								wTrueResult);
-					} else {
-						wResult = wResult.replace(wFullMatch, wTrueResolved);
+						}
+					} catch (Exception e) {
+						// no an expression to evaluate . it's not
+						// javascript
+						if (CXStringUtils.isFloat(wTrueResult)
+								|| CXStringUtils.isNumeric(wTrueResult)) {
+							wResult = wResult.replace("\"" + wFullMatch + "\"",
+									wTrueResult);
+
+						} else {
+							wResult = wResult.replace(wFullMatch, wTrueResult);
+
+						}
 
 					}
-				} catch (Exception e) {
-					// no an expression to evaluate . it's not
-					// javascript
-					if (CXStringUtils.isFloat(wTrueResult)
-							|| CXStringUtils.isNumeric(wTrueResult)) {
-						wResult = wResult.replace("\"" + wFullMatch + "\"",
-								wTrueResult);
+				} else {
+					try {
+						String wFalseResolved = wRhinoScriptEngine.eval(
+								wFalseResult).toString();
+						wResult = wResult.replace(wFullMatch, wFalseResolved);
 
-					} else {
-						wResult = wResult.replace(wFullMatch, wTrueResult);
-
+					} catch (Exception e) {
+						wResult = wResult.replace(wFullMatch, wFalseResult);
 					}
-
 				}
-			} else {
-				try {
-					String wFalseResolved = wRhinoScriptEngine.eval(
-							wFalseResult).toString();
-					wResult = wResult.replace(wFullMatch, wFalseResolved);
+			} catch (Exception e) {
+				// can't resolve ternary expression do nothin
+				aLogger.logInfo(CJsonResolvTernary.class, "resultTernary",
+						"fail to evaluate condition %s", wCondition);
 
-				} catch (Exception e) {
-					wResult = wResult.replace(wFullMatch, wFalseResult);
-				}
 			}
-
 		}
 
 		return wResult;
