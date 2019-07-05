@@ -537,14 +537,23 @@ public class CJsonProvider implements IJsonProvider {
 													// should be taken in
 													// account
 					if (wlTag instanceof JSONObject) {
-						JSONObject wlTagJson = (JSONObject) wlTag;
+						JSONObject wlTagJson = new JSONObject(wlTag.toString());
 						wlPath = wlTagJson.optString(PATH);
 						wMustBeInclude = evaluateCondition(wlTagJson
 								.optString(COND));
+						wlTagJson.remove(COND);
 					} else {
 						pLogger.logInfo(this, "resolveInclude",
 								"not a file include Object but another tag. we keep the jsonObject");
 						wlPath = wlTag.toString();
+						try {
+							JSONObject wOtherTag = new JSONObject(wlTag);
+							wMustBeInclude = evaluateCondition(wOtherTag
+									.optString(COND));
+						} catch (Exception e) {
+							// do nothing
+
+						}
 					}
 
 					if (wMustBeInclude) {
