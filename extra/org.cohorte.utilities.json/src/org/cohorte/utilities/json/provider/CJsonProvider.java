@@ -541,6 +541,7 @@ public class CJsonProvider implements IJsonProvider {
 						wlPath = wlTagJson.optString(PATH);
 						wMustBeInclude = evaluateCondition(wlTagJson
 								.optString(COND));
+
 						wlTagJson.remove(COND);
 					} else {
 						pLogger.logInfo(this, "resolveInclude",

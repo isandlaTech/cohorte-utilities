@@ -300,7 +300,9 @@ public class CXRsrcGeneratorProvider extends CXRsrcProvider {
 			throws Exception {
 		JSONObject wGeneratorContent = new JSONObject(aGeneratorContent);
 		JSONObject wAppliedContent = applyGenerator(wGeneratorContent, null);
-
+		if (wAppliedContent.has("cond")) {
+			wAppliedContent.remove("cond");
+		}
 		return new CXRsrcText(new CXRsrcUriPath(""),
 				CXRsrcTextReadInfo.newInstanceFromString(wAppliedContent
 						.toString()));
@@ -311,7 +313,9 @@ public class CXRsrcGeneratorProvider extends CXRsrcProvider {
 		JSONObject wGeneratorContent = new JSONObject(aGeneratorContent);
 		JSONObject wAppliedContent = applyGenerator(wGeneratorContent,
 				aListFather);
-
+		if (wAppliedContent.has("cond")) {
+			wAppliedContent.remove("cond");
+		}
 		return new CXRsrcText(new CXRsrcUriPath(""),
 				CXRsrcTextReadInfo.newInstanceFromString(wAppliedContent
 						.toString()));
