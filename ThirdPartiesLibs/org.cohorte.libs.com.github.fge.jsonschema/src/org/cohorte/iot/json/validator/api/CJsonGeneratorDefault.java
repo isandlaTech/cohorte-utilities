@@ -1,14 +1,14 @@
 package org.cohorte.iot.json.validator.api;
 
+import org.psem2m.utilities.json.JSONObject;
+import org.psem2m.utilities.logging.CActivityLoggerBasicConsole;
+import org.psem2m.utilities.logging.IActivityLogger;
+
 import io.apptik.json.JsonElement;
 import io.apptik.json.JsonObject;
 import io.apptik.json.generator.JsonGenerator;
 import io.apptik.json.generator.JsonGeneratorConfig;
 import io.apptik.json.schema.SchemaV4;
-
-import org.psem2m.utilities.json.JSONObject;
-import org.psem2m.utilities.logging.CActivityLoggerBasicConsole;
-import org.psem2m.utilities.logging.IActivityLogger;
 
 public class CJsonGeneratorDefault implements IJsonGenerator {
 
@@ -20,6 +20,7 @@ public class CJsonGeneratorDefault implements IJsonGenerator {
 
 		JsonGeneratorConfig gConf = new JsonGeneratorConfig();
 		gConf.emptyJson = aIsEmpty;
+
 		aLogger.logInfo(this, "validateSchema", "generate fake json");
 		JsonObject wJob = new JsonGenerator(schema, gConf).generate()
 				.asJsonObject();
