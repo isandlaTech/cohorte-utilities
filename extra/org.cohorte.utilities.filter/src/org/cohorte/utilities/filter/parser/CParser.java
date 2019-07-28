@@ -23,10 +23,21 @@ import org.psem2m.utilities.json.JSONObject;
  */
 public class CParser {
 
+	/**
+	 * @param aObject
+	 * @return
+	 * @throws CParseException
+	 */
 	public static CExpression parse(final JSONObject aObject) throws CParseException {
 		return parse(aObject, null);
 	}
 
+	/**
+	 * @param aObject
+	 * @param aField
+	 * @return
+	 * @throws CParseException
+	 */
 	public static CExpression parse(final JSONObject aObject, final String aField) throws CParseException {
 		ExpressionOperator wOperator = null;
 		String wField = aField;
@@ -44,8 +55,8 @@ public class CParser {
 				}
 			} else {
 				if (wOperator == null) {
-					throw new CParseException(String.format("Operator not found expected=[%s], found=[%s]",
-							ExpressionOperator.listAll(), aKey));
+					throw new CParseException(String.format("Operator [%s] not found. Expected in: %s", aKey,
+							ExpressionOperator.listAll()));
 
 				} else {
 
@@ -80,8 +91,8 @@ public class CParser {
 							JSONArray wArr = aObject.optJSONArray(aKey);
 							((CExpressionArray) wExp).setValues(parseExpressions(wArr));
 						} else {
-							throw new CParseException(
-									String.format("Operator %s must be an array opeator ", wOperator.toString()));
+							throw new CParseException(String.format("Operator %s must be an array opeator ",
+									wOperator.toString()));
 
 						}
 					}
@@ -92,6 +103,11 @@ public class CParser {
 		return wExp;
 	}
 
+	/**
+	 * @param aFilter
+	 * @return
+	 * @throws CParseException
+	 */
 	public static CExpression parse(final String aFilter) throws CParseException {
 		JSONObject wObject;
 		try {
@@ -103,6 +119,11 @@ public class CParser {
 		}
 	}
 
+	/**
+	 * @param aArray
+	 * @return
+	 * @throws CParseException
+	 */
 	private static List<IExpression> parseExpressions(final JSONArray aArray) throws CParseException {
 		List<IExpression> wValues = new ArrayList<>();
 		for (int i = 0; i < aArray.length(); i++) {
@@ -116,6 +137,11 @@ public class CParser {
 		return wValues;
 	}
 
+	/**
+	 * @param aArray
+	 * @return
+	 * @throws CParseException
+	 */
 	private static List<Object> parseValue(final JSONArray aArray) throws CParseException {
 		List<Object> wValues = new ArrayList<>();
 		for (int i = 0; i < aArray.length(); i++) {
