@@ -41,6 +41,11 @@
 			"testlt":{
 				"$nin":["noin1","noin2"]
 			}
+		},
+		{
+			"testlike":{
+				"$like":"%abc%"
+			}
 		}
 		
 	]

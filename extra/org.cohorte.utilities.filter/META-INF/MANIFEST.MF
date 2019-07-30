@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Filter
 Bundle-SymbolicName: org.cohorte.utilities.filter
-Bundle-Version: 1.0.1
+Bundle-Version: 1.0.2
 Bundle-Activator: org.cohorte.utilities.filter.Activator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: org.cohorte.utilities.filter

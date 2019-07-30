@@ -25,6 +25,8 @@ public enum ExpressionOperator implements IExpressionConstants {
 	//
 	IN("$in", HAS_FIELD, ON_ARRAY),
 	//
+	LIKE("$like", HAS_FIELD, !ON_ARRAY),
+	//
 	LT("$lt", HAS_FIELD, !ON_ARRAY),
 	//
 	LTE("$lte", HAS_FIELD, !ON_ARRAY),
@@ -82,8 +84,7 @@ public enum ExpressionOperator implements IExpressionConstants {
 	 * @param aIsHasField
 	 * @param isOperandArray
 	 */
-	ExpressionOperator(final String aValues, final boolean aIsHasField,
-			final boolean isOperandArray) {
+	ExpressionOperator(final String aValues, final boolean aIsHasField, final boolean isOperandArray) {
 		this();
 		pValues.add(aValues);
 		pIsOperandArray = isOperandArray;
@@ -95,8 +96,7 @@ public enum ExpressionOperator implements IExpressionConstants {
 	 * @param aIsHasField
 	 * @param isOperandArray
 	 */
-	ExpressionOperator(final String[] aValues, final boolean aIsHasField,
-			final boolean isOperandArray) {
+	ExpressionOperator(final String[] aValues, final boolean aIsHasField, final boolean isOperandArray) {
 		this();
 		if (aValues != null) {
 			for (String wVal : aValues) {

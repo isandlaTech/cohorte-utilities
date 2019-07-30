@@ -40,6 +40,7 @@ public class CSQLStringTranslator implements ITranslator<String> {
 		pMapOperator.put(ExpressionOperator.GTE.toString(), ">=");
 		pMapOperator.put(ExpressionOperator.LT.toString(), "<");
 		pMapOperator.put(ExpressionOperator.LTE.toString(), "<=");
+		pMapOperator.put(ExpressionOperator.LIKE.toString(), "LIKE");
 		pMapOperator.put(ExpressionOperator.NIN.toString(), "NOT IN");
 		pMapOperator.put(ExpressionOperator.EXISTS.toString(), "IS %s NULL");
 		pMapOperator.put(ExpressionOperator.REGEXP.toString(), "LIKE");
@@ -48,10 +49,11 @@ public class CSQLStringTranslator implements ITranslator<String> {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
-	 * org.cohorte.utilities.filter.serializer.ITranslator#translateExpression(org.
-	 * cohorte.utilities.filter.expression.ExpressionOperator, java.util.List)
+	 * org.cohorte.utilities.filter.serializer.ITranslator#translateExpression
+	 * (org. cohorte.utilities.filter.expression.ExpressionOperator,
+	 * java.util.List)
 	 */
 	@Override
 	public String translateExpression(final ExpressionOperator aOperator, final List<String> aListOfExpression) {
@@ -62,10 +64,10 @@ public class CSQLStringTranslator implements ITranslator<String> {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
-	 * org.cohorte.utilities.filter.serializer.ITranslator#translateExpression(org.
-	 * cohorte.utilities.filter.expression.IExpressionFieldArray)
+	 * org.cohorte.utilities.filter.serializer.ITranslator#translateExpression
+	 * (org. cohorte.utilities.filter.expression.IExpressionFieldArray)
 	 */
 	@Override
 	public String translateExpression(final IExpressionFieldArray aExpression) {
@@ -92,10 +94,10 @@ public class CSQLStringTranslator implements ITranslator<String> {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
-	 * org.cohorte.utilities.filter.serializer.ITranslator#translateExpression(org.
-	 * cohorte.utilities.filter.expression.IExpressionValue)
+	 * org.cohorte.utilities.filter.serializer.ITranslator#translateExpression
+	 * (org. cohorte.utilities.filter.expression.IExpressionValue)
 	 */
 	@Override
 	public String translateExpression(final IExpressionValue aExpression) {
