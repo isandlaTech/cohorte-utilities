@@ -10,9 +10,7 @@ Import-Package: javax.script,
 Bundle-Vendor: mozilla
 Bundle-ClassPath: libs/rhino-1.7.8.jar,
  .
-Export-Package: de.christophkraemer.rhino.javascript,
- de.christophkraemer.rhino.util,
- org.mozilla.classfile,
+Export-Package: org.mozilla.classfile,
  org.mozilla.javascript,
  org.mozilla.javascript.annotations,
  org.mozilla.javascript.ast,
