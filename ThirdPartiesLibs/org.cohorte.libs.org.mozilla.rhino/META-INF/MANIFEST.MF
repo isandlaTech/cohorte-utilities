@@ -6,9 +6,7 @@ Bundle-Version: 1.7.8
 Bundle-Activator: org.cohorte.libs.org.mozilla.rhino.Activator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javax.script,
- org.osgi.framework;version="1.3.0",
- com.cohorte.*,
- org.cohorte.*
+ org.osgi.framework;version="1.3.0"
 Bundle-Vendor: mozilla
 Bundle-ClassPath: libs/rhino-1.7.8.jar,
  .
