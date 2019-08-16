@@ -367,6 +367,12 @@ public class CJsonProvider implements IJsonProvider {
 	@Override
 	public JSONObject getJSONObject(final String aTag,
 			final String aFatherPath, final String aContentId) throws Exception {
+		return getJSONObject(aTag, aFatherPath, aContentId, false);
+	}
+
+	public JSONObject getJSONObject(final String aTag,
+			final String aFatherPath, final String aContentId,
+			final boolean noIncludeResolution) throws Exception {
 		// get content
 		pLogger.logInfo(this, "getJSONObject", "get content from id %s",
 				aContentId);
@@ -387,8 +393,11 @@ public class CJsonProvider implements IJsonProvider {
 
 			Object wNotCommentJson = checkIsJson(wNotComment);
 			// check include content that must be resolve
-			return getJSONObject(aFatherPath, (JSONObject) wNotCommentJson,
-					wVars);
+			if (!noIncludeResolution) {
+				return getJSONObject(aFatherPath, (JSONObject) wNotCommentJson,
+						wVars);
+			}
+			return (JSONObject) wNotCommentJson;
 		}
 		return null;
 	}
