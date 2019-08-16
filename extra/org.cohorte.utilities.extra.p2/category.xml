@@ -4,7 +4,7 @@
    <bundle id="org.cohorte.utilities.crypto" version="1.0.2">
       <category name="utilities.extra"/>
    </bundle>
-   <bundle id="org.cohorte.utilities.json" version="1.0.19">
+   <bundle id="org.cohorte.utilities.json" version="1.0.20">
       <category name="utilities.extra"/>
    </bundle>
    <bundle id="org.cohorte.utilities.sql" version="1.0.4">
