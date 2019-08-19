@@ -7,6 +7,8 @@ Bundle-Activator: org.cohorte.utilities.json.Activator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: com.jayway.jsonpath,
+ de.christophkraemer.rhino.javascript,
+ de.christophkraemer.rhino.util,
  javax.script,
  org.cohorte.utilities.junit,
  org.javatuples,
