@@ -43,6 +43,7 @@
    <bundle id="org.cohorte.utilities.test" version="1.0.1">
       <category name="utilities.extra"/>
    </bundle>
+    
    <bundle id="org.cohorte.libs.javax.mail" version="1.4.0">
       <category name="libs"/>
    </bundle>

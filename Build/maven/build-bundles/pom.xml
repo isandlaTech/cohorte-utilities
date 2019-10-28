@@ -46,6 +46,7 @@
 		<module>../../../extra/org.cohorte.utilities.ui.swing</module>
 		<module>../../../extra/org.cohorte.utilities.json</module>
 		<module>../../../extra/org.cohorte.utilities.filter</module>
+		<module>../../../extra/org.cohorte.utilities.rest</module>
 		
 		
 	</modules>
