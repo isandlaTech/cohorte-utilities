@@ -4,9 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.psem2m.utilities.CXStringUtils;
-import org.psem2m.utilities.json.JSONArray;
 import org.psem2m.utilities.json.JSONException;
-import org.psem2m.utilities.json.JSONObject;
 import org.psem2m.utilities.logging.IActivityLogger;
 
 import de.christophkraemer.rhino.javascript.RhinoScriptEngine;
@@ -32,63 +30,7 @@ public class CJsonResolvTernary {
 	public static Object resultTernary(final IActivityLogger aLogger,
 			final Object aContent, final RhinoScriptEngine wRhinoScriptEngine)
 			throws JSONException {
-		String wResult = aContent.toString();
-		Matcher wMatcher = sPattern.matcher(wResult);
-		while (wMatcher.find()) {
-			// retrieve 3 groupe that conrespond to the condition then the true
-			// result and false result
-			String wCondition = wMatcher.group(1);
-
-			String wTrueResult = wMatcher.group(2);
-			String wFalseResult = wMatcher.group(3);
-
-			String wFullMatch = wMatcher.group(0);
-			// apply it only if all variable are resolved
-			Object wCondResult;
-			try {
-				aLogger.logInfo(CJsonResolvTernary.class, "resultTernary",
-						"evaluation condition %s", wCondition);
-				wCondResult = wRhinoScriptEngine.eval(wCondition);
-
-				if (wCondResult instanceof Boolean
-						&& ((Boolean) wCondResult).booleanValue()) {
-					try {
-						String wTrueResolved = wRhinoScriptEngine.eval(
-								wTrueResult).toString();
-						wResult = wResult.replace(wFullMatch, wTrueResolved);
-
-					} catch (Exception e) {
-						// no an expression to evaluate . it's not
-						// javascript
-						wResult = wResult.replace(wFullMatch, wTrueResult);
-
-					}
-				} else {
-					try {
-						String wFalseResolved = wRhinoScriptEngine.eval(
-								wFalseResult).toString();
-						wResult = wResult.replace(wFullMatch, wFalseResolved);
-
-					} catch (Exception e) {
-						wResult = wResult.replace(wFullMatch, wFalseResult);
-					}
-				}
-			} catch (Exception e) {
-				// can't resolve ternary expression do nothin
-				aLogger.logInfo(CJsonResolvTernary.class, "resultTernary",
-						"fail to evaluate condition %s", wCondition);
-
-			}
-
-		}
-		if (aContent instanceof JSONObject) {
-			return new JSONObject(wResult);
-		} else if (aContent instanceof JSONArray) {
-			return new JSONArray(wResult);
-		} else {
-			return wResult;
-
-		}
+		return resultTernary(aLogger, aContent.toString(), wRhinoScriptEngine);
 
 	}
 

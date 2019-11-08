@@ -390,7 +390,8 @@ public class CJsonProvider implements IJsonProvider {
 			Map<String, String> wVars = getVariableFromPath(wPath);
 
 			wNotComment = CXStringUtils.replaceVariables(wNotComment, wVars);
-
+			wNotComment = CJsonResolvTernary.resultTernary(pLogger,
+					wNotComment, pRhinoScriptEngine);
 			Object wNotCommentJson = checkIsJson(wNotComment);
 			// check include content that must be resolve
 			if (!noIncludeResolution) {
@@ -705,6 +706,7 @@ public class CJsonProvider implements IJsonProvider {
 		}
 		wResolvContent = CJsonResolvTernary.resultTernary(pLogger,
 				wResolvContent, pRhinoScriptEngine);
+		wResolvContent = checkIsJson(wResolvContent.toString());
 		return wResolvContent;
 
 	}

@@ -83,7 +83,7 @@ public class CJunitTestProcessJson extends CAbstractJunitTest {
 					"test_ternary_expression.js" } };
 
 	/**
-	 * 
+	 *
 	 */
 	@AfterClass
 	public static void destroy() {
@@ -145,8 +145,7 @@ public class CJunitTestProcessJson extends CAbstractJunitTest {
 			getLogger().logSevere(this, wMethodName, "EXPECTED ERROR: %s", e);
 
 			logEndOK(this, wMethodName, "The waited JSONException is thrown");
-
-			throw e;
+			Assert.assertTrue(true);
 		}
 	}
 
@@ -157,6 +156,7 @@ public class CJunitTestProcessJson extends CAbstractJunitTest {
 	public void testPreprocessBadJson01() throws Exception {
 
 		testPreprocessBadJson("testPreprocessBadJson01", "badJson.js");
+
 	}
 
 	/**
