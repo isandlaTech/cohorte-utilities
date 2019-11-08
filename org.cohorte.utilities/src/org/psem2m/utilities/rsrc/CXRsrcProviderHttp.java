@@ -5,7 +5,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 /**
  * Class Http server
@@ -23,8 +25,7 @@ public class CXRsrcProviderHttp extends CXRsrcProvider {
 	 * @return
 	 * @throws Exception
 	 */
-	public static CXRsrcProviderHttp newHttpServerFromUrl(String aFullAddress, Charset aDefCharset)
-			throws Exception {
+	public static CXRsrcProviderHttp newHttpServerFromUrl(String aFullAddress, Charset aDefCharset) throws Exception {
 		CXRsrcProviderHttp wSrv = null;
 		if (aFullAddress != null) {
 			String wHost = null;
@@ -45,8 +46,7 @@ public class CXRsrcProviderHttp extends CXRsrcProvider {
 					wIdx++;
 					if (wIdx < wTmp.length()) {
 						int wIdxPath = wTmp.indexOf(CXRsrcUrlAddress.URL_SEP);
-						String wPortStr = wIdxPath == -1 ? wTmp.substring(wIdx) : wTmp.substring(
-								wIdx, wIdxPath);
+						String wPortStr = wIdxPath == -1 ? wTmp.substring(wIdx) : wTmp.substring(wIdx, wIdxPath);
 						try {
 							wPort = Integer.parseInt(wPortStr);
 						} catch (Exception e) {
@@ -58,7 +58,8 @@ public class CXRsrcProviderHttp extends CXRsrcProvider {
 					wHost = wIdxPath == -1 ? wTmp : wTmp.substring(0, wIdxPath);
 				}
 			}
-			// System.out.println("newHttpServerFromUrl - Host["+wHost+"] - Port["+wPort+"] - Url["
+			// System.out.println("newHttpServerFromUrl - Host["+wHost+"] - Port["+wPort+"]
+			// - Url["
 			// + aFullAddress + "]");
 			if (wHost != null) {
 				wSrv = new CXRsrcProviderHttp(wHost, wPort, wSecured, aDefCharset);
@@ -92,8 +93,8 @@ public class CXRsrcProviderHttp extends CXRsrcProvider {
 	 * @param aAuthentication
 	 * @param aDefCharset
 	 */
-	public CXRsrcProviderHttp(CXRsrcUrlAddress aAddress, CXHttpProxy aProxy,
-			CXHttpAuthentication aAuthentication, Charset aDefCharset) {
+	public CXRsrcProviderHttp(CXRsrcUrlAddress aAddress, CXHttpProxy aProxy, CXHttpAuthentication aAuthentication,
+			Charset aDefCharset) {
 		super(aDefCharset);
 		pAddress = aAddress != null ? aAddress.clone() : null;
 		pAuthentication = aAuthentication != null ? aAuthentication.clone() : null;
@@ -125,12 +126,9 @@ public class CXRsrcProviderHttp extends CXRsrcProvider {
 	 */
 	public CXRsrcProviderHttp(String aHostName, int aPort, boolean aSecured, Charset aDefCharset) {
 		this(null, null, null, aDefCharset);
-		boolean wSecured = (aSecured && aPort != CXHttpAddress.DEF_PORT)
-				|| aPort == CXHttpsAddress.DEF_PORT;
-		int wPort = aPort > 0 ? aPort : (wSecured ? CXHttpsAddress.DEF_PORT
-				: CXHttpAddress.DEF_PORT);
-		setAddress(wSecured ? new CXHttpsAddress(aHostName, wPort) : new CXHttpAddress(aHostName,
-				wPort));
+		boolean wSecured = (aSecured && aPort != CXHttpAddress.DEF_PORT) || aPort == CXHttpsAddress.DEF_PORT;
+		int wPort = aPort > 0 ? aPort : (wSecured ? CXHttpsAddress.DEF_PORT : CXHttpAddress.DEF_PORT);
+		setAddress(wSecured ? new CXHttpsAddress(aHostName, wPort) : new CXHttpAddress(aHostName, wPort));
 	}
 
 	/**
@@ -145,8 +143,7 @@ public class CXRsrcProviderHttp extends CXRsrcProvider {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.psem2m.utilities.rsrc.CXRsrcProvider#addDescriptionInBuffer(java.
+	 * @see org.psem2m.utilities.rsrc.CXRsrcProvider#addDescriptionInBuffer(java.
 	 * lang.Appendable)
 	 */
 	@Override
@@ -206,6 +203,17 @@ public class CXRsrcProviderHttp extends CXRsrcProvider {
 		return pAuthentication;
 	}
 
+	@Override
+	protected String getDirAbsPathDirectory(CXRsrcUriPath aPath) {
+
+		return aPath.getFullPath();
+	}
+
+	@Override
+	protected List<String> getListPathDirectory(CXRsrcUriPath aPath, final Pattern aPattern) {
+		return null;
+	}
+
 	/**
 	 * @return
 	 */
@@ -258,8 +266,7 @@ public class CXRsrcProviderHttp extends CXRsrcProvider {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.psem2m.utilities.rsrc.CXRsrcProvider#openConnection(java.net.URL)
+	 * @see org.psem2m.utilities.rsrc.CXRsrcProvider#openConnection(java.net.URL)
 	 */
 	@Override
 	protected URLConnection openConnection(URL aUrl) throws IOException {

@@ -1,6 +1,7 @@
 package org.psem2m.utilities.rsrc;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -13,10 +14,14 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.psem2m.utilities.files.CXFileDir;
 import org.psem2m.utilities.logging.CActivityLoggerNull;
@@ -51,10 +56,8 @@ public class CXRsrcProviderFile extends CXRsrcProvider {
 	 * @param aDefCharset
 	 * @throws Exception
 	 */
-	public CXRsrcProviderFile(final CXFileDir aDefaultPath,
-			final Charset aDefCharset) throws Exception {
-		this(aDefaultPath == null ? null : aDefaultPath.getAbsolutePath(),
-				aDefCharset);
+	public CXRsrcProviderFile(final CXFileDir aDefaultPath, final Charset aDefCharset) throws Exception {
+		this(aDefaultPath == null ? null : aDefaultPath.getAbsolutePath(), aDefCharset);
 	}
 
 	/**
@@ -72,38 +75,30 @@ public class CXRsrcProviderFile extends CXRsrcProvider {
 	 * @param aDefCharset
 	 * @throws Exception
 	 */
-	public CXRsrcProviderFile(final String aDefaultPath,
-			final Charset aDefCharset) throws Exception {
+	public CXRsrcProviderFile(final String aDefaultPath, final Charset aDefCharset) throws Exception {
 		this(aDefaultPath, aDefCharset, null, CActivityLoggerNull.getInstance());
 	}
 
-	public CXRsrcProviderFile(final String aDefaultPath,
-			final Charset aDefCharset,
-			final IRsrcNotifierHandler aNotifierHandler,
-			final IActivityLogger aLogger) throws Exception {
+	public CXRsrcProviderFile(final String aDefaultPath, final Charset aDefCharset,
+			final IRsrcNotifierHandler aNotifierHandler, final IActivityLogger aLogger) throws Exception {
 		super(aDefCharset);
 		setDefaultDirectoryCheck(aDefaultPath);
 		pLogger = aLogger;
 		if (aNotifierHandler != null) {
-			pLogger.logInfo(this, "CXRsrcProviderFile<construct>",
-					"create executorService for watching directory");
-			pExecutorService = Executors.newFixedThreadPool(1,
-					new ThreadFactory() {
+			pLogger.logInfo(this, "CXRsrcProviderFile<construct>", "create executorService for watching directory");
+			pExecutorService = Executors.newFixedThreadPool(1, new ThreadFactory() {
 
-						@Override
-						public Thread newThread(final Runnable aRunnable) {
-							// TODO Auto-generated method stub
-							return new Thread(aRunnable, String.format(
-									"WatcherService-CRsrcProviderFile-%d",
-									hashCode()));
-						}
-					});
+				@Override
+				public Thread newThread(final Runnable aRunnable) {
+					// TODO Auto-generated method stub
+					return new Thread(aRunnable, String.format("WatcherService-CRsrcProviderFile-%d", hashCode()));
+				}
+			});
 			// create a watcherService
 			pNotifierHandler = aNotifierHandler;
 			pWatchService = FileSystems.getDefault().newWatchService();
 			Path pPath = Paths.get(getDefDirectory().getPath());
-			pPath.register(pWatchService, StandardWatchEventKinds.ENTRY_CREATE,
-					StandardWatchEventKinds.ENTRY_MODIFY,
+			pPath.register(pWatchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY,
 					StandardWatchEventKinds.ENTRY_DELETE);
 
 			pExecutorService.submit(new Runnable() {
@@ -112,8 +107,7 @@ public class CXRsrcProviderFile extends CXRsrcProvider {
 				public void run() {
 					// check with a interval the modification on file in
 					// directory using a watcher
-					pLogger.logInfo(this, "run", "watch directory %s",
-							getDefDirectory().getPath());
+					pLogger.logInfo(this, "run", "watch directory %s", getDefDirectory().getPath());
 					while (pContinueWatching.get()) {
 						try {
 
@@ -126,11 +120,8 @@ public class CXRsrcProviderFile extends CXRsrcProvider {
 							if (wKey != null) {
 								for (WatchEvent<?> wEvent : wKey.pollEvents()) {
 
-									pNotifierHandler.handle(wEvent.kind(),
-											getDefDirectory().getPath()
-													+ File.separatorChar
-													+ wEvent.context()
-															.toString());
+									pNotifierHandler.handle(wEvent.kind(), getDefDirectory().getPath()
+											+ File.separatorChar + wEvent.context().toString());
 								}
 							}
 							boolean valid = wKey.reset();
@@ -138,8 +129,7 @@ public class CXRsrcProviderFile extends CXRsrcProvider {
 								break;
 							}
 						} catch (Exception e) {
-							pLogger.logSevere(this, "run",
-									"Error watcher thread %s", e);
+							pLogger.logSevere(this, "run", "Error watcher thread %s", e);
 							pContinueWatching.set(false);
 						}
 					}
@@ -151,8 +141,7 @@ public class CXRsrcProviderFile extends CXRsrcProvider {
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see
-	 * org.psem2m.utilities.rsrc.CXRsrcProvider#addDescriptionInBuffer(java.
+	 * @see org.psem2m.utilities.rsrc.CXRsrcProvider#addDescriptionInBuffer(java.
 	 * lang.Appendable)
 	 */
 	@Override
@@ -192,6 +181,27 @@ public class CXRsrcProviderFile extends CXRsrcProvider {
 		return pContinueWatching.get();
 	}
 
+	@Override
+	protected String getDirAbsPathDirectory(CXRsrcUriPath aPath) {
+		CXFileDir wDir = new CXFileDir(aPath.getParent().getPath());
+
+		return wDir.getAbsolutePath();
+	}
+
+	@Override
+	protected List<String> getListPathDirectory(CXRsrcUriPath aPath, final Pattern aPattern) {
+		CXFileDir wDir = new CXFileDir(aPath.getParent().getPath());
+		List<String> wPaths = Arrays.asList(wDir.list(new FilenameFilter() {
+
+			@Override
+			public boolean accept(final File dir, final String name) {
+				Matcher wMatch = aPattern.matcher(name);
+				return wMatch.find();
+			}
+		}));
+		return wPaths;
+	}
+
 	/*
 	 * True si acces fichier en local du serveur - False si access remote (http)
 	 *
@@ -207,8 +217,7 @@ public class CXRsrcProviderFile extends CXRsrcProvider {
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see
-	 * org.psem2m.utilities.rsrc.CXRsrcProvider#openConnection(java.net.URL)
+	 * @see org.psem2m.utilities.rsrc.CXRsrcProvider#openConnection(java.net.URL)
 	 */
 	@Override
 	protected URLConnection openConnection(final URL aUrl) throws IOException {
@@ -225,8 +234,7 @@ public class CXRsrcProviderFile extends CXRsrcProvider {
 	 * @param aDefaultPath
 	 * @throws Exception
 	 */
-	public void setDefaultDirectoryCheck(final String aDefaultPath)
-			throws Exception {
+	public void setDefaultDirectoryCheck(final String aDefaultPath) throws Exception {
 		String wDefDir = null;
 		String wInput = aDefaultPath == null ? null : aDefaultPath.trim();
 		if (wInput != null && wInput.length() != 0) {
@@ -292,13 +300,11 @@ public class CXRsrcProviderFile extends CXRsrcProvider {
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see
-	 * org.psem2m.utilities.rsrc.CXRsrcProvider#urlNew(org.psem2m.utilities.
+	 * @see org.psem2m.utilities.rsrc.CXRsrcProvider#urlNew(org.psem2m.utilities.
 	 * rsrc.CXRsrcUriPath)
 	 */
 	@Override
-	protected URL urlNew(final CXRsrcUriPath aPath)
-			throws MalformedURLException {
+	protected URL urlNew(final CXRsrcUriPath aPath) throws MalformedURLException {
 		return new URL(URL_FILE, "", aPath.getUrlStr(urlGetAddress()));
 	}
 }

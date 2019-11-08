@@ -2,7 +2,9 @@ package org.psem2m.utilities.rsrc;
 
 import java.nio.charset.Charset;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class CXRsrcProviderMemory extends CXRsrcProvider {
 
@@ -31,6 +33,17 @@ public class CXRsrcProviderMemory extends CXRsrcProvider {
 	}
 
 	@Override
+	protected String getDirAbsPathDirectory(CXRsrcUriPath aPath) {
+
+		return aPath.getFullPath();
+	}
+
+	@Override
+	protected List<String> getListPathDirectory(CXRsrcUriPath aPath, final Pattern aPattern) {
+		return null;
+	}
+
+	@Override
 	public boolean isLocal() {
 		return true;
 	}
@@ -44,14 +57,12 @@ public class CXRsrcProviderMemory extends CXRsrcProvider {
 		if (pMapMemory.get(wContentId) != null) {
 			return pMapMemory.get(wContentId);
 		} else {
-			throw new Exception(String.format(
-					"not exists %s in memory provider", aContentId));
+			throw new Exception(String.format("not exists %s in memory provider", aContentId));
 		}
 	}
 
 	@Override
-	public CXListRsrcText rsrcReadTxts(final String aContentId)
-			throws Exception {
+	public CXListRsrcText rsrcReadTxts(final String aContentId) throws Exception {
 		CXListRsrcText wList = new CXListRsrcText();
 		String wContentId = aContentId;
 		if (aContentId.contains("?")) {
@@ -60,8 +71,7 @@ public class CXRsrcProviderMemory extends CXRsrcProvider {
 		if (pMapMemory.get(wContentId) != null) {
 			wList.add(pMapMemory.get(wContentId));
 		} else {
-			throw new Exception(String.format(
-					"not exists %s in memory provider", aContentId));
+			throw new Exception(String.format("not exists %s in memory provider", aContentId));
 		}
 		return wList;
 	}
