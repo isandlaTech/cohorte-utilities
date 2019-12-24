@@ -105,7 +105,7 @@ public class CXFileTextPatcher {
 				(aLinesToBePatched != null) ? aLinesToBePatched.size() : -1, aPatch);
 
 		// test if the patch is not already in place
-		testIfPatchable(aLinesToBePatched, aPatch);
+		// testIfPatchable(aLinesToBePatched, aPatch);
 
 		List<String> wLinesPatched = new ArrayList<>();
 
@@ -482,19 +482,26 @@ public class CXFileTextPatcher {
 
 		try {
 			int wIdxPatchTextLine = 0;
+			String wFullPatchLines = "";
 			for (String wPatchTextLine : aPatch.getTextLines()) {
 				int wIdxLineToBePatched = 0;
 				for (String wLineToBePatched : aLinesToBePatched) {
+					if (wIdxLineToBePatched != 0)
+						wFullPatchLines += "\n" + wLineToBePatched;
+					else
+						wFullPatchLines += wLineToBePatched;
 
-					if (wLineToBePatched != null && wLineToBePatched.contains(wPatchTextLine.trim())) {
-						throw new Exception(String.format(
-								"the line (%d)[%s] of the patch is already present in the line of the target (%d)[%s]",
-								wIdxPatchTextLine, wPatchTextLine.trim(), wIdxLineToBePatched, wLineToBePatched));
-					}
 					wIdxLineToBePatched++;
+
+				}
+				if (wFullPatchLines != null && wLineToBePatched.contains(wPatchTextLine.trim())) {
+					throw new Exception(String.format(
+							"the line (%d)[%s] of the patch is already present in the line of the target (%d)[%s]",
+							wIdxPatchTextLine, wPatchTextLine.trim(), wIdxLineToBePatched, wLineToBePatched));
 				}
 				wIdxPatchTextLine++;
 			}
+
 			return true;
 		} catch (Exception e) {
 			throw new Exception("One line of the patch is already present in the file to be patched", e);
