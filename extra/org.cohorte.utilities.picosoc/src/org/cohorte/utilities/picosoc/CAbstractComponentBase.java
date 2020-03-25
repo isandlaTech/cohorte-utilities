@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.psem2m.utilities.CXException;
 import org.psem2m.utilities.logging.IActivityLogger;
 
 /**
@@ -265,10 +266,11 @@ public abstract class CAbstractComponentBase implements IComponent {
 					pMyServiceRef.getServiceKey(), pMyServiceRef);
 
 		} catch (Exception e) {
+			// #40
 			log(Level.SEVERE, this, "registerMeAsService",
-					"unable to register me as service [‰s] : %s",
+					"unable to register me as service [%s] : %s",
 					new CServiceKey<T>(aSpecification, aProperties),
-					e.getLocalizedMessage());
+					CXException.eUserMessagesInString(e));
 		}
 	}
 

@@ -1,4 +1,13 @@
 
+
+
+1.0.2 to 1.0.3 (master)
+==================
+
+- MOD_OG_20200325
+  - #41 Correction of the trace of the error when the registration of a service can't be done.
+  
+
 1.0.1 to 1.0.2 (master)
 ==================
 
