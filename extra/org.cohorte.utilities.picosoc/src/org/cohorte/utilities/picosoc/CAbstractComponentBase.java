@@ -113,8 +113,9 @@ public abstract class CAbstractComponentBase implements IComponent {
 			return CServicesRegistry.getRegistry()
 					.findServiceRef(aSpecification, aProperties).getService();
 		} catch (Exception e) {
+			//#41
 			CComponentLogger.logInMain(Level.FINE, this, "getOptionalService",
-					"unable to get the optional service [‰s]",
+					"unable to get the optional service [%s]",
 					new CServiceKey<T>(aSpecification, aProperties));
 
 			return null;
@@ -145,8 +146,9 @@ public abstract class CAbstractComponentBase implements IComponent {
 			return CServicesRegistry.getRegistry()
 					.getServiceRef(aSpecification, aProperties).getService();
 		} catch (Exception e) {
+			//#41
 			log(Level.SEVERE, this, "getService",
-					"unable to get the service [‰s] : %s", new CServiceKey<T>(
+					"unable to get the service [%s] : %s", new CServiceKey<T>(
 							aSpecification, aProperties),
 					e.getLocalizedMessage());
 			throw e;
@@ -182,8 +184,9 @@ public abstract class CAbstractComponentBase implements IComponent {
 			return CServicesRegistry.getRegistry().getServiceRef(
 					aSpecification, aProperties);
 		} catch (Exception e) {
+			// #41
 			log(Level.SEVERE, this, "getServiceRef",
-					"unable to get the service ref of the service [‰s] : %s",
+					"unable to get the service ref of the service [%s] : %s",
 					new CServiceKey<T>(aSpecification, aProperties),
 					e.getLocalizedMessage());
 			throw e;
@@ -266,7 +269,7 @@ public abstract class CAbstractComponentBase implements IComponent {
 					pMyServiceRef.getServiceKey(), pMyServiceRef);
 
 		} catch (Exception e) {
-			// #40
+			// #41
 			log(Level.SEVERE, this, "registerMeAsService",
 					"unable to register me as service [%s] : %s",
 					new CServiceKey<T>(aSpecification, aProperties),
@@ -334,8 +337,9 @@ public abstract class CAbstractComponentBase implements IComponent {
 				pMyServiceRef = null;
 				return wRemoved;
 			} catch (Exception e) {
+				// #41
 				log(Level.SEVERE, this, "<init>",
-						"unable to unregister me as service [‰s] : %s", this
+						"unable to unregister me as service [%s] : %s", this
 								.getClass().getSimpleName(),
 						e.getLocalizedMessage());
 			}
