@@ -35,7 +35,7 @@
 
 		<module>../../../extra/org.cohorte.utilities.test</module>
 		
-		<!-- MOD_OG_20200325 : change the order : picosoc before "webapp" according the dependencies -->
+		<!-- MOD_OG_20200325 : change the order of the build : picosoc before "webapp" according the dependencies -->
 		<module>../../../extra/org.cohorte.utilities.picosoc</module>
 		<module>../../../extra/org.cohorte.utilities.webapp</module>
 		<module>../../../extra/org.cohorte.utilities.crypto</module>
