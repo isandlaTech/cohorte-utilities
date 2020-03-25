@@ -1,0 +1,1 @@
+Folder for the JUnit tests

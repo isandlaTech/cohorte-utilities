@@ -1,4 +1,10 @@
 
+1.1.4
+=====
+
+ - MOD_OG_20200325
+   - #40 Refactoring of the main components of a WebApp to be usable by the Junit tests
+ 
 1.1.3
 =====
 
