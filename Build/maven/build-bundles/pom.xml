@@ -34,9 +34,10 @@
 		<module>../../../ThirdPartiesLibs/org.cohorte.libs.javax.mail</module>
 
 		<module>../../../extra/org.cohorte.utilities.test</module>
-	
-		<module>../../../extra/org.cohorte.utilities.webapp</module>
+		
+		<!-- MOD_OG_20200325 : change the order : picosoc before "webapp" according the dependencies -->
 		<module>../../../extra/org.cohorte.utilities.picosoc</module>
+		<module>../../../extra/org.cohorte.utilities.webapp</module>
 		<module>../../../extra/org.cohorte.utilities.crypto</module>
 
 		<!--<module>../../../extra/org.cohorte.utilities.picosoc.webapp</module>-->
