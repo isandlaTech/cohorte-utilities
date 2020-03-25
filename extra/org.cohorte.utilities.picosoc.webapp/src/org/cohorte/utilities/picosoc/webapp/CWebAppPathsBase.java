@@ -223,7 +223,7 @@ public class CWebAppPathsBase extends CAbstractComponentBase implements ISvcWebA
 		try {
 			Method wMethod = getClass().getMethod(aMethodName);
 			wValue = String.valueOf(wMethod.invoke(this));
-		} catch (Exception | Error e) {
+		} catch (Exception e) {
 			Throwable wThrowable = (e instanceof InvocationTargetException)? ((InvocationTargetException)e).getTargetException() : e;
 			wValue= CXException.eUserMessagesInString(wThrowable);
 		}
