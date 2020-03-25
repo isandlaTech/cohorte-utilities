@@ -134,6 +134,13 @@
 				<module>build-bundles</module>
 			</modules>
 		</profile>
+		<!-- MOD_OG_20200325 -->
+       	<profile>
+			<id>build_jars</id>
+			<modules>
+				<module>build-jars</module>
+			</modules>
+		</profile>
 			<profile>
 			<id>construct_site</id>
 			<modules>

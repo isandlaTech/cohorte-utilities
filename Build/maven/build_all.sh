@@ -5,28 +5,34 @@ echo "********************************** init **********************************
 echo
 
 
-if  [ $# -gt 0 ] && [ $1 = 'no' ]
+if  [ $# -gt 0 ] && [ $1 = 'deploy' ]
 then
-	export DEPLOY=""
-	echo "No deployment"
-else
 	export DEPLOY=deploy
-	echo "Deployment in Nexus"
+	echo "DEPLOY     : [${DEPLOY}] Deployment in Nexus for validation"
+else
+	export DEPLOY=""
+	echo "DEPLOY     : [${DEPLOY}] => No deployment in Nexus"
 fi
 
-echo "DEPLOY=${DEPLOY}"
+
+export JAVA_HOME=$(/usr/libexec/java_home -v 1.8/usr/libexec/java_home -v 1.8)
+
+echo "JAVA_HOME    : [${JAVA_HOME}]"
+
+java -version
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-export P2_LOCAL_REPO=`pwd`/p2-repo/ 
+echo "DIR          : [${DIR}]"
 
-echo "P2_LOCAL_REPO=$P2_LOCAL_REPO"
+export P2_LOCAL_REPO=`pwd`/p2-repo/ 
+echo "P2_LOCAL_REPO: [$P2_LOCAL_REPO]"
 
 echo
 echo "********************************** cleanup and build org.cohorte.utilities **********************************"
 echo
 
 cd ../../org.cohorte.utilities/
-mvn clean install deploy 
+mvn clean install $DEPLOY 
 
 cd $DIR
 
@@ -49,6 +55,16 @@ mvn clean install $DEPLOY -P build_bundles -DP2_LOCAL_REPO=$P2_LOCAL_REPO
 if test $? -ne 0 ; then
 exit
 fi
+
+# MOD_OG_20200325
+echo
+echo "********************************** build_jars ($DEPLOY) **********************************"
+echo
+
+#mvn clean install $DEPLOY -P build_jars -DP2_LOCAL_REPO=$P2_LOCAL_REPO
+#if test $? -ne 0 ; then
+#exit
+#fi
 
 echo
 echo "********************************** construct_p2_repo **********************************"
