@@ -105,7 +105,7 @@ public class CXFileTextPatcher {
 				(aLinesToBePatched != null) ? aLinesToBePatched.size() : -1, aPatch);
 
 		// test if the patch is not already in place
-		testIfPatchable(aLinesToBePatched, aPatch);
+		// testIfPatchable(aLinesToBePatched, aPatch);
 
 		List<String> wLinesPatched = new ArrayList<>();
 
