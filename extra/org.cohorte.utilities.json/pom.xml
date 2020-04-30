@@ -10,7 +10,7 @@
 		<relativePath>../../Build/maven/build-bundles/pom.xml</relativePath>
 	</parent>
 	<artifactId>org.cohorte.utilities.json</artifactId>
-	<version>1.0.20</version>   <!-- ATTENSION : doit être le même que celui du MANIFEST -->
+	<version>1.0.21</version>   <!-- ATTENSION : doit être le même que celui du MANIFEST -->
 
 	<packaging>eclipse-plugin</packaging>
 	
