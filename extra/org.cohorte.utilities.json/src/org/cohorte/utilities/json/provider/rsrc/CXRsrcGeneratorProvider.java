@@ -82,7 +82,7 @@ public class CXRsrcGeneratorProvider extends CXRsrcProvider {
 				wMatcher = pPatternJsonPath.matcher(wReplaceValue);
 
 			}
-			aApplied.put(aProp, wReplaceValue);
+			aApplied.put(aProp, getJSONORString(wReplaceValue));
 		} else if (aValue instanceof JSONObject) {
 			aApplied.put(aProp, applyGenerator((JSONObject) aValue, aListOfFatherJson));
 
@@ -103,13 +103,14 @@ public class CXRsrcGeneratorProvider extends CXRsrcProvider {
 						wHasMatch = true;
 						String wMatch = wMatcher.group();
 						Pair<String, JSONObject> wTuple = getFather(wMatch, aListOfFatherJson);
-						wReplaceString = wReplaceString.replace(wMatch,
-								applyJsonPath(wTuple.getValue1().toString(), wTuple.getValue0()));
+						
+						wReplaceString = wReplaceString.replace(wMatch,applyJsonPath(wTuple.getValue1().toString(), wTuple.getValue0())
+								);
 					}
 					if (!wHasMatch) {// we add the current value
 						wReplaceArrayValue.put(wElem);
 					} else {
-						wReplaceArrayValue.put(wReplaceString);
+						wReplaceArrayValue.put(getJSONORString(wReplaceString));
 
 					}
 				}
@@ -118,6 +119,27 @@ public class CXRsrcGeneratorProvider extends CXRsrcProvider {
 		} else {
 			aApplied.put(aProp, aValue);
 		}
+	}
+	
+	/**
+	 * analyze return of jsonpath to see if it's JSONObject, JSONArray or String 
+	 * @return
+	 */
+	private Object getJSONORString(String aJsonPathResult) {
+		Object wRes = aJsonPathResult;
+		try {
+			wRes = new JSONObject(aJsonPathResult);
+			return wRes;
+		}catch(Exception e) {
+		}
+		try {
+			wRes = new JSONArray(aJsonPathResult);
+			return wRes;
+		}catch(Exception e) {
+		}
+		return aJsonPathResult;
+
+		
 	}
 
 	/**
