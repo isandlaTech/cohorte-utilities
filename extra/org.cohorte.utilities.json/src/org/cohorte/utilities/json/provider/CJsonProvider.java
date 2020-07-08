@@ -520,8 +520,6 @@ public class CJsonProvider implements IJsonProvider {
 			final List<JSONObject> aFathersContent,
 			final Map<String, String> aReplaceVars) throws Exception {
 
-		List<JSONObject> wFathersContent = getListFather(aFathersContent,
-				aContent);
 		Object wResolvContent = aContent;
 
 		for (final String wTag : pJsonResolver.getListTags()) {
@@ -588,7 +586,10 @@ public class CJsonProvider implements IJsonProvider {
 								@Override
 								public void run() {
 									try {
-										resolveIncludePath(aContent,wMatch,wPath,currentPath,aUseMemoryProvider,wlTag,wTag,aFathersContent,aReplaceVars,wSubNoCommentContent);
+										List<JSONObject> wListFather = new ArrayList<>();
+										wListFather.addAll(getListFather(aFathersContent,
+												aContent));
+										resolveIncludePath(aContent,wMatch,wPath,currentPath,aUseMemoryProvider,wlTag,wTag,wListFather,aReplaceVars,wSubNoCommentContent);
 
 									}catch(Exception e) {
 
