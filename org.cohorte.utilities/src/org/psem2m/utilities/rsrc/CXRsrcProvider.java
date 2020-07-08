@@ -165,7 +165,11 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 			throw new Exception("Unable to check a resource path having no name [" + aPath.getFullPath() + "]");
 		}
 		if (!aFulPath && !pDefaultDirectory.isEmpty()) {
-			return new CXRsrcUriPath(pDefaultDirectory, aPath);
+			if (aPath.getFullPath().startsWith("/file:/")) {
+				return new CXRsrcUriPath(pDefaultDirectory, aPath.getFullPath().substring(7));
+			} else {
+				return new CXRsrcUriPath(pDefaultDirectory, aPath);
+			}
 
 		}
 		return aPath;
