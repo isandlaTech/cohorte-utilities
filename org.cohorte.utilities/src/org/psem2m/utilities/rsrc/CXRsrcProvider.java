@@ -362,8 +362,12 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 		return wCnx;
 	}
 
-	protected CXRsrcText readRsrcTextContent(final CXRsrcUriPath aPath, long aTimeStamp, final boolean aForceSecondes)
-			throws Exception {
+	public void purgeCache() {
+		// nothn
+	}
+
+	protected CXRsrcText readRsrcTextContent(final CXRsrcUriPath aPath, String aFullPath, long aTimeStamp,
+			final boolean aForceSecondes) throws Exception {
 		URL wUrl = null;
 		URLConnection wCnx = null;
 		boolean wCheckTimeStamp = aTimeStamp > 0;
@@ -406,13 +410,18 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrc<?> rsrcRead(final CXRsrc<?> aRsrc, final boolean aCheckTimeStamp) throws Exception {
+	public CXRsrc<?> rsrcRead(final CXRsrc<?> aRsrc, String aFullPath, final boolean aCheckTimeStamp) throws Exception {
 		assert aRsrc != null : "Null resource";
 		if (aRsrc.isText()) {
-			return rsrcReadTxt(aRsrc.getPath(), aCheckTimeStamp ? aRsrc.getTimeStampSyst() : 0, false, true);
+			return rsrcReadTxt(aRsrc.getPath(), aFullPath, aCheckTimeStamp ? aRsrc.getTimeStampSyst() : 0, false, true);
 		} else {
 			return rsrcReadByte(aRsrc.getPath(), aCheckTimeStamp ? aRsrc.getTimeStampSyst() : 0, false, true);
 		}
+	}
+
+	public CXRsrc<?> rsrcRead(final CXRsrcUriPath aPath, final long aTimeStamp, final boolean aForceSecondes)
+			throws Exception {
+		return rsrcRead(aPath, null, aTimeStamp, aForceSecondes, false);
 	}
 
 	/**
@@ -422,8 +431,8 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrc<?> rsrcRead(final CXRsrcUriPath aRsrcPath) throws Exception {
-		return rsrcRead(aRsrcPath.getFullPath(), 0);
+	public CXRsrc<?> rsrcRead(final CXRsrcUriPath aRsrcPath, String aFullPath) throws Exception {
+		return rsrcRead(aRsrcPath.getFullPath(), aFullPath, 0);
 	}
 
 	/**
@@ -433,9 +442,9 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrc<?> rsrcRead(final CXRsrcUriPath aPath, final long aTimeStamp, final boolean aForceSecondes)
-			throws Exception {
-		return rsrcRead(aPath, aTimeStamp, aForceSecondes, false);
+	public CXRsrc<?> rsrcRead(final CXRsrcUriPath aPath, String aFullPath, final long aTimeStamp,
+			final boolean aForceSecondes) throws Exception {
+		return rsrcRead(aPath, aFullPath, aTimeStamp, aForceSecondes, false);
 	}
 
 	/**
@@ -446,18 +455,31 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	private CXRsrc<?> rsrcRead(final CXRsrcUriPath aPath, final long aTimeStamp, final boolean aForceSecondes,
-			final boolean aFulPath) throws Exception {
+	private CXRsrc<?> rsrcRead(final CXRsrcUriPath aPath, String aFullPath, final long aTimeStamp,
+			final boolean aForceSecondes, final boolean aFulPath) throws Exception {
 		if (aPath != null) {
 			CXMimeType wMime = aPath.getMimeType();
 			if (wMime != null && wMime.isText()) {
-				return rsrcReadTxt(aPath, aTimeStamp, aForceSecondes, aFulPath);
+				return rsrcReadTxt(aPath, aFullPath, aTimeStamp, aForceSecondes, aFulPath);
 			} else {
 				return rsrcReadByte(aPath, aTimeStamp, aForceSecondes, aFulPath);
 			}
 		} else {
 			throw new Exception((aPath == null ? "Null" : "empty") + " resource path");
 		}
+	}
+
+	public CXRsrc<?> rsrcRead(final String aRsrcPath) throws Exception {
+		return rsrcRead(aRsrcPath, null, 0);
+	}
+
+	public CXRsrc<?> rsrcRead(final String aRsrcPath, final long aTimeStampSyst) throws Exception {
+		return rsrcRead(aRsrcPath, null, aTimeStampSyst, false);
+	}
+
+	public CXRsrc<?> rsrcRead(final String aRsrcPath, final long aTimeStampSyst, final boolean aForceSecond)
+			throws Exception {
+		return rsrcRead(new CXRsrcUriPath(aRsrcPath), null, aTimeStampSyst, aForceSecond);
 	}
 
 	/**
@@ -467,8 +489,8 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrc<?> rsrcRead(final String aRsrcPath) throws Exception {
-		return rsrcRead(aRsrcPath, 0);
+	public CXRsrc<?> rsrcRead(final String aRsrcPath, String aFullPath) throws Exception {
+		return rsrcRead(aRsrcPath, aFullPath, 0);
 	}
 
 	/**
@@ -480,8 +502,8 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrc<?> rsrcRead(final String aRsrcPath, final long aTimeStampSyst) throws Exception {
-		return rsrcRead(aRsrcPath, aTimeStampSyst, false);
+	public CXRsrc<?> rsrcRead(final String aRsrcPath, String aFullPath, final long aTimeStampSyst) throws Exception {
+		return rsrcRead(aRsrcPath, aFullPath, aTimeStampSyst, false);
 	}
 
 	/**
@@ -491,9 +513,9 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrc<?> rsrcRead(final String aRsrcPath, final long aTimeStampSyst, final boolean aForceSecond)
-			throws Exception {
-		return rsrcRead(new CXRsrcUriPath(aRsrcPath), aTimeStampSyst, aForceSecond);
+	public CXRsrc<?> rsrcRead(final String aRsrcPath, String aFullPath, final long aTimeStampSyst,
+			final boolean aForceSecond) throws Exception {
+		return rsrcRead(new CXRsrcUriPath(aRsrcPath), aFullPath, aTimeStampSyst, aForceSecond);
 	}
 
 	/**
@@ -590,13 +612,22 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 		return rsrcReadByte(new CXRsrcUriPath(aRsrcPath), aTimeStampSyst, aForceSecond);
 	}
 
+	public CXRsrcText rsrcReadTxt(final CXRsrcUriPath aRsrcPath) throws Exception {
+		return rsrcReadTxt(aRsrcPath.getFullPath(), null, 0);
+	}
+
+	public CXRsrcText rsrcReadTxt(final CXRsrcUriPath aPath, final long aTimeStamp, final boolean aForceSecondes)
+			throws Exception {
+		return rsrcReadTxt(aPath, null, aTimeStamp, aForceSecondes, false);
+	}
+
 	/**
 	 * @param aRsrcPath
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrcText rsrcReadTxt(final CXRsrcUriPath aRsrcPath) throws Exception {
-		return rsrcReadTxt(aRsrcPath.getFullPath(), 0);
+	public CXRsrcText rsrcReadTxt(final CXRsrcUriPath aRsrcPath, String aFullPath) throws Exception {
+		return rsrcReadTxt(aRsrcPath.getFullPath(), aFullPath, 0);
 	}
 
 	/**
@@ -606,9 +637,9 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrcText rsrcReadTxt(final CXRsrcUriPath aPath, final long aTimeStamp, final boolean aForceSecondes)
-			throws Exception {
-		return rsrcReadTxt(aPath, aTimeStamp, aForceSecondes, false);
+	public CXRsrcText rsrcReadTxt(final CXRsrcUriPath aPath, String aFullPath, final long aTimeStamp,
+			final boolean aForceSecondes) throws Exception {
+		return rsrcReadTxt(aPath, aFullPath, aTimeStamp, aForceSecondes, false);
 	}
 
 	/**
@@ -619,19 +650,19 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	private CXRsrcText rsrcReadTxt(final CXRsrcUriPath aPath, final long aTimeStamp, final boolean aForceSecondes,
-			final boolean aFulPath) throws Exception {
+	private CXRsrcText rsrcReadTxt(final CXRsrcUriPath aPath, String aFullPath, final long aTimeStamp,
+			final boolean aForceSecondes, final boolean aFulPath) throws Exception {
 		CXRsrcText wRsrc = null;
 		CXRsrcUriPath wPath = null;
 		URL wUrl = null;
 		try {
 			wPath = checkUriPath(aPath, aFulPath);
 
-			wRsrc = readRsrcTextContent(wPath, aTimeStamp, aForceSecondes);
+			wRsrc = readRsrcTextContent(wPath, aFullPath, aTimeStamp, aForceSecondes);
 
 		} catch (Exception e) {
 			if (hasNext()) {
-				return next().rsrcReadTxt(aPath, aTimeStamp, aForceSecondes, aFulPath);
+				return next().rsrcReadTxt(aPath, aFullPath, aTimeStamp, aForceSecondes, aFulPath);
 			}
 			throwExcepReadText("Unable to read "
 					+ ((wPath == null) ? "null" : (wUrl == null) ? aPath.getFullPath() : wUrl.toString()), e);
@@ -639,13 +670,26 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 		return wRsrc;
 	}
 
+	public CXRsrcText rsrcReadTxt(final String aRsrcPath) throws Exception {
+		return rsrcReadTxt(aRsrcPath, null, 0);
+	}
+
+	public CXRsrcText rsrcReadTxt(final String aRsrcPath, final long aTimeStampSyst) throws Exception {
+		return rsrcReadTxt(aRsrcPath, null, aTimeStampSyst, false);
+	}
+
+	public CXRsrcText rsrcReadTxt(final String aRsrcPath, final long aTimeStampSyst, final boolean aForceSecond)
+			throws Exception {
+		return rsrcReadTxt(new CXRsrcUriPath(aRsrcPath), null, aTimeStampSyst, aForceSecond);
+	}
+
 	/**
 	 * @param aRsrcPath
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrcText rsrcReadTxt(final String aRsrcPath) throws Exception {
-		return rsrcReadTxt(aRsrcPath, 0);
+	public CXRsrcText rsrcReadTxt(final String aRsrcPath, String aFullPath) throws Exception {
+		return rsrcReadTxt(aRsrcPath, aFullPath, 0);
 	}
 
 	/**
@@ -656,8 +700,9 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrcText rsrcReadTxt(final String aRsrcPath, final long aTimeStampSyst) throws Exception {
-		return rsrcReadTxt(aRsrcPath, aTimeStampSyst, false);
+	public CXRsrcText rsrcReadTxt(final String aRsrcPath, String aFullPath, final long aTimeStampSyst)
+			throws Exception {
+		return rsrcReadTxt(aRsrcPath, aFullPath, aTimeStampSyst, false);
 	}
 
 	/**
@@ -667,18 +712,22 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrcText rsrcReadTxt(final String aRsrcPath, final long aTimeStampSyst, final boolean aForceSecond)
-			throws Exception {
-		return rsrcReadTxt(new CXRsrcUriPath(aRsrcPath), aTimeStampSyst, aForceSecond);
+	public CXRsrcText rsrcReadTxt(final String aRsrcPath, String aFullPath, final long aTimeStampSyst,
+			final boolean aForceSecond) throws Exception {
+		return rsrcReadTxt(new CXRsrcUriPath(aRsrcPath), aFullPath, aTimeStampSyst, aForceSecond);
 	}
 
-	public CXListRsrcText rsrcReadTxts(final CXRsrcUriPath aPath, final long aTimeStamp, final boolean aForceSecondes)
-			throws Exception {
-		return rsrcReadTxts(aPath, aTimeStamp, aForceSecondes, false);
+	public CXRsrcText rsrcReadTxt(final String aRsrcPath, String aFullPath, String aFullParam) throws Exception {
+		return rsrcReadTxt(aRsrcPath, aFullPath, 0);
 	}
 
-	private CXListRsrcText rsrcReadTxts(final CXRsrcUriPath aPath, final long aTimeStamp, final boolean aForceSecondes,
-			final boolean aFulPath) throws Exception {
+	public CXListRsrcText rsrcReadTxts(final CXRsrcUriPath aPath, String aFullPath, final long aTimeStamp,
+			final boolean aForceSecondes) throws Exception {
+		return rsrcReadTxts(aPath, aFullPath, aTimeStamp, aForceSecondes, false);
+	}
+
+	protected CXListRsrcText rsrcReadTxts(final CXRsrcUriPath aPath, String aFullPath, final long aTimeStamp,
+			final boolean aForceSecondes, final boolean aFulPath) throws Exception {
 		CXRsrcText wRsrc = null;
 		CXRsrcUriPath wPath = null;
 		URL wUrl = null;
@@ -704,23 +753,36 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 					for (String aSubFilePath : wPaths) {
 						wListRsrc.add(
 								readRsrcTextContent(new CXRsrcUriPath(wParentPath + File.separatorChar + aSubFilePath),
-										aTimeStamp, aForceSecondes));
+										aFullPath, aTimeStamp, aForceSecondes));
 
 					}
 				}
 			} else {
-				wRsrc = readRsrcTextContent(wPath, aTimeStamp, aForceSecondes);
+				wRsrc = readRsrcTextContent(wPath, aFullPath, aTimeStamp, aForceSecondes);
 				wListRsrc.add(wRsrc);
 			}
 		} catch (Exception e) {
 			if (hasNext()) {
-				wListRsrc.add(next().rsrcReadTxt(aPath, aTimeStamp, aForceSecondes, aFulPath));
+				wListRsrc.add(next().rsrcReadTxt(aPath, aFullPath, aTimeStamp, aForceSecondes, aFulPath));
 				return wListRsrc;
 			}
 			throwExcepReadText("Unable to read "
 					+ ((wPath == null) ? "null" : (wUrl == null) ? aPath.getFullPath() : wUrl.toString()), e);
 		}
 		return wListRsrc;
+	}
+
+	public CXListRsrcText rsrcReadTxts(final String aRsrcPath) throws Exception {
+		return rsrcReadTxts(aRsrcPath, null, 0);
+	}
+
+	public CXListRsrcText rsrcReadTxts(final String aRsrcPath, final long aTimeStampSyst) throws Exception {
+		return rsrcReadTxts(aRsrcPath, null, aTimeStampSyst, false);
+	}
+
+	public CXListRsrcText rsrcReadTxts(final String aRsrcPath, final long aTimeStampSyst, final boolean aForceSecond)
+			throws Exception {
+		return rsrcReadTxts(new CXRsrcUriPath(aRsrcPath), null, aTimeStampSyst, aForceSecond);
 	}
 
 	/**
@@ -730,17 +792,18 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXListRsrcText rsrcReadTxts(final String aRsrcPath) throws Exception {
-		return rsrcReadTxts(aRsrcPath, 0);
+	public CXListRsrcText rsrcReadTxts(final String aRsrcPath, String aFullPath) throws Exception {
+		return rsrcReadTxts(aRsrcPath, aFullPath, 0);
 	}
 
-	public CXListRsrcText rsrcReadTxts(final String aRsrcPath, final long aTimeStampSyst) throws Exception {
-		return rsrcReadTxts(aRsrcPath, aTimeStampSyst, false);
-	}
-
-	public CXListRsrcText rsrcReadTxts(final String aRsrcPath, final long aTimeStampSyst, final boolean aForceSecond)
+	public CXListRsrcText rsrcReadTxts(final String aRsrcPath, String aFullPath, final long aTimeStampSyst)
 			throws Exception {
-		return rsrcReadTxts(new CXRsrcUriPath(aRsrcPath), aTimeStampSyst, aForceSecond);
+		return rsrcReadTxts(aRsrcPath, aFullPath, aTimeStampSyst, false);
+	}
+
+	public CXListRsrcText rsrcReadTxts(final String aRsrcPath, String aFullPath, final long aTimeStampSyst,
+			final boolean aForceSecond) throws Exception {
+		return rsrcReadTxts(new CXRsrcUriPath(aRsrcPath), aFullPath, aTimeStampSyst, aForceSecond);
 	}
 
 	/**

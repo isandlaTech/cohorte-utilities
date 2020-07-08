@@ -36,6 +36,7 @@ public interface IJsonRsrcResolver {
 	 * @return
 	 */
 	Set<String> getListTags();
+	public Collection<CXRsrcProvider> getRsrcProvider();
 
 	public Collection<CXRsrcProvider> getRsrcProvider(final String aTag);
 

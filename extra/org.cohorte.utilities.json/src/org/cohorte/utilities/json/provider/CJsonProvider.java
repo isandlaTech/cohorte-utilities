@@ -8,6 +8,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.cohorte.utilities.json.provider.CJsonRsrcResolver.EProviderKind;
 import org.psem2m.utilities.CXException;
@@ -32,9 +35,11 @@ public class CJsonProvider implements IJsonProvider {
 	public static final String INCLUDE = "$include";
 
 	private static String PATH = "path";
-	private static final String SEP_PATH = ";";
+	private static final String SEP_PATH = ";file";
 
 	private final String EMPTYJSON = "{}";
+
+	private final ExecutorService pExecutors = Executors.newCachedThreadPool();
 
 	/**
 	 * boolean that express if we don't need to raise an exception if the
@@ -85,7 +90,7 @@ public class CJsonProvider implements IJsonProvider {
 	 */
 	private void addInheritParameter(final Object aContent,
 			final Map<String, String> aReplaceVars, final String aTag)
-			throws UnsupportedEncodingException {
+					throws UnsupportedEncodingException {
 
 		if (aContent instanceof JSONObject) {
 			JSONObject wObj = (JSONObject) aContent;
@@ -310,7 +315,7 @@ public class CJsonProvider implements IJsonProvider {
 	 */
 	public JSONObject getJSONObject(final String currentPath,
 			final JSONObject aUnresolvedJson, final Map<String, String> wVars)
-			throws Exception {
+					throws Exception {
 
 		// preprocess content
 
@@ -492,6 +497,14 @@ public class CJsonProvider implements IJsonProvider {
 		}
 	}
 
+
+	@Override
+	public void purgeCache() {
+		for(CXRsrcProvider wProv:pJsonResolver.getRsrcProvider()) {
+			wProv.purgeCache();
+		}
+	}
+
 	/**
 	 *
 	 * @param currentPath
@@ -511,7 +524,7 @@ public class CJsonProvider implements IJsonProvider {
 				aContent);
 		Object wResolvContent = aContent;
 
-		for (String wTag : pJsonResolver.getListTags()) {
+		for (final String wTag : pJsonResolver.getListTags()) {
 			// regexp that allow to catch the strings like
 
 			/*
@@ -523,9 +536,9 @@ public class CJsonProvider implements IJsonProvider {
 			// looking for subcontent identified by a id e.g $file, $ur ,
 			// $memory
 			// Matcher wMatcherFile = wPatternDollarFile.matcher(aContent);
-			List<String> wSubNoCommentContent = new ArrayList<>();
+			final List<String> wSubNoCommentContent = new ArrayList<>();
 
-			for (JSONObject wMatch : foundMatchTags(wTag, wResolvContent)) {
+			for (final JSONObject wMatch : foundMatchTags(wTag, wResolvContent)) {
 				JSONObject wJsonSubId = wMatch;
 				try {
 					wSubNoCommentContent.clear();
@@ -540,12 +553,11 @@ public class CJsonProvider implements IJsonProvider {
 					 * and path the subcontent that contain string value like
 					 * {key1} will be replace by val1
 					 */
-					Object wlTag = wJsonSubId.opt(wTag);
+					final Object wlTag = wJsonSubId.opt(wTag);
 					String wlPath = null;
-					Map<String, String> replaceVars = null;
 					boolean wMustBeInclude = true; // condition if the tag
-													// should be taken in
-													// account
+					// should be taken in
+					// account
 					if (wlTag instanceof JSONObject) {
 						JSONObject wlTagJson = new JSONObject(wlTag.toString());
 						wlPath = wlTagJson.optString(PATH);
@@ -570,93 +582,29 @@ public class CJsonProvider implements IJsonProvider {
 					if (wMustBeInclude) {
 						List<String> wListPath = Arrays.asList(wlPath
 								.split(SEP_PATH));
-						for (String wPath : wListPath) {
-							// if file we are allowed to put relative path
+						List<Future<?>> wListFuture = new ArrayList<>();
+						for (final String wPath : wListPath) {
+							wListFuture.add(pExecutors.submit(new Runnable() {
+								@Override
+								public void run() {
+									try {
+										resolveIncludePath(aContent,wMatch,wPath,currentPath,aUseMemoryProvider,wlTag,wTag,aFathersContent,aReplaceVars,wSubNoCommentContent);
 
-							// we include te current path
-							if (currentPath != null && !currentPath.isEmpty()) {
-								if (!wPath.startsWith(EProviderKind.FILE
-										.toString() + "/")) {
-									wPath = wPath.replace(
-											EProviderKind.FILE.toString(),
-											EProviderKind.FILE.toString()
-													+ currentPath + "/");
-								}
+									}catch(Exception e) {
 
-							}
-							pLogger.logInfo(this, "resolveInclude",
-									"retrieve variable to replace from path");
-							replaceVars = aReplaceVars;
-							Map<String, String> wCurrentReplaceVars = getVariableFromPath(wPath);
-							if (wCurrentReplaceVars != null) {
-								if (replaceVars != null) {
-									replaceVars.putAll(wCurrentReplaceVars);
-								} else {
-									replaceVars = wCurrentReplaceVars;
-								}
-							}
-
-							// read the current object . we set the list of the
-							// father
-							CXListRsrcText wRsrcs = pJsonResolver.getContent(
-									wTag, wPath.isEmpty() ? wlTag.toString()
-											: wPath, aUseMemoryProvider,
-									wFathersContent);
-							if (wRsrcs != null && wRsrcs.size() > 0) {
-								for (CXRsrcText wRsrc : wRsrcs) {
-									// resolv subcontent
-									Object wValidContent = getValidContent(wRsrc);
-									// must be a JSONArray or JSONObject
-									// replace vars in the resolve content
-									String wResolvVariable = CXStringUtils
-											.replaceVariables(
-													wValidContent.toString(),
-													replaceVars);
-
-									wValidContent = checkIsJson(wResolvVariable);
-
-									// call ternary resolve
-									// resolve json path from the father json
-									// object
-									// with the json to include
-
-									if (!aUseMemoryProvider) {
-										initMemoryProviderCache(wValidContent,
-												wTag);
 									}
-									addInheritParameter(wValidContent,
-											replaceVars, wTag);
-
-									// we resolve an include so we need to pass
-									// the
-									// list
-									// of father plus the current one that is
-									// his
-									// father
-									// add to manage the sub current path when
-									// we hae include in genreator (TODO enhance
-									// this mechanism)
-									String wCurrentPathInclude = wPath
-											.isEmpty() && currentPath != null ? currentPath
-											: "";
-									wSubNoCommentContent.add(resolveInclude(
-											wCurrentPathInclude
-													+ getSubPath(wTag, wRsrc),
-											wValidContent, aUseMemoryProvider,
-											wFathersContent, replaceVars)
-											.toString());
 								}
-
-							} else {
-								if (!aUseMemoryProvider) {
-									// no resolution we init the cache with
-									// the current content
-									initMemoryProviderCache(aContent, wTag);
-								}
-								wSubNoCommentContent.add(wMatch.toString());
-							}
+							}));
 
 						}
+						boolean wFinish = false;
+						while(!wFinish) {
+							wFinish=true;
+							for(Future<?> wFuture:wListFuture) {
+								wFinish=wFinish && wFuture.isDone();
+							}
+						}
+
 					}
 
 				} catch (Exception e) {
@@ -709,6 +657,129 @@ public class CJsonProvider implements IJsonProvider {
 		wResolvContent = checkIsJson(wResolvContent.toString());
 		return wResolvContent;
 
+	}
+	private void resolveIncludePath(final Object aContent,final JSONObject aMatch,final String aPath, final String currentPath, final boolean aUseMemoryProvider, final Object alTag, final String aTag, final List<JSONObject> aFathersContent, final Map<String,String> aReplaceVars, final List<String> aSubNoCommentContent) throws Exception {
+		String wPath = aPath;
+		String wFatherPath = "";
+		Map<String, String> replaceVars = null;
+
+		if( !wPath.isEmpty() ){
+			if( !wPath.startsWith(EProviderKind.FILE.toString())) {
+				wPath="file"+wPath;
+			}
+			if( wPath.indexOf("?") != -1 ) {
+				wFatherPath = wPath.substring(0,wPath.substring(0,wPath.indexOf("?")).lastIndexOf("/"));
+
+			}else {
+				wFatherPath = wPath.substring(0,wPath.lastIndexOf("/"));
+
+			}
+			if( wFatherPath.equals("file:/") ){
+				wFatherPath = "";
+			}
+		}
+
+		// if file we are allowed to put relative path
+		// we include te current path
+		if (currentPath != null && !currentPath.isEmpty()) {
+			if (!wPath.startsWith(EProviderKind.FILE
+					.toString() + "/")) {
+				if( currentPath.endsWith("/")) {
+					wPath = wPath.replace(
+							EProviderKind.FILE.toString(),
+							EProviderKind.FILE.toString()
+							+ currentPath );
+				}else {
+					wPath = wPath.replace(
+							EProviderKind.FILE.toString(),
+							EProviderKind.FILE.toString()
+							+ currentPath + "/");
+				}
+			}
+
+		}
+		pLogger.logInfo(this, "resolveInclude",
+				"retrieve variable to replace from path");
+		replaceVars = aReplaceVars;
+		Map<String, String> wCurrentReplaceVars = getVariableFromPath(wPath);
+		if (wCurrentReplaceVars != null) {
+			if (replaceVars != null) {
+				replaceVars.putAll(wCurrentReplaceVars);
+			} else {
+				replaceVars = wCurrentReplaceVars;
+			}
+		}
+
+		// read the current object . we set the list of the
+		// father
+		CXListRsrcText wRsrcs = pJsonResolver.getContent(
+				aTag, wPath.isEmpty() ? alTag.toString()
+						: wPath, aUseMemoryProvider,
+						aFathersContent);
+		if (wRsrcs != null && wRsrcs.size() > 0) {
+			for (CXRsrcText wRsrc : wRsrcs) {
+				// resolv subcontent
+				Object wValidContent = getValidContent(wRsrc);
+				// must be a JSONArray or JSONObject
+				// replace vars in the resolve content
+				String wResolvVariable = CXStringUtils
+						.replaceVariables(
+								wValidContent.toString(),
+								replaceVars);
+
+				wValidContent = checkIsJson(wResolvVariable);
+
+				// call ternary resolve
+				// resolve json path from the father json
+				// object
+				// with the json to include
+
+				if (!aUseMemoryProvider) {
+					initMemoryProviderCache(wValidContent,
+							aTag);
+				}
+				addInheritParameter(wValidContent,
+						replaceVars, aTag);
+
+				// we resolve an include so we need to pass
+				// the
+				// list
+				// of father plus the current one that is
+				// his
+				// father
+				// add to manage the sub current path when
+				// we hae include in genreator (TODO enhance
+				// this mechanism)
+				wFatherPath = (wFatherPath.startsWith(EProviderKind.FILE.toString()) ? wFatherPath.substring(7):wFatherPath);
+				String wCurrentPathInclude=null;
+				if (currentPath != null && !wFatherPath.startsWith("/") ) {
+					if( currentPath.endsWith("/") ) {
+						wCurrentPathInclude = currentPath+wFatherPath;
+
+					}else{
+						wCurrentPathInclude = currentPath+"/"+wFatherPath;
+
+					}
+				}else {
+					wCurrentPathInclude =wFatherPath;
+				}
+
+				aSubNoCommentContent.add(resolveInclude(
+						wCurrentPathInclude
+						+ getSubPath(aTag, wRsrc),
+						wValidContent, aUseMemoryProvider,
+						aFathersContent, replaceVars)
+						.toString());
+			}
+
+		} else {
+			if (!aUseMemoryProvider) {
+				// no resolution we init the cache with
+				// the current content
+				initMemoryProviderCache(aContent, aTag);
+			}
+			aSubNoCommentContent.add(aMatch.toString());
+		}
 	}
 
 	@Override

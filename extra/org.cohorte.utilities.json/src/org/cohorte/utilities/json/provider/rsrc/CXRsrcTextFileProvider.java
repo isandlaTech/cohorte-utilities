@@ -63,7 +63,21 @@ public class CXRsrcTextFileProvider extends CXRsrcProviderFile {
 		return new CXRsrcText(new CXRsrcUriPath(""),
 				CXRsrcTextReadInfo.newInstanceFromString(wResult.toString()));
 	}
+	@Override
+	public CXRsrcText rsrcReadTxt(final String aPath, final String aQueryPath) throws Exception {
+		CXRsrcText wText = super.rsrcReadTxt(aPath);
+		JSONArray wResult = new JSONArray();
 
+		if (wText != null && wText.getContent() != null) {
+			String[] wLines = wText.getContent().split("\n");
+			for (String aLine : wLines) {
+				wResult.put(aLine);
+			}
+
+		}
+		return new CXRsrcText(new CXRsrcUriPath(""),
+				CXRsrcTextReadInfo.newInstanceFromString(wResult.toString()));
+	}
 	@Override
 	public String urlGetAddress() {
 		// TODO Auto-generated method stub

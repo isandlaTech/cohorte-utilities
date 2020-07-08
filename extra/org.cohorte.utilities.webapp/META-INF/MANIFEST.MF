@@ -8,12 +8,13 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.cohorte.utilities.webapp
 Bundle-Version: 1.0.0
 Created-By: iPOJO 1.12.1
-Export-Package: org.cohorte.utilities.webapp,org.cohorte.utilities.webap
- p.filters
-Import-Package: javax.servlet;version=2.6.0, javax.servlet.http;version=
- 2.6.0, org.apache.felix.ipojo;version="[1.12.1,2.0.0)", org.apache.feli
- x.ipojo.architecture;version="[1.12.1,2.0.0)", org.osgi.framework;versi
- on=1.3.0, org.osgi.service.cm;version=1.2, org.osgi.service.log;version
- =1.3, org.psem2m.isolates.base, org.psem2m.utilities, org.psem2m.utilit
- ies.files, org.psem2m.utilities.json, org.psem2m.utilities.logging
+Export-Package: org.cohorte.utilities.webapp,org.cohorte.utilities.web
+ app.filters
+Import-Package: javax.servlet;version=2.6.0, javax.servlet.http;versio
+ n=2.6.0, org.apache.felix.ipojo;version="[1.12.1,2.0.0)", org.apache.
+ felix.ipojo.architecture;version="[1.12.1,2.0.0)", org.osgi.framework
+ ;version=1.3.0, org.osgi.service.cm;version=1.2, org.osgi.service.log
+ ;version=1.3, org.psem2m.isolates.base, org.psem2m.utilities, org.pse
+ m2m.utilities.files, org.psem2m.utilities.json, org.psem2m.utilities.
+ logging
 

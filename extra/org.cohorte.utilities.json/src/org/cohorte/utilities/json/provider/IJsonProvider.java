@@ -3,6 +3,7 @@ package org.cohorte.utilities.json.provider;
 import org.psem2m.utilities.json.JSONObject;
 
 public interface IJsonProvider {
+
 	/**
 	 *
 	 * @param aUnresolvedJson
@@ -11,7 +12,6 @@ public interface IJsonProvider {
 	 */
 	public JSONObject getJSONObject(final JSONObject aUnresolvedJson)
 			throws Exception;
-
 	/**
 	 * return a JSONObject from a specific url (memory,file or http)
 	 *
@@ -47,6 +47,8 @@ public interface IJsonProvider {
 	 */
 	public JSONObject getJSONObject(final String aSubPath, final String aTag,
 			final String aContentId) throws Exception;
+
+	public void purgeCache();
 
 	/**
 	 * allow to don't raise exception if content are not found true : exception

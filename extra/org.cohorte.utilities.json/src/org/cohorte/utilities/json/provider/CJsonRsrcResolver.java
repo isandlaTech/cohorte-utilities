@@ -27,7 +27,7 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 	public static enum EProviderKind {
 		FILE("file://", CXRsrcProviderFile.class), HTTP("http://",
 				CXRsrcProviderHttp.class), MEMORY("memory://",
-				CXRsrcProviderMemory.class);
+						CXRsrcProviderMemory.class);
 		private Class<? extends CXRsrcProvider> pClass;
 		private String pValue;
 
@@ -167,8 +167,7 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 			final String aContentId) {
 		if (EProviderKind.FILE.checkKind(aContentId)) {
 			// it's for file provider
-			return EProviderKind.FILE
-					.getValidPathForProvider(aProv, aContentId);
+			return aContentId;
 
 		} else if (EProviderKind.MEMORY.checkKind(aContentId)) {
 			return EProviderKind.MEMORY.getValidPathForProvider(aProv,
@@ -226,9 +225,12 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 
 	private CXListRsrcText getContentByProvider(final CXRsrcProvider aProvider,
 			final String aContentId, final List<JSONObject> aListFather)
-			throws Exception {
+					throws Exception {
 		String wValidContentId = checkValidProviderAndPath(aProvider,
 				aContentId);
+
+		String wQueryParam = null;
+
 		if (wValidContentId != null) {
 			if (aProvider instanceof CXRsrcGeneratorProvider) {
 				CXListRsrcText wRsrcList = new CXListRsrcText();
@@ -245,28 +247,37 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 				if (wValidContentId.indexOf("?") != -1) {
 					wValidContentId = wValidContentId.substring(0,
 							wValidContentId.indexOf("?"));
+					wQueryParam = wValidContentId.indexOf("?")!=-1 ?wValidContentId.substring(wValidContentId.indexOf("?")):null;
+
 				}
 				CXListRsrcText wRsrcList = new CXListRsrcText();
-				wRsrcList.add(aProvider.rsrcReadTxt(wValidContentId));
+				wRsrcList.add(aProvider.rsrcReadTxt(wValidContentId,wQueryParam));
 
 				return wRsrcList;
 
 			} else {
 				// check if we ask for a JSON Array element
 				// replace potential // in the path
+				boolean wWantSubTagJson = wValidContentId.contains("#");
 
 				boolean wWantSubArrayElem = wValidContentId.contains("]");
 				CXListRsrcText wList;
 				if (wValidContentId.indexOf("?") != -1) {
 					wValidContentId = wValidContentId.substring(0,
 							wValidContentId.indexOf("?"));
+					wQueryParam = wValidContentId.indexOf("?")!=-1 ?wValidContentId.substring(wValidContentId.indexOf("?")):null;
 				}
-				if (wWantSubArrayElem) {
-					wList = aProvider.rsrcReadTxts(wValidContentId.substring(0,
-							wValidContentId.indexOf("[")));
-				} else {
-					wList = aProvider.rsrcReadTxts(wValidContentId);
+				String wFilePath = wValidContentId;
+				if (wWantSubArrayElem && wFilePath.contains("]")) {
+					wFilePath = wFilePath.substring(0,
+							wValidContentId.indexOf("["));
 				}
+				if (wWantSubTagJson && wFilePath.contains("#")) {
+					wFilePath = wFilePath.substring(0,
+							wValidContentId.indexOf("#"));
+				}
+				wList = aProvider.rsrcReadTxts(wFilePath,wQueryParam);
+
 				// alter content of each RsrcText to only set the
 				// subcontains asked
 				for (int i = 0; i < wList.size(); i++) {
@@ -292,7 +303,23 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 						}
 
 					}
+					if( wWantSubTagJson &&  wNoComment.contains("{")  && wNoComment.indexOf("{") < wNoComment.indexOf("[") ) {
+						String wTagField = wValidContentId.split("#")[1];
 
+						JSONObject wSubContent = new JSONObject(wNoComment);
+						if( wTagField.contains(".") ) {
+							Object wSubJsonElem = wSubContent;
+							for(String wTagPart:wTagField.split("\\.")) {
+								if(wSubJsonElem instanceof JSONObject ) {
+									wSubJsonElem = ((JSONObject)wSubJsonElem).opt(wTagPart);
+								}
+							}
+							wNoComment = wSubJsonElem.toString();
+
+						}else {
+							wNoComment = wSubContent.opt(wTagField).toString();
+						}
+					}
 					wRsrc.setContent(wNoComment);
 				}
 
@@ -309,6 +336,18 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 		wListTag.addAll(pListMemoryProviderByTag.keySet());
 		return wListTag;
 	}
+	@Override
+	public Collection<CXRsrcProvider> getRsrcProvider() {
+		List<CXRsrcProvider> wList = new ArrayList<>();
+		for(String wKey:pListProviderByTag.keySet()) {
+			if (pListProviderByTag.get(wKey) != null) {
+				wList.addAll(pListProviderByTag.get(wKey).values());
+			}
+		}
+
+		return wList;
+	}
+
 
 	@Override
 	public Collection<CXRsrcProvider> getRsrcProvider(final String aTag) {
