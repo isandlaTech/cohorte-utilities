@@ -766,8 +766,7 @@ public class CJsonProvider implements IJsonProvider {
 				}
 
 				aSubNoCommentContent.add(resolveInclude(
-						wCurrentPathInclude
-						+ getSubPath(aTag, wRsrc),
+						wCurrentPathInclude,
 						wValidContent, aUseMemoryProvider,
 						aFathersContent, replaceVars)
 						.toString());
