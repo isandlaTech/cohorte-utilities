@@ -245,9 +245,10 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 				return wRsrcList;
 			} else if (aProvider instanceof CXRsrcTextFileProvider) {
 				if (wValidContentId.indexOf("?") != -1) {
+					wQueryParam = wValidContentId.indexOf("?")!=-1 ?wValidContentId.substring(wValidContentId.indexOf("?")):null;
+
 					wValidContentId = wValidContentId.substring(0,
 							wValidContentId.indexOf("?"));
-					wQueryParam = wValidContentId.indexOf("?")!=-1 ?wValidContentId.substring(wValidContentId.indexOf("?")):null;
 
 				}
 				CXListRsrcText wRsrcList = new CXListRsrcText();
@@ -263,9 +264,10 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 				boolean wWantSubArrayElem = wValidContentId.contains("]");
 				CXListRsrcText wList;
 				if (wValidContentId.indexOf("?") != -1) {
+					wQueryParam = wValidContentId.indexOf("?")!=-1 ?wValidContentId.substring(wValidContentId.indexOf("?")):null;
+
 					wValidContentId = wValidContentId.substring(0,
 							wValidContentId.indexOf("?"));
-					wQueryParam = wValidContentId.indexOf("?")!=-1 ?wValidContentId.substring(wValidContentId.indexOf("?")):null;
 				}
 				String wFilePath = wValidContentId;
 				if (wWantSubArrayElem && wFilePath.contains("]")) {
