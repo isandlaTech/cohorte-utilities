@@ -2,6 +2,7 @@ package org.cohorte.utilities.json.provider;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.psem2m.utilities.json.JSONObject;
@@ -27,7 +28,7 @@ public interface IJsonRsrcResolver {
 
 	public CXListRsrcText getContent(final String aTag,
 			final String aContentId, final boolean aMemoryProvider,
-			final List<JSONObject> aFatherObject) throws Exception;
+			final List<JSONObject> aFatherObject, Map<String,String> aMapString) throws Exception;
 
 	/**
 	 * return the list of the content id that handle the resolve like $file,

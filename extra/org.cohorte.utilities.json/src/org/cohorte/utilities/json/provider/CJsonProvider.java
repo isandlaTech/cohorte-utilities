@@ -260,7 +260,7 @@ public class CJsonProvider implements IJsonProvider {
 		String wPath = aPath != null ? aPath + "/" + aContentId : aContentId;
 
 		CXListRsrcText wRsrcs = pJsonResolver.getContent(aTag, wPath, false,
-				null);
+				null,null);
 		if (wRsrcs != null && wRsrcs.size() > 0) {
 			JSONArray wArr = new JSONArray();
 			for (CXRsrcText wRsrc : wRsrcs) {
@@ -383,16 +383,16 @@ public class CJsonProvider implements IJsonProvider {
 				aContentId);
 		String wPath = aFatherPath != null ? aFatherPath + "/" + aContentId
 				: aContentId;
+		Map<String, String> wVars = getVariableFromPath(wPath);
 
 		CXListRsrcText wRsrcs = pJsonResolver.getContent(aTag, wPath, false,
-				null);
+				null,wVars);
 		if (wRsrcs != null && wRsrcs.size() > 0) {
 			// we get only the first one
 			CXRsrcText wRsrc = wRsrcs.get(0);
 			String wNotComment = wRsrc.getContent();
 
 			// replace vars regarding the variable set in the path
-			Map<String, String> wVars = getVariableFromPath(wPath);
 
 			wNotComment = CXStringUtils.replaceVariables(wNotComment, wVars);
 			wNotComment = CJsonResolvTernary.resultTernary(pLogger,
@@ -665,7 +665,7 @@ public class CJsonProvider implements IJsonProvider {
 		Map<String, String> replaceVars = null;
 
 		if( !wPath.isEmpty() ){
-			if( !wPath.startsWith(EProviderKind.FILE.toString())) {
+			if( !wPath.startsWith(EProviderKind.FILE.toString()) && !wPath.startsWith(EProviderKind.MEMORY.toString()) && !wPath.startsWith(EProviderKind.HTTP.toString())) {
 				wPath="file"+wPath;
 			}
 			if( wPath.indexOf("?") != -1 ) {
@@ -716,7 +716,7 @@ public class CJsonProvider implements IJsonProvider {
 		CXListRsrcText wRsrcs = pJsonResolver.getContent(
 				aTag, wPath.isEmpty() ? alTag.toString()
 						: wPath, aUseMemoryProvider,
-						aFathersContent);
+						aFathersContent,replaceVars);
 		if (wRsrcs != null && wRsrcs.size() > 0) {
 			for (CXRsrcText wRsrc : wRsrcs) {
 				// resolv subcontent

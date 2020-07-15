@@ -9,6 +9,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
@@ -370,7 +371,7 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 		// nothn
 	}
 
-	protected CXRsrcText readRsrcTextContent(final CXRsrcUriPath aPath, String aFullPath, long aTimeStamp,
+	protected CXRsrcText readRsrcTextContent(final CXRsrcUriPath aPath, Map<String, String> aFullPath, long aTimeStamp,
 			final boolean aForceSecondes) throws Exception {
 		URL wUrl = null;
 		URLConnection wCnx = null;
@@ -414,7 +415,8 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrc<?> rsrcRead(final CXRsrc<?> aRsrc, String aFullPath, final boolean aCheckTimeStamp) throws Exception {
+	public CXRsrc<?> rsrcRead(final CXRsrc<?> aRsrc, Map<String, String> aFullPath, final boolean aCheckTimeStamp)
+			throws Exception {
 		assert aRsrc != null : "Null resource";
 		if (aRsrc.isText()) {
 			return rsrcReadTxt(aRsrc.getPath(), aFullPath, aCheckTimeStamp ? aRsrc.getTimeStampSyst() : 0, false, true);
@@ -435,7 +437,7 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrc<?> rsrcRead(final CXRsrcUriPath aRsrcPath, String aFullPath) throws Exception {
+	public CXRsrc<?> rsrcRead(final CXRsrcUriPath aRsrcPath, Map<String, String> aFullPath) throws Exception {
 		return rsrcRead(aRsrcPath.getFullPath(), aFullPath, 0);
 	}
 
@@ -446,7 +448,7 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrc<?> rsrcRead(final CXRsrcUriPath aPath, String aFullPath, final long aTimeStamp,
+	public CXRsrc<?> rsrcRead(final CXRsrcUriPath aPath, Map<String, String> aFullPath, final long aTimeStamp,
 			final boolean aForceSecondes) throws Exception {
 		return rsrcRead(aPath, aFullPath, aTimeStamp, aForceSecondes, false);
 	}
@@ -459,7 +461,7 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	private CXRsrc<?> rsrcRead(final CXRsrcUriPath aPath, String aFullPath, final long aTimeStamp,
+	private CXRsrc<?> rsrcRead(final CXRsrcUriPath aPath, Map<String, String> aFullPath, final long aTimeStamp,
 			final boolean aForceSecondes, final boolean aFulPath) throws Exception {
 		if (aPath != null) {
 			CXMimeType wMime = aPath.getMimeType();
@@ -493,7 +495,7 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrc<?> rsrcRead(final String aRsrcPath, String aFullPath) throws Exception {
+	public CXRsrc<?> rsrcRead(final String aRsrcPath, Map<String, String> aFullPath) throws Exception {
 		return rsrcRead(aRsrcPath, aFullPath, 0);
 	}
 
@@ -506,7 +508,8 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrc<?> rsrcRead(final String aRsrcPath, String aFullPath, final long aTimeStampSyst) throws Exception {
+	public CXRsrc<?> rsrcRead(final String aRsrcPath, Map<String, String> aFullPath, final long aTimeStampSyst)
+			throws Exception {
 		return rsrcRead(aRsrcPath, aFullPath, aTimeStampSyst, false);
 	}
 
@@ -517,7 +520,7 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrc<?> rsrcRead(final String aRsrcPath, String aFullPath, final long aTimeStampSyst,
+	public CXRsrc<?> rsrcRead(final String aRsrcPath, Map<String, String> aFullPath, final long aTimeStampSyst,
 			final boolean aForceSecond) throws Exception {
 		return rsrcRead(new CXRsrcUriPath(aRsrcPath), aFullPath, aTimeStampSyst, aForceSecond);
 	}
@@ -630,7 +633,7 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrcText rsrcReadTxt(final CXRsrcUriPath aRsrcPath, String aFullPath) throws Exception {
+	public CXRsrcText rsrcReadTxt(final CXRsrcUriPath aRsrcPath, Map<String, String> aFullPath) throws Exception {
 		return rsrcReadTxt(aRsrcPath.getFullPath(), aFullPath, 0);
 	}
 
@@ -641,7 +644,7 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrcText rsrcReadTxt(final CXRsrcUriPath aPath, String aFullPath, final long aTimeStamp,
+	public CXRsrcText rsrcReadTxt(final CXRsrcUriPath aPath, Map<String, String> aFullPath, final long aTimeStamp,
 			final boolean aForceSecondes) throws Exception {
 		return rsrcReadTxt(aPath, aFullPath, aTimeStamp, aForceSecondes, false);
 	}
@@ -654,7 +657,7 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	private CXRsrcText rsrcReadTxt(final CXRsrcUriPath aPath, String aFullPath, final long aTimeStamp,
+	private CXRsrcText rsrcReadTxt(final CXRsrcUriPath aPath, Map<String, String> aFullPath, final long aTimeStamp,
 			final boolean aForceSecondes, final boolean aFulPath) throws Exception {
 		CXRsrcText wRsrc = null;
 		CXRsrcUriPath wPath = null;
@@ -692,7 +695,7 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrcText rsrcReadTxt(final String aRsrcPath, String aFullPath) throws Exception {
+	public CXRsrcText rsrcReadTxt(final String aRsrcPath, Map<String, String> aFullPath) throws Exception {
 		return rsrcReadTxt(aRsrcPath, aFullPath, 0);
 	}
 
@@ -704,7 +707,7 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrcText rsrcReadTxt(final String aRsrcPath, String aFullPath, final long aTimeStampSyst)
+	public CXRsrcText rsrcReadTxt(final String aRsrcPath, Map<String, String> aFullPath, final long aTimeStampSyst)
 			throws Exception {
 		return rsrcReadTxt(aRsrcPath, aFullPath, aTimeStampSyst, false);
 	}
@@ -716,22 +719,23 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXRsrcText rsrcReadTxt(final String aRsrcPath, String aFullPath, final long aTimeStampSyst,
+	public CXRsrcText rsrcReadTxt(final String aRsrcPath, Map<String, String> aFullPath, final long aTimeStampSyst,
 			final boolean aForceSecond) throws Exception {
 		return rsrcReadTxt(new CXRsrcUriPath(aRsrcPath), aFullPath, aTimeStampSyst, aForceSecond);
 	}
 
-	public CXRsrcText rsrcReadTxt(final String aRsrcPath, String aFullPath, String aFullParam) throws Exception {
+	public CXRsrcText rsrcReadTxt(final String aRsrcPath, Map<String, String> aFullPath, String aFullParam)
+			throws Exception {
 		return rsrcReadTxt(aRsrcPath, aFullPath, 0);
 	}
 
-	public CXListRsrcText rsrcReadTxts(final CXRsrcUriPath aPath, String aFullPath, final long aTimeStamp,
+	public CXListRsrcText rsrcReadTxts(final CXRsrcUriPath aPath, Map<String, String> aFullPath, final long aTimeStamp,
 			final boolean aForceSecondes) throws Exception {
 		return rsrcReadTxts(aPath, aFullPath, aTimeStamp, aForceSecondes, false);
 	}
 
-	protected CXListRsrcText rsrcReadTxts(final CXRsrcUriPath aPath, String aFullPath, final long aTimeStamp,
-			final boolean aForceSecondes, final boolean aFulPath) throws Exception {
+	protected CXListRsrcText rsrcReadTxts(final CXRsrcUriPath aPath, Map<String, String> aFullPath,
+			final long aTimeStamp, final boolean aForceSecondes, final boolean aFulPath) throws Exception {
 		CXRsrcText wRsrc = null;
 		CXRsrcUriPath wPath = null;
 		URL wUrl = null;
@@ -796,16 +800,16 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	public CXListRsrcText rsrcReadTxts(final String aRsrcPath, String aFullPath) throws Exception {
+	public CXListRsrcText rsrcReadTxts(final String aRsrcPath, Map<String, String> aFullPath) throws Exception {
 		return rsrcReadTxts(aRsrcPath, aFullPath, 0);
 	}
 
-	public CXListRsrcText rsrcReadTxts(final String aRsrcPath, String aFullPath, final long aTimeStampSyst)
+	public CXListRsrcText rsrcReadTxts(final String aRsrcPath, Map<String, String> aFullPath, final long aTimeStampSyst)
 			throws Exception {
 		return rsrcReadTxts(aRsrcPath, aFullPath, aTimeStampSyst, false);
 	}
 
-	public CXListRsrcText rsrcReadTxts(final String aRsrcPath, String aFullPath, final long aTimeStampSyst,
+	public CXListRsrcText rsrcReadTxts(final String aRsrcPath, Map<String, String> aFullPath, final long aTimeStampSyst,
 			final boolean aForceSecond) throws Exception {
 		return rsrcReadTxts(new CXRsrcUriPath(aRsrcPath), aFullPath, aTimeStampSyst, aForceSecond);
 	}

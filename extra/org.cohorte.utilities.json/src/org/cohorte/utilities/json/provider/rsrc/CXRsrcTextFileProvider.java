@@ -1,6 +1,7 @@
 package org.cohorte.utilities.json.provider.rsrc;
 
 import java.nio.charset.Charset;
+import java.util.Map;
 
 import org.psem2m.utilities.files.CXFileDir;
 import org.psem2m.utilities.json.JSONArray;
@@ -64,7 +65,7 @@ public class CXRsrcTextFileProvider extends CXRsrcProviderFile {
 				CXRsrcTextReadInfo.newInstanceFromString(wResult.toString()));
 	}
 	@Override
-	public CXRsrcText rsrcReadTxt(final String aPath, final String aQueryPath) throws Exception {
+	public CXRsrcText rsrcReadTxt(final String aPath, final Map<String,String> aQueryPath) throws Exception {
 		CXRsrcText wText = super.rsrcReadTxt(aPath);
 		JSONArray wResult = new JSONArray();
 

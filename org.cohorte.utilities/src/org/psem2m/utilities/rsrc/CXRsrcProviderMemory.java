@@ -55,7 +55,7 @@ public class CXRsrcProviderMemory extends CXRsrcProvider {
 	}
 
 	@Override
-	public CXRsrcText rsrcReadTxt(final String aContentId, String aQueryParam) throws Exception {
+	public CXRsrcText rsrcReadTxt(final String aContentId, Map<String, String> aQueryParam) throws Exception {
 		String wContentId = aContentId;
 		if (aContentId.contains("?")) {
 			wContentId = aContentId.substring(0, wContentId.indexOf("?"));
@@ -73,7 +73,7 @@ public class CXRsrcProviderMemory extends CXRsrcProvider {
 	}
 
 	@Override
-	public CXListRsrcText rsrcReadTxts(final String aContentId, String aQueryParam) throws Exception {
+	public CXListRsrcText rsrcReadTxts(final String aContentId, Map<String, String> aQueryParam) throws Exception {
 		CXListRsrcText wList = new CXListRsrcText();
 		String wContentId = aContentId;
 		if (aContentId.contains("?")) {

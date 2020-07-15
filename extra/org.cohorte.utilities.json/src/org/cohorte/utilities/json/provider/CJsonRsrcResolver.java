@@ -170,8 +170,8 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 			return aContentId;
 
 		} else if (EProviderKind.MEMORY.checkKind(aContentId)) {
-			return EProviderKind.MEMORY.getValidPathForProvider(aProv,
-					aContentId);
+			return aContentId.replace(EProviderKind.MEMORY.toString(),"");
+
 
 		} else if (EProviderKind.HTTP.checkKind(aContentId)) {
 			return EProviderKind.HTTP
@@ -185,14 +185,14 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 	@Override
 	public CXListRsrcText getContent(final String aTag,
 			final String aContentId, final boolean aMemoryProvider,
-			final List<JSONObject> aFatherObject) throws Exception {
+			final List<JSONObject> aFatherObject, final Map<String,String > aMapString) throws Exception {
 		CXListRsrcText wContents = null;
 		List<Exception> wExcept = new ArrayList<>();
 
 		if (aMemoryProvider && pListMemoryProviderByTag.get(aTag) != null) {
 			wContents = getContentByProvider(
 					pListMemoryProviderByTag.get(aTag), aContentId,
-					aFatherObject);
+					aFatherObject,aMapString);
 		}
 		if ((wContents == null || wContents.size() == 0)
 				&& pListProviderByTag.get(aTag) != null) {
@@ -205,7 +205,7 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 				// return the path without the prefix or null if it's not valid
 				try {
 					wContents = getContentByProvider(wProv, aContentId,
-							aFatherObject);
+							aFatherObject,aMapString);
 				} catch (Exception e) {
 					wExcept.add(e);
 				}
@@ -224,7 +224,7 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 	}
 
 	private CXListRsrcText getContentByProvider(final CXRsrcProvider aProvider,
-			final String aContentId, final List<JSONObject> aListFather)
+			final String aContentId, final List<JSONObject> aListFather, final Map<String,String> aMapString)
 					throws Exception {
 		String wValidContentId = checkValidProviderAndPath(aProvider,
 				aContentId);
@@ -245,14 +245,20 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 				return wRsrcList;
 			} else if (aProvider instanceof CXRsrcTextFileProvider) {
 				if (wValidContentId.indexOf("?") != -1) {
-					wQueryParam = wValidContentId.indexOf("?")!=-1 ?wValidContentId.substring(wValidContentId.indexOf("?")):null;
 
 					wValidContentId = wValidContentId.substring(0,
 							wValidContentId.indexOf("?"));
 
 				}
 				CXListRsrcText wRsrcList = new CXListRsrcText();
-				wRsrcList.add(aProvider.rsrcReadTxt(wValidContentId,wQueryParam));
+				wRsrcList.add(aProvider.rsrcReadTxt(wValidContentId,aMapString));
+
+				return wRsrcList;
+
+			}else if (aProvider instanceof CXRsrcProviderMemory) {
+
+				CXListRsrcText wRsrcList = new CXListRsrcText();
+				wRsrcList.add(aProvider.rsrcReadTxt(wValidContentId,aMapString));
 
 				return wRsrcList;
 
@@ -264,7 +270,6 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 				boolean wWantSubArrayElem = wValidContentId.contains("]");
 				CXListRsrcText wList;
 				if (wValidContentId.indexOf("?") != -1) {
-					wQueryParam = wValidContentId.indexOf("?")!=-1 ?wValidContentId.substring(wValidContentId.indexOf("?")):null;
 
 					wValidContentId = wValidContentId.substring(0,
 							wValidContentId.indexOf("?"));
@@ -278,7 +283,7 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 					wFilePath = wFilePath.substring(0,
 							wValidContentId.indexOf("#"));
 				}
-				wList = aProvider.rsrcReadTxts(wFilePath,wQueryParam);
+				wList = aProvider.rsrcReadTxts(wFilePath,aMapString);
 
 				// alter content of each RsrcText to only set the
 				// subcontains asked
