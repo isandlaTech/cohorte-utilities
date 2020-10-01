@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -93,13 +94,13 @@ public class CJsonProvider implements IJsonProvider {
 					throws UnsupportedEncodingException {
 
 		if (aContent instanceof JSONObject) {
-			JSONObject wObj = (JSONObject) aContent;
+			final JSONObject wObj = (JSONObject) aContent;
 			if (aReplaceVars != null && wObj.keySet().contains(aTag)) {
 
 				String wSubIncludeStr = wObj.optString(aTag);
-				int wIndexParameter = wSubIncludeStr.indexOf("?");
+				final int wIndexParameter = wSubIncludeStr.indexOf("?");
 				if (wSubIncludeStr.contains("?")) {
-					Map<String, String> wReplaceVarsSubInclude = CXQueryString
+					final Map<String, String> wReplaceVarsSubInclude = CXQueryString
 							.splitQueryFirst(wSubIncludeStr.substring(
 									wIndexParameter + 1,
 									wSubIncludeStr.length()));
@@ -108,13 +109,13 @@ public class CJsonProvider implements IJsonProvider {
 							wIndexParameter);
 				}
 
-				String wParameterUrl = CXQueryString
+				final String wParameterUrl = CXQueryString
 						.urlEncodeUTF8(aReplaceVars);
 				wSubIncludeStr = wSubIncludeStr + "?" + wParameterUrl;
 				wObj.put(aTag, wSubIncludeStr);
 			}
 		} else if (aContent instanceof JSONArray) {
-			JSONArray wArr = (JSONArray) aContent;
+			final JSONArray wArr = (JSONArray) aContent;
 			for (int i = 0; i < wArr.length(); i++) {
 				addInheritParameter(wArr.opt(i), aReplaceVars, aTag);
 			}
@@ -136,8 +137,8 @@ public class CJsonProvider implements IJsonProvider {
 		if (aJsonString == null || aJsonString.isEmpty()) {
 			return null;
 		} else {
-			int indexSquare = aJsonString.indexOf('[');
-			int indexCurly = aJsonString.indexOf('{');
+			final int indexSquare = aJsonString.indexOf('[');
+			final int indexCurly = aJsonString.indexOf('{');
 			if (indexCurly == -1 && indexSquare == -1) {// not a json
 				return new JSONObject(aJsonString);
 			} else if (indexCurly != -1 && indexSquare == -1) {
@@ -168,7 +169,7 @@ public class CJsonProvider implements IJsonProvider {
 			pLogger.logInfo(this, "evaluateCondition", "eval condition %s ",
 					aCondition);
 
-			Object wReply = pRhinoScriptEngine.eval(aCondition);
+			final Object wReply = pRhinoScriptEngine.eval(aCondition);
 			pLogger.logInfo(this, "evaluateCondition",
 					"eval condition %s , result=%s", aCondition, wReply);
 
@@ -182,7 +183,7 @@ public class CJsonProvider implements IJsonProvider {
 						aCondition, wReply);
 				return false;
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 			pLogger.logSevere(
 					this,
@@ -205,18 +206,18 @@ public class CJsonProvider implements IJsonProvider {
 	 * @return
 	 */
 	List<JSONObject> foundMatchTags(final String aTag, final Object aObject) {
-		List<JSONObject> wListTagJson = new ArrayList<>();
+		final List<JSONObject> wListTagJson = new ArrayList<>();
 		if (aObject instanceof JSONObject) {
-			JSONObject wJsonObject = (JSONObject) aObject;
+			final JSONObject wJsonObject = (JSONObject) aObject;
 			if (wJsonObject.keySet().contains(aTag)) {
 				wListTagJson.add(wJsonObject);
 			} else {
-				for (Object wValue : wJsonObject.values()) {
+				for (final Object wValue : wJsonObject.values()) {
 					wListTagJson.addAll(foundMatchTags(aTag, wValue));
 				}
 			}
 		} else if (aObject instanceof JSONArray) {
-			JSONArray wJsonArray = (JSONArray) aObject;
+			final JSONArray wJsonArray = (JSONArray) aObject;
 			for (int i = 0; i < wJsonArray.length(); i++) {
 				wListTagJson.addAll(foundMatchTags(aTag, wJsonArray.opt(i)));
 			}
@@ -257,16 +258,16 @@ public class CJsonProvider implements IJsonProvider {
 		// get content
 		pLogger.logInfo(this, "getJSONObject", "get content from id %s",
 				aContentId);
-		String wPath = aPath != null ? aPath + "/" + aContentId : aContentId;
+		final String wPath = aPath != null ? aPath + "/" + aContentId : aContentId;
 
-		CXListRsrcText wRsrcs = pJsonResolver.getContent(aTag, wPath, false,
+		final CXListRsrcText wRsrcs = pJsonResolver.getContent(aTag, wPath, false,
 				null,null);
 		if (wRsrcs != null && wRsrcs.size() > 0) {
-			JSONArray wArr = new JSONArray();
-			for (CXRsrcText wRsrc : wRsrcs) {
-				String aContent = wRsrc.getContent();
+			final JSONArray wArr = new JSONArray();
+			for (final CXRsrcText wRsrc : wRsrcs) {
+				final String aContent = wRsrc.getContent();
 
-				Object wNotCommentJson = checkIsJson(aContent);
+				final Object wNotCommentJson = checkIsJson(aContent);
 				// check include content that must be resolve
 				wArr.put(wNotCommentJson);
 			}
@@ -324,7 +325,7 @@ public class CJsonProvider implements IJsonProvider {
 				"preprocess resolve subcontent ");
 
 		// resolve file and http and call handle for mem cache
-		List<JSONObject> wListFather = new ArrayList<>();
+		final List<JSONObject> wListFather = new ArrayList<>();
 		wListFather.add(aUnresolvedJson);
 		Object wResolvedObj = resolveInclude(currentPath, aUnresolvedJson,
 				pInitCacheHandler == null, wListFather, wVars);
@@ -381,15 +382,15 @@ public class CJsonProvider implements IJsonProvider {
 		// get content
 		pLogger.logInfo(this, "getJSONObject", "get content from id %s",
 				aContentId);
-		String wPath = aFatherPath != null ? aFatherPath + "/" + aContentId
+		final String wPath = aFatherPath != null ? aFatherPath + "/" + aContentId
 				: aContentId;
-		Map<String, String> wVars = getVariableFromPath(wPath);
+		final Map<String, String> wVars = getVariableFromPath(wPath);
 
-		CXListRsrcText wRsrcs = pJsonResolver.getContent(aTag, wPath, false,
+		final CXListRsrcText wRsrcs = pJsonResolver.getContent(aTag, wPath, false,
 				null,wVars);
 		if (wRsrcs != null && wRsrcs.size() > 0) {
 			// we get only the first one
-			CXRsrcText wRsrc = wRsrcs.get(0);
+			final CXRsrcText wRsrc = wRsrcs.get(0);
 			String wNotComment = wRsrc.getContent();
 
 			// replace vars regarding the variable set in the path
@@ -397,7 +398,7 @@ public class CJsonProvider implements IJsonProvider {
 			wNotComment = CXStringUtils.replaceVariables(wNotComment, wVars);
 			wNotComment = CJsonResolvTernary.resultTernary(pLogger,
 					wNotComment, pRhinoScriptEngine);
-			Object wNotCommentJson = checkIsJson(wNotComment);
+			final Object wNotCommentJson = checkIsJson(wNotComment);
 			// check include content that must be resolve
 			if (!noIncludeResolution) {
 				return getJSONObject(aFatherPath, (JSONObject) wNotCommentJson,
@@ -414,7 +415,7 @@ public class CJsonProvider implements IJsonProvider {
 
 	private List<JSONObject> getListFather(
 			final List<JSONObject> aListOfFather, final Object aContent) {
-		List<JSONObject> wFathersContent = new ArrayList<>();
+		final List<JSONObject> wFathersContent = new ArrayList<>();
 		if (aListOfFather != null && aListOfFather.size() > 0) {
 			wFathersContent.addAll(aListOfFather);
 		}
@@ -434,10 +435,10 @@ public class CJsonProvider implements IJsonProvider {
 	private String getSubPath(final String aTag, final CXRsrcText aRsrc) {
 		String wSubPath = aRsrc.getFullPath();
 		// always used / even on windows. the path are always define with /
-		int wIdx = wSubPath.lastIndexOf("/");
+		final int wIdx = wSubPath.lastIndexOf("/");
 		wSubPath = wIdx != -1 ? wSubPath.substring(0, wIdx + 1) : wSubPath;
 		CXRsrcProvider wProviderUsed = null;
-		for (CXRsrcProvider aProvider : pJsonResolver.getRsrcProvider(aTag)) {
+		for (final CXRsrcProvider aProvider : pJsonResolver.getRsrcProvider(aTag)) {
 			if (wProviderUsed == null
 					&& aProvider != null
 					&& aRsrc.getFullPath().contains(
@@ -457,14 +458,14 @@ public class CJsonProvider implements IJsonProvider {
 	}
 
 	private Object getValidContent(final CXRsrcText aRsrc) throws JSONException {
-		String wSubContent = aRsrc.getContent();
+		final String wSubContent = aRsrc.getContent();
 
 		// remove comment
 		Object wSubContentObj = null;
 		// check if it's json
 		try {
 			wSubContentObj = checkIsJson(wSubContent);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new JSONException(String.format(
 					"bad JSON content Exception=[%s] , content=[%S]", e,
 					wSubContent));
@@ -475,10 +476,10 @@ public class CJsonProvider implements IJsonProvider {
 	private Map<String, String> getVariableFromPath(String aPath)
 			throws UnsupportedEncodingException {
 		if (aPath != null) {
-			int wIdx = aPath.indexOf("?");
+			final int wIdx = aPath.indexOf("?");
 			if (wIdx != -1) {
 				// need to parse to extract the memory key
-				String wParam = aPath.substring(wIdx + 1);
+				final String wParam = aPath.substring(wIdx + 1);
 				aPath = aPath.substring(0, wIdx);
 				return CXQueryString.splitQueryFirst(wParam);
 			}
@@ -489,7 +490,7 @@ public class CJsonProvider implements IJsonProvider {
 
 	private void initMemoryProviderCache(final Object aValidContent,
 			final String aTag) {
-		CXRsrcProviderMemory wMemProv = pJsonResolver
+		final CXRsrcProviderMemory wMemProv = pJsonResolver
 				.getRsrcProviderMemory(aTag);
 		if (pInitCacheHandler != null && wMemProv != null) {
 			// call the initCache memory
@@ -500,7 +501,7 @@ public class CJsonProvider implements IJsonProvider {
 
 	@Override
 	public void purgeCache() {
-		for(CXRsrcProvider wProv:pJsonResolver.getRsrcProvider()) {
+		for(final CXRsrcProvider wProv:pJsonResolver.getRsrcProvider()) {
 			wProv.purgeCache();
 		}
 	}
@@ -537,7 +538,7 @@ public class CJsonProvider implements IJsonProvider {
 			final List<String> wSubNoCommentContent = new ArrayList<>();
 
 			for (final JSONObject wMatch : foundMatchTags(wTag, wResolvContent)) {
-				JSONObject wJsonSubId = wMatch;
+				final JSONObject wJsonSubId = wMatch;
 				try {
 					wSubNoCommentContent.clear();
 					// set absolute path
@@ -557,7 +558,7 @@ public class CJsonProvider implements IJsonProvider {
 					// should be taken in
 					// account
 					if (wlTag instanceof JSONObject) {
-						JSONObject wlTagJson = new JSONObject(wlTag.toString());
+						final JSONObject wlTagJson = new JSONObject(wlTag.toString());
 						wlPath = wlTagJson.optString(PATH);
 						wMustBeInclude = evaluateCondition(wlTagJson
 								.optString(COND));
@@ -568,31 +569,33 @@ public class CJsonProvider implements IJsonProvider {
 								"not a file include Object but another tag. we keep the jsonObject");
 						wlPath = wlTag.toString();
 						try {
-							JSONObject wOtherTag = new JSONObject(wlTag);
+							final JSONObject wOtherTag = new JSONObject(wlTag);
 							wMustBeInclude = evaluateCondition(wOtherTag
 									.optString(COND));
-						} catch (Exception e) {
+						} catch (final Exception e) {
 							// do nothing
 
 						}
 					}
 
 					if (wMustBeInclude) {
-						List<String> wListPath = Arrays.asList(wlPath
+						final List<String> wListPath = Arrays.asList(wlPath
 								.split(SEP_PATH));
-						List<Future<?>> wListFuture = new ArrayList<>();
+						final List<Future<?>> wListFuture = new ArrayList<>();
 						for (final String wPath : wListPath) {
 							wListFuture.add(pExecutors.submit(new Runnable() {
 								@Override
 								public void run() {
 									try {
-										List<JSONObject> wListFather = new ArrayList<>();
+										final List<JSONObject> wListFather = new ArrayList<>();
 										wListFather.addAll(getListFather(aFathersContent,
 												aContent));
-										resolveIncludePath(aContent,wMatch,wPath,currentPath,aUseMemoryProvider,wlTag,wTag,wListFather,aReplaceVars,wSubNoCommentContent);
+										Map<String,String> wCloneReplaceVars = new HashMap<>();
+										wCloneReplaceVars.putAll(aReplaceVars);
+										resolveIncludePath(aContent,wMatch,wPath,currentPath,aUseMemoryProvider,wlTag,wTag,wListFather,wCloneReplaceVars,wSubNoCommentContent);
 
-									}catch(Exception e) {
-
+									}catch(final Exception e) {
+										pLogger.logSevere(this, "resolveInclude", "Fail to resolve include Path Error=[%s]",e);
 									}
 								}
 							}));
@@ -601,14 +604,14 @@ public class CJsonProvider implements IJsonProvider {
 						boolean wFinish = false;
 						while(!wFinish) {
 							wFinish=true;
-							for(Future<?> wFuture:wListFuture) {
+							for(final Future<?> wFuture:wListFuture) {
 								wFinish=wFinish && wFuture.isDone();
 							}
 						}
 
 					}
 
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					// TODO Provider must return a typed exception and
 					// not a global one
 					if (pIgnoreMissingContent
@@ -631,7 +634,7 @@ public class CJsonProvider implements IJsonProvider {
 				}
 
 				// replace file by empty json.
-				String wResolvContentStr = wResolvContent.toString();
+				final String wResolvContentStr = wResolvContent.toString();
 				if (wSubNoCommentContent.size() == 1) {
 					wResolvContent = checkIsJson(wResolvContentStr.replace(
 							wMatch.toString(), wSubNoCommentContent.get(0)));
@@ -640,7 +643,7 @@ public class CJsonProvider implements IJsonProvider {
 							wMatch.toString(), EMPTYJSON));
 				} else {
 					String wMerge = "";
-					for (String wSubContent : wSubNoCommentContent) {
+					for (final String wSubContent : wSubNoCommentContent) {
 						if (!wMerge.isEmpty()) {
 							wMerge = wMerge + ",";
 						}
@@ -702,7 +705,7 @@ public class CJsonProvider implements IJsonProvider {
 		pLogger.logInfo(this, "resolveInclude",
 				"retrieve variable to replace from path");
 		replaceVars = aReplaceVars;
-		Map<String, String> wCurrentReplaceVars = getVariableFromPath(wPath);
+		final Map<String, String> wCurrentReplaceVars = getVariableFromPath(wPath);
 		if (wCurrentReplaceVars != null) {
 			if (replaceVars != null) {
 				replaceVars.putAll(wCurrentReplaceVars);
@@ -713,17 +716,17 @@ public class CJsonProvider implements IJsonProvider {
 
 		// read the current object . we set the list of the
 		// father
-		CXListRsrcText wRsrcs = pJsonResolver.getContent(
+		final CXListRsrcText wRsrcs = pJsonResolver.getContent(
 				aTag, wPath.isEmpty() ? alTag.toString()
 						: wPath, aUseMemoryProvider,
 						aFathersContent,replaceVars);
 		if (wRsrcs != null && wRsrcs.size() > 0) {
-			for (CXRsrcText wRsrc : wRsrcs) {
+			for (final CXRsrcText wRsrc : wRsrcs) {
 				// resolv subcontent
 				Object wValidContent = getValidContent(wRsrc);
 				// must be a JSONArray or JSONObject
 				// replace vars in the resolve content
-				String wResolvVariable = CXStringUtils
+				final String wResolvVariable = CXStringUtils
 						.replaceVariables(
 								wValidContent.toString(),
 								replaceVars);
@@ -764,6 +767,7 @@ public class CJsonProvider implements IJsonProvider {
 				}else {
 					wCurrentPathInclude =wFatherPath;
 				}
+
 
 				aSubNoCommentContent.add(resolveInclude(
 						wCurrentPathInclude,
