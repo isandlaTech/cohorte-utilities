@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.logging.Level;
 
+import org.cohorte.utilities.CXClassUtils;
 import org.psem2m.utilities.CXException;
 import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.CXTimer;
@@ -68,6 +69,13 @@ public class CAbstractJunitTest {
 	/**
 	 * @return
 	 */
+	public static CTestsRegistry initializeTestsRegistry() {
+		return initializeTestsRegistry(CXClassUtils.findClass(CAbstractJunitTest.class));
+	}
+	
+	/**
+	 * @return
+	 */
 	public static CTestsRegistry initializeTestsRegistry(final Class<? extends CAbstractJunitTest> aClass) {
 
 		CTestsRegistry wTestsRegistry = new CTestsRegistry(aClass);
@@ -76,7 +84,13 @@ public class CAbstractJunitTest {
 
 		return wTestsRegistry;
 	}
-
+	/**
+	 * 
+	 */
+	public static void logBannerDestroy() {
+		logBannerDestroy(CXClassUtils.findClass(CAbstractJunitTest.class));
+	}
+	
 	/**
 	 * @param aClassTestSimpleName
 	 */
@@ -85,7 +99,14 @@ public class CAbstractJunitTest {
 		CXLoggerUtils.logBannerInfo(sLogger, aClassTest, "destroy", "END OF TEST %s \n%s", aClassTest.getSimpleName(),
 				dumpTestsMaps());
 	}
-
+	
+	/**
+	 * 
+	 */
+	public static void logBannerInitialization() {
+		logBannerInitialization(CXClassUtils.findClass(CAbstractJunitTest.class));
+	}
+	
 	/**
 	 * <pre>
 	 * -Djava.util.logging.SimpleFormatter.format="%1$tY/%1$tm/%1$td; %1$tH:%1$tM:%1$tS:%1$tL; %4$7.7s; %3$16.016s; %2$54.54s; %5$s%6$s%n"
@@ -93,6 +114,7 @@ public class CAbstractJunitTest {
 	 * 
 	 * @param aClassTestSimpleName
 	 */
+
 	public static void logBannerInitialization(final Class<? extends CAbstractJunitTest> aClassTest) {
 
 		StringBuilder wBannerLines = new StringBuilder();
