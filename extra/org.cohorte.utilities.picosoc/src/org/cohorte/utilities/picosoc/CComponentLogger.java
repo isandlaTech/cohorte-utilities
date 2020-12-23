@@ -418,20 +418,31 @@ public abstract class CComponentLogger extends CAbstractComponentBase implements
 			System.err.println(sToolsException.eInString(wEx));
 		}
 	}
+	
+	private final String pLoggerAlias;
 
 	/**
 	 * @param aLoggerName
 	 * @throws Exception
 	 */
-	public CComponentLogger(final String aLoggerName) throws Exception {
+	public CComponentLogger(final String aLoggerAlias) throws Exception {
 		super();
 		
-		CServiceProperties wProps= (aLoggerName==null)?null:CServiceProperties.newProps(CComponentLogger.LOGGER_ALIAS,aLoggerName);
+		pLoggerAlias = aLoggerAlias;
+		
+		CServiceProperties wProps= (aLoggerAlias==null)?null:CServiceProperties.newProps(CComponentLogger.LOGGER_ALIAS,aLoggerAlias);
 
 		registerMeAsService(IActivityLogger.class,wProps);
 
 		getLogger().logInfo(this, "<init>", "instanciated: lineDef=[%s]",
 				sActivityFormater.getLineDefInString());
+	}
+	
+	/**
+	 * @return
+	 */
+	public String getAlias() {
+		return pLoggerAlias;
 	}
 	
 	/**
@@ -442,6 +453,7 @@ public abstract class CComponentLogger extends CAbstractComponentBase implements
 	}
 
 	/*
+	 * #48
 	 * (non-Javadoc)
 	 * 
 	 * @see
@@ -450,8 +462,7 @@ public abstract class CComponentLogger extends CAbstractComponentBase implements
 	 */
 	@Override
 	public Appendable addDescriptionInBuffer(final Appendable aBuffer) {
-		return CXStringUtils.appendStringsInBuff(aBuffer, getClass()
-				.getSimpleName(), String.valueOf(hashCode()));
+		return CXStringUtils.appendFormatStrInBuff(aBuffer, " alias=[%s]", getAlias());
 	}
 
 	/**
