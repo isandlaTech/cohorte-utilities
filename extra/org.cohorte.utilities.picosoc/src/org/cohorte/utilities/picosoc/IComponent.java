@@ -103,7 +103,15 @@ public interface IComponent {
 	<T> List<CServicReference<T>> getServiceRefs(
 			Class<? extends T> aSpecification,
 			final Map<String, String> aProperties);
-
+	/**
+	 * @param aSpecification
+	 * @param aProperties
+	 * @param aStrictMode
+	 * @return
+	 */
+	<T> List<CServicReference<T>> getServiceRefs(
+			Class<? extends T> aSpecification,
+			final Map<String, String> aProperties,final boolean aStrictMode);
 	/**
 	 * @param aSpecification
 	 */

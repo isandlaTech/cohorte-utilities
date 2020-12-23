@@ -220,6 +220,16 @@ public abstract class CAbstractComponentBase implements IComponent {
 		return CServicesRegistry.getRegistry().getServiceRefs(aSpecification,
 				aProperties);
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.cohorte.utilities.picosoc.IComponent#getServiceRefs(java.lang.Class, java.util.Map, boolean)
+	 */
+	public <T> List<CServicReference<T>> getServiceRefs(
+			Class<? extends T> aSpecification, Map<String, String> aProperties,final boolean aStrictMode) {
+
+		return CServicesRegistry.getRegistry().getServiceRefs(aSpecification,
+				aProperties,aStrictMode);
+	}
 
 	/**
 	 * @param aLevel

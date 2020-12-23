@@ -26,6 +26,10 @@ import org.psem2m.utilities.logging.IActivityRequester;
  */
 public abstract class CComponentLogger extends CAbstractComponentBase implements
 		IActivityLogger {
+	
+	public static final String LOGGER_ALIAS = "alias";
+	
+	public static final String NO_LOGGER_ALIAS = null;
 
 	private static final int BANNER_WIDTH = 140;
 
@@ -416,16 +420,25 @@ public abstract class CComponentLogger extends CAbstractComponentBase implements
 	}
 
 	/**
+	 * @param aLoggerName
 	 * @throws Exception
-	 * 
 	 */
-	public CComponentLogger() throws Exception {
+	public CComponentLogger(final String aLoggerName) throws Exception {
 		super();
+		
+		CServiceProperties wProps= (aLoggerName==null)?null:CServiceProperties.newProps(CComponentLogger.LOGGER_ALIAS,aLoggerName);
 
-		registerMeAsService(IActivityLogger.class);
+		registerMeAsService(IActivityLogger.class,wProps);
 
 		getLogger().logInfo(this, "<init>", "instanciated: lineDef=[%s]",
 				sActivityFormater.getLineDefInString());
+	}
+	
+	/**
+	 * @throws Exception
+	 */
+	public CComponentLogger() throws Exception {
+		this(NO_LOGGER_ALIAS);
 	}
 
 	/*

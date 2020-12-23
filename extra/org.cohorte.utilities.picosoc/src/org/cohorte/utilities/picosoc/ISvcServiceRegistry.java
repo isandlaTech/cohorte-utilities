@@ -7,7 +7,9 @@ import java.util.Map;
  * 
  */
 public interface ISvcServiceRegistry {
-
+	
+	boolean SEARCH_MODE_STRICT = true;
+	boolean SEARCH_MODE_NOT_STRICT = false;
 	/**
 	 * 
 	 */

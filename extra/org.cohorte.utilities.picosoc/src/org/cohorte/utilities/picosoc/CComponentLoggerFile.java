@@ -72,10 +72,20 @@ public abstract class CComponentLoggerFile extends CComponentLogger {
 	 * 
 	 */
 	public CComponentLoggerFile() throws Exception {
-		super();
+		this(NO_LOGGER_ALIAS);
+	}
+	/**
+	 * @param aLoggerAlias
+	 * @throws Exception
+	 */
+	public CComponentLoggerFile(final String aLoggerAlias) throws Exception {
+	
+		super(aLoggerAlias);
 		sMe = this;
+		
+		CServiceProperties wProps= (aLoggerAlias==null)?null:CServiceProperties.newProps(CComponentLogger.LOGGER_ALIAS,aLoggerAlias);
 
-		pSvcLoggerConfigurator = getService(ISvcLoggerConfigurator.class);
+		pSvcLoggerConfigurator = getService(ISvcLoggerConfigurator.class,wProps);
 
 		pFileLogger = initFileLogger();
 
