@@ -15,6 +15,8 @@ import org.cohorte.utilities.json.provider.rsrc.CXRsrcGeneratorProvider;
 import org.cohorte.utilities.json.provider.rsrc.CXRsrcTextFileProvider;
 import org.psem2m.utilities.json.JSONArray;
 import org.psem2m.utilities.json.JSONObject;
+import org.psem2m.utilities.logging.CActivityLoggerNull;
+import org.psem2m.utilities.logging.IActivityLogger;
 import org.psem2m.utilities.rsrc.CXListRsrcText;
 import org.psem2m.utilities.rsrc.CXRsrcProvider;
 import org.psem2m.utilities.rsrc.CXRsrcProviderFile;
@@ -88,17 +90,17 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 
 		String wNoComment = aContent;
 		if (wNoComment != null) {
-			Matcher wMatcher = pPatternAll.matcher(wNoComment);
+			final Matcher wMatcher = pPatternAll.matcher(wNoComment);
 
 			while (wMatcher.find()) {
 				for (int i = 0; i < wMatcher.groupCount(); i++) {
-					String wStr = wMatcher.group(i);
+					final String wStr = wMatcher.group(i);
 
 					if (wStr != null
 							&& wStr.indexOf("/") != -1
 							&& (!pPatternCheckSlash.matcher(wStr).find() || pPatternCheck
 									.matcher(wStr).find())) {
-						int idx = wStr.indexOf("/");
+						final int idx = wStr.indexOf("/");
 						wNoComment = wNoComment.replace(
 								wStr.substring(idx != -1 ? idx : 0), "");
 
@@ -117,9 +119,15 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 
 	private final Map<String, Map<Integer, CXRsrcProvider>> pListProviderByTag;
 
+	private IActivityLogger pLogger = CActivityLoggerNull.getInstance();
+
 	public CJsonRsrcResolver() {
 		pListProviderByTag = new Hashtable<>();
 		pListMemoryProviderByTag = new Hashtable<>();
+	}
+
+	public void setLogger(IActivityLogger aLogger) {
+		pLogger = aLogger;
 	}
 
 	/**
@@ -187,7 +195,7 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 			final String aContentId, final boolean aMemoryProvider,
 			final List<JSONObject> aFatherObject, final Map<String,String > aMapString) throws Exception {
 		CXListRsrcText wContents = null;
-		List<Exception> wExcept = new ArrayList<>();
+		final List<Exception> wExcept = new ArrayList<>();
 
 		if (aMemoryProvider && pListMemoryProviderByTag.get(aTag) != null) {
 			wContents = getContentByProvider(
@@ -197,16 +205,17 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 		if ((wContents == null || wContents.size() == 0)
 				&& pListProviderByTag.get(aTag) != null) {
 			// look on all provider and return the first elem found
-			Set<Integer> wKeys = pListProviderByTag.get(aTag).keySet();
-			for (int wKey : wKeys) {
-				CXRsrcProvider wProv = pListProviderByTag.get(aTag).get(wKey);
+			final Set<Integer> wKeys = pListProviderByTag.get(aTag).keySet();
+			for (final int wKey : wKeys) {
+				final CXRsrcProvider wProv = pListProviderByTag.get(aTag).get(wKey);
 				// check if the content id contain file://, memory:// or http://
 				// and
 				// return the path without the prefix or null if it's not valid
 				try {
+					pLogger.logInfo(this, "getContent", "get content from id %s",aContentId);
 					wContents = getContentByProvider(wProv, aContentId,
 							aFatherObject,aMapString);
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					wExcept.add(e);
 				}
 				if (wContents != null) {
@@ -229,17 +238,17 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 		String wValidContentId = checkValidProviderAndPath(aProvider,
 				aContentId);
 
-		String wQueryParam = null;
+		final String wQueryParam = null;
 
 		if (wValidContentId != null) {
 			if (aProvider instanceof CXRsrcGeneratorProvider) {
-				CXListRsrcText wRsrcList = new CXListRsrcText();
+				final CXListRsrcText wRsrcList = new CXListRsrcText();
 				wRsrcList.add(((CXRsrcGeneratorProvider) aProvider)
 						.rsrcReadTxt(wValidContentId, aListFather));
 				for (int i = 0; i < wRsrcList.size(); i++) {
-					CXRsrcText wRsrc = wRsrcList.get(i);
-					String wCommentedJSON = wRsrc.getContent();
-					String wNoComment = removeComment(wCommentedJSON);
+					final CXRsrcText wRsrc = wRsrcList.get(i);
+					final String wCommentedJSON = wRsrc.getContent();
+					final String wNoComment = removeComment(wCommentedJSON);
 					wRsrc.setContent(wNoComment);
 				}
 				return wRsrcList;
@@ -250,14 +259,14 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 							wValidContentId.indexOf("?"));
 
 				}
-				CXListRsrcText wRsrcList = new CXListRsrcText();
+				final CXListRsrcText wRsrcList = new CXListRsrcText();
 				wRsrcList.add(aProvider.rsrcReadTxt(wValidContentId,aMapString));
 
 				return wRsrcList;
 
 			}else if (aProvider instanceof CXRsrcProviderMemory) {
 
-				CXListRsrcText wRsrcList = new CXListRsrcText();
+				final CXListRsrcText wRsrcList = new CXListRsrcText();
 				wRsrcList.add(aProvider.rsrcReadTxt(wValidContentId,aMapString));
 
 				return wRsrcList;
@@ -265,9 +274,9 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 			} else {
 				// check if we ask for a JSON Array element
 				// replace potential // in the path
-				boolean wWantSubTagJson = wValidContentId.contains("#");
+				final boolean wWantSubTagJson = wValidContentId.contains("#");
 
-				boolean wWantSubArrayElem = wValidContentId.contains("]");
+				final boolean wWantSubArrayElem = wValidContentId.contains("]");
 				CXListRsrcText wList;
 				if (wValidContentId.indexOf("?") != -1) {
 
@@ -288,35 +297,37 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 				// alter content of each RsrcText to only set the
 				// subcontains asked
 				for (int i = 0; i < wList.size(); i++) {
-					CXRsrcText wRsrc = wList.get(i);
-					String wCommentedJSON = wRsrc.getContent();
+					final CXRsrcText wRsrc = wList.get(i);
+					final String wCommentedJSON = wRsrc.getContent();
+					pLogger.logInfo(this, "getContentByProvider", "get content from id %s",wRsrc.getFullPath());
+
 					String wNoComment = removeComment(wCommentedJSON);
 					if (wWantSubArrayElem) {
-						String wIndex = wValidContentId.substring(
+						final String wIndex = wValidContentId.substring(
 								wValidContentId.indexOf("[") + 1,
 								wValidContentId.indexOf("]"));
-						JSONArray wJSon = new JSONArray(wNoComment);
+						final JSONArray wJSon = new JSONArray(wNoComment);
 
 						if (wIndex.equals("*")) {
 							// concat all object of the array
 							wNoComment = "";
 							for (int k = 0; k < wJSon.length(); k++) {
-								String wElem = wJSon.opt(k).toString();
+								final String wElem = wJSon.opt(k).toString();
 								wNoComment += k > 0 ? "," + wElem : wElem;
 							}
 						} else {
-							int wIndexInt = Integer.parseInt(wIndex);
+							final int wIndexInt = Integer.parseInt(wIndex);
 							wNoComment = wJSon.opt(wIndexInt).toString();
 						}
 
 					}
 					if( wWantSubTagJson &&  wNoComment.contains("{")  && wNoComment.indexOf("{") < wNoComment.indexOf("[") ) {
-						String wTagField = wValidContentId.split("#")[1];
+						final String wTagField = wValidContentId.split("#")[1];
 
-						JSONObject wSubContent = new JSONObject(wNoComment);
+						final JSONObject wSubContent = new JSONObject(wNoComment);
 						if( wTagField.contains(".") ) {
 							Object wSubJsonElem = wSubContent;
-							for(String wTagPart:wTagField.split("\\.")) {
+							for(final String wTagPart:wTagField.split("\\.")) {
 								if(wSubJsonElem instanceof JSONObject ) {
 									wSubJsonElem = ((JSONObject)wSubJsonElem).opt(wTagPart);
 								}
@@ -338,15 +349,15 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 
 	@Override
 	public Set<String> getListTags() {
-		Set<String> wListTag = new HashSet<>();
+		final Set<String> wListTag = new HashSet<>();
 		wListTag.addAll(pListProviderByTag.keySet());
 		wListTag.addAll(pListMemoryProviderByTag.keySet());
 		return wListTag;
 	}
 	@Override
 	public Collection<CXRsrcProvider> getRsrcProvider() {
-		List<CXRsrcProvider> wList = new ArrayList<>();
-		for(String wKey:pListProviderByTag.keySet()) {
+		final List<CXRsrcProvider> wList = new ArrayList<>();
+		for(final String wKey:pListProviderByTag.keySet()) {
 			if (pListProviderByTag.get(wKey) != null) {
 				wList.addAll(pListProviderByTag.get(wKey).values());
 			}
@@ -358,11 +369,11 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 
 	@Override
 	public Collection<CXRsrcProvider> getRsrcProvider(final String aTag) {
-		List<CXRsrcProvider> wList = new ArrayList<>();
+		final List<CXRsrcProvider> wList = new ArrayList<>();
 		if (pListProviderByTag.get(aTag) != null) {
 			wList.addAll(pListProviderByTag.get(aTag).values());
 		}
-		CXRsrcProvider wMemory = getRsrcProviderMemory(aTag);
+		final CXRsrcProvider wMemory = getRsrcProviderMemory(aTag);
 		if (wMemory != null) {
 			wList.add(wMemory);
 		}

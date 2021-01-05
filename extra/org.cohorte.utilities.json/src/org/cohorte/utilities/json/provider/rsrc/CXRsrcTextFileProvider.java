@@ -66,7 +66,7 @@ public class CXRsrcTextFileProvider extends CXRsrcProviderFile {
 	}
 	@Override
 	public CXRsrcText rsrcReadTxt(final String aPath, final Map<String,String> aQueryPath) throws Exception {
-		CXRsrcText wText = super.rsrcReadTxt(aPath);
+		CXRsrcText wText = super.rsrcReadTxt(aPath,aQueryPath);
 		JSONArray wResult = new JSONArray();
 
 		if (wText != null && wText.getContent() != null) {
