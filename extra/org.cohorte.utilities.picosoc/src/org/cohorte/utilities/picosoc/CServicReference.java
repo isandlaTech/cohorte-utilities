@@ -41,6 +41,15 @@ public class CServicReference<T> {
 	public T getService() {
 		return pService;
 	}
+	
+	/**
+	 * #48
+	 * 
+	 * @return
+	 */
+	public String getServiceClassName() {
+		return getService().getClass().getSimpleName();
+	}
 
 	/**
 	 * @return
@@ -71,5 +80,21 @@ public class CServicReference<T> {
 	 */
 	public String setProperty(final String aKey, final String aValue) {
 		return pServiceKey.setProperty(aKey, aValue);
+	}
+	
+	/**
+	 * @param aProperties
+	 * @return
+	 */
+	public int setProperties(final Map<String, String> aProperties) {
+		return pServiceKey.setProperties(aProperties);
+	}
+	
+	/* #48
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return String.format("ServicRef:[%s][%s]",getServiceKey().toString(),getServiceClassName());
 	}
 }

@@ -1,5 +1,9 @@
 
+1.0.3 to 1.1.0 (master)
+==================
 
+- MOD_OG_20201222
+  - #48 Correction of the "ServiceKey" equality, and general enhancements
 
 1.0.2 to 1.0.3 (master)
 ==================

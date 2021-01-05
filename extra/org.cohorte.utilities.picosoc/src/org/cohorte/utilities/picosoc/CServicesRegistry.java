@@ -13,7 +13,6 @@ import java.util.logging.Level;
 public class CServicesRegistry extends CAbstractComponentBase implements
 		ISvcServiceRegistry {
 
-	private static final boolean SEARCH_MODE_STRICT = true;
 
 	private static CServicesRegistry sServicesRegistry;
 
@@ -40,7 +39,21 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	}
 
 	private final Map<CServiceKey<?>, CServicReference<?>> pServicesRegistry = new HashMap<CServiceKey<?>, CServicReference<?>>();
+	// #48
+	private final Map<Object, CServicReference<?>> pServicesMap = new HashMap<Object, CServicReference<?>>();
 
+	
+	/**
+	 * @param aService
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> CServicReference<T> findServiceRef(final T aService){
+		
+		return (CServicReference<T> )pServicesMap.get(aService);
+	}
+	
+	
 	/**
 	 * 
 	 */
@@ -61,6 +74,7 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 
 		unregisterMe();
 		pServicesRegistry.clear();
+		pServicesMap.clear();
 	}
 
 	/*
@@ -179,6 +193,8 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 
 		return wWebAppServicRef;
 	}
+	
+
 
 	/*
 	 * (non-Javadoc)
@@ -187,10 +203,20 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	 * org.cohorte.utilities.picosoc.CAbstractComponentBase#getServiceRefs(java
 	 * .lang.Class, java.util.Map)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T> List<CServicReference<T>> getServiceRefs(
 			Class<? extends T> aSpecification, Map<String, String> aProperties) {
+		
+		return getServiceRefs(aSpecification,aProperties,SEARCH_MODE_STRICT);
+	}
+	
+
+	/* (non-Javadoc)
+	 * @see org.cohorte.utilities.picosoc.CAbstractComponentBase#getServiceRefs(java.lang.Class, java.util.Map, boolean)
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> List<CServicReference<T>> getServiceRefs(
+			Class<? extends T> aSpecification, Map<String, String> aProperties,final boolean aStrictMode ) {
 
 		CServiceKey<T> wSearchedKey = new CServiceKey<T>(aSpecification,
 				aProperties);
@@ -200,7 +226,7 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 			for (Map.Entry<CServiceKey<?>, CServicReference<?>> wEntry : pServicesRegistry
 					.entrySet()) {
 
-				if (wEntry.getKey().match(wSearchedKey)) {
+				if (wEntry.getKey().match(wSearchedKey,aStrictMode)) {
 					wServiceRefs.add((CServicReference<T>) wEntry.getValue());
 				}
 			}
@@ -233,23 +259,25 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 			final Map<String, String> aProperties, final T aService)
 			throws Exception {
 
-		CServicReference<T> wWebAppServicRef = new CServicReference<T>(
+		CServicReference<T> wServicRef = new CServicReference<T>(
 				aSpecification, aProperties, aService);
 
-		if (pServicesRegistry.containsKey(wWebAppServicRef.getServiceKey())) {
+		if (pServicesRegistry.containsKey(wServicRef.getServiceKey())) {
 			throw new Exception(String.format(
-					"The service [%s] already registered", wWebAppServicRef
+					"The service [%s] already registered", wServicRef
 							.getServiceKey().toString()));
 		}
 
-		pServicesRegistry.put(wWebAppServicRef.getServiceKey(),
-				wWebAppServicRef);
+		pServicesRegistry.put(wServicRef.getServiceKey(),
+				wServicRef);
+		// #48
+		pServicesMap.put(aService, wServicRef);
 
 		log(Level.FINER, this, "registerService",
 				"ServiceKey=[%s] Service=[%s] ServiceRef=[%s]",
-				wWebAppServicRef.getServiceKey(),
-				wWebAppServicRef.getService(), wWebAppServicRef);
-		return wWebAppServicRef;
+				wServicRef.getServiceKey(),
+				wServicRef.getService(), wServicRef);
+		return wServicRef;
 	}
 
 	/*
@@ -262,6 +290,10 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	@Override
 	public <T> boolean removeService(CServicReference<T> aServiceRef)
 			throws Exception {
+		
+		if (aServiceRef==null) {
+			throw new Exception("Unable to remove a nul serviceRef");
+		}
 
 		if (!pServicesRegistry.containsKey(aServiceRef.getServiceKey())) {
 			throw new Exception(String.format(
@@ -269,15 +301,30 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 					aServiceRef.getServiceKey()));
 		}
 
-		CServicReference<?> wServiceRemoved = pServicesRegistry
+		CServicReference<?> wServiceRef1Removed = pServicesRegistry
 				.remove(aServiceRef.getServiceKey());
-		boolean wIsServiceRemoved = (wServiceRemoved != null);
-
+		boolean wIsServiceRef1Removed = (wServiceRef1Removed != null);
+		if (!wIsServiceRef1Removed) {
+			throw new Exception(String.format(
+					"Unable to remove the service [%s] from the map 'pServicesRegistry'",
+					aServiceRef.getServiceKey()));
+		}
+		// #48
+		CServicReference<?> wServiceRef2Removed = pServicesMap.remove(aServiceRef.getService());
+		boolean wIsServiceRef2Removed = (wServiceRef2Removed != null);
+		if (!wIsServiceRef2Removed) {
+			throw new Exception(String.format(
+					"Unable to remove the service [%s] from the map 'pServicesMap'",
+					aServiceRef.getServiceKey()));
+		}
+		
+		
 		log(Level.INFO, this, "removeService",
-				"IsServiceRemoved=[%s] ServiceKey=[%s] ServiceRef=[%s]",
-				wIsServiceRemoved, wServiceRemoved.getServiceKey(),
-				wServiceRemoved);
-		return wIsServiceRemoved;
+				"IsServiceRemoved=[%s] ServiceRef=[%s]",
+				(wIsServiceRef1Removed &wIsServiceRef2Removed) ,
+				wServiceRef1Removed);
+		
+		return wIsServiceRef1Removed;
 	}
 
 	/**

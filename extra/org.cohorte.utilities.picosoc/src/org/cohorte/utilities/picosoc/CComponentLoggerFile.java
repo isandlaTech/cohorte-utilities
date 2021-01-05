@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
+import org.psem2m.utilities.CXStringUtils;
+import org.psem2m.utilities.IXDescriber;
 import org.psem2m.utilities.files.CXFileDir;
 import org.psem2m.utilities.logging.CActivityLoggerBasic;
 import org.psem2m.utilities.logging.CActivityLoggerNull;
@@ -64,22 +66,97 @@ public abstract class CComponentLoggerFile extends CComponentLogger {
 		CComponentLogger.logInMain(record);
 	}
 
-	private final IActivityLogger pFileLogger;
+	// #48
+	private final ISvcActivityLoggerConfigurator pActivityLoggerConfigurator;
 
+	private final IActivityLogger pFileLogger;
+	
 	private final ISvcLoggerConfigurator pSvcLoggerConfigurator;
 
+	// #48 : default 
+	private int pFileLimit = 10 * 1024 * 1024;
+	// #48 : default 
+	private int pNbFile = 10;
+	// #48 : default 
+	private EActivityLogColumn[] pLineDef = IActivityFormater.LINE_SHORT;
+	
+	// #48 : default 
+	private boolean pIsMultiline = !IActivityFormater.MULTILINES_TEXT;
+	
+
+	/**
+	 * @return
+	 */
+	public int getFileLimit() {
+		return pFileLimit;
+	}
+	
+	/**
+	 * @return
+	 */
+	public int getNbFile() {
+		return pNbFile;
+	}
+	
+	/**
+	 * @return
+	 */
+	public boolean isMultiline() {
+		return pIsMultiline;
+	}
 	/**
 	 * 
 	 */
 	public CComponentLoggerFile() throws Exception {
-		super();
+		this(NO_LOGGER_ALIAS);
+	}
+	
+	/**
+	 * @param aLoggerAlias
+	 * @throws Exception
+	 */
+	public CComponentLoggerFile(final String aLoggerAlias) throws Exception {
+	
+		super(aLoggerAlias);
 		sMe = this;
+		try {
+		CServiceProperties wProps= (aLoggerAlias==null)?null:CServiceProperties.newProps(CComponentLogger.LOGGER_ALIAS,aLoggerAlias);
 
-		pSvcLoggerConfigurator = getService(ISvcLoggerConfigurator.class);
+		// #48 retreive the specific LoggerConfigurator using the given Alias if present
+		try {
+			pSvcLoggerConfigurator = getService(ISvcLoggerConfigurator.class,wProps);
+		} catch (Exception e) {
+			throw new Exception("missing mandatory ISvcLoggerConfigurator service",e);
+		}
+		
+		// #48 retreive the specific ActivityLoggerConfigurator using the given Alias if present
+		pActivityLoggerConfigurator = getOptionalService(ISvcActivityLoggerConfigurator.class,wProps);
 
 		pFileLogger = initFileLogger();
+		
+		pFileLogger.logInfo(this, "<init>", "FileLogger: \n%s \n%s",
+				toDescription(),pFileLogger.toDescription());
+		
+	} catch (Exception e) {
+		throw new Exception("Unable to instanciate file Logger",e);
+	}
+	}
+	
+	/* #48
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.psem2m.utilities.IXDescriber#addDescriptionInBuffer(java.lang.Appendable
+	 * )
+	 */
+	@Override
+	public Appendable addDescriptionInBuffer(final Appendable aBuffer) {
+		
+		super.addDescriptionInBuffer(aBuffer);
+		
+		CXStringUtils.appendFormatStrInBuff(aBuffer, " hasConfigurator=[%s] isMultiline=[%s] nbFile=[%s] fileLimit=[%s]", hasOptionalActivityLoggerConfigurator(),this.isMultiline(),getNbFile(),getFileLimit());
 
-		pFileLogger.logInfo(this, "<init>", "OK");
+		return aBuffer;
 	}
 
 	/**
@@ -94,7 +171,6 @@ public abstract class CComponentLoggerFile extends CComponentLogger {
 		wSB.append(FILENAME_EXT);
 		return wSB.toString();
 	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -108,6 +184,15 @@ public abstract class CComponentLoggerFile extends CComponentLogger {
 		}
 
 	}
+	
+	/**
+	 *  #48
+	 * @return
+	 */
+	public ISvcActivityLoggerConfigurator getActivityLoggerConfigurator() {
+		return pActivityLoggerConfigurator;
+	}
+	
 
 	@Override
 	public Level getLevel() {
@@ -125,6 +210,14 @@ public abstract class CComponentLoggerFile extends CComponentLogger {
 		return (pFileLogger != null) ? pFileLogger : super.getLogger();
 	}
 
+	/**
+	 *  #48
+	 * @return
+	 */
+	public ISvcLoggerConfigurator getLoggerConfigurator() {
+		return pSvcLoggerConfigurator;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -137,30 +230,36 @@ public abstract class CComponentLoggerFile extends CComponentLogger {
 	}
 
 	/**
+	 *  #48
+	 *  
+	 * @return
+	 */
+	public boolean hasOptionalActivityLoggerConfigurator() {
+		return pActivityLoggerConfigurator !=null;
+	}
+
+	/**
 	 * @return an instance of IActivityLogger
 	 */
-	private IActivityLogger initFileLogger() {
+	private IActivityLogger initFileLogger() throws Exception{
 
-		IActivityLogger wActivityLogger = CActivityLoggerNull.getInstance();
+		String wLoggerName = "???";
+		
 		try {
-
-			// the three main informations
-			String wLoggerName = pSvcLoggerConfigurator.getLoggerName();
+			// the three main informations available in the mandatory LoggerConfigurator
+			wLoggerName = pSvcLoggerConfigurator.getLoggerName();
 			File wDirLogs = pSvcLoggerConfigurator.getDirLogs();
 			String wLevel = pSvcLoggerConfigurator.getLevel().getName();
 
 			// the specialized informatons
-			int wFileLimit = 10 * 1024 * 1024;
-			int wNbFile = 10;
-			EActivityLogColumn[] wLineDef = IActivityFormater.LINE_SHORT;
-			boolean wIsMultiLine = false;
 
-			ISvcActivityLoggerConfigurator wActivityLoggerConfigurator = getOptionalService(ISvcActivityLoggerConfigurator.class);
-			if (wActivityLoggerConfigurator != null) {
-				wFileLimit = wActivityLoggerConfigurator.getFileLimit();
-				wNbFile = wActivityLoggerConfigurator.getNbFile();
-				wLineDef = wActivityLoggerConfigurator.getLineDef();
-				wIsMultiLine = wActivityLoggerConfigurator.isMultiline();
+
+			// #48
+			if (hasOptionalActivityLoggerConfigurator()) {
+				pFileLimit = getActivityLoggerConfigurator().getFileLimit();
+				pNbFile = getActivityLoggerConfigurator().getNbFile();
+				pLineDef = getActivityLoggerConfigurator().getLineDef();
+				pIsMultiline = getActivityLoggerConfigurator().isMultiline();
 			}
 
 			String wLogFileNamePattern = buildFileNamePattern(wLoggerName);
@@ -170,17 +269,15 @@ public abstract class CComponentLoggerFile extends CComponentLogger {
 
 			String wAbsolutePathPattern = wLogFilePattern.getAbsolutePath();
 
-			wActivityLogger = CActivityLoggerBasic.newLogger(wLoggerName,
-					wAbsolutePathPattern, wLevel, wFileLimit, wNbFile,
-					wLineDef, wIsMultiLine);
+			IActivityLogger wActivityLoggerFile = CActivityLoggerBasic.newLogger(wLoggerName,
+					wAbsolutePathPattern, wLevel, pFileLimit, pNbFile,
+					pLineDef, pIsMultiline);
 
-			logInfo(this, "initFileLogger", "FileLogger: %s",
-					wActivityLogger.toDescription());
-
+			return wActivityLoggerFile;
+			
 		} catch (Exception e) {
-			logSevere(this, "initFileLogger", e);
+			throw new Exception(String.format("Unable to initialize the file logger  [%s]", wLoggerName),e)	;
 		}
-		return wActivityLogger;
 	}
 
 	/*

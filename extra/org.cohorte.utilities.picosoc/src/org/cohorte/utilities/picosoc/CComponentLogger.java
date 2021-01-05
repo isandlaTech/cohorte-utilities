@@ -26,6 +26,10 @@ import org.psem2m.utilities.logging.IActivityRequester;
  */
 public abstract class CComponentLogger extends CAbstractComponentBase implements
 		IActivityLogger {
+	
+	public static final String LOGGER_ALIAS = "alias";
+	
+	public static final String NO_LOGGER_ALIAS = null;
 
 	private static final int BANNER_WIDTH = 140;
 
@@ -414,21 +418,42 @@ public abstract class CComponentLogger extends CAbstractComponentBase implements
 			System.err.println(sToolsException.eInString(wEx));
 		}
 	}
+	
+	private final String pLoggerAlias;
 
 	/**
+	 * @param aLoggerName
 	 * @throws Exception
-	 * 
 	 */
-	public CComponentLogger() throws Exception {
+	public CComponentLogger(final String aLoggerAlias) throws Exception {
 		super();
+		
+		pLoggerAlias = aLoggerAlias;
+		
+		CServiceProperties wProps= (aLoggerAlias==null)?null:CServiceProperties.newProps(CComponentLogger.LOGGER_ALIAS,aLoggerAlias);
 
-		registerMeAsService(IActivityLogger.class);
+		registerMeAsService(IActivityLogger.class,wProps);
 
 		getLogger().logInfo(this, "<init>", "instanciated: lineDef=[%s]",
 				sActivityFormater.getLineDefInString());
 	}
+	
+	/**
+	 * @return
+	 */
+	public String getAlias() {
+		return pLoggerAlias;
+	}
+	
+	/**
+	 * @throws Exception
+	 */
+	public CComponentLogger() throws Exception {
+		this(NO_LOGGER_ALIAS);
+	}
 
 	/*
+	 * #48
 	 * (non-Javadoc)
 	 * 
 	 * @see
@@ -437,8 +462,7 @@ public abstract class CComponentLogger extends CAbstractComponentBase implements
 	 */
 	@Override
 	public Appendable addDescriptionInBuffer(final Appendable aBuffer) {
-		return CXStringUtils.appendStringsInBuff(aBuffer, getClass()
-				.getSimpleName(), String.valueOf(hashCode()));
+		return CXStringUtils.appendFormatStrInBuff(aBuffer, " alias=[%s]", getAlias());
 	}
 
 	/**
