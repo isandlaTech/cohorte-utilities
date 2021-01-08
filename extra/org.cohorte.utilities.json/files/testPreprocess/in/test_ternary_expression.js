@@ -13,7 +13,7 @@
 	"detail" : 
 		{
 			"$file":{
-				"path": "('${var}' == 'test')?test_replace_vars_include1.js:test_replace_vars_include2;",
+				"path": "file://('${var}' == 'test')?test_replace_vars_include1.js:test_replace_vars_include2.js;",
 				"cond":"'${var}' == 'test'"
 			}
 		}

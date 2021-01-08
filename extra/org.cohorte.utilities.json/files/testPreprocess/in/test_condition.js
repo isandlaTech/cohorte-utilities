@@ -13,7 +13,7 @@
 	"detail" : 
 		{
 			"$file":{
-				"path":"test_jsonpath_son.js",
+				"path":"file://test_jsonpath_son.js",
 				"cond":"'${var}' == 'test'"
 			}
 		}

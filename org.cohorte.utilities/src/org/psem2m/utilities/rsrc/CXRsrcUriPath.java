@@ -13,8 +13,7 @@ import org.psem2m.utilities.scripting.CXJsObjectBase;
 public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 
 	// Force l'extension de la ressource si pas d'extension dans aPath
-	public static CXRsrcUriPath newInstanceWithExt(
-			final CXRsrcUriDir aParentDir, final String aPath,
+	public static CXRsrcUriPath newInstanceWithExt(final CXRsrcUriDir aParentDir, final String aPath,
 			final String aDefExt) {
 		CXRsrcUriPath wPath = new CXRsrcUriPath(aParentDir, aPath);
 		if (wPath.isValid() && !wPath.hasExtension() && aDefExt != null) {
@@ -29,16 +28,15 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 	private String pName = null;
 	private String pNameNoExt = null;
 	private CXRsrcUriDir pParent = null;
-
 	private String[] pPartArray;
+	private String pUriPath;
 
-	public CXRsrcUriPath(final CXRsrcUriDir aParentDir,
-			final CXRsrcUriPath aPath) {
+	public CXRsrcUriPath(final CXRsrcUriDir aParentDir, final CXRsrcUriPath aPath) {
 		if (aPath != null && aPath.isValid()) {
 			pName = aPath.getName();
-			pParent = aParentDir == null ? aPath.getParent() : aParentDir
-					.concat(aPath.getParent());
+			pParent = aParentDir == null ? aPath.getParent() : aParentDir.concat(aPath.getParent());
 			pFullPath = pParent.getUrlPath(pName);
+			pUriPath = aPath.toString();
 		}
 	}
 
@@ -53,15 +51,18 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 			pFullPath = aPath.pFullPath;
 			pExt = aPath.pExt;
 			pMimeType = aPath.pMimeType;
+			pUriPath = aPath.toString();
+
 		}
 	}
 
 	public CXRsrcUriPath(final String aPath) {
 		if (aPath != null) {
+			pUriPath = aPath.replace("file://", "");
+
 			String wPath = aPath.trim();
 			if (wPath.indexOf(CXRsrcUriDir.BAD_SEPARATOR) != -1) {
-				wPath = wPath.replace(CXRsrcUriDir.BAD_SEPARATOR,
-						CXRsrcUriDir.SEPARATOR);
+				wPath = wPath.replace(CXRsrcUriDir.BAD_SEPARATOR, CXRsrcUriDir.SEPARATOR);
 			}
 			int wIdx = wPath.lastIndexOf(CXRsrcUriDir.SEPARATOR);
 			if (wIdx == -1) {
@@ -79,8 +80,7 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 	}
 
 	public CXRsrcUriPath(final String aParentDir, final String aPath) {
-		this(aParentDir == null ? null : new CXRsrcUriDir(aParentDir),
-				new CXRsrcUriPath(aPath));
+		this(aParentDir == null ? null : new CXRsrcUriDir(aParentDir), new CXRsrcUriPath(aPath));
 	}
 
 	@Override
@@ -95,12 +95,12 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 		return new CXRsrcUriPath(this);
 	}
 
-	// Get and Set
-
 	// Converti en DIrectory sans l'extension
 	public CXRsrcUriDir clone2Dir() {
 		return pParent.concat(getNameNoExt());
 	}
+
+	// Get and Set
 
 	@Override
 	public boolean equals(final Object o) {
@@ -176,8 +176,7 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 			return pPartArray;
 		}
 		String[] wArray = pParent != null ? pParent.getPartsArray(false) : null;
-		pPartArray = wArray != null ? Arrays.copyOf(wArray, wArray.length + 1)
-				: new String[1];
+		pPartArray = wArray != null ? Arrays.copyOf(wArray, wArray.length + 1) : new String[1];
 		pPartArray[pPartArray.length - 1] = pName;
 		return pPartArray;
 	}
@@ -207,8 +206,7 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 
 	// Renvoie le path de la ressource � partir de la 1ere partie d'url aUrlPart
 	// non inclue
-	public CXRsrcUriPath getRsrcPathFromPart(final String aUrlPart,
-			final int aOffset) {
+	public CXRsrcUriPath getRsrcPathFromPart(final String aUrlPart, final int aOffset) {
 		int wIdx = pParent.getFirstPartIdx(aUrlPart);
 		if (wIdx == -1) {
 			return null;
@@ -226,6 +224,10 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 
 	public URI getURI() throws URISyntaxException {
 		return new URI(pFullPath);
+	}
+
+	public String getUriPath() {
+		return pUriPath.toString();
 	}
 
 	public String getUrlStr(final String aAddress) {
@@ -254,15 +256,13 @@ public class CXRsrcUriPath extends CXJsObjectBase implements Cloneable {
 	}
 
 	public boolean isValid() {
-		return pFullPath != null && pParent != null && pParent.isValid()
-				&& pName != null;
+		return pFullPath != null && pParent != null && pParent.isValid() && pName != null;
 	}
 
 	private void setExt(final String aDefExt) {
 		pExt = aDefExt;
 		pName = new StringBuilder(pName).append('.').append(aDefExt).toString();
-		pFullPath = new StringBuilder(pFullPath).append('.').append(aDefExt)
-				.toString();
+		pFullPath = new StringBuilder(pFullPath).append('.').append(aDefExt).toString();
 	}
 
 	private void splitExt() {

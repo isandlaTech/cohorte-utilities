@@ -71,8 +71,8 @@ public class CJunitTestProcessJson extends CAbstractJunitTest {
 
 			{ "deploy_world.js", "deploy_world.js" },
 			{
-					"deploy_world.js?deploy.subdomain=grandest&deploy.ip=80.80.80.80",
-					"deploy_world_with_properties.js" },
+				"deploy_world.js?deploy.subdomain=grandest&deploy.ip=80.80.80.80",
+			"deploy_world_with_properties.js" },
 			{ "test_replace_vars.js?var=test", "test_replace_vars.js" },
 
 			{ "test_array_of_array.js", "test_array_of_array.js" },
@@ -80,7 +80,7 @@ public class CJunitTestProcessJson extends CAbstractJunitTest {
 
 			{ "test_jsonpath_condition.js", "test_jsonpath_condition.js" },
 			{ "test_ternary_expression.js?var=test",
-					"test_ternary_expression.js" } };
+			"test_ternary_expression.js" } };
 
 	/**
 	 *
@@ -104,7 +104,7 @@ public class CJunitTestProcessJson extends CAbstractJunitTest {
 
 		try {
 
-			CJsonRsrcResolver wResolver = new CJsonRsrcResolver();
+			final CJsonRsrcResolver wResolver = new CJsonRsrcResolver();
 			wResolver.addRsrcProvider(
 					"$generator",
 					new CXRsrcGeneratorProvider(CActivityLoggerNull
@@ -117,8 +117,8 @@ public class CJunitTestProcessJson extends CAbstractJunitTest {
 					fileTestsIn2, Charset.defaultCharset()));
 
 			pProvider = new CJsonProvider(wResolver,
-					CActivityLoggerBasicConsole.getInstance());
-		} catch (Exception e) {
+					CActivityLoggerBasicConsole.getInstance(),true);
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 
@@ -173,19 +173,19 @@ public class CJunitTestProcessJson extends CAbstractJunitTest {
 	 */
 	@Theory
 	public void testPreprocessJson(final String[] testFiles) throws Exception {
-		String wMethodName = "testPreprocessJson";
-		String wRunningId = testFiles[0];
+		final String wMethodName = "testPreprocessJson";
+		final String wRunningId = testFiles[0];
 		logBeginMultiple(this, wMethodName, wRunningId,
 				"Try to parse a bad json: %s ",
 				CXStringUtils.stringTableToString(testFiles));
 
 		try {
 
-			CXFileText wFileOut = new CXFileText(fileTestsOut
+			final CXFileText wFileOut = new CXFileText(fileTestsOut
 					+ File.separatorChar + testFiles[1]);
-			JSONObject in = pProvider.getJSONObject("$file", testFiles[0]);
+			final JSONObject in = pProvider.getJSONObject("$file", testFiles[0]);
 
-			JSONObject out = new JSONObject(wFileOut.readAll());
+			final JSONObject out = new JSONObject(wFileOut.readAll());
 			System.out.println("------");
 			System.out.println("in = " + testFiles[0]);
 			System.out.println("out = " + testFiles[1]);

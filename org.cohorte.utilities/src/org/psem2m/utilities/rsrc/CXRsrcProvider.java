@@ -1,21 +1,16 @@
 package org.psem2m.utilities.rsrc;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.psem2m.utilities.files.CXFileDir;
 import org.psem2m.utilities.scripting.CXJsObjectBase;
 
 /**
@@ -158,7 +153,7 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	private CXRsrcUriPath checkUriPath(final CXRsrcUriPath aPath, final boolean aFulPath) throws Exception {
+	protected CXRsrcUriPath checkUriPath(final CXRsrcUriPath aPath, final boolean aFulPath) throws Exception {
 		if (aPath == null || !aPath.isValid()) {
 			throw new Exception("Unable to check a" + (aPath == null ? "Null" : "empty") + " resource path");
 		}
@@ -657,7 +652,7 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 	 * @return
 	 * @throws Exception
 	 */
-	private CXRsrcText rsrcReadTxt(final CXRsrcUriPath aPath, Map<String, String> aFullPath, final long aTimeStamp,
+	protected CXRsrcText rsrcReadTxt(final CXRsrcUriPath aPath, Map<String, String> aFullPath, final long aTimeStamp,
 			final boolean aForceSecondes, final boolean aFulPath) throws Exception {
 		CXRsrcText wRsrc = null;
 		CXRsrcUriPath wPath = null;
@@ -743,32 +738,10 @@ public abstract class CXRsrcProvider extends CXJsObjectBase implements Iterator<
 
 		try {
 			wPath = checkUriPath(aPath, aFulPath);
-			if (wPath.getFullPath().contains("*")) {
-				String wRegexp = wPath.getName().replaceAll("\\*", "\\.\\*");
-				final Pattern wPattern = Pattern.compile(wRegexp);
-				// look to list of file in that directory
-				CXFileDir wDir = new CXFileDir(wPath.getParent().getPath());
-				List<String> wPaths = Arrays.asList(wDir.list(new FilenameFilter() {
 
-					@Override
-					public boolean accept(final File dir, final String name) {
-						Matcher wMatch = wPattern.matcher(name);
-						return wMatch.find();
-					}
-				}));
-				String wParentPath = wDir.getAbsolutePath();
-				if (wPaths != null) {
-					for (String aSubFilePath : wPaths) {
-						wListRsrc.add(
-								readRsrcTextContent(new CXRsrcUriPath(wParentPath + File.separatorChar + aSubFilePath),
-										aFullPath, aTimeStamp, aForceSecondes));
+			wRsrc = readRsrcTextContent(wPath, aFullPath, aTimeStamp, aForceSecondes);
+			wListRsrc.add(wRsrc);
 
-					}
-				}
-			} else {
-				wRsrc = readRsrcTextContent(wPath, aFullPath, aTimeStamp, aForceSecondes);
-				wListRsrc.add(wRsrc);
-			}
 		} catch (Exception e) {
 			if (hasNext()) {
 				wListRsrc.add(next().rsrcReadTxt(aPath, aFullPath, aTimeStamp, aForceSecondes, aFulPath));

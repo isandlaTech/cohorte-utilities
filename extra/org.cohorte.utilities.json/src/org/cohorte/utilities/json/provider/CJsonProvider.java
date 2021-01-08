@@ -590,8 +590,10 @@ public class CJsonProvider implements IJsonProvider {
 										final List<JSONObject> wListFather = new ArrayList<>();
 										wListFather.addAll(getListFather(aFathersContent,
 												aContent));
-										Map<String,String> wCloneReplaceVars = new HashMap<>();
-										wCloneReplaceVars.putAll(aReplaceVars);
+										final Map<String,String> wCloneReplaceVars = new HashMap<>();
+										if( aReplaceVars != null ) {
+											wCloneReplaceVars.putAll(aReplaceVars);
+										}
 										resolveIncludePath(aContent,wMatch,wPath,currentPath,aUseMemoryProvider,wlTag,wTag,wListFather,wCloneReplaceVars,wSubNoCommentContent);
 
 									}catch(final Exception e) {
@@ -668,18 +670,30 @@ public class CJsonProvider implements IJsonProvider {
 		Map<String, String> replaceVars = null;
 
 		if( !wPath.isEmpty() ){
-			if( !wPath.startsWith(EProviderKind.FILE.toString()) && !wPath.startsWith(EProviderKind.MEMORY.toString()) && !wPath.startsWith(EProviderKind.HTTP.toString())) {
-				wPath="file"+wPath;
-			}
-			if( wPath.indexOf("?") != -1 ) {
-				wFatherPath = wPath.substring(0,wPath.substring(0,wPath.indexOf("?")).lastIndexOf("/"));
-
+			if( wPath.startsWith("[") ) {
+				// conver to string path with file:// and ";" as separator
+				final JSONArray wPathMerge = new JSONArray(wPath);
+				wPath = "";
+				for(int i=0;i<wPathMerge.length();i++) {
+					wPath+="file://"+wPathMerge.getString(i)+";";
+				}
 			}else {
-				wFatherPath = wPath.substring(0,wPath.lastIndexOf("/"));
+				if( !wPath.startsWith(EProviderKind.FILE.toString()) && !wPath.startsWith(EProviderKind.MEMORY.toString()) && !wPath.startsWith(EProviderKind.HTTP.toString())) {
+					wPath="file"+wPath;
+				}
+				if( wPath.indexOf("?") != -1 ) {
+					wFatherPath = wPath.substring(0,wPath.substring(0,wPath.indexOf("?")).lastIndexOf("/"));
 
-			}
-			if( wFatherPath.equals("file:/") ){
-				wFatherPath = "";
+				}else {
+					if( wPath.lastIndexOf("/") >=0) {
+						wFatherPath = wPath.substring(0,wPath.lastIndexOf("/"));
+					}else {
+						wFatherPath ="";
+					}
+				}
+				if( wFatherPath.equals("file:/") ){
+					wFatherPath = "";
+				}
 			}
 		}
 

@@ -16,6 +16,7 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -42,6 +43,8 @@ public class CXRsrcProviderFile extends CXRsrcProvider {
 	private String pAddress = null;
 
 	private final AtomicBoolean pContinueWatching = new AtomicBoolean(true);
+
+	CXFileDir pDefaultFileDir = null;
 
 	private ExecutorService pExecutorService;
 
@@ -181,6 +184,10 @@ public class CXRsrcProviderFile extends CXRsrcProvider {
 		return pContinueWatching.get();
 	}
 
+	public CXFileDir getDefaultDirectory() {
+		return pDefaultFileDir;
+	}
+
 	@Override
 	protected String getDirAbsPathDirectory(CXRsrcUriPath aPath) {
 		CXFileDir wDir = new CXFileDir(aPath.getParent().getPath());
@@ -224,6 +231,45 @@ public class CXRsrcProviderFile extends CXRsrcProvider {
 		return super.openConnection(aUrl);
 	}
 
+	@Override
+	protected CXListRsrcText rsrcReadTxts(final CXRsrcUriPath aPath, Map<String, String> aFullPath,
+			final long aTimeStamp, final boolean aForceSecondes, final boolean aFulPath) throws Exception {
+		CXRsrcText wRsrc = null;
+		CXRsrcUriPath wPath = null;
+		URL wUrl = null;
+		CXListRsrcText wListRsrc = new CXListRsrcText();
+
+		try {
+			wPath = checkUriPath(aPath, aFulPath);
+			if (wPath.getFullPath().contains("*")) {
+
+				// look to list of file in that directory
+				List<String> wPaths = getDefaultDirectory().scanAllAsListString(aPath.getUriPath());
+
+				String wParentPath = getDefaultDirectory().getAbsolutePath();
+				if (wPaths != null) {
+					for (String aSubFilePath : wPaths) {
+						wListRsrc.add(
+								readRsrcTextContent(new CXRsrcUriPath(wParentPath + File.separatorChar + aSubFilePath),
+										aFullPath, aTimeStamp, aForceSecondes));
+
+					}
+				}
+			} else {
+				wRsrc = readRsrcTextContent(wPath, aFullPath, aTimeStamp, aForceSecondes);
+				wListRsrc.add(wRsrc);
+			}
+		} catch (Exception e) {
+			if (hasNext()) {
+				wListRsrc.add(next().rsrcReadTxt(aPath, aFullPath, aTimeStamp, aForceSecondes, aFulPath));
+				return wListRsrc;
+			}
+			throwExcepReadText("Unable to read "
+					+ ((wPath == null) ? "null" : (wUrl == null) ? aPath.getFullPath() : wUrl.toString()), e);
+		}
+		return wListRsrc;
+	}
+
 	public void setContinue(final boolean aContinue) {
 		pContinueWatching.set(aContinue);
 	}
@@ -260,6 +306,7 @@ public class CXRsrcProviderFile extends CXRsrcProvider {
 			pAddress = CXRsrcUriDir.SEPARATOR_STR;
 		}
 		super.setDefaultDirectory(wDefDir);
+		pDefaultFileDir = new CXFileDir(aDefaultPath);
 	}
 
 	/**
