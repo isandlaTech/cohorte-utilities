@@ -24,12 +24,11 @@ import de.christophkraemer.rhino.javascript.RhinoScriptEngine;
  */
 public class CJsonResolvTernary {
 
-	private static final Pattern sPattern = Pattern
-			.compile("\\(([\\=|<|>|\\/|\\[|\\]|<=|>=|\\!|\\.|'|\\$|\\(|\\)|\\s|\\w|\\{|\\}\\-]*)\\)\\s*\\?([\\s|\\[|\\]|\\$|\\/|\\{|\\}|\\w|\\.|\\\\\\\\\"|'||\\(|\\)|\\-]*):([\\s|\\[|\\]|\\$|\\w|\\\\\\\\\"|'|\\.|\\/||\\{|\\}|\\(|\\)|\\-]*);");
+	private static final Pattern sPattern = Pattern.compile(
+			"\\(([\\=|<|>|\\/|\\[|\\]|<=|>=|\\!|\\.|'|\\$|\\(|\\)|\\s|\\w|\\{|\\}\\-]*)\\)\\s*\\?([\\s|\\[|\\]|\\$|\\/|\\{|\\}|\\w|\\.|\\\\\\\\\"|'||\\(|\\)|\\-]*):([\\s|\\[|\\]|\\$|\\w|\\\\\\\\\"|'|\\.|\\/||\\{|\\}|\\(|\\)|\\-]*);");
 
-	public static Object resultTernary(final IActivityLogger aLogger,
-			final Object aContent, final RhinoScriptEngine wRhinoScriptEngine)
-					throws JSONException {
+	public static Object resultTernary(final IActivityLogger aLogger, final Object aContent,
+			final RhinoScriptEngine wRhinoScriptEngine) throws JSONException {
 		return resultTernary(aLogger, aContent.toString(), wRhinoScriptEngine);
 
 	}
@@ -40,46 +39,38 @@ public class CJsonResolvTernary {
 	 * @param aContent
 	 * @return
 	 */
-	public static String resultTernary(final IActivityLogger aLogger,
-			final String aContent, final RhinoScriptEngine wRhinoScriptEngine)
-					throws JSONException {
+	public static String resultTernary(final IActivityLogger aLogger, final String aContent,
+			final RhinoScriptEngine wRhinoScriptEngine) throws JSONException {
 		String wResult = aContent;
-		Matcher wMatcher = sPattern.matcher(aContent);
+		final Matcher wMatcher = sPattern.matcher(aContent);
 		while (wMatcher.find()) {
 			// retrieve 3 groupe that conrespond to the condition then the true
 			// result and false result
-			String wCondition = wMatcher.group(1);
+			final String wCondition = wMatcher.group(1);
 
-			String wTrueResult = wMatcher.group(2);
-			String wFalseResult = wMatcher.group(3);
+			final String wTrueResult = wMatcher.group(2);
+			final String wFalseResult = wMatcher.group(3);
 
-			String wFullMatch = wMatcher.group(0);
+			final String wFullMatch = wMatcher.group(0);
 			// apply it only if all variable are resolved
 			Object wCondResult;
 			try {
 				wCondResult = wRhinoScriptEngine.eval(wCondition);
 
-				if (wCondResult instanceof Boolean
-						&& ((Boolean) wCondResult).booleanValue()) {
+				if (wCondResult instanceof Boolean && ((Boolean) wCondResult).booleanValue()) {
 					try {
-						String wTrueResolved = wRhinoScriptEngine.eval(
-								wTrueResult).toString();
-						if (CXStringUtils.isFloat(wTrueResult)
-								|| CXStringUtils.isNumeric(wTrueResult)) {
-							wResult = wResult.replace("\"" + wFullMatch + "\"",
-									wTrueResult);
+						final String wTrueResolved = wRhinoScriptEngine.eval(wTrueResult).toString();
+						if (CXStringUtils.isFloat(wTrueResult) || CXStringUtils.isNumeric(wTrueResult)) {
+							wResult = wResult.replace("\"" + wFullMatch + "\"", wTrueResult);
 						} else {
-							wResult = wResult
-									.replace(wFullMatch, wTrueResolved);
+							wResult = wResult.replace(wFullMatch, wTrueResolved);
 
 						}
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						// no an expression to evaluate . it's not
 						// javascript
-						if (CXStringUtils.isFloat(wTrueResult)
-								|| CXStringUtils.isNumeric(wTrueResult)) {
-							wResult = wResult.replace("\"" + wFullMatch + "\"",
-									wTrueResult);
+						if (CXStringUtils.isFloat(wTrueResult) || CXStringUtils.isNumeric(wTrueResult)) {
+							wResult = wResult.replace("\"" + wFullMatch + "\"", wTrueResult);
 
 						} else {
 							wResult = wResult.replace(wFullMatch, wTrueResult);
@@ -89,29 +80,23 @@ public class CJsonResolvTernary {
 					}
 				} else {
 					try {
-						String wFalseResolved = wRhinoScriptEngine.eval(
-								wFalseResult).toString();
-						if (CXStringUtils.isFloat(wFalseResult)
-								|| CXStringUtils.isNumeric(wFalseResult)) {
-							wResult = wResult.replace("\"" + wFullMatch + "\"",
-									wTrueResult);
-						}else {
+						final String wFalseResolved = wRhinoScriptEngine.eval(wFalseResult).toString();
+						if (CXStringUtils.isFloat(wFalseResult) || CXStringUtils.isNumeric(wFalseResult)) {
+							wResult = wResult.replace("\"" + wFullMatch + "\"", wFalseResult);
+						} else {
 							wResult = wResult.replace(wFullMatch, wFalseResolved);
 						}
-					} catch (Exception e) {
-						if (CXStringUtils.isFloat(wFalseResult)
-								|| CXStringUtils.isNumeric(wFalseResult)) {
-							wResult = wResult.replace("\"" + wFullMatch + "\"",
-									wTrueResult);
-						}else {
+					} catch (final Exception e) {
+						if (CXStringUtils.isFloat(wFalseResult) || CXStringUtils.isNumeric(wFalseResult)) {
+							wResult = wResult.replace("\"" + wFullMatch + "\"", wFalseResult);
+						} else {
 							wResult = wResult.replace(wFullMatch, wFalseResult);
 						}
 					}
 				}
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				// can't resolve ternary expression do nothin
-				aLogger.logInfo(CJsonResolvTernary.class, "resultTernary",
-						"fail to evaluate condition %s", wCondition);
+				aLogger.logInfo(CJsonResolvTernary.class, "resultTernary", "fail to evaluate condition %s", wCondition);
 
 			}
 		}
