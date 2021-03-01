@@ -29,7 +29,7 @@ public class CJsonResolvTernary {
 
 	public static Object resultTernary(final IActivityLogger aLogger,
 			final Object aContent, final RhinoScriptEngine wRhinoScriptEngine)
-			throws JSONException {
+					throws JSONException {
 		return resultTernary(aLogger, aContent.toString(), wRhinoScriptEngine);
 
 	}
@@ -42,7 +42,7 @@ public class CJsonResolvTernary {
 	 */
 	public static String resultTernary(final IActivityLogger aLogger,
 			final String aContent, final RhinoScriptEngine wRhinoScriptEngine)
-			throws JSONException {
+					throws JSONException {
 		String wResult = aContent;
 		Matcher wMatcher = sPattern.matcher(aContent);
 		while (wMatcher.find()) {
@@ -91,10 +91,21 @@ public class CJsonResolvTernary {
 					try {
 						String wFalseResolved = wRhinoScriptEngine.eval(
 								wFalseResult).toString();
-						wResult = wResult.replace(wFullMatch, wFalseResolved);
-
+						if (CXStringUtils.isFloat(wFalseResult)
+								|| CXStringUtils.isNumeric(wFalseResult)) {
+							wResult = wResult.replace("\"" + wFullMatch + "\"",
+									wTrueResult);
+						}else {
+							wResult = wResult.replace(wFullMatch, wFalseResolved);
+						}
 					} catch (Exception e) {
-						wResult = wResult.replace(wFullMatch, wFalseResult);
+						if (CXStringUtils.isFloat(wFalseResult)
+								|| CXStringUtils.isNumeric(wFalseResult)) {
+							wResult = wResult.replace("\"" + wFullMatch + "\"",
+									wTrueResult);
+						}else {
+							wResult = wResult.replace(wFullMatch, wFalseResult);
+						}
 					}
 				}
 			} catch (Exception e) {
