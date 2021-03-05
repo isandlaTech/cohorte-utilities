@@ -18,7 +18,7 @@
 			"$generator":{
 				"id" : "value",
 				"valueId2":"$.article[id=id2].test3",
-				
+				"test":"$.article[id=id3].$generator.id"
 			}
 		}
 	]

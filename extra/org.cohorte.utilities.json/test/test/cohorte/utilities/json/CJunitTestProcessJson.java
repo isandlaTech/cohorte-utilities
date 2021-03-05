@@ -34,55 +34,54 @@ import org.psem2m.utilities.rsrc.CXRsrcProviderFile;
 @RunWith(Theories.class)
 public class CJunitTestProcessJson extends CAbstractJunitTest {
 
-	public static String fileTestsIn = System.getProperty("user.dir")
-			+ File.separatorChar + "files" + File.separatorChar
-			+ "testPreprocess" + File.separatorChar + "in" + File.separatorChar;
-	public static String fileTestsIn2 = System.getProperty("user.dir")
-			+ File.separatorChar + "files" + File.separatorChar
-			+ "testPreprocess" + File.separatorChar + "in2"
-			+ File.separatorChar;
+	public static String fileTestsIn = System.getProperty("user.dir") + File.separatorChar + "files"
+			+ File.separatorChar + "testPreprocess" + File.separatorChar + "in" + File.separatorChar;
+	public static String fileTestsIn2 = System.getProperty("user.dir") + File.separatorChar + "files"
+			+ File.separatorChar + "testPreprocess" + File.separatorChar + "in2" + File.separatorChar;
 
-	public static String fileTestsOut = System.getProperty("user.dir")
-			+ File.separatorChar + "files" + File.separatorChar
-			+ "testPreprocess" + File.separatorChar + "out"
-			+ File.separatorChar;
+	public static String fileTestsOut = System.getProperty("user.dir") + File.separatorChar + "files"
+			+ File.separatorChar + "testPreprocess" + File.separatorChar + "out" + File.separatorChar;
 
 	private static CJsonProvider pProvider;
 
 	public static @DataPoints String[][] testFiles = {
 
-			{ "module_empty.js", "empty.js" },
-			{ "module_noComment.js", "noComment.js" },
-			{ "module_slashComment.js", "noComment.js" },
-			{ "module_slashStarComment.js", "noComment.js" },
-			{ "module_allComment.js", "noComment.js" },
-			{ "module_testDef.js", "testDef.js" },
+			/*
+			 * { "module_empty.js", "empty.js" }, { "module_noComment.js", "noComment.js" },
+			 * { "module_slashComment.js", "noComment.js" }, { "module_slashStarComment.js",
+			 * "noComment.js" }, { "module_allComment.js", "noComment.js" }, {
+			 * "module_testDef.js", "testDef.js" },
+			 * 
+			 * { "module_allCommentAndFile.js", "noComment2.js" }, {
+			 * "module_allCommentAndFileWithPath.js", "noComment2.js" },
+			 * 
+			 * { "module_allMultiPath.js", "noCommentMutliPath.js" },
+			 * 
+			 * { "test_condition.js?var=test", "test_condition_true.js" },
+			 * 
+			 * { "test_condition.js?var=other", "test_condition_false.js" },
+			 * 
+			 * { "test_jsonpath_grandfather.js", "test_jsonpath_grandfather.js" },
+			 * 
+			 * { "deploy_world.js", "deploy_world.js" }, {
+			 * "deploy_world.js?deploy.subdomain=grandest&deploy.ip=80.80.80.80",
+			 * "deploy_world_with_properties.js" }, { "test_replace_vars.js?var=test",
+			 * "test_replace_vars.js" },
+			 * 
+			 * { "test_array_of_array.js", "test_array_of_array.js" }, {
+			 * "test_include_file_text.js", "test_include_file_text.js" },
+			 */
+			{ "test_jsonpath_condition.js", "test_jsonpath_condition.js" } };
 
-			{ "module_allCommentAndFile.js", "noComment2.js" },
-			{ "module_allCommentAndFileWithPath.js", "noComment2.js" },
-
-			{ "module_allMultiPath.js", "noCommentMutliPath.js" },
-
-			{ "test_condition.js?var=test", "test_condition_true.js" },
-
-			{ "test_condition.js?var=other", "test_condition_false.js" },
-
-			{ "test_jsonpath_grandfather.js", "test_jsonpath_grandfather.js" },
-
-			{ "deploy_world.js", "deploy_world.js" },
-			{
-				"deploy_world.js?deploy.subdomain=grandest&deploy.ip=80.80.80.80",
-			"deploy_world_with_properties.js" },
-			{ "test_replace_vars.js?var=test", "test_replace_vars.js" },
-
-			{ "test_array_of_array.js", "test_array_of_array.js" },
-			{ "test_include_file_text.js", "test_include_file_text.js" },
-
-			{ "test_jsonpath_condition.js", "test_jsonpath_condition.js" },
-			{ "test_ternary_expression.js?var=test",
-			"test_ternary_expression.js" } };
-
-	/**
+	/*
+	 * { "test_ternary_expression.js?var=test", "test_ternary_expression.js" }, {
+	 * "test_ternary_expression2.js?var=test", "test_ternary_expression2-true.js" },
+	 * { "test_ternary_expression2.js?var=toto", "test_ternary_expression2-false.js"
+	 * }
+	 *
+	 * };
+	 *
+	 * /**
 	 *
 	 */
 	@AfterClass
@@ -105,19 +104,13 @@ public class CJunitTestProcessJson extends CAbstractJunitTest {
 		try {
 
 			final CJsonRsrcResolver wResolver = new CJsonRsrcResolver();
-			wResolver.addRsrcProvider(
-					"$generator",
-					new CXRsrcGeneratorProvider(CActivityLoggerNull
-							.getInstance()));
-			wResolver.addRsrcProvider("$textFile", new CXRsrcTextFileProvider(
-					fileTestsIn, CActivityLoggerNull.getInstance()));
-			wResolver.addRsrcProvider("$file", new CXRsrcProviderFile(
-					fileTestsIn, Charset.defaultCharset()));
-			wResolver.addRsrcProvider("$file", new CXRsrcProviderFile(
-					fileTestsIn2, Charset.defaultCharset()));
+			wResolver.addRsrcProvider("$generator", new CXRsrcGeneratorProvider(CActivityLoggerNull.getInstance()));
+			wResolver.addRsrcProvider("$textFile",
+					new CXRsrcTextFileProvider(fileTestsIn, CActivityLoggerNull.getInstance()));
+			wResolver.addRsrcProvider("$file", new CXRsrcProviderFile(fileTestsIn, Charset.defaultCharset()));
+			wResolver.addRsrcProvider("$file", new CXRsrcProviderFile(fileTestsIn2, Charset.defaultCharset()));
 
-			pProvider = new CJsonProvider(wResolver,
-					CActivityLoggerBasicConsole.getInstance(),true);
+			pProvider = new CJsonProvider(wResolver, CActivityLoggerBasicConsole.getInstance(), true);
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
@@ -129,8 +122,7 @@ public class CJunitTestProcessJson extends CAbstractJunitTest {
 	 * @param aFileName
 	 * @throws Exception
 	 */
-	private void testPreprocessBadJson(final String wMethodName,
-			final String aFileName) throws Exception {
+	private void testPreprocessBadJson(final String wMethodName, final String aFileName) throws Exception {
 
 		logBegin(this, wMethodName, "Try to parse a bad json [%s] ", aFileName);
 
@@ -138,8 +130,7 @@ public class CJunitTestProcessJson extends CAbstractJunitTest {
 
 			pProvider.getJSONObject("$file", aFileName);
 
-			logEndKO(this, wMethodName,
-					"The JSONObject has to throw an Exception !");
+			logEndKO(this, wMethodName, "The JSONObject has to throw an Exception !");
 
 		} catch (Exception | Error e) {
 			getLogger().logSevere(this, wMethodName, "EXPECTED ERROR: %s", e);
@@ -175,14 +166,12 @@ public class CJunitTestProcessJson extends CAbstractJunitTest {
 	public void testPreprocessJson(final String[] testFiles) throws Exception {
 		final String wMethodName = "testPreprocessJson";
 		final String wRunningId = testFiles[0];
-		logBeginMultiple(this, wMethodName, wRunningId,
-				"Try to parse a bad json: %s ",
+		logBeginMultiple(this, wMethodName, wRunningId, "Try to parse a bad json: %s ",
 				CXStringUtils.stringTableToString(testFiles));
 
 		try {
 
-			final CXFileText wFileOut = new CXFileText(fileTestsOut
-					+ File.separatorChar + testFiles[1]);
+			final CXFileText wFileOut = new CXFileText(fileTestsOut + File.separatorChar + testFiles[1]);
 			final JSONObject in = pProvider.getJSONObject("$file", testFiles[0]);
 
 			final JSONObject out = new JSONObject(wFileOut.readAll());
@@ -197,14 +186,12 @@ public class CJunitTestProcessJson extends CAbstractJunitTest {
 
 			Assert.assertEquals(in.toString(), out.toString());
 
-			logBeginMultipleOK(this, wMethodName, wRunningId,
-					"Exception thrown OK");
+			logBeginMultipleOK(this, wMethodName, wRunningId, "Exception thrown OK");
 
 		} catch (Exception | Error e) {
 			getLogger().logSevere(this, wMethodName, "ERROR: %s", e);
 
-			logBeginMultipleKO(this, wMethodName, wRunningId,
-					"Unexpected exception !", e);
+			logBeginMultipleKO(this, wMethodName, wRunningId, "Unexpected exception !", e);
 
 			throw e;
 		}
