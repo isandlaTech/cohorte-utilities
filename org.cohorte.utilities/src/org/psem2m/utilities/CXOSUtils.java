@@ -32,19 +32,19 @@ public final class CXOSUtils {
 	 * 
 	 * http://www.microsoft.com/globaldev/reference/oem/858.htm
 	 * 
-	 * for example a small 'e' acute is character 0xe9 in ISO-8859-1 but
-	 * character 0x82 in Windows OEM fonts.
+	 * for example a small 'e' acute is character 0xe9 in ISO-8859-1 but character
+	 * 0x82 in Windows OEM fonts.
 	 */
 	public static final String ENCODING_CP_858 = "Cp858";
 
 	/**
 	 * http://java.sun.com/j2se/1.4.2/docs/guide/intl/encoding.doc.html
 	 * 
-	 * ISO 8859-1, same as 8859_1, USA, Europe, Latin America, Caribbean,
-	 * Canada, Africa, Latin-1, (Danish, Dutch, English, Faeroese, Finnish,
-	 * French, German, Icelandic, Irish, Italian, Norwegian, Portuguese, Spanish
-	 * and Swedish). Beware, for NT, the default is Cp1252 a variant of Latin-1,
-	 * controlled by the control panel regional settings.
+	 * ISO 8859-1, same as 8859_1, USA, Europe, Latin America, Caribbean, Canada,
+	 * Africa, Latin-1, (Danish, Dutch, English, Faeroese, Finnish, French, German,
+	 * Icelandic, Irish, Italian, Norwegian, Portuguese, Spanish and Swedish).
+	 * Beware, for NT, the default is Cp1252 a variant of Latin-1, controlled by the
+	 * control panel regional settings.
 	 */
 
 	// "ISO-8859-1"
@@ -77,9 +77,9 @@ public final class CXOSUtils {
 	 * 
 	 * Microsoft Windows variant of Latin-1, NT default. Beware. Some unexpected
 	 * translations occur when you read with this default encoding, e.g. codes
-	 * 128..159 are translated to 16 bit chars with bits in the high order byte
-	 * on. It does not just truncate the high byte on write and pad with 0 on
-	 * read. For true Latin-1 see 8859-1.
+	 * 128..159 are translated to 16 bit chars with bits in the high order byte on.
+	 * It does not just truncate the high byte on write and pad with 0 on read. For
+	 * true Latin-1 see 8859-1.
 	 */
 	public static final String ENCODING_WINDOWS_1252 = "windows-1252";
 
@@ -87,10 +87,11 @@ public final class CXOSUtils {
 
 	private final static String FILE_NAME_DUMMY = "dummy";
 	private final static String OSKEY_MACOSX = "Mac OS X";
-
 	private final static String OSKEY_WIN2000 = "2000";
 	private final static String OSKEY_WIN2003 = "2003";
 	private final static String OSKEY_WIN2008 = "2008";
+	private final static String OSKEY_WIN2018 = "2018";
+	private final static String OSKEY_WIN2019 = "2019";
 	private final static String OSKEY_WIN7 = "Windows 7";
 	private final static String OSKEY_WIN8 = "Windows 8";
 	private final static String OSKEY_WINNT = "NT";
@@ -122,20 +123,18 @@ public final class CXOSUtils {
 	 * @param aValue
 	 *            the value
 	 * @param aValueMultiLineLine
-	 *            if false, the line separator present in the value are replaced
-	 *            by '§'
+	 *            if false, the line separator present in the value are replaced by
+	 *            '§'
 	 * @return
 	 */
-	private static StringBuilder addEnvPropertiesInfoDescrInSB(
-			final StringBuilder aSB, final String aId, final int wMaxIdLen,
-			String aValue, final boolean aValueMultiLineLine) {
+	private static StringBuilder addEnvPropertiesInfoDescrInSB(final StringBuilder aSB, final String aId,
+			final int wMaxIdLen, String aValue, final boolean aValueMultiLineLine) {
 
 		if (!aValueMultiLineLine && aValue.contains(CXStringUtils.LINE_SEP)) {
 			aValue = aValue.replace('\n', '§');
 		}
 
-		return CXJvmUtils.addDescrAlignInSB(aSB, aId, wMaxIdLen, aValue,
-				120 - wMaxIdLen, CXJvmUtils.SEP_NUL);
+		return CXJvmUtils.addDescrAlignInSB(aSB, aId, wMaxIdLen, aValue, 120 - wMaxIdLen, CXJvmUtils.SEP_NUL);
 	}
 
 	/**
@@ -188,12 +187,11 @@ public final class CXOSUtils {
 	 *            the separator included between each information
 	 * @param aValueMultiLineLine
 	 *            accepts format multiline information if true
-	 * @return the environment variables as a name-value pairs list separated by
-	 *         the separator
+	 * @return the environment variables as a name-value pairs list separated by the
+	 *         separator
 	 * @throws java.io.IOException
 	 */
-	public static String getEnvContext(final char aSeparator,
-			final boolean aValueMultiLineLine) {
+	public static String getEnvContext(final char aSeparator, final boolean aValueMultiLineLine) {
 
 		StringBuilder wSB = new StringBuilder();
 
@@ -214,8 +212,7 @@ public final class CXOSUtils {
 				}
 			}
 
-			CXSortedMapString wSortedEnv = new CXSortedMapString(wEnv,
-					CXSortList.ASCENDING, CXSortList.SORTBYKEY);
+			CXSortedMapString wSortedEnv = new CXSortedMapString(wEnv, CXSortList.ASCENDING, CXSortList.SORTBYKEY);
 
 			Set<Entry<String, String>> wProps = wSortedEnv.getTreeSet();
 
@@ -224,8 +221,7 @@ public final class CXOSUtils {
 				if (wI > 0) {
 					wSB.append(aSeparator);
 				}
-				addEnvPropertiesInfoDescrInSB(wSB,
-						String.valueOf(wProp.getKey()), wMaxKeyLen,
+				addEnvPropertiesInfoDescrInSB(wSB, String.valueOf(wProp.getKey()), wMaxKeyLen,
 						String.valueOf(wProp.getValue()), aValueMultiLineLine);
 				wI++;
 			}
@@ -351,13 +347,15 @@ public final class CXOSUtils {
 
 		if (wPath == null || wPath.length() == 0) {
 			// System.out.println(
-			// "Temporary directory is unknown ('java.io.tmpdir'), using directory used by 'File.createTempFile'."
+			// "Temporary directory is unknown ('java.io.tmpdir'), using directory used by
+			// 'File.createTempFile'."
 			// );
 
 			wPath = getTempAbsolutePath();
 
 			if (wPath == null || wPath.length() == 0) {
-				// System.out.println("'File.createTempFile' doesn't return directory, using current directory ('user.dir').");
+				// System.out.println("'File.createTempFile' doesn't return directory, using
+				// current directory ('user.dir').");
 
 				wPath = System.getProperty(SYS_PROPERTY_USERDIR);
 			}
@@ -448,6 +446,42 @@ public final class CXOSUtils {
 	}
 
 	/**
+	 * @return true if the current OS is Windows 2000
+	 */
+	public static boolean isOsWindows2018() {
+
+		return isOsWindows2018(getOsName());
+	}
+
+	/**
+	 * @param aOsName
+	 *            the OS name to test
+	 * @return true if the OS name match the identifier of Windows 2000
+	 */
+	public static boolean isOsWindows2018(final String aOsName) {
+
+		return aOsName.indexOf(OSKEY_WIN2018) > -1;
+	}
+
+	/**
+	 * @return true if the current OS is Windows 2000
+	 */
+	public static boolean isOsWindows2019() {
+
+		return isOsWindows2019(getOsName());
+	}
+
+	/**
+	 * @param aOsName
+	 *            the OS name to test
+	 * @return true if the OS name match the identifier of Windows 2000
+	 */
+	public static boolean isOsWindows2019(final String aOsName) {
+
+		return aOsName.indexOf(OSKEY_WIN2019) > -1;
+	}
+
+	/**
 	 * @return true if the current OS is Windows 7
 	 */
 	public static boolean isOsWindowsEight() {
@@ -480,10 +514,10 @@ public final class CXOSUtils {
 	 */
 	public static boolean isOsWindowsFamily(final String aOsName) {
 
-		return isOsWindowsXP(aOsName) || isOsWindowsSeven(aOsName)
-				|| isOsWindowsEight(aOsName) || isOsWindowsVista(aOsName)
-				|| isOsWindows2003(aOsName) || isOsWindows2008(aOsName)
-				|| isOsWindows2000(aOsName) || isOsWindowsNT(aOsName);
+		return isOsWindowsXP(aOsName) || isOsWindowsSeven(aOsName) || isOsWindowsEight(aOsName)
+				|| isOsWindowsVista(aOsName) || isOsWindows2003(aOsName) || isOsWindows2008(aOsName)
+				|| isOsWindows2000(aOsName) || isOsWindowsNT(aOsName) || isOsWindows2018(aOsName)
+				|| isOsWindows2019(aOsName);
 	}
 
 	/**
