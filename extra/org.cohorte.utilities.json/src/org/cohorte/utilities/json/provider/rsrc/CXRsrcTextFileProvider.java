@@ -4,6 +4,7 @@ import java.nio.charset.Charset;
 import java.util.Map;
 
 import org.cohorte.utilities.json.provider.CJsonResolvTernary;
+import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.files.CXFileDir;
 import org.psem2m.utilities.json.JSONArray;
 import org.psem2m.utilities.logging.IActivityLogger;
@@ -80,7 +81,11 @@ public class CXRsrcTextFileProvider extends CXRsrcProviderFile {
 		JSONArray wResult = new JSONArray();
 
 		if (wText != null && wText.getContent() != null) {
-			String[] wLines = wText.getContent().split("\n");
+			String wFullText = CXStringUtils.replaceVariables(wText.getContent(),aQueryPath);
+
+			wFullText = CJsonResolvTernary.resultTernary(pActivityLogger,
+					wFullText, pRhinoScriptEngine);
+			String[] wLines = wFullText.split("\n");
 			for (String aLine : wLines) {
 				wResult.put(aLine);
 			}

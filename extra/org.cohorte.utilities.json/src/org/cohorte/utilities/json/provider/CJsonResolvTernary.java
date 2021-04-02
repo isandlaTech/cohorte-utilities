@@ -96,7 +96,7 @@ public class CJsonResolvTernary {
 				}
 			} catch (final Exception e) {
 				// can't resolve ternary expression do nothin
-				aLogger.logInfo(CJsonResolvTernary.class, "resultTernary", "fail to evaluate condition %s", wCondition);
+				aLogger.logSevere(CJsonResolvTernary.class, "resultTernary", "fail to evaluate condition %s , Error=[%s]", wCondition,e);
 
 			}
 		}
