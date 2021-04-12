@@ -242,6 +242,10 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 		return dumpAvailableEngines(pEngineManager);
 	}
 
+	public CXJsCompiledScript getCompiledScript(CXJsSourceMain aSourceMainS) throws CXJsException {
+		return getScriptEngine().compile(aSourceMainS, false);
+	}
+
 	/**
 	 * @return
 	 */

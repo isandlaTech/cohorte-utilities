@@ -28,6 +28,15 @@ public interface IXJsManager {
 	public int clearCache();
 
 	/**
+	 * get compiled script froma sourceMain
+	 * 
+	 * @param aSourceMainS
+	 * @return
+	 * @throws CXJsException
+	 */
+	public CXJsCompiledScript getCompiledScript(CXJsSourceMain aSourceMainS) throws CXJsException;
+
+	/**
 	 * @return
 	 * @throws Exception
 	 */
