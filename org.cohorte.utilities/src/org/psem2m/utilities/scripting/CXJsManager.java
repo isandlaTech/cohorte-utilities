@@ -31,8 +31,7 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 * @param aEngineManager
 	 * @return
 	 */
-	public static String dumpAvailableEngines(
-			final ScriptEngineManager aEngineManager) {
+	public static String dumpAvailableEngines(final ScriptEngineManager aEngineManager) {
 
 		if (aEngineManager == null) {
 			return "the EngineManager is null";
@@ -67,16 +66,14 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 * @param aName
 	 * @throws CXJsExcepUnknownLanguage
 	 */
-	public CXJsManager(final IActivityLogger aActivityLogger,
-			final ScriptEngineManager aScriptEngineManager, final String aName)
-			throws CXJsExcepUnknownLanguage {
+	public CXJsManager(final IActivityLogger aActivityLogger, final ScriptEngineManager aScriptEngineManager,
+			final String aName) throws CXJsExcepUnknownLanguage {
 
 		super();
 		pActivityLogger = aActivityLogger;
 
 		if (aScriptEngineManager == null) {
-			throw new CXJsExcepUnknownLanguage("CXJsManager",
-					"No language, the given ScriptEngineManager is null");
+			throw new CXJsExcepUnknownLanguage("CXJsManager", "No language, the given ScriptEngineManager is null");
 		}
 
 		pEngineManager = aScriptEngineManager;
@@ -84,8 +81,7 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 
 		// search the factory of the language in the list build by the Discovery
 		// mechanism of the ScriptEngineManager.
-		for (ScriptEngineFactory wFact : aScriptEngineManager
-				.getEngineFactories()) {
+		for (ScriptEngineFactory wFact : aScriptEngineManager.getEngineFactories()) {
 			if (CXJsScriptFactory.checkName(wFact, aName)) {
 				wXJsScriptFactory = CXJsScriptFactory.newInstance(wFact, aName);
 				break;
@@ -97,16 +93,14 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 		if (wXJsScriptFactory == null) {
 			ScriptEngine wEngine = aScriptEngineManager.getEngineByName(aName);
 			if (wEngine != null) {
-				wXJsScriptFactory = CXJsScriptFactory.newInstance(
-						wEngine.getFactory(), aName);
+				wXJsScriptFactory = CXJsScriptFactory.newInstance(wEngine.getFactory(), aName);
 			}
 		}
 
 		if (wXJsScriptFactory == null) {
-			throw new CXJsExcepUnknownLanguage(
-					"CXJsManager",
-					"The scripting language [%s] is not registered in the current ScriptEngineManager [%s]",
-					aName, aScriptEngineManager);
+			throw new CXJsExcepUnknownLanguage("CXJsManager",
+					"The scripting language [%s] is not registered in the current ScriptEngineManager [%s]", aName,
+					aScriptEngineManager);
 		}
 		pScriptEngineFactory = wXJsScriptFactory;
 	}
@@ -115,8 +109,8 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 * @param aScriptLanguage
 	 * @throws CXJsExcepUnknownLanguage
 	 */
-	public CXJsManager(final IActivityLogger aActivityLogger,
-			final String aScriptLanguage) throws CXJsExcepUnknownLanguage {
+	public CXJsManager(final IActivityLogger aActivityLogger, final String aScriptLanguage)
+			throws CXJsExcepUnknownLanguage {
 		this(aActivityLogger, new ScriptEngineManager(), aScriptLanguage);
 	}
 
@@ -125,27 +119,24 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 * @param aScriptLanguage
 	 * @throws CXJsExcepUnknownLanguage
 	 */
-	public CXJsManager(final ScriptEngineManager aScriptEngineManager,
-			final String aScriptLanguage) throws CXJsExcepUnknownLanguage {
+	public CXJsManager(final ScriptEngineManager aScriptEngineManager, final String aScriptLanguage)
+			throws CXJsExcepUnknownLanguage {
 
-		this(CActivityLoggerNull.getInstance(), aScriptEngineManager,
-				aScriptLanguage);
+		this(CActivityLoggerNull.getInstance(), aScriptEngineManager, aScriptLanguage);
 	}
 
 	/**
 	 * @param aScriptLanguage
 	 * @throws CXJsExcepUnknownLanguage
 	 */
-	public CXJsManager(final String aScriptLanguage)
-			throws CXJsExcepUnknownLanguage {
+	public CXJsManager(final String aScriptLanguage) throws CXJsExcepUnknownLanguage {
 		this(new ScriptEngineManager(), aScriptLanguage);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.psem2m.utilities.scripting.CXJsObjectBase#addDescriptionInBuffer(
+	 * @see org.psem2m.utilities.scripting.CXJsObjectBase#addDescriptionInBuffer(
 	 * java.lang.Appendable)
 	 */
 	@Override
@@ -153,8 +144,7 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 
 		descrAddLine(aSB, "Source providers");
 		if (pRsrcProviderChain != null) {
-			descrAddLine(aSB, "Nb providers available",
-					pRsrcProviderChain.size());
+			descrAddLine(aSB, "Nb providers available", pRsrcProviderChain.size());
 			descrAddIndent(aSB, pRsrcProviderChain.toDescription());
 		} else {
 			descrAddLine(aSB, "NO PROVIDER available");
@@ -170,8 +160,7 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 
 		if (hasEngineManager()) {
 			descrAddLine(aSB, "Script engine manager");
-			descrAddLine(aSB, "Nb languages available", pEngineManager
-					.getEngineFactories().size());
+			descrAddLine(aSB, "Nb languages available", pEngineManager.getEngineFactories().size());
 			descrAddIndent(aSB, getAvailableLanguages());
 		}
 		return aSB;
@@ -180,13 +169,11 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.psem2m.utilities.scripting.IJsManager#addProvider(java.lang.String,
+	 * @see org.psem2m.utilities.scripting.IJsManager#addProvider(java.lang.String,
 	 * org.psem2m.utilities.rsrc.CXRsrcProvider)
 	 */
 	@Override
-	public void addProvider(final String aProviderId,
-			final CXRsrcProvider aProvider) {
+	public void addProvider(final String aProviderId, final CXRsrcProvider aProvider) {
 		if (pRsrcProviderChain != null) {
 			pRsrcProviderChain.add(aProvider);
 		} else {
@@ -224,12 +211,10 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 * @return
 	 * @throws CXJsException
 	 */
-	public CXJsCompiledScript compileFromFile(final CXRsrcProvider aRootSrc,
-			final CXRsrcUriPath aRelativePath, final boolean aCheckTimeStamp,
-			final IXjsTracer tracer) throws CXJsException {
+	public CXJsCompiledScript compileFromFile(final CXRsrcProvider aRootSrc, final CXRsrcUriPath aRelativePath,
+			final boolean aCheckTimeStamp, final IXjsTracer tracer) throws CXJsException {
 		CXJsEngine wEngine = pScriptEngineFactory.getScriptEngine();
-		return wEngine.compile(getMainSource(aRootSrc, aRelativePath, tracer),
-				aCheckTimeStamp, tracer);
+		return wEngine.compile(getMainSource(aRootSrc, aRelativePath, tracer), aCheckTimeStamp, tracer);
 	}
 
 	/**
@@ -261,8 +246,7 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 * @return
 	 */
 	public String getLanguage() {
-		return pScriptEngineFactory == null ? "Null" : pScriptEngineFactory
-				.getCallName();
+		return pScriptEngineFactory == null ? "Null" : pScriptEngineFactory.getCallName();
 	}
 
 	/**
@@ -271,10 +255,9 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 * @return
 	 * @throws CXJsException
 	 */
-	public CXJsSourceMain getMainSource(final CXRsrcProvider aRootSrc,
-			final CXRsrcUriPath aRelativePath) throws CXJsException {
-		return getMainSource(aRootSrc, aRelativePath,
-				CXjsTracerNull.getInstance());
+	public CXJsSourceMain getMainSource(final CXRsrcProvider aRootSrc, final CXRsrcUriPath aRelativePath)
+			throws CXJsException {
+		return getMainSource(aRootSrc, aRelativePath, CXjsTracerNull.getInstance());
 	}
 
 	/**
@@ -284,11 +267,9 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 * @return
 	 * @throws CXJsException
 	 */
-	public CXJsSourceMain getMainSource(final CXRsrcProvider aRootSrc,
-			final CXRsrcUriPath aRelativePath, final IXjsTracer tracer)
-			throws CXJsException {
-		return CXJsSourceMain.newInstanceFromFile(aRootSrc, aRelativePath,
-				getLanguage(), tracer);
+	public CXJsSourceMain getMainSource(final CXRsrcProvider aRootSrc, final CXRsrcUriPath aRelativePath,
+			final IXjsTracer tracer) throws CXJsException {
+		return CXJsSourceMain.newInstanceFromFile(aRootSrc, aRelativePath, getLanguage(), tracer);
 	}
 
 	/**
@@ -296,8 +277,7 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 * @return
 	 * @throws CXJsException
 	 */
-	public CXJsSourceMain getMainSource(final CXRsrcUriPath aRelativePath)
-			throws CXJsException {
+	public CXJsSourceMain getMainSource(final CXRsrcUriPath aRelativePath) throws CXJsException {
 		return getMainSource(aRelativePath, CXjsTracerNull.getInstance());
 	}
 
@@ -307,18 +287,16 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 * @return
 	 * @throws CXJsException
 	 */
-	public CXJsSourceMain getMainSource(final CXRsrcUriPath aRelativePath,
-			final IXjsTracer tracer) throws CXJsException {
+	public CXJsSourceMain getMainSource(final CXRsrcUriPath aRelativePath, final IXjsTracer tracer)
+			throws CXJsException {
 
 		try {
-			return CXJsSourceMain.newInstanceFromFile(pRsrcProviderChain,
-					aRelativePath, getLanguage(), tracer);
+			return CXJsSourceMain.newInstanceFromFile(pRsrcProviderChain, aRelativePath, getLanguage(), tracer);
 		} catch (CXJsExcepLoad e) {
 
 			// can't get main source from all the providers
-			throw new CXJsException(e,
-					"Unable to find [%s] in the list of providers : %s",
-					aRelativePath, pRsrcProviderChain);
+			throw new CXJsException(e, "Unable to find [%s] in the list of providers : %s", aRelativePath,
+					pRsrcProviderChain);
 		}
 
 	}
@@ -330,11 +308,9 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 * @return
 	 * @throws CXJsException
 	 */
-	public CXJsSourceMain getMainSource(final String aSource,
-			final CXRsrcProvider aRootSrc, final IXjsTracer tracer)
+	public CXJsSourceMain getMainSource(final String aSource, final CXRsrcProvider aRootSrc, final IXjsTracer tracer)
 			throws CXJsException {
-		return CXJsSourceMain.newInstanceFromSource(aRootSrc, null, aSource,
-				getLanguage(), tracer);
+		return CXJsSourceMain.newInstanceFromSource(aRootSrc, null, aSource, getLanguage(), tracer);
 	}
 
 	/**
@@ -344,11 +320,10 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 * @return
 	 * @throws CXJsException
 	 */
-	public CXJsSourceMain getMainSource(final String aSource,
-			final CXRsrcProvider aRootSrc, final String aMairSrcRelPath)
-			throws CXJsException {
-		return CXJsSourceMain.newInstanceFromSource(aRootSrc, aMairSrcRelPath,
-				aSource, getLanguage(), CXjsTracerNull.getInstance());
+	public CXJsSourceMain getMainSource(final String aSource, final CXRsrcProvider aRootSrc,
+			final String aMairSrcRelPath) throws CXJsException {
+		return CXJsSourceMain.newInstanceFromSource(aRootSrc, aMairSrcRelPath, aSource, getLanguage(),
+				CXjsTracerNull.getInstance());
 	}
 
 	/**
@@ -359,11 +334,9 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 * @return
 	 * @throws CXJsException
 	 */
-	public CXJsSourceMain getMainSource(final String aSource,
-			final CXRsrcProvider aRootSrc, final String aMairSrcRelPath,
-			final IXjsTracer tracer) throws CXJsException {
-		return CXJsSourceMain.newInstanceFromSource(aRootSrc, aMairSrcRelPath,
-				aSource, getLanguage(), tracer);
+	public CXJsSourceMain getMainSource(final String aSource, final CXRsrcProvider aRootSrc,
+			final String aMairSrcRelPath, final IXjsTracer tracer) throws CXJsException {
+		return CXJsSourceMain.newInstanceFromSource(aRootSrc, aMairSrcRelPath, aSource, getLanguage(), tracer);
 	}
 
 	/**
@@ -372,8 +345,7 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 * @return
 	 * @throws CXJsException
 	 */
-	public CXJsSourceMain getMainSource(final String aSource,
-			final IXjsTracer tracer) throws CXJsException {
+	public CXJsSourceMain getMainSource(final String aSource, final IXjsTracer tracer) throws CXJsException {
 		return getMainSource(aSource, (String) null, tracer);
 	}
 
@@ -383,10 +355,8 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 * @return
 	 * @throws CXJsException
 	 */
-	public CXJsSourceMain getMainSource(final String aSource,
-			final String aMairSrcRelPath) throws CXJsException {
-		return getMainSource(aSource, aMairSrcRelPath,
-				CXjsTracerNull.getInstance());
+	public CXJsSourceMain getMainSource(final String aSource, final String aMairSrcRelPath) throws CXJsException {
+		return getMainSource(aSource, aMairSrcRelPath, CXjsTracerNull.getInstance());
 	}
 
 	/**
@@ -396,18 +366,16 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 * @return
 	 * @throws CXJsException
 	 */
-	public CXJsSourceMain getMainSource(final String aSource,
-			final String aMairSrcRelPath, final IXjsTracer tracer)
+	public CXJsSourceMain getMainSource(final String aSource, final String aMairSrcRelPath, final IXjsTracer tracer)
 			throws CXJsException {
 
 		try {
-			return CXJsSourceMain.newInstanceFromSource(pRsrcProviderChain,
-					aMairSrcRelPath, aSource, getLanguage(), tracer);
+			return CXJsSourceMain.newInstanceFromSource(pRsrcProviderChain, aMairSrcRelPath, aSource, getLanguage(),
+					tracer);
 		} catch (CXJsExcepLoad e) {
 			// can't get main source from all the providers
-			throw new CXJsException(e,
-					"Unable to find [%s] in the chain of providers [%s]",
-					aSource, pRsrcProviderChain);
+			throw new CXJsException(e, "Unable to find [%s] in the chain of providers [%s]", aSource,
+					pRsrcProviderChain);
 		}
 	}
 
@@ -438,8 +406,7 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 * @param aMainModule
 	 * @return
 	 */
-	public CXJsEngineInvocable getScriptEngineInvocable(
-			final CXJsSourceMain aMainModule) {
+	public CXJsEngineInvocable getScriptEngineInvocable(final CXJsSourceMain aMainModule) {
 		return pScriptEngineFactory.getScriptEngineInvocable(aMainModule);
 	}
 
@@ -471,8 +438,7 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 * @see org.psem2m.utilities.scripting.IJsManager#newRuningContext(int)
 	 */
 	@Override
-	public IXJsRuningContext newRuningContext(final int aBufferSize)
-			throws Exception {
+	public IXJsRuningContext newRuningContext(final int aBufferSize) throws Exception {
 		return new CXJsRuningContext(aBufferSize);
 	}
 
@@ -485,20 +451,17 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	 * java.lang.String)
 	 */
 	@Override
-	public CXJsRunner newRunner(final IActivityLogger aActivityLogger,
-			final CXJsSourceMain aJsSourceMain, final CXJsEngine aEngine,
-			final String aScriptUri) throws Exception {
+	public CXJsRunner newRunner(final IActivityLogger aActivityLogger, final CXJsSourceMain aJsSourceMain,
+			final CXJsEngine aEngine, final String aScriptUri) throws Exception {
 
-		return new CXJsRunner(aActivityLogger, aJsSourceMain, aEngine,
-				aScriptUri);
+		return new CXJsRunner(aActivityLogger, aJsSourceMain, aEngine, aScriptUri);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.psem2m.utilities.scripting.IJsManager#removeProvider(java.lang.String
-	 * )
+	 * org.psem2m.utilities.scripting.IJsManager#removeProvider(java.lang.String )
 	 */
 	@Override
 	public void removeProvider(final String aProviderId) {
@@ -506,16 +469,37 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	}
 
 	@Override
-	public IXJsRuningReply runScript(final IActivityLogger aActivityLogger,
-			final CXJsSourceMain aSourceMain,
+	public IXJsRuningReply runScript(final IActivityLogger aActivityLogger, final CXJsCompiledScript aCompiledScript,
+			final Map<String, Object> aVariablesMap) throws Exception {
+
+		IXJsRuningContext wCtx = newRuningContext(-1);
+
+		if (aVariablesMap != null && aVariablesMap.size() > 0) {
+			for (Map.Entry<String, Object> wProp : aVariablesMap.entrySet()) {
+				wCtx.setAttrEngine(wProp.getKey(), wProp.getValue());
+			}
+		}
+		// Exec
+		try {
+			aCompiledScript.eval(wCtx.start(CXJsRuningContext.ACT_EVAL_COMPILED, 0));
+			return wCtx;
+		} catch (Exception e) {
+
+			throw e;
+		} finally {
+			getActivityLogger().logDebug(this, "runScript", "Duration=", wCtx.getTimerInfo());
+		}
+	}
+
+	@Override
+	public IXJsRuningReply runScript(final IActivityLogger aActivityLogger, final CXJsSourceMain aSourceMain,
 			final Map<String, Object> aVariablesMap) throws Exception {
 		return runScript(aActivityLogger, null, aSourceMain, aVariablesMap);
 	}
 
 	@Override
-	public IXJsRuningReply runScript(final IActivityLogger aActivityLogger,
-			final String aProviderId, final CXJsSourceMain aSourceMain,
-			final Map<String, Object> aVariablesMap) throws Exception {
+	public IXJsRuningReply runScript(final IActivityLogger aActivityLogger, final String aProviderId,
+			final CXJsSourceMain aSourceMain, final Map<String, Object> aVariablesMap) throws Exception {
 
 		CXJsRunner wRunner = null;
 		String wScriptUri = aSourceMain.getScriptUri();
@@ -536,11 +520,9 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 		if (wRunner == null) {
 
 			// use the given ActivityLogger of that associated to that manager
-			IActivityLogger wActivityLogger = (aActivityLogger != null) ? aActivityLogger
-					: pActivityLogger;
+			IActivityLogger wActivityLogger = (aActivityLogger != null) ? aActivityLogger : pActivityLogger;
 
-			wRunner = newRunner(wActivityLogger, aSourceMain,
-					getScriptEngine(), aSourceMain.getSourceName());
+			wRunner = newRunner(wActivityLogger, aSourceMain, getScriptEngine(), aSourceMain.getSourceName());
 			if (wScriptUri != null) {
 				pJsRunnerMap.put(wScriptUri, wRunner);
 			}
@@ -562,56 +544,46 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 				wRunner = pJsRunnerMap.remove(wScriptUri);
 			}
 			if (wRunner != null) {
-				getActivityLogger().logDebug(this, "runScript", "JsRunner=",
-						wRunner.pId, "removed.");
+				getActivityLogger().logDebug(this, "runScript", "JsRunner=", wRunner.pId, "removed.");
 			}
 			throw e;
 		} finally {
-			getActivityLogger().logDebug(this, "runScript", "Duration=",
-					wCtx.getTimerInfo());
+			getActivityLogger().logDebug(this, "runScript", "Duration=", wCtx.getTimerInfo());
 		}
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.psem2m.utilities.scripting.IJsManager#runScript(java.lang.String,
+	 * @see org.psem2m.utilities.scripting.IJsManager#runScript(java.lang.String,
 	 * java.util.Map)
 	 */
 	@Override
-	public IXJsRuningReply runScript(final IActivityLogger aActivityLogger,
-			final String aScriptUri, final Map<String, Object> aVariablesMap)
-			throws Exception {
+	public IXJsRuningReply runScript(final IActivityLogger aActivityLogger, final String aScriptUri,
+			final Map<String, Object> aVariablesMap) throws Exception {
 		return runScript(aActivityLogger, null, aScriptUri, aVariablesMap);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.psem2m.utilities.scripting.IJsManager#runScript(java.lang.String,
+	 * @see org.psem2m.utilities.scripting.IJsManager#runScript(java.lang.String,
 	 * java.lang.String, java.util.Map)
 	 */
 	@Override
-	public IXJsRuningReply runScript(final IActivityLogger aActivityLogger,
-			final String aProviderId, final String aScriptUri,
-			final Map<String, Object> aVariablesMap) throws Exception {
-		IActivityLogger wActivityLogger = (aActivityLogger != null) ? aActivityLogger
-				: pActivityLogger;
-		CXJsSourceMain wSourceMain = getMainSource(
-				new CXRsrcUriPath(aScriptUri),
+	public IXJsRuningReply runScript(final IActivityLogger aActivityLogger, final String aProviderId,
+			final String aScriptUri, final Map<String, Object> aVariablesMap) throws Exception {
+		IActivityLogger wActivityLogger = (aActivityLogger != null) ? aActivityLogger : pActivityLogger;
+		CXJsSourceMain wSourceMain = getMainSource(new CXRsrcUriPath(aScriptUri),
 				CXjsTracerFactory.newJsTracer(wActivityLogger));
-		return runScript(aActivityLogger, aProviderId, wSourceMain,
-				aVariablesMap);
+		return runScript(aActivityLogger, aProviderId, wSourceMain, aVariablesMap);
 
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.psem2m.utilities.scripting.IXJsManager#runScript(java.lang.String)
+	 * @see org.psem2m.utilities.scripting.IXJsManager#runScript(java.lang.String)
 	 */
 	@Override
 	public IXJsRuningReply runScript(final String aScriptUri) throws Exception {
@@ -622,13 +594,12 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.psem2m.utilities.scripting.IXJsManager#runScript(java.lang.String,
+	 * @see org.psem2m.utilities.scripting.IXJsManager#runScript(java.lang.String,
 	 * java.util.Map)
 	 */
 	@Override
-	public IXJsRuningReply runScript(final String aScriptUri,
-			final Map<String, Object> aVariablesMap) throws Exception {
+	public IXJsRuningReply runScript(final String aScriptUri, final Map<String, Object> aVariablesMap)
+			throws Exception {
 		// runs script whithout explicit ActivityLogger and ProviderId,
 		return runScript(null, null, aScriptUri, aVariablesMap);
 	}
@@ -636,14 +607,12 @@ public class CXJsManager extends CXJsObjectBase implements IXJsManager {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.psem2m.utilities.scripting.IXJsManager#runScript(java.lang.String,
+	 * @see org.psem2m.utilities.scripting.IXJsManager#runScript(java.lang.String,
 	 * java.lang.String, java.util.Map)
 	 */
 	@Override
-	public IXJsRuningReply runScript(final String aProviderId,
-			final String aScriptUri, final Map<String, Object> aVariablesMap)
-			throws Exception {
+	public IXJsRuningReply runScript(final String aProviderId, final String aScriptUri,
+			final Map<String, Object> aVariablesMap) throws Exception {
 
 		// runs script whithout explicit ActivityLogger and ProviderId,
 		return runScript(null, null, aScriptUri, aVariablesMap);

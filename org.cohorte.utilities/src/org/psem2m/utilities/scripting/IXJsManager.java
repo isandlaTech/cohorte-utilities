@@ -20,8 +20,7 @@ public interface IXJsManager {
 	 * @param aProviderId
 	 * @param aProvider
 	 */
-	public void addProvider(final String aProviderId,
-			final CXRsrcProvider aProvider);
+	public void addProvider(final String aProviderId, final CXRsrcProvider aProvider);
 
 	/**
 	 * @return
@@ -42,14 +41,26 @@ public interface IXJsManager {
 	 * @return
 	 * @throws Exception
 	 */
-	public CXJsRunner newRunner(final IActivityLogger aActivityLogger,
-			final CXJsSourceMain aMain, final CXJsEngine aEngine,
-			final String aScriptUri) throws Exception;
+	public CXJsRunner newRunner(final IActivityLogger aActivityLogger, final CXJsSourceMain aMain,
+			final CXJsEngine aEngine, final String aScriptUri) throws Exception;
 
 	/**
 	 * @param aProviderId
 	 */
 	public void removeProvider(final String aProviderId);
+
+	/**
+	 * run a compiled script
+	 * 
+	 * @param aActivityLogger
+	 * @param aProviderId
+	 * @param aCompiledScript
+	 * @param aVariablesMap
+	 * @return
+	 * @throws Exception
+	 */
+	public IXJsRuningReply runScript(final IActivityLogger aActivityLogger, final CXJsCompiledScript aCompiledScript,
+			final Map<String, Object> aVariablesMap) throws Exception;
 
 	/**
 	 *
@@ -59,14 +70,13 @@ public interface IXJsManager {
 	 * @return
 	 * @throws Exception
 	 */
-	public IXJsRuningReply runScript(final IActivityLogger aActivityLogger,
-			final CXJsSourceMain aSourceMain,
+	public IXJsRuningReply runScript(final IActivityLogger aActivityLogger, final CXJsSourceMain aSourceMain,
 			final Map<String, Object> aVariablesMap) throws Exception;
 
 	/**
 	 * @param aActivityLogger
-	 *            an explict logger to be used rather than that associated to
-	 *            the manager
+	 *            an explict logger to be used rather than that associated to the
+	 *            manager
 	 * @param aProviderId
 	 *            an explict id to search the script uri in only one provider
 	 * @param aSourceMain
@@ -75,27 +85,25 @@ public interface IXJsManager {
 	 * @return
 	 * @throws Exception
 	 */
-	public IXJsRuningReply runScript(final IActivityLogger aActivityLogger,
-			final String aProviderId, final CXJsSourceMain aSourceMain,
-			final Map<String, Object> aVariablesMap) throws Exception;
+	public IXJsRuningReply runScript(final IActivityLogger aActivityLogger, final String aProviderId,
+			final CXJsSourceMain aSourceMain, final Map<String, Object> aVariablesMap) throws Exception;
 
 	/**
 	 * @param aActivityLogger
-	 *            an explict logger to be used rather than that associated to
-	 *            the manager
+	 *            an explict logger to be used rather than that associated to the
+	 *            manager
 	 * @param aScriptUri
 	 * @param aVariablesMap
 	 * @return
 	 * @throws Exception
 	 */
-	public IXJsRuningReply runScript(final IActivityLogger aActivityLogger,
-			final String aScriptUri, final Map<String, Object> aVariablesMap)
-			throws Exception;
+	public IXJsRuningReply runScript(final IActivityLogger aActivityLogger, final String aScriptUri,
+			final Map<String, Object> aVariablesMap) throws Exception;
 
 	/**
 	 * @param aActivityLogger
-	 *            an explict logger to be used rather than that associated to
-	 *            the manager
+	 *            an explict logger to be used rather than that associated to the
+	 *            manager
 	 * @param aProviderId
 	 *            an explict id to search the script uri in only one provider
 	 * @param aScriptUri
@@ -103,9 +111,8 @@ public interface IXJsManager {
 	 * @return
 	 * @throws Exception
 	 */
-	public IXJsRuningReply runScript(final IActivityLogger aActivityLogger,
-			final String aProviderId, final String aScriptUri,
-			final Map<String, Object> aVariablesMap) throws Exception;
+	public IXJsRuningReply runScript(final IActivityLogger aActivityLogger, final String aProviderId,
+			final String aScriptUri, final Map<String, Object> aVariablesMap) throws Exception;
 
 	/**
 	 * @param aScriptUri
@@ -120,8 +127,7 @@ public interface IXJsManager {
 	 * @return
 	 * @throws Exception
 	 */
-	public IXJsRuningReply runScript(final String aScriptUri,
-			final Map<String, Object> aVariablesMap) throws Exception;
+	public IXJsRuningReply runScript(final String aScriptUri, final Map<String, Object> aVariablesMap) throws Exception;
 
 	/**
 	 * @param aProviderId
@@ -131,7 +137,6 @@ public interface IXJsManager {
 	 * @return
 	 * @throws Exception
 	 */
-	public IXJsRuningReply runScript(final String aProviderId,
-			final String aScriptUri, final Map<String, Object> aVariablesMap)
-			throws Exception;
+	public IXJsRuningReply runScript(final String aProviderId, final String aScriptUri,
+			final Map<String, Object> aVariablesMap) throws Exception;
 }
