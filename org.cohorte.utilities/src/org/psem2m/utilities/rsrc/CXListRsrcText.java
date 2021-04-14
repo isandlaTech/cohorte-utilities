@@ -1,6 +1,7 @@
 package org.psem2m.utilities.rsrc;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.IXDescriber;
@@ -11,8 +12,7 @@ import org.psem2m.utilities.IXDescriber;
  * @author apisu
  *
  */
-public class CXListRsrcText extends ArrayList<CXRsrcText> implements
-		IXDescriber {
+public class CXListRsrcText extends ArrayList<CXRsrcText> implements IXDescriber {
 
 	/**
 	 *
@@ -24,11 +24,18 @@ public class CXListRsrcText extends ArrayList<CXRsrcText> implements
 		CXStringUtils.appendKeyValInBuff(aBuffer, "ListRsrcText size", size());
 
 		for (CXRsrcText wElem : this) {
-			CXStringUtils.appendKeyValInBuff(aBuffer,
-					wElem.getPath().getName(), wElem.toDescription());
+			CXStringUtils.appendKeyValInBuff(aBuffer, wElem.getPath().getName(), wElem.toDescription());
 		}
 
 		return aBuffer;
+	}
+
+	public List<String> getContexts() {
+		List<String> wContent = new ArrayList<>();
+		for (CXRsrcText wFile : this) {
+			wContent.add(wFile.getContent());
+		}
+		return wContent;
 	}
 
 	@Override

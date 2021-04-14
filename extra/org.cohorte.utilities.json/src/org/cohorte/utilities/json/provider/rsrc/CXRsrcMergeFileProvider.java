@@ -3,6 +3,7 @@ package org.cohorte.utilities.json.provider.rsrc;
 import java.nio.charset.Charset;
 import java.util.Map;
 
+import org.psem2m.utilities.CXTimer;
 import org.psem2m.utilities.files.CXFileDir;
 import org.psem2m.utilities.json.JSONObject;
 import org.psem2m.utilities.logging.IActivityLogger;
@@ -22,6 +23,10 @@ public class CXRsrcMergeFileProvider  extends CXRsrcProviderFile {
 	 */
 	public CXRsrcMergeFileProvider(final CXFileDir aDefaultPath, final Charset aDefCharset) throws Exception {
 		super(aDefaultPath, aDefCharset);
+	}
+
+	public CXRsrcMergeFileProvider(final CXFileDir aDefaultPath, final Charset aDefCharset,final IActivityLogger aLogger) throws Exception {
+		super(aDefaultPath, aDefCharset,aLogger);
 	}
 
 	/**
@@ -46,7 +51,7 @@ public class CXRsrcMergeFileProvider  extends CXRsrcProviderFile {
 		super(aDefaultPath,aDefCharset,aNotifierHandler,aLogger);
 	}
 
-	public static  JSONObject merge(JSONObject aJson1,JSONObject aJson2) {
+	public static  JSONObject merge(final JSONObject aJson1,final JSONObject aJson2) {
 		for(final String wKey:aJson2.keySet()) {
 			if( !aJson1.keySet().contains(wKey) ) {
 				// just add it
@@ -68,23 +73,34 @@ public class CXRsrcMergeFileProvider  extends CXRsrcProviderFile {
 	}
 
 	@Override
-	public CXListRsrcText rsrcReadTxts(final String aRsrcPath, Map<String, String> aFullPath) throws Exception {
+	public CXListRsrcText rsrcReadTxts(final String aRsrcPath, final Map<String, String> aFullPath) throws Exception {
+
+		pLogger.logInfo(this, "rsrcReadTxts", "start rsrcReadTxts");
 		final CXListRsrcText wListTextRes = new CXListRsrcText();
 		JSONObject wFileJSON = new JSONObject();
 		for(final String wFilePath:aRsrcPath.split(";") ) {
 			final CXListRsrcText wTexts =  rsrcReadTxts(wFilePath, aFullPath, 0);
+			final CXTimer wTimer = new CXTimer();
+			wTimer.start();
+			pLogger.logInfo(this, "rsrcReadTxts", "merge json rsrcReadTxts nbElem=[%d]",wTexts.size());
+
 			for(final CXRsrcText wText :wTexts) {
 				// merge all JSON file to a single json
 				final String wStr = wText.getContent();
+
 				final JSONObject wJson = new JSONObject(wStr);
 				wFileJSON = merge(wFileJSON,wJson);
 			}
+			pLogger.logInfo(this, "rsrcReadTxts", "end merge json rsrcReadTxts nbElem=[%d] duration=[%s]",wTexts.size(),wTimer.stopStrMs());
+
 		}
 
 
 		final CXRsrcText wRes =  new CXRsrcText(new CXRsrcUriPath(""),
 				CXRsrcTextReadInfo.newInstanceFromString(wFileJSON.toString()));
 		wListTextRes.add(wRes);
+		pLogger.logInfo(this, "rsrcReadTxts", "end rsrcReadTxts");
+
 		return wListTextRes;
 	}
 

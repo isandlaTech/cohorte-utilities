@@ -14,16 +14,20 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.psem2m.utilities.CXTimer;
 import org.psem2m.utilities.files.CXFileDir;
 import org.psem2m.utilities.logging.CActivityLoggerNull;
 import org.psem2m.utilities.logging.IActivityLogger;
@@ -46,9 +50,11 @@ public class CXRsrcProviderFile extends CXRsrcProvider {
 
 	CXFileDir pDefaultFileDir = null;
 
+	ExecutorService pExecutorRead = Executors.newFixedThreadPool(10);
+
 	private ExecutorService pExecutorService;
 
-	IActivityLogger pLogger;
+	protected IActivityLogger pLogger;
 
 	private IRsrcNotifierHandler pNotifierHandler;
 
@@ -61,6 +67,16 @@ public class CXRsrcProviderFile extends CXRsrcProvider {
 	 */
 	public CXRsrcProviderFile(final CXFileDir aDefaultPath, final Charset aDefCharset) throws Exception {
 		this(aDefaultPath == null ? null : aDefaultPath.getAbsolutePath(), aDefCharset);
+	}
+
+	/**
+	 * @param aDefaultPath
+	 * @param aDefCharset
+	 * @throws Exception
+	 */
+	public CXRsrcProviderFile(final CXFileDir aDefaultPath, final Charset aDefCharset, IActivityLogger aLogger)
+			throws Exception {
+		this(aDefaultPath == null ? null : aDefaultPath.getAbsolutePath(), aDefCharset, null, aLogger);
 	}
 
 	/**
@@ -86,6 +102,7 @@ public class CXRsrcProviderFile extends CXRsrcProvider {
 			final IRsrcNotifierHandler aNotifierHandler, final IActivityLogger aLogger) throws Exception {
 		super(aDefCharset);
 		setDefaultDirectoryCheck(aDefaultPath);
+
 		pLogger = aLogger;
 		if (aNotifierHandler != null) {
 			pLogger.logInfo(this, "CXRsrcProviderFile<construct>", "create executorService for watching directory");
@@ -180,6 +197,19 @@ public class CXRsrcProviderFile extends CXRsrcProvider {
 		}
 	}
 
+	private Callable<CXRsrcText> getCallableReadRsrcTextContent(final CXRsrcUriPath aPath,
+			final Map<String, String> aFullPath, final long aTimeStamp, final boolean aForceSecondes) {
+		return new Callable<CXRsrcText>() {
+
+			@Override
+			public CXRsrcText call() throws Exception {
+				// TODO Auto-generated method stub
+				return readRsrcTextContent(aPath, aFullPath, aTimeStamp, aForceSecondes);
+			}
+
+		};
+	}
+
 	public boolean getContinue() {
 		return pContinueWatching.get();
 	}
@@ -238,23 +268,43 @@ public class CXRsrcProviderFile extends CXRsrcProvider {
 		CXRsrcUriPath wPath = null;
 		URL wUrl = null;
 		CXListRsrcText wListRsrc = new CXListRsrcText();
+		List<Future<CXRsrcText>> wFutures = new ArrayList<>();
 
 		try {
 			wPath = checkUriPath(aPath, aFulPath);
 			if (wPath.getFullPath().contains("*")) {
-
+				CXTimer wTimer = new CXTimer();
+				wTimer.start();
+				pLogger.logInfo(this, "rsrcReadTxts", "start read multiple file path=[%s]", wPath.getFullPath());
 				// look to list of file in that directory
 				List<String> wPaths = getDefaultDirectory().scanAllAsListString(aPath.getUriPath());
 
 				String wParentPath = getDefaultDirectory().getAbsolutePath();
+				// read files using multithread to improve read of content
 				if (wPaths != null) {
 					for (String aSubFilePath : wPaths) {
-						wListRsrc.add(
-								readRsrcTextContent(new CXRsrcUriPath(wParentPath + File.separatorChar + aSubFilePath),
-										aFullPath, aTimeStamp, aForceSecondes));
+						CXRsrcUriPath wPathUri = new CXRsrcUriPath(wParentPath + File.separatorChar + aSubFilePath);
+						wFutures.add(pExecutorRead.submit(
+								getCallableReadRsrcTextContent(wPathUri, aFullPath, aTimeStamp, aForceSecondes)));
 
 					}
 				}
+				boolean wAllDone = false;
+				while (!wAllDone) {
+					wAllDone = true;
+					for (Future<CXRsrcText> wFuture : wFutures) {
+						wAllDone = wAllDone && wFuture.isDone();
+
+					}
+				}
+				for (Future<CXRsrcText> wFuture : wFutures) {
+					wListRsrc.add(wFuture.get());
+
+				}
+
+				pLogger.logInfo(this, "rsrcReadTxts", "end read multiple file path=[%s] msDuration=[%s]",
+						wPath.getFullPath(), wTimer.stopStrMs());
+
 			} else {
 				wRsrc = readRsrcTextContent(wPath, aFullPath, aTimeStamp, aForceSecondes);
 				wListRsrc.add(wRsrc);

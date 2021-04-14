@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import org.cohorte.utilities.json.provider.rsrc.CXRsrcGeneratorProvider;
 import org.cohorte.utilities.json.provider.rsrc.CXRsrcMergeFileProvider;
 import org.cohorte.utilities.json.provider.rsrc.CXRsrcTextFileProvider;
+import org.psem2m.utilities.CXTimer;
 import org.psem2m.utilities.json.JSONArray;
 import org.psem2m.utilities.json.JSONObject;
 import org.psem2m.utilities.logging.CActivityLoggerNull;
@@ -125,6 +126,11 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 	public CJsonRsrcResolver() {
 		pListProviderByTag = new Hashtable<>();
 		pListMemoryProviderByTag = new Hashtable<>();
+	}
+	public CJsonRsrcResolver(final IActivityLogger aLogger) {
+		pListProviderByTag = new Hashtable<>();
+		pListMemoryProviderByTag = new Hashtable<>();
+		pLogger = aLogger;
 	}
 
 	/**
@@ -318,6 +324,10 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 
 		// alter content of each RsrcText to only set the
 		// subcontains asked
+		final CXTimer wTimer = new CXTimer();
+		wTimer.start();
+		pLogger.logInfo(this, "getContentByProvider", "get content from id %s",aValidContentId);
+
 		for (int i = 0; i < wList.size(); i++) {
 			final CXRsrcText wRsrc = wList.get(i);
 			final String wCommentedJSON = wRsrc.getContent();
@@ -362,12 +372,16 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 			}
 			wRsrc.setContent(wNoComment);
 		}
+		pLogger.logInfo(this, "getContentByProvider", "end get content from id %s duration[%s]",aValidContentId,wTimer.stopStrMs());
 
 		return wList;
 	}
 
 
 	private CXListRsrcText getContentByProviderMerge(final CXRsrcMergeFileProvider aProvider, final String aValidContentId, final Map<String,String> aMapString) throws Exception {
+		final CXTimer wTimer = new CXTimer();
+		wTimer.start();
+		pLogger.logInfo(this, "getContentByProviderMerge", "start get content from id %s",aValidContentId);
 
 		// check if we ask for a JSON Array element
 
@@ -376,18 +390,8 @@ public class CJsonRsrcResolver implements IJsonRsrcResolver {
 
 		wList = aProvider.rsrcReadTxts(wFilePath,aMapString);
 
-		// alter content of each RsrcText to only set the
-		// subcontains asked
-		for (int i = 0; i < wList.size(); i++) {
-			final CXRsrcText wRsrc = wList.get(i);
-			final String wCommentedJSON = wRsrc.getContent();
-			pLogger.logInfo(this, "getContentByProvider", "get content from id %s",wRsrc.getFullPath());
 
-			final String wNoComment = removeComment(wCommentedJSON);
-
-
-			wRsrc.setContent(wNoComment);
-		}
+		pLogger.logInfo(this, "getContentByProviderMerge", "end get content from id %s duration=[%s]",aValidContentId,wTimer.stopStrMs());
 
 		return wList;
 	}
