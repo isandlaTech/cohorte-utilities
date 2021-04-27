@@ -6,7 +6,7 @@
 	<groupId>org.cohorte.utilities</groupId>
 	<artifactId>org.cohorte.utilities</artifactId>
 
-	<version>1.3.3</version>   <!-- ATTENSION : doit être le même que celui du MANIFEST -->
+	<version>1.3.4</version>   <!-- ATTENSION : doit être le même que celui du MANIFEST -->
 
 	<packaging>eclipse-plugin</packaging>
 	

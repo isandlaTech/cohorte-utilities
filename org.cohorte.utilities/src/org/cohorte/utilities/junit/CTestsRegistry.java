@@ -324,6 +324,9 @@ public class CTestsRegistry {
 			// compliance with Java 7
 			Annotation wAnnotation = wMethod.getAnnotation(Test.class);
 			if (wAnnotation == null) {
+				wAnnotation = wMethod.getAnnotation(CTest.class);
+			}
+			if (wAnnotation == null) {
 				// issue with tychos to compilation with Theory. this class cannot be found
 				Class<? extends Annotation> wTheoryClass;
 				try {
