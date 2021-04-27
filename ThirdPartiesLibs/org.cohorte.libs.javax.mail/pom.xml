@@ -9,10 +9,10 @@
 		<version>1.0.0</version>
 		<relativePath>../../Build/maven/build-bundles/pom.xml</relativePath>
 	</parent>
+	
 	<artifactId>org.cohorte.libs.javax.mail</artifactId>
-	<!-- MOD_0G_20170102 -->
-	<version>1.4</version>
-	<!--<version>1.0.0.201501211743</version>-->
+	<!-- MOD_0G_20210427 -->
+	<version>1.6.2</version>
 	
 	<packaging>eclipse-plugin</packaging>
 	
