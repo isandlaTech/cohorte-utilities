@@ -636,7 +636,7 @@ public class CXFileText extends CXFile {
 	 */
 	public List<String> tail(final int aNumberOfLines) throws IOException {
 
-		return new CXFileTailReader(this, getDefaultEncoding()).tail(aNumberOfLines);
+		return new CXFileTextTailReader(this, getDefaultEncoding()).tail(aNumberOfLines);
 	}
 
 	/**

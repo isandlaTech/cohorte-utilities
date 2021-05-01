@@ -25,7 +25,7 @@ import java.util.List;
  * @see https://medium.com/@dotronglong/tail-in-java-8-9114a62eb88b
  *
  */
-public class CXFileTailReader {
+public class CXFileTextTailReader {
 
 	private static final int DEFAULT_BUFFER_SIZE = 512;
 
@@ -40,7 +40,7 @@ public class CXFileTailReader {
 	/**
 	 * @param aFile
 	 */
-	public CXFileTailReader(final File aFile) {
+	public CXFileTextTailReader(final File aFile) {
 		this(aFile, Charset.forName(DEFAULT_CHARSET));
 	}
 
@@ -51,7 +51,7 @@ public class CXFileTailReader {
 	 * @param aFile
 	 * @param aFileCharset
 	 */
-	public CXFileTailReader(final File aFile, Charset aFileCharset) {
+	public CXFileTextTailReader(final File aFile, Charset aFileCharset) {
 		super();
 
 		if (!aFile.exists()) {
@@ -66,7 +66,7 @@ public class CXFileTailReader {
 	 * @param aFile
 	 * @param aCharsetName
 	 */
-	public CXFileTailReader(final File aFile, final String aCharsetName) {
+	public CXFileTextTailReader(final File aFile, final String aCharsetName) {
 		this(aFile, Charset.forName(aCharsetName));
 
 	}
@@ -74,7 +74,7 @@ public class CXFileTailReader {
 	/**
 	 * @param aFilePath
 	 */
-	public CXFileTailReader(final String aFilePath) {
+	public CXFileTextTailReader(final String aFilePath) {
 		this(new File(aFilePath));
 	}
 
@@ -82,7 +82,7 @@ public class CXFileTailReader {
 	 * @param aFilePath
 	 * @param aFileCharset
 	 */
-	public CXFileTailReader(final String aFilePath, final Charset aFileCharset) {
+	public CXFileTextTailReader(final String aFilePath, final Charset aFileCharset) {
 		this(new File(aFilePath), aFileCharset);
 	}
 
@@ -90,7 +90,7 @@ public class CXFileTailReader {
 	 * @param aFilePath
 	 * @param aFileCharset
 	 */
-	public CXFileTailReader(final String aFilePath, final String aCharsetName) {
+	public CXFileTextTailReader(final String aFilePath, final String aCharsetName) {
 		this(new File(aFilePath), Charset.forName(aCharsetName));
 	}
 
@@ -197,7 +197,7 @@ public class CXFileTailReader {
 	/**
 	 * Read a number of lines from bottom of file
 	 * 
-	 * @see CXFileTailReader https://en.wikipedia.org/wiki/Tail_(Unix)
+	 * @see CXFileTextTailReader https://en.wikipedia.org/wiki/Tail_(Unix)
 	 * @param path a string represents for path to file
 	 * @param numberOfLines an integer number indicates number of lines to be
 	 * retrieved
