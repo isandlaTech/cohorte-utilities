@@ -611,6 +611,19 @@ public class CXFileText extends CXFile {
 	}
 
 	/**
+	 * 1.4.0
+	 * 
+	 * @param aOffset
+	 * @param aPageSize
+	 * @return
+	 * @throws IOException
+	 */
+	public List<String> readPage(final int aOffset, final int aPageSize) throws IOException {
+
+		return new CXFileTextPageReader(this, getDefaultEncoding()).readPage(aOffset, aPageSize);
+	}
+
+	/**
 	 * @param aEncod
 	 */
 	public void setDefaultEncoding(String aEncod) {
@@ -630,6 +643,8 @@ public class CXFileText extends CXFile {
 	}
 
 	/**
+	 * 1.3.6
+	 * 
 	 * @param aNumberOfLines
 	 * @return
 	 * @throws IOException

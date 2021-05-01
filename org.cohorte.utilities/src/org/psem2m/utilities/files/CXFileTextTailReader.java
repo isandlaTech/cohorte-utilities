@@ -10,11 +10,12 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * 1.3.6
+ * 
  * Tail a Text file
  * 
  * Correction if the file ended by one or more \n
@@ -25,23 +26,17 @@ import java.util.List;
  * @see https://medium.com/@dotronglong/tail-in-java-8-9114a62eb88b
  *
  */
-public class CXFileTextTailReader {
+public class CXFileTextTailReader extends CXFileTextAbstratReader {
 
 	private static final int DEFAULT_BUFFER_SIZE = 512;
 
-	private static final String DEFAULT_CHARSET = "UTF-8";
-
 	private static final char NEW_LINE = 10;
-
-	private final File pFile;
-
-	private final Charset pFileCharset;
 
 	/**
 	 * @param aFile
 	 */
 	public CXFileTextTailReader(final File aFile) {
-		this(aFile, Charset.forName(DEFAULT_CHARSET));
+		super(aFile);
 	}
 
 	/**
@@ -52,14 +47,7 @@ public class CXFileTextTailReader {
 	 * @param aFileCharset
 	 */
 	public CXFileTextTailReader(final File aFile, Charset aFileCharset) {
-		super();
-
-		if (!aFile.exists()) {
-			throw new InvalidPathException(aFile.getAbsolutePath(), "File does not exist");
-		}
-
-		pFile = aFile;
-		pFileCharset = aFileCharset;
+		super(aFile, aFileCharset);
 	}
 
 	/**
@@ -67,7 +55,7 @@ public class CXFileTextTailReader {
 	 * @param aCharsetName
 	 */
 	public CXFileTextTailReader(final File aFile, final String aCharsetName) {
-		this(aFile, Charset.forName(aCharsetName));
+		super(aFile, aCharsetName);
 
 	}
 
@@ -75,7 +63,7 @@ public class CXFileTextTailReader {
 	 * @param aFilePath
 	 */
 	public CXFileTextTailReader(final String aFilePath) {
-		this(new File(aFilePath));
+		super(aFilePath);
 	}
 
 	/**
@@ -83,7 +71,7 @@ public class CXFileTextTailReader {
 	 * @param aFileCharset
 	 */
 	public CXFileTextTailReader(final String aFilePath, final Charset aFileCharset) {
-		this(new File(aFilePath), aFileCharset);
+		super(aFilePath, aFileCharset);
 	}
 
 	/**
@@ -91,7 +79,7 @@ public class CXFileTextTailReader {
 	 * @param aFileCharset
 	 */
 	public CXFileTextTailReader(final String aFilePath, final String aCharsetName) {
-		this(new File(aFilePath), Charset.forName(aCharsetName));
+		super(aFilePath, aCharsetName);
 	}
 
 	/**
@@ -106,41 +94,6 @@ public class CXFileTextTailReader {
 			aLines.addFirst(aOutput.toString());
 		}
 		aOutput.reset();
-	}
-
-	/**
-	 * @return
-	 */
-	public File getFile() {
-		return pFile;
-	}
-
-	/**
-	 * @return
-	 */
-	Charset getFileCharset() {
-		return pFileCharset;
-	}
-
-	/**
-	 * @return
-	 */
-	String getFileCharsetName() {
-		return getFileCharset().name();
-	}
-
-	/**
-	 * @return
-	 */
-	public String getFileName() {
-		return pFile.getName();
-	}
-
-	/**
-	 * @return
-	 */
-	public Path getPath() {
-		return getFile().toPath();
 	}
 
 	/**
@@ -266,13 +219,4 @@ public class CXFileTextTailReader {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return String.format("file name=[%s] charset=[%s]", getFileName(), getFileCharsetName());
-	}
 }
