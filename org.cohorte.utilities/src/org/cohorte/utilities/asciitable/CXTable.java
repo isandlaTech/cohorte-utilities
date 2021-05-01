@@ -158,7 +158,7 @@ public class CXTable {
 	 * @param aTBodyRows
 	 * @return
 	 */
-	public CXTable addAll(List<CXTBodyRow> aTBodyRows) {
+	public CXTable addAllTBodyRows(List<CXTBodyRow> aTBodyRows) {
 		pBodyRows.addAll(aTBodyRows);
 		return this;
 	}
@@ -169,7 +169,7 @@ public class CXTable {
 	 * @param aTHeaders
 	 * @return
 	 */
-	public CXTable addTHeaders(final CXTHeaderRow aTHeaders) {
+	public CXTable addAllTHeaders(final CXTHeaderRow aTHeaders) {
 
 		pHeaderRow.addAllTH(aTHeaders);
 		return this;
@@ -178,7 +178,7 @@ public class CXTable {
 	/**
 	 * @return
 	 */
-	public List<CXTBodyRow> getBodyRows() {
+	public List<CXTBodyRow> getTBodyRows() {
 		return pBodyRows;
 	}
 
@@ -207,13 +207,6 @@ public class CXTable {
 	/**
 	 * @return
 	 */
-	public CXTHeaderRow getHeader() {
-		return pHeaderRow;
-	}
-
-	/**
-	 * @return
-	 */
 	public CXTHeaderRow getTHeaderRow() {
 		return pHeaderRow;
 	}
@@ -221,18 +214,10 @@ public class CXTable {
 	/**
 	 * @return
 	 */
-	CXTBodyRow newTBodyRow() {
+	public CXTBodyRow newTBodyRow() {
 		CXTBodyRow wRow = new CXTBodyRow();
 		pBodyRows.add(wRow);
 		return wRow;
-	}
-
-	/**
-	 * @return
-	 */
-	public CXTable setBodyRows(List<CXTBodyRow> aTBodyRows) {
-		pBodyRows.clear();
-		return addAll(aTBodyRows);
 	}
 
 	/**
@@ -251,6 +236,14 @@ public class CXTable {
 			}
 		}
 		return this;
+	}
+
+	/**
+	 * @return
+	 */
+	public CXTable setTBodyRows(List<CXTBodyRow> aTBodyRows) {
+		pBodyRows.clear();
+		return addAllTBodyRows(aTBodyRows);
 	}
 
 	/**
@@ -280,7 +273,7 @@ public class CXTable {
 	public CXTable setTHeaderRow(final CXTHeaderRow aTHeaderRow) {
 
 		pHeaderRow.clear();
-		return addTHeaders(aTHeaderRow);
+		return addAllTHeaders(aTHeaderRow);
 	}
 
 	/*

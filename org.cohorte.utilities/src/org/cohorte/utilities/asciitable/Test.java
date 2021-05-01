@@ -192,7 +192,7 @@ public class Test {
 			wTable = new CXTable(CXTable.WITH_NUMBER, "%02d", "Numéro");
 
 			// build header
-			wTable.getHeader()
+			wTable.getTHeaderRow()
 			//
 					.addTH("Zéro", ASCIITable.ALIGN_CENTER)
 					//
@@ -262,7 +262,7 @@ public class Test {
 			wTable = new CXTable(CXTable.WITH_NUMBER, "%02d", "Numéro");
 
 			// build header
-			wTHeaderRow = wTable.getHeader()
+			wTHeaderRow = wTable.getTHeaderRow()
 			//
 					.addTH("User Name", ASCIITable.ALIGN_LEFT)
 					//
@@ -291,7 +291,7 @@ public class Test {
 		// ###########################
 		printTestSeparator();
 
-		List<CXTBodyRow> wRows = wTable.getBodyRows();
+		List<CXTBodyRow> wRows = wTable.getTBodyRows();
 		for (int wTestIdx = 0; wTestIdx < wMax; wTestIdx++) {
 
 			wTimer = CXTimer.newStartedTimer();
@@ -300,7 +300,7 @@ public class Test {
 
 			wTable.setTHeaderRow(wTHeaderRow);
 
-			wTable.setBodyRows(wRows);
+			wTable.setTBodyRows(wRows);
 
 			wTable.toString();
 
@@ -312,7 +312,7 @@ public class Test {
 		// ###########################
 		printTestSeparator();
 
-		wRows = wTable.getBodyRows();
+		wRows = wTable.getTBodyRows();
 		for (int wTestIdx = 0; wTestIdx < wMax; wTestIdx++) {
 
 			wTimer = CXTimer.newStartedTimer();
@@ -321,7 +321,7 @@ public class Test {
 
 			wTable.setTHeaderRow(wTHeaderRow);
 
-			wTable.setBodyRows(wRows);
+			wTable.setTBodyRows(wRows);
 
 			wTable.toString();
 
