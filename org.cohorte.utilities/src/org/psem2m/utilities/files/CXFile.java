@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
+import java.text.DecimalFormat;
 
 import org.psem2m.utilities.CXStringUtils;
 
@@ -42,10 +43,24 @@ public class CXFile extends CXFileBase {
 	 * @return
 	 * @throws Exception
 	 */
-	public static CXFile createTempFile(String aPref, String aSuff,
-			CXFileDir aParentDir) throws Exception {
+	public static CXFile createTempFile(String aPref, String aSuff, CXFileDir aParentDir) throws Exception {
 		final File wFile = File.createTempFile(aPref, aSuff, aParentDir);
 		return new CXFile(wFile.getPath());
+	}
+
+	/**
+	 * @param size
+	 * @return
+	 * @see https
+	 * ://stackoverflow.com/questions/3263892/format-file-size-as-mb-gb-etc
+	 */
+	public static String readableFileSize(final long size) {
+		if (size <= 0) {
+			return "0";
+		}
+		final String[] units = new String[] { "B", "kB", "MB", "GB", "TB" };
+		int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+		return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
 	}
 
 	/**
@@ -54,8 +69,7 @@ public class CXFile extends CXFileBase {
 	 * @return
 	 * @throws Exception
 	 */
-	private static CXFile replaceContentBy(CXFile aDestFile, CXFile aContentFile)
-			throws Exception {
+	private static CXFile replaceContentBy(CXFile aDestFile, CXFile aContentFile) throws Exception {
 		final RandomAccessFile wRAF = new RandomAccessFile(aDestFile, "rw");
 		wRAF.setLength(0);// clean file
 		wRAF.write(aContentFile.readAllBytes());
@@ -114,8 +128,7 @@ public class CXFile extends CXFileBase {
 	 */
 	private void assertExist(String aAction) throws IOException {
 		if (!exists()) {
-			throw new IOException("Can't " + aAction + " file '"
-					+ getAbsolutePath() + "'.\nFile not found.");
+			throw new IOException("Can't " + aAction + " file '" + getAbsolutePath() + "'.\nFile not found.");
 		}
 	}
 
@@ -132,8 +145,7 @@ public class CXFile extends CXFileBase {
 	 * @return aDestFile
 	 * @throws Exception
 	 */
-	public CXFile copyTo(CXFile aDestFile, boolean aDeleteIfExists)
-			throws IOException {
+	public CXFile copyTo(CXFile aDestFile, boolean aDeleteIfExists) throws IOException {
 		assertExist("copy");
 		this.close();
 		if ((!aDestFile.exists()) || (aDestFile.exists() && aDeleteIfExists)) {
@@ -162,17 +174,13 @@ public class CXFile extends CXFileBase {
 	/**
 	 * Copie d'un fichier
 	 *
-	 * @param aDir
-	 *            - Repertoire de copie - null--> Repertoire courant
-	 * @param aName
-	 *            - nom du fichier de destination
-	 * @param aDeleteIfExists
-	 *            - Suppresion du fichier destination
+	 * @param aDir - Repertoire de copie - null--> Repertoire courant
+	 * @param aName - nom du fichier de destination
+	 * @param aDeleteIfExists - Suppresion du fichier destination
 	 * @return fichier de destination
 	 * @throws Exception
 	 */
-	public CXFile copyTo(CXFileDir aDir, String aName, boolean aDeleteIfExists)
-			throws IOException {
+	public CXFile copyTo(CXFileDir aDir, String aName, boolean aDeleteIfExists) throws IOException {
 		CXFileDir wDir = aDir;
 		if (wDir == null) {
 			wDir = getParentDirectory();
@@ -192,9 +200,9 @@ public class CXFile extends CXFileBase {
 	}
 
 	/*
-	 *
+	 * 
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.io.File#delete()
 	 */
 	@Override
@@ -209,8 +217,7 @@ public class CXFile extends CXFileBase {
 	 * @return
 	 * @throws Exception
 	 */
-	public CXFile duplicateIn(CXFile aDestFile, boolean aCreateIfNotExists)
-			throws Exception {
+	public CXFile duplicateIn(CXFile aDestFile, boolean aCreateIfNotExists) throws Exception {
 		assertExist("duplicateIn");
 
 		if (aCreateIfNotExists && !aDestFile.exists()) {
@@ -223,9 +230,9 @@ public class CXFile extends CXFileBase {
 	}
 
 	/*
-	 *
+	 * 
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.lang.Object#finalize()
 	 */
 	@Override
@@ -283,6 +290,13 @@ public class CXFile extends CXFileBase {
 	/**
 	 * @return
 	 */
+	public String getReadableFileSize() {
+		return readableFileSize(size());
+	}
+
+	/**
+	 * @return
+	 */
 	public boolean hasExtension() {
 		return getAbsolutePath().indexOf(EXTENSION_SEP) != -1;
 	}
@@ -310,8 +324,7 @@ public class CXFile extends CXFileBase {
 	 * @return
 	 * @throws Exception
 	 */
-	public CXFile moveTo(CXFile aDestFile, boolean aDeleteIfExists)
-			throws IOException {
+	public CXFile moveTo(CXFile aDestFile, boolean aDeleteIfExists) throws IOException {
 		assertExist("move");
 		close();
 
@@ -319,14 +332,12 @@ public class CXFile extends CXFileBase {
 			if (aDeleteIfExists) {
 				aDestFile.delete();
 			} else {
-				throw new IOException("Can't move file '" + getAbsolutePath()
-						+ "' to '" + aDestFile.getAbsolutePath()
+				throw new IOException("Can't move file '" + getAbsolutePath() + "' to '" + aDestFile.getAbsolutePath()
 						+ "'.\nDestination file already exists.");
 			}
 		}
 		if (!renameTo(aDestFile)) {
-			throw new IOException("Can't move file '" + getAbsolutePath()
-					+ "' to '" + aDestFile.getAbsolutePath()
+			throw new IOException("Can't move file '" + getAbsolutePath() + "' to '" + aDestFile.getAbsolutePath()
 					+ "'.\nMethode \"renameTo\" return false.");
 		}
 		return aDestFile;
@@ -335,16 +346,12 @@ public class CXFile extends CXFileBase {
 	/**
 	 * Deplacement d'un fichier
 	 *
-	 * @param aDir
-	 *            - Repertoire de copie - null--> Repertoire courant
-	 * @param aName
-	 *            - nom du fichier de destination
-	 * @param aDeleteIfExists
-	 *            - Suppresion du fichier destination
+	 * @param aDir - Repertoire de copie - null--> Repertoire courant
+	 * @param aName - nom du fichier de destination
+	 * @param aDeleteIfExists - Suppresion du fichier destination
 	 * @throws Exception
 	 */
-	public CXFile moveTo(CXFileDir aDir, String aName, boolean aDeleteIfExists)
-			throws IOException {
+	public CXFile moveTo(CXFileDir aDir, String aName, boolean aDeleteIfExists) throws IOException {
 		CXFileDir wDir = aDir;
 		if (wDir == null) {
 			wDir = getParentDirectory();
@@ -376,8 +383,7 @@ public class CXFile extends CXFileBase {
 			wStream.close();
 			return wData;
 		} else {
-			throw new IOException("File not opened - Can't read file '"
-					+ getAbsolutePath() + "'");
+			throw new IOException("File not opened - Can't read file '" + getAbsolutePath() + "'");
 		}
 	}
 
