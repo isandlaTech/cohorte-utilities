@@ -26,6 +26,8 @@ import java.util.List;
 
 import org.psem2m.utilities.CXBytesUtils;
 import org.psem2m.utilities.CXOSUtils;
+import org.psem2m.utilities.files.CXFileTextPageReader.CTextPage;
+import org.psem2m.utilities.json.JSONObject;
 
 /**
  * Classe de gestion de fichiers de type TEXT
@@ -618,9 +620,22 @@ public class CXFileText extends CXFile {
 	 * @return
 	 * @throws IOException
 	 */
-	public List<String> readPage(final int aOffset, final int aPageSize) throws IOException {
+	public CTextPage readPage(final int aOffset, final int aPageSize) throws IOException {
 
 		return new CXFileTextPageReader(this, getDefaultEncoding()).readPage(aOffset, aPageSize);
+	}
+
+	/**
+	 * 1.4.0
+	 * 
+	 * @param aOffset
+	 * @param aPageSize
+	 * @return
+	 * @throws IOException
+	 */
+	public JSONObject readPageAsJson(final int aOffset, final int aPageSize) throws IOException {
+
+		return readPage(aOffset, aPageSize).toJson();
 	}
 
 	/**
