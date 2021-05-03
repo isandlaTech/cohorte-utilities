@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.psem2m.utilities.CXBytesUtils;
 import org.psem2m.utilities.CXOSUtils;
-import org.psem2m.utilities.files.CXFileTextPageReader.CTextPage;
+import org.psem2m.utilities.files.CXFileTextReader.CTextPage;
 import org.psem2m.utilities.json.JSONObject;
 
 /**
@@ -346,6 +346,28 @@ public class CXFileText extends CXFile {
 	}
 
 	/**
+	 * 1.4.0
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public long countLines() throws IOException {
+
+		return new CXFileTextReader(this, getDefaultEncoding()).countLines();
+	}
+
+	/**
+	 * 1.4.0
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public long countLines(final String aGrep) throws IOException {
+
+		return new CXFileTextReader(this, getDefaultEncoding()).countLines(aGrep);
+	}
+
+	/**
 	 * @return
 	 */
 	public String getDefaultEncoding() {
@@ -622,7 +644,21 @@ public class CXFileText extends CXFile {
 	 */
 	public CTextPage readPage(final int aOffset, final int aPageSize) throws IOException {
 
-		return new CXFileTextPageReader(this, getDefaultEncoding()).readPage(aOffset, aPageSize);
+		return readPage(aOffset, aPageSize, CXFileTextReader.NO_GREP);
+	}
+
+	/**
+	 * 1.4.0
+	 * 
+	 * @param aOffset
+	 * @param aPageSize
+	 * @param aGrep
+	 * @return
+	 * @throws IOException
+	 */
+	public CTextPage readPage(final int aOffset, final int aPageSize, final String aGrep) throws IOException {
+
+		return new CXFileTextReader(this, getDefaultEncoding()).readPage(aOffset, aPageSize, aGrep);
 	}
 
 	/**
@@ -635,7 +671,21 @@ public class CXFileText extends CXFile {
 	 */
 	public JSONObject readPageAsJson(final int aOffset, final int aPageSize) throws IOException {
 
-		return readPage(aOffset, aPageSize).toJson();
+		return readPageAsJson(aOffset, aPageSize, CXFileTextReader.NO_GREP);
+	}
+
+	/**
+	 * 1.4.0
+	 * 
+	 * @param aOffset
+	 * @param aPageSize
+	 * @param aGrep
+	 * @return
+	 * @throws IOException
+	 */
+	public JSONObject readPageAsJson(final int aOffset, final int aPageSize, final String aGrep) throws IOException {
+
+		return readPage(aOffset, aPageSize, aGrep).toJson();
 	}
 
 	/**
@@ -666,7 +716,9 @@ public class CXFileText extends CXFile {
 	 */
 	public List<String> tail(final int aNumberOfLines) throws IOException {
 
-		return new CXFileTextTailReader(this, getDefaultEncoding()).tail(aNumberOfLines);
+		CTextPage wPage = new CXFileTextReader(this, getDefaultEncoding()).tail(aNumberOfLines);
+
+		return wPage.getLines();
 	}
 
 	/**
