@@ -17,11 +17,10 @@ public class CXJsModule extends CXJsSource {
 	private final static String DIR_CURRENT = "./";
 	private final static String DIR_PARENT = "../";
 
-	protected static CXJsModule loadNewModule(CXJsSource aParent, String aRelPath, String aInclude)
-			throws Exception {
+	protected static CXJsModule loadNewModule(CXJsSource aParent, String aRelPath, String aInclude) throws Exception {
 		if (aRelPath == null || aRelPath.isEmpty()) {
-			throw new Exception("Bad include syntax[" + aInclude + "] - ParentDir["
-					+ aParent.getSrcRootDir().getPath() + "]");
+			throw new Exception(
+					"Bad include syntax[" + aInclude + "] - ParentDir[" + aParent.getSrcRootDir().getPath() + "]");
 		}
 		String wRelPath = aRelPath.replace(CXRsrcUriDir.BAD_SEPARATOR, CXRsrcUriDir.SEPARATOR);
 		CXRsrcUriDir wSrcRootDir = aParent.getSrcRootDir();
@@ -37,8 +36,8 @@ public class CXJsModule extends CXJsSource {
 				}
 			} while (wSrcRootDir != null && wRelPath.startsWith(DIR_PARENT));
 			if (wSrcRootDir == null) {
-				throw new Exception("Bad include[" + aInclude + " - ParentDir["
-						+ aParent.getSrcRootDir().getPath() + "]");
+				throw new Exception(
+						"Bad include[" + aInclude + " - ParentDir[" + aParent.getSrcRootDir().getPath() + "]");
 			}
 		} else {
 			if (wRelPath.startsWith(DIR_CURRENT)) {
@@ -61,7 +60,7 @@ public class CXJsModule extends CXJsSource {
 	 * @param aRelPath
 	 * @param aInclude
 	 */
-	private CXJsModule(CXJsSource aParent, CXRsrcUriDir aParentDir, String aRelPath, String aInclude) {
+	protected CXJsModule(CXJsSource aParent, CXRsrcUriDir aParentDir, String aRelPath, String aInclude) {
 		super(aParent);
 		pPath = new CXRsrcUriPath(aParentDir, aRelPath);
 		setSrcRootDir(pPath.getParent());
@@ -71,8 +70,7 @@ public class CXJsModule extends CXJsSource {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.psem2m.utilities.scripting.CXJsSource#addDescriptionInBuffer(java
+	 * @see org.psem2m.utilities.scripting.CXJsSource#addDescriptionInBuffer(java
 	 * .lang.Appendable)
 	 */
 	@Override
@@ -206,8 +204,7 @@ public class CXJsModule extends CXJsSource {
 	 */
 	@Override
 	protected void loadThrowExcep(CXJsSourceMain aMain, Throwable e) throws CXJsExcepLoad {
-		throw new CXJsExcepLoad(aMain, e, "Error reading module " + getFileName() + " - Include["
-				+ pInclude + "]");
+		throw new CXJsExcepLoad(aMain, e, "Error reading module " + getFileName() + " - Include[" + pInclude + "]");
 	}
 
 	/**
@@ -226,15 +223,14 @@ public class CXJsModule extends CXJsSource {
 	/**
 	 * UNiquement sir load si !pMergeIncludes
 	 * 
-	 * Empty If Statement finds instances where a condition is checked but
-	 * nothing is done about it.
+	 * Empty If Statement finds instances where a condition is checked but nothing
+	 * is done about it.
 	 * 
 	 * @param aOrderedList
 	 * @param aParentIdx
 	 * @throws CXJsExcepLoad
 	 */
-	protected void orderIncludes(LinkedList<CXJsModule> aOrderedList, int aParentIdx)
-			throws CXJsExcepLoad {
+	protected void orderIncludes(LinkedList<CXJsModule> aOrderedList, int aParentIdx) throws CXJsExcepLoad {
 		int wMyIdx = aOrderedList.indexOf(this);
 		if (aParentIdx < 0) {
 			if (wMyIdx == -1) {
@@ -248,16 +244,15 @@ public class CXJsModule extends CXJsSource {
 				aParentIdx++;
 			} else if (wMyIdx >= aParentIdx) {
 				// Erreur dans les dependances entre modules
-				throw new CXJsExcepLoad(getRoot(), "Include error in module["
-						+ getParent().getSourceName() + "] - Circular reference - Include["
-						+ pInclude + "] - Stack[" + getIncludeStack() + "]", "resolvingIncludes");
+				throw new CXJsExcepLoad(getRoot(), "Include error in module[" + getParent().getSourceName()
+						+ "] - Circular reference - Include[" + pInclude + "] - Stack[" + getIncludeStack() + "]",
+						"resolvingIncludes");
 			}
 			// si wMyIdx < aParentIdx alors Ordre Ok
 		}
 		if (traceDebugOn()) {
 			System.out.println("Current : " + getSourceName() + " idx[" + wMyIdx + "]");
-			System.out.println("  Parent : " + getParent().getSourceName() + " idx[" + aParentIdx
-					+ "]");
+			System.out.println("  Parent : " + getParent().getSourceName() + " idx[" + aParentIdx + "]");
 		}
 		CXJsModule wModule = getFirstChild();
 		if (wModule != null) {
