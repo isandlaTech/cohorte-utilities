@@ -17,8 +17,7 @@ public class CXJsScriptExcepCtx extends CXJsObjectBase {
 	 * @param aSrcMain
 	 * @param aWhere
 	 */
-	public CXJsScriptExcepCtx(CXJsException aExcep, CXJsSourceMain aSrcMain,
-			CXJsSourceLocalization aWhere) {
+	public CXJsScriptExcepCtx(CXJsException aExcep, CXJsSourceMain aSrcMain, CXJsSourceLocalization aWhere) {
 		pWhere = aWhere;
 		pSrcMain = aSrcMain;
 		pExcep = aExcep;
@@ -27,32 +26,27 @@ public class CXJsScriptExcepCtx extends CXJsObjectBase {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.psem2m.utilities.scripting.CXJsObjectBase#addDescriptionInBuffer(
+	 * @see org.psem2m.utilities.scripting.CXJsObjectBase#addDescriptionInBuffer(
 	 * java.lang.Appendable)
 	 */
 	@Override
 	public Appendable addDescriptionInBuffer(Appendable aSB) {
 		// no decription from the super class !
 		// aSB = super.addDescriptionInBuffer(aSB);
-		descrAddLine(aSB, "Error running script - Name[" + getMainSourceName()
-				+ "] - Language[" + getLanguage() + "]");
+		descrAddLine(aSB, "Error running script - Name[" + getMainSourceName() + "] - Language[" + getLanguage() + "]");
 		StringBuilder wTmp = new StringBuilder(1024);
 		String wMsg = pExcep.getMessage();
 		descrAddLine(wTmp, "Message", wMsg);
 		descrAddLine(wTmp, "Action", pExcep.getAction());
 		if (getWhereSrc() != null) {
-			descrAddLine(wTmp, "Error occured line[" + getWhereLineNum()
-					+ "] in " + getWhereSourceName() + " module");
+			descrAddLine(wTmp, "Error occured line[" + getWhereLineNum() + "] in " + getWhereSourceName() + " module");
 			descrAddLine(wTmp, "Code :");
-			descrAddIndent(wTmp,
-					getWhereSrc().getText(getWhereLineNum(), 4, "--> "));
+			descrAddIndent(wTmp, getWhereSrc().getText(getWhereLineNum(), 4, "--> "));
 		}
 		if (pExcep.getCause() != null) {
 			Throwable wCause = pExcep.getCause();
 			while (wCause != null && wCause != pExcep) {
-				if (wCause.getMessage() != null
-						&& wCause.getMessage().indexOf(wMsg) == -1) {
+				if (wCause.getMessage() != null && wCause.getMessage().indexOf(wMsg) == -1) {
 					// FDB - FIche 65417
 					descrAddLine(wTmp, "Cause", wCause.getMessage());
 				}
@@ -110,5 +104,10 @@ public class CXJsScriptExcepCtx extends CXJsObjectBase {
 	 */
 	public CXJsSource getWhereSrc() {
 		return pWhere == null ? null : pWhere.getSrc();
+	}
+
+	@Override
+	public String toString() {
+		return toDescription();
 	}
 }
