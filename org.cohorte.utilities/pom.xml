@@ -6,9 +6,9 @@
 	<groupId>org.cohorte.utilities</groupId>
 	<artifactId>org.cohorte.utilities</artifactId>
 
-	<!-- MOD_OG_20210501 JDK 8 and readPage() method in text file -->
+	<!-- MOD_OG_20210505 correction of missings in the list of exported packages -->
 	<!-- NOTICE : more details in the HISTORY.txt file  -->
-	<version>1.4.1</version>   <!-- ATTENTION : SAME VERSION AS IN THE OSGi MANIFEST -->
+	<version>1.4.2</version>   <!-- ATTENTION : SAME VERSION AS IN THE OSGi MANIFEST -->
 
 	<packaging>eclipse-plugin</packaging>
 	

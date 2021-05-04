@@ -2,14 +2,18 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: COHORTE :: Utilities
 Bundle-SymbolicName: org.cohorte.utilities
-Bundle-Version: 1.4.1
+Bundle-Version: 1.4.2
 Bundle-Vendor: Cohorte technologies
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: javax.script,
  org.cohorte.utilities,
+ org.cohorte.utilities.asciitable,
+ org.cohorte.utilities.asciitable.impl,
+ org.cohorte.utilities.asciitable.spec,
  org.cohorte.utilities.encode,
  org.cohorte.utilities.helpers,
  org.cohorte.utilities.junit,
+ org.cohorte.utilities.security,
  org.cohorte.utilities.tests,
  org.psem2m.utilities,
  org.psem2m.utilities.files,
