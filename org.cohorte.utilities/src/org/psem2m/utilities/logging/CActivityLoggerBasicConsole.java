@@ -13,7 +13,41 @@ import org.psem2m.utilities.CXStringUtils;
  */
 public class CActivityLoggerBasicConsole implements IActivityLoggerJul {
 
-	private final static CActivityLoggerBasicConsole sCActivityLoggerBasicConsole = new CActivityLoggerBasicConsole();
+	private final static CActivityLoggerBasicConsole sCActivityLoggerBasicConsole;
+
+	private static final boolean sIsFormatValid;
+
+	static {
+		// true if the Simple formater is configured with the format
+		// CXJulUtils.SIMPLE_FORMATTER_FORMAT
+		sIsFormatValid = CXJulUtils.validSimpleFormaterConfig();
+
+		String wReport = "";
+
+		if (!sIsFormatValid) {
+			try {
+				wReport += '\n' + CXJulUtils.setFormatOfSimpleFormatter(CXJulUtils.SIMPLE_FORMATTER_FORMAT);
+
+				// log ALL !
+				CXJulUtils.getRootLogger().setLevel(Level.ALL);
+
+				// use the SimpleFormatter
+				int wNbHandlerSet = CXJulUtils.setSimpleFormatter(CXJulUtils.getRootLogger());
+
+				wReport += '\n' + String.format("RootLogger: [%d] handlers set with the SimpleFormater", wNbHandlerSet);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		sCActivityLoggerBasicConsole = new CActivityLoggerBasicConsole();
+
+		if (wReport.length() > 0) {
+			sCActivityLoggerBasicConsole.logInfo(CActivityLoggerBasicConsole.class, "static",
+					"Jul logger initialisation: %s", wReport);
+		}
+	}
 
 	/**
 	 * @return
@@ -23,8 +57,6 @@ public class CActivityLoggerBasicConsole implements IActivityLoggerJul {
 	}
 
 	protected IActivityFormater pActivityFormater;
-
-	protected final boolean pIsFormatValid = CXJulUtils.validSimpleFormaterConfig();
 
 	protected final Logger pJulLogger = CXJulUtils.getRootLogger();
 
@@ -39,12 +71,6 @@ public class CActivityLoggerBasicConsole implements IActivityLoggerJul {
 	 */
 	protected CActivityLoggerBasicConsole() {
 		super();
-
-		// log ALL !
-		pJulLogger.setLevel(Level.ALL);
-
-		// use the SimpleFormatter
-		CXJulUtils.setSimpleFormatter(pJulLogger);
 
 		pActivityFormater = CActivityFormaterBasic.getInstance(IActivityFormater.LINE_CONSOLE);
 		pActivityFormater.acceptMultiline(IActivityFormater.MULTILINES_TEXT);
@@ -170,10 +196,11 @@ public class CActivityLoggerBasicConsole implements IActivityLoggerJul {
 	}
 
 	/**
-	 * @return
+	 * @return true if the Simple formater is configured with the
+	 *         SIMPLE_FORMATTER_FORMAT
 	 */
 	public boolean IsSimpleFormatterFormatValid() {
-		return pIsFormatValid;
+		return sIsFormatValid;
 	}
 
 	/**

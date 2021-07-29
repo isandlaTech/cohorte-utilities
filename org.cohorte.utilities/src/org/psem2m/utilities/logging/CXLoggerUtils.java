@@ -14,14 +14,11 @@ public class CXLoggerUtils {
 
 	private static final int BANNER_WIDTH = 140;
 
-	/**
-	 * <pre>
-	 * 	-Djava.util.logging.SimpleFormatter.format=\"%1$tY/%1$tm/%1$td %1$tH-%1$tM-%1$tS.%1$tL|%3$30.30s|%4$8.8s| %5$s%6$s%n\"";
-	 * </pre>
-	 */
-	public static final String SIMPLE_FORMATTER_CONFIG = "%1$tY/%1$tm/%1$td %1$tH-%1$tM-%1$tS.%1$tL|%3$30.30s|%4$8.8s| %5$s%6$s%n";
+	//MOD_OG 1.4.3
+	public static final String SIMPLE_FORMATTER_CONFIG = CXJulUtils.SIMPLE_FORMATTER_FORMAT;// "%1$tY/%1$tm/%1$td %1$tH-%1$tM-%1$tS.%1$tL|%3$30.30s|%4$8.8s| %5$s%6$s%n";
 
-	public static final String SIMPLE_FORMATTER_PROP_NAME = "java.util.logging.SimpleFormatter.format";
+	//MOD_OG 1.4.3
+	public static final String SIMPLE_FORMATTER_PROP_NAME = CXJulUtils.SIMPLE_FORMATTER_FORMAT_PROPERTY;// "java.util.logging.SimpleFormatter.format";
 
 	/**
 	 * @param aChar

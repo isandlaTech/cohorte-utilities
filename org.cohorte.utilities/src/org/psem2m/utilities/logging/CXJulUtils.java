@@ -1,6 +1,5 @@
 package org.psem2m.utilities.logging;
 
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -13,6 +12,7 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+import org.cohorte.utilities.CXClassUtils;
 import org.psem2m.utilities.CXException;
 
 /**
@@ -26,8 +26,31 @@ public class CXJulUtils {
 	public static final String FILTER_JUL_NAME_SHIRO = "org.apache.shiro*";
 	public static final String NO_FILTER = null;
 
-	// issue #29
+	/**
+	 * issue #29 MOD_OG 1.4.3
+	 * 
+	 * <pre>
+	 * DATE(1)                   LEVEL(4) THREAD(3)         SOURCE(2): INSTANCE + METHOD                            LINE (5) + (6)
+	 * <------- 24 car ------->..<-7c-->..<---- 16c ----->..<--------------------- 54c -------------------------->..<------------------ N characters  -------...
+	 *                                                      <--------- 27c------------>..<----------25c ---------->
+	 * Logger File
+	 * 2019/02/12; 10:58:05:630; FINE   ;    SSEMonitor(1); SSEMachineRequestsMaps_6830;                 sendIddle; begin
+	 * 2019/02/12; 10:58:05:630; FINE   ;    SSEMonitor(1); se.CSSEMachineRequests_9877;                 sendIddle; key=[(01,105)(cb6c8485-258a-496c-93a8-40aff9f997b7)] ...
+	 * 2019/02/12; 10:58:05:630; FINE   ;    SSEMonitor(1); SSEMachineRequestsMaps_6830;                 sendIddle; end. NbSentIddle=[0]
+	 * Logger console
+	 * 2019/02/12; 15:59:28:339;   Infos;             main; apps.impl.CTestLogging_0842;                    doTest; SimpleFormatter current format=[%1$tY/%1$tm/%1$td; %1$tH:%1$tM:%1$tS:%1$tL; %4$7.7s; %3$16.016s; %2$54.54s; %5$s%6$s%n]
+	 * 2019/02/12; 15:59:28:344;   Infos;             main; apps.impl.CTestLogging_0842;                    doTest; SimpleFormatter jvm property  =[%1$tY/%1$tm/%1$td; %1$tH:%1$tM:%1$tS:%1$tL; %4$7.7s; %3$16.016s; %2$54.54s; %5$s%6$s%n]
+	 * 2019/02/12; 15:59:28:345;   Infos;             main; apps.impl.CTestLogging_0842;                    doTest; IsSimpleFormatterFormatValid=[true] / JulLogger: Name=[] Level=[ALL] 
+	 * 2019/02/12; 15:59:28:346;   Infos;             main; apps.impl.CTestLogging_0842;                    doTest; logInfo: Ligne log info
+	 * </pre>
+	 * 
+	 * 
+	 * <pre>
+	 * SimpleFormat=[%1$tY/%1$tm/%1$td; %1$tH:%1$tM:%1$tS:%1$tL; %4$7.7s; %3$16.016s; %2$54.54s; %5$s%6$s%n]
+	 * </pre>
+	 */
 	public static final String SIMPLE_FORMATTER_FORMAT = "%1$tY/%1$tm/%1$td; %1$tH:%1$tM:%1$tS:%1$tL; %4$7.7s; %3$16.016s; %2$54.54s; %5$s%6$s%n";
+
 	public static final String SIMPLE_FORMATTER_FORMAT_PROPERTY = "java.util.logging.SimpleFormatter.format";
 
 	protected static SimpleFormatter sSimpleFormatter = new SimpleFormatter();
@@ -243,6 +266,7 @@ public class CXJulUtils {
 
 	/**
 	 * issue #29
+	 * 
 	 * <pre>
 	 * SimpleFormat=[%1$tY/%1$tm/%1$td; %1$tH:%1$tM:%1$tS:%1$tL; %4$7.7s; %3$16.016s; %2$54.54s; %5$s%6$s%n]
 	 * </pre>
@@ -254,23 +278,8 @@ public class CXJulUtils {
 	}
 
 	/**
-	 * @return
-	 */
-	public static String getSimpleFormatterCurrentFormat() {
-
-		//
-		// format string for printing the log record
-		// private static final String format
-		try {
-			Field wFormatField = getSimpleFormatterFormatField();
-			// static field: instance is null
-			return String.valueOf(wFormatField.get(null));
-		} catch (Exception e) {
-			return String.format("ERROR: %s", CXException.eCauseMessagesInString(e));
-		}
-	}
-
-	/**
+	 * MOD_OG_1.4.3
+	 * 
 	 * retreive the static private field "format" of the class "SimpleFormatter"
 	 * 
 	 * <pre>
@@ -279,13 +288,18 @@ public class CXJulUtils {
 	 * </pre>
 	 * 
 	 * @return
-	 * @throws NoSuchFieldException
-	 * @throws SecurityException
 	 */
-	private static Field getSimpleFormatterFormatField() throws NoSuchFieldException, SecurityException {
-		Field wFormatField = SimpleFormatter.class.getDeclaredField("format");
-		wFormatField.setAccessible(true);
-		return wFormatField;
+	public static String getSimpleFormatterCurrentFormat() {
+
+		// format string for printing the log record
+		// private static final String format
+		try {
+			return CXClassUtils.getPrivateStaticFinalString(SimpleFormatter.class, "format");
+		}
+		//
+		catch (Exception e) {
+			return String.format("ERROR: %s", CXException.eCauseMessagesInString(e));
+		}
 	}
 
 	/**
@@ -297,43 +311,9 @@ public class CXJulUtils {
 	}
 
 	/**
-	 *
-	 *
-	 * The formatting can be customized by specifying the format string in the
-	 * java.util.logging.SimpleFormatter.format property.
-	 *
-	 * <pre>
-	 * where the arguments and their index are:
-	 * 0 format  - the java.util.Formatter format string specified in the java.util.logging.SimpleFormatter.format property or the default format.
-	 * 1 date    - a Date object representing event time of the log record.
-	 * 2 source  - a string representing the caller, if available; otherwise, the logger's name.
-	 * 3 logger  - the logger's name.
-	 * 4 level   - the log level.
-	 * 5 message - the formatted log message returned from the Formatter.formatMessage(LogRecord) method. It uses java.text formatting and does not use the java.util.Formatter format argument.
-	 * 6 thrown  - a string representing the throwable associated with the log record and its backtrace beginning with a newline character,
-	 *            if any; otherwise, an empty string.
-	 * </pre>
-	 *
-	 * <ul>
-	 * <li>'Y' Year, formatted as at least four digits
-	 * <li>'m' Month, formatted as two digits
-	 * <li>'d' Day of month, formatted as two digits
-	 * <li>'H' Hour of the day for the 24-hour clock
-	 * <li>'M' Minute within the hour formatted as two digits
-	 * <li>'S' Seconds within the minute, formatted as two digits
-	 * <li>'L' Millisecond within the second formatted as three digits
-	 * </ul>
-	 *
-	 * FORMAT ==> -Djava.util.logging.SimpleFormatter.format
-	 *
-	 * "%1$tY/%1$tm/%1$td %1$tH-%1$tM-%1$tS.%1$tL|%3$46s|%4$14s| %5$s%6$s%n";
-	 *
-	 * @see http 
-	 *      ://docs.oracle.com/javase/7/docs/api/java/util/logging/SimpleFormatter
-	 *      .html#formatting
-	 * @see http 
-	 *      ://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html#syntax
-	 *
+	 * MOD_OG 1.4.3
+	 * 
+	 * set
 	 *
 	 * @return a repport
 	 */
@@ -359,16 +339,18 @@ public class CXJulUtils {
 				wHandlers = wMainLogger.getHandlers();
 				if (wHandlers != null && wHandlers.length > 0) {
 					for (final Handler wHandler : wHandlers) {
-						if (wHandler instanceof ConsoleHandler) {
-							wHandler.setFormatter(sSimpleFormatter);
-							wSB.append(String.format("\n(%3d) [%s] setSimpleFormatter=[%b]", wHandlerIdx,
-									"ConsoleHandler", true));
 
-						} else if (wHandler instanceof FileHandler) {
+						boolean wToSet = ((wHandler instanceof ConsoleHandler) || (wHandler instanceof FileHandler));
+
+						if (wToSet) {
 							wHandler.setFormatter(sSimpleFormatter);
-							wSB.append(String.format("\n(%3d) [%s] setSimpleFormatter=[%b]", wHandlerIdx,
-									"FileHandler", true));
 						}
+
+						String wHandlerClassName = wHandler.getClass().getSimpleName();
+
+						wSB.append(String.format("\n(%3d) [%s] setSimpleFormatter=[%b]", wHandlerIdx,
+								wHandlerClassName, wToSet));
+
 						wHandlerIdx++;
 					}
 				}
@@ -388,6 +370,25 @@ public class CXJulUtils {
 	}
 
 	/**
+	 * MOD_OG 1.4.3
+	 * 
+	 * <pre>
+	 * 61    // format string for printing the log record
+	 * 62    private static final String format = LoggingSupport.getSimpleFormat();
+	 * </pre>
+	 * 
+	 * @param aFormat
+	 *            the format to replace the format given by the method
+	 *            "LoggingSupport.getSimpleFormat() "
+	 * @return the report of the setting
+	 * @throws Exception
+	 */
+	public static String setFormatOfSimpleFormatter(final String aFormat) throws Exception {
+
+		return CXClassUtils.setPrivateStaticFinalString(SimpleFormatter.class, "format", aFormat);
+	}
+
+	/**
 	 * @param aLogger
 	 *            The Jul logger to set
 	 * @param aFormatter
@@ -402,10 +403,10 @@ public class CXJulUtils {
 		if (wHandlers != null && wHandlers.length > 0) {
 			for (final Handler wHandler : wHandlers) {
 				if (wHandler instanceof ConsoleHandler) {
-					wHandler.setFormatter(sSimpleFormatter);
+					wHandler.setFormatter(aFormatter);
 					wNbSet++;
 				} else if (wHandler instanceof FileHandler) {
-					wHandler.setFormatter(sSimpleFormatter);
+					wHandler.setFormatter(aFormatter);
 					wNbSet++;
 				}
 			}
@@ -437,8 +438,11 @@ public class CXJulUtils {
 		return addDescriptionInSB(new StringBuilder(), wLoggerName, aLogger).toString();
 	}
 
-	/**issue #29
-	 * @return
+	/**
+	 * issue #29 MOD_OG 1.4.3
+	 * 
+	 * @return true if the Simple formater is configured with the format
+	 *         CXJulUtils.SIMPLE_FORMATTER_FORMAT
 	 */
 	public static boolean validSimpleFormaterConfig() {
 		return SIMPLE_FORMATTER_FORMAT.equals(getSimpleFormatterCurrentFormat());

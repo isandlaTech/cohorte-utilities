@@ -2,6 +2,10 @@ package org.cohorte.utilities;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -18,17 +22,19 @@ import org.psem2m.utilities.logging.CActivityLoggerBasicConsole;
  * Usage:
  * 
  * <pre>
-		// Usage example:
-		 class FooBar
-		 {
-		    static final Logger LOGGER = LoggerFactory.getLogger(CallerClassGetter.getCallerClass())
-		 }
+ * 		// Usage example:
+ * 		 class FooBar
+ * 		 {
+ * 		    static final Logger LOGGER = LoggerFactory.getLogger(CallerClassGetter.getCallerClass())
+ * 		 }
  * </pre>
  * 
  * @author ogattaz
  * 
  * @see Getting the class name from a static method in Java
- *      https://stackoverflow.com/questions/936684/getting-the-class-name-from-a-static-method-in-java
+ *      https://stackoverflow
+ *      .com/questions/936684/getting-the-class-name-from-a-
+ *      static-method-in-java
  */
 public final class CXClassUtils extends SecurityManager {
 
@@ -71,20 +77,28 @@ public final class CXClassUtils extends SecurityManager {
 	}
 
 	/**
-	 * return the first class of the list of callers which is :
-	 * <lu>
-	 * <li>outside the package ofthe class "org.cohorte.utilities.CXClassUtils"</li>
-	 * <li>not the aAssignableClass</li>
-	 * <li>assignable to the aAssignableClass</li>
-	 * </ul>
+	 * @param e
+	 * @return
+	 */
+	private static String dumpThrowable(final Throwable e) {
+		StringWriter wSW = new StringWriter();
+		e.printStackTrace(new PrintWriter(wSW));
+		return wSW.toString();
+	}
 
+	/**
+	 * return the first class of the list of callers which is : <lu> <li>outside
+	 * the package ofthe class "org.cohorte.utilities.CXClassUtils"</li> <li>not
+	 * the aAssignableClass</li> <li>assignable to the aAssignableClass</li>
+	 * </ul>
+	 * 
 	 * <pre>
-		   [class org.cohorte.utilities.CXClassUtils, 
-			class org.cohorte.utilities.CXClassUtils, 
-			class org.cohorte.utilities.junit.CAbstractJunitTest, 
-			class test.org.cohorte.utilities.picosoc.CTestComponentsLogger, 
-			...
-			]
+	 * 		   [class org.cohorte.utilities.CXClassUtils, 
+	 * 			class org.cohorte.utilities.CXClassUtils, 
+	 * 			class org.cohorte.utilities.junit.CAbstractJunitTest, 
+	 * 			class test.org.cohorte.utilities.picosoc.CTestComponentsLogger, 
+	 * 			...
+	 * 			]
 	 * </pre>
 	 * 
 	 * @return the first class of the list of callers which is ...
@@ -96,18 +110,18 @@ public final class CXClassUtils extends SecurityManager {
 
 		for (Class<?> wClass : getCallersClasses()) {
 
-			// is this class outside the package "fr.agilium.dimensions.core.junit"
+			// is this class outside the package
+			// "fr.agilium.dimensions.core.junit"
 			if (!wCurrentPackage.equals(wClass.getPackage())) {
 
 				// is this class extends CAbstractBaseTest?
-				if (aAssignableClass!= wClass && aAssignableClass.isAssignableFrom(wClass)) {
-					return (Class<R>)wClass;
+				if (aAssignableClass != wClass && aAssignableClass.isAssignableFrom(wClass)) {
+					return (Class<R>) wClass;
 				}
 			}
 		}
-		String wMessage = String.format(
-				"Unable to find a class<? extends %s> outside of the package [%s]. Callers:%s",aAssignableClass.getSimpleName(),
-				wCurrentPackage.toString(), dumpCallersClasses(','));
+		String wMessage = String.format("Unable to find a class<? extends %s> outside of the package [%s]. Callers:%s",
+				aAssignableClass.getSimpleName(), wCurrentPackage.toString(), dumpCallersClasses(','));
 
 		CActivityLoggerBasicConsole.getInstance().logSevere(aAssignableClass, "getCallerClass", wMessage);
 
@@ -115,7 +129,8 @@ public final class CXClassUtils extends SecurityManager {
 	}
 
 	/**
-	 * Recursive method used to find all classes in a given directory and subdirs.
+	 * Recursive method used to find all classes in a given directory and
+	 * subdirs.
 	 *
 	 * @param directory
 	 *            The base directory
@@ -149,9 +164,12 @@ public final class CXClassUtils extends SecurityManager {
 
 				if (aClassFilter.hasExtendedClass()) {
 
-					// Determines if the class or interface represented by this Class object is
-					// either the same as, or is a superclass or superinterface of, the class or
-					// interface represented by the specified Class parameter. It returns true if
+					// Determines if the class or interface represented by this
+					// Class object is
+					// either the same as, or is a superclass or superinterface
+					// of, the class or
+					// interface represented by the specified Class parameter.
+					// It returns true if
 					// so;
 					if (!aClassFilter.getExtendedClass().isAssignableFrom(wClass)) {
 						continue;
@@ -163,7 +181,7 @@ public final class CXClassUtils extends SecurityManager {
 		}
 		return classes;
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -177,8 +195,8 @@ public final class CXClassUtils extends SecurityManager {
 	 * @throws ClassNotFoundException
 	 * @throws IOException
 	 */
-	public static List<Class<?>> getClasses(final IXClassFilter aClassFilter)
-			throws ClassNotFoundException, IOException {
+	public static List<Class<?>> getClasses(final IXClassFilter aClassFilter) throws ClassNotFoundException,
+			IOException {
 
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
@@ -205,8 +223,8 @@ public final class CXClassUtils extends SecurityManager {
 	}
 
 	/**
-	 * Scans all classes accessible from the context class loader which belong to
-	 * the given package and subpackages.
+	 * Scans all classes accessible from the context class loader which belong
+	 * to the given package and subpackages.
 	 *
 	 * @param aPackageName
 	 *            The base package
@@ -222,11 +240,133 @@ public final class CXClassUtils extends SecurityManager {
 	}
 
 	/**
+	 * MOD_OG 1.4.3
+	 * 
+	 * @param aClass
+	 * @param aFieldName
+	 * @return
+	 * @throws Exception
+	 */
+	public static String getPrivateStaticFinalString(Class<?> aClass, final String aFieldName) throws Exception {
+
+		try {
+
+			Field wTargetField = aClass.getDeclaredField(aFieldName);
+
+			boolean wHasToRemovePrivate = !wTargetField.isAccessible();
+			// remove "private"
+			if (wHasToRemovePrivate) {
+				wTargetField.setAccessible(true);
+			}
+
+			// remove "final"
+			// @see
+			// https://stackoverflow.com/questions/3301635/change-private-static-final-field-using-java-reflection
+
+			int wOriginalModifiers = wTargetField.getModifiers();
+			boolean wHasToRemoveFinal = (wOriginalModifiers & ~Modifier.FINAL) != wOriginalModifiers;
+			Field wModifiersField = null;
+
+			if (wHasToRemoveFinal) {
+				wModifiersField = Field.class.getDeclaredField("modifiers");
+				wModifiersField.setAccessible(true);
+				wModifiersField.setInt(wTargetField, wTargetField.getModifiers() & ~Modifier.FINAL);
+			}
+
+			String wValue = String.valueOf(wTargetField.get(null));
+
+			// if (wHasToRemoveFinal) {
+			// wModifiersField.setInt(wTargetField, wOriginalModifiers);
+			// }
+			// if (wHasToRemovePrivate) {
+			// wTargetField.setAccessible(false);
+			// }
+
+			return wValue;
+		} catch (Exception e) {
+			throw new Exception(String.format("ERROR: Unable to get the value of the private field [%s.%s]",
+			//
+					aClass.getSimpleName(),
+					//
+					aFieldName), e);
+		}
+	}
+
+	/**
 	 * @param aPackageName
 	 * @return
 	 */
 	public static String packageNameToPath(final String aPackageName) {
 		return aPackageName.replace('.', '/');
+	}
+
+	/**
+	 * MOD_OG 1.4.3
+	 * 
+	 * @param aClass
+	 * @param aFieldName
+	 * @param aValue
+	 * @return the report of the setting
+	 * @throws Exception
+	 */
+	public static String setPrivateStaticFinalString(Class<?> aClass, final String aFieldName, final String aValue)
+			throws Exception {
+
+		try {
+
+			Field wTargetField = aClass.getDeclaredField(aFieldName);
+
+			boolean wHasToRemovePrivate = !wTargetField.isAccessible();
+			// remove "private"
+			if (wHasToRemovePrivate) {
+				wTargetField.setAccessible(true);
+			}
+
+			// remove "final"
+			// @see
+			// https://stackoverflow.com/questions/3301635/change-private-static-final-field-using-java-reflection
+
+			int wOriginalModifiers = wTargetField.getModifiers();
+			boolean wHasToRemoveFinal = (wOriginalModifiers & ~Modifier.FINAL) != wOriginalModifiers;
+			Field wModifiersField = null;
+
+			if (wHasToRemoveFinal) {
+				wModifiersField = Field.class.getDeclaredField("modifiers");
+				wModifiersField.setAccessible(true);
+				wModifiersField.setInt(wTargetField, wTargetField.getModifiers() & ~Modifier.FINAL);
+			}
+
+			// verif
+			String wOldValue = String.valueOf(wTargetField.get(null));
+
+			// set static field
+			wTargetField.set(null, aValue);
+
+			// verif
+			String wNewValue = String.valueOf(wTargetField.get(null));
+
+			// verif
+			boolean wModified = aValue.equals(wNewValue);
+
+			return String.format("Modified static fied: [%s.%s]\n - Modified=[%b]\n - NewValue=[%s]\n - OldValue=[%s]",
+			//
+					aClass.getSimpleName(),
+					//
+					wTargetField.getName(),
+					//
+					wModified,
+					//
+					wNewValue,
+					//
+					wOldValue);
+
+		} catch (Exception e) {
+			throw new Exception(String.format("ERROR: Unable to set the final field [%s.%s]",
+			//
+					aClass.getSimpleName(),
+					//
+					aFieldName), e);
+		}
 	}
 
 	/**

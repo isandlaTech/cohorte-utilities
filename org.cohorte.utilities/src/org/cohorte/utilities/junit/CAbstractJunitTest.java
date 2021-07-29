@@ -10,6 +10,7 @@ import org.psem2m.utilities.CXException;
 import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.CXTimer;
 import org.psem2m.utilities.logging.CActivityLoggerBasicConsole;
+import org.psem2m.utilities.logging.CXJulUtils;
 import org.psem2m.utilities.logging.CXLoggerUtils;
 import org.psem2m.utilities.logging.IActivityLogger;
 import org.psem2m.utilities.logging.IActivityLoggerJul;
@@ -21,14 +22,6 @@ import org.psem2m.utilities.logging.IActivityLoggerJul;
 public class CAbstractJunitTest {
 
 	private static final String END_TEST_LINE = CXStringUtils.strFromChar('.', 140);
-
-	private static final String ID_PARAM_SIMPLE_FORMATTER = "java.util.logging.SimpleFormatter.format";
-
-	private static final String LINE_FORMAT_VALUE = "%1$tY/%1$tm/%1$td; %1$tH:%1$tM:%1$tS:%1$tL; %4$7.7s; %3$16.016s; %2$54.54s; %5$s%6$s%n"
-			.replaceAll("%", "%%");
-
-	private static final String PARAM_SIMPLE_FORMATTER_DEF = String.format("-D%s=\"%s\"", ID_PARAM_SIMPLE_FORMATTER,
-			LINE_FORMAT_VALUE);
 
 	protected static final IActivityLogger sLogger = CActivityLoggerBasicConsole.getInstance();
 
@@ -72,7 +65,7 @@ public class CAbstractJunitTest {
 	public static CTestsRegistry initializeTestsRegistry() {
 		return initializeTestsRegistry(CXClassUtils.findClass(CAbstractJunitTest.class));
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -84,13 +77,14 @@ public class CAbstractJunitTest {
 
 		return wTestsRegistry;
 	}
+
 	/**
 	 * 
 	 */
 	public static void logBannerDestroy() {
 		logBannerDestroy(CXClassUtils.findClass(CAbstractJunitTest.class));
 	}
-	
+
 	/**
 	 * @param aClassTestSimpleName
 	 */
@@ -99,14 +93,14 @@ public class CAbstractJunitTest {
 		CXLoggerUtils.logBannerInfo(sLogger, aClassTest, "destroy", "END OF TEST %s \n%s", aClassTest.getSimpleName(),
 				dumpTestsMaps());
 	}
-	
+
 	/**
 	 * 
 	 */
 	public static void logBannerInitialization() {
 		logBannerInitialization(CXClassUtils.findClass(CAbstractJunitTest.class));
 	}
-	
+
 	/**
 	 * <pre>
 	 * -Djava.util.logging.SimpleFormatter.format="%1$tY/%1$tm/%1$td; %1$tH:%1$tM:%1$tS:%1$tL; %4$7.7s; %3$16.016s; %2$54.54s; %5$s%6$s%n"
@@ -119,18 +113,24 @@ public class CAbstractJunitTest {
 
 		StringBuilder wBannerLines = new StringBuilder();
 
-		wBannerLines.append(
-				String.format("BEGIN OF TEST %s . NbTest=[%s]", aClassTest.getSimpleName(), getNbtestsMap(aClassTest)));
+		wBannerLines.append(String.format("BEGIN OF TEST %s . NbTest=[%s]", aClassTest.getSimpleName(),
+				getNbtestsMap(aClassTest)));
 
-		boolean wIsSimpleFormatterConfigured = (System.getProperty(ID_PARAM_SIMPLE_FORMATTER) != null);
+		// MOD_OG_1.4.3
+		boolean wIsSimpleFormatterConfigured = CXJulUtils.validSimpleFormaterConfig();
 
 		if (!wIsSimpleFormatterConfigured) {
-			wBannerLines
-					.append(String.format("\nThe Simpleformatter must be configured using the property[%s] .\neg. %s",
-							ID_PARAM_SIMPLE_FORMATTER, PARAM_SIMPLE_FORMATTER_DEF));
-		}
 
-		CXLoggerUtils.logBannerInfo(sLogger, aClassTest, "initialize", wBannerLines.toString());
+			wBannerLines
+					.append(String
+							.format("\nThe Simpleformatter isn't configured.\nThe current format is       [%s].\nThe user friendly format is [%s].",
+							//
+									CXJulUtils.getSimpleFormatterCurrentFormat(),
+									//
+									CXJulUtils.SIMPLE_FORMATTER_FORMAT));
+		}
+		// notice, the lines of the banner contains '%' characters.
+		CXLoggerUtils.logBannerInfo(sLogger, aClassTest, "initialize", "%s", wBannerLines.toString());
 
 		sLogger.logInfo(aClassTest, "initialize", "CAbstractJunitTest initialized.");
 
@@ -138,8 +138,8 @@ public class CAbstractJunitTest {
 
 		((IActivityLoggerJul) sLogger).getJulLogger().setLevel(Level.ALL);
 
-		sLogger.logInfo(aClassTest, "initialize", "Logger=[%s] Level=[%s]", sLogger.toDescription(),
-				sLogger.getLevel().getName());
+		sLogger.logInfo(aClassTest, "initialize", "Logger=[%s] Level=[%s]", sLogger.toDescription(), sLogger.getLevel()
+				.getName());
 
 	}
 
@@ -240,8 +240,8 @@ public class CAbstractJunitTest {
 	 * @param aArgs
 	 * @throws Exception
 	 */
-	protected void logBeginMultipleKO(final CAbstractJunitTest aTest, final String aMethodName, final String aRunningId,
-			final String aMessage, final Throwable aException) throws Exception {
+	protected void logBeginMultipleKO(final CAbstractJunitTest aTest, final String aMethodName,
+			final String aRunningId, final String aMessage, final Throwable aException) throws Exception {
 
 		getTestsRegistry().setTestKO(aMethodName, aRunningId, aMessage, aException);
 
@@ -257,8 +257,8 @@ public class CAbstractJunitTest {
 	 * @param aArgs
 	 * @throws Exception
 	 */
-	protected void logBeginMultipleOK(final CAbstractJunitTest aTest, final String aMethodName, final String aRunningId,
-			final String aLineFormat, final Object... aArgs) throws Exception {
+	protected void logBeginMultipleOK(final CAbstractJunitTest aTest, final String aMethodName,
+			final String aRunningId, final String aLineFormat, final Object... aArgs) throws Exception {
 
 		getTestsRegistry().setTestOK(aMethodName, aRunningId);
 
