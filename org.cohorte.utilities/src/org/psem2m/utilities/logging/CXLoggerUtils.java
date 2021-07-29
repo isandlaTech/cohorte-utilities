@@ -14,10 +14,10 @@ public class CXLoggerUtils {
 
 	private static final int BANNER_WIDTH = 140;
 
-	//MOD_OG 1.4.3
+	// MOD_OG 1.4.3
 	public static final String SIMPLE_FORMATTER_CONFIG = CXJulUtils.SIMPLE_FORMATTER_FORMAT;// "%1$tY/%1$tm/%1$td %1$tH-%1$tM-%1$tS.%1$tL|%3$30.30s|%4$8.8s| %5$s%6$s%n";
 
-	//MOD_OG 1.4.3
+	// MOD_OG 1.4.3
 	public static final String SIMPLE_FORMATTER_PROP_NAME = CXJulUtils.SIMPLE_FORMATTER_FORMAT_PROPERTY;// "java.util.logging.SimpleFormatter.format";
 
 	/**
@@ -145,21 +145,23 @@ public class CXLoggerUtils {
 	 * <pre>
 	 * 	############################################################################################################################################
 	 * 	#
-	 * 	# THE SIMPLE FORMATTER ISN'T CONFIFGURED
+	 * 	# The Simpleformatter isn't configured
 	 * 	#
-	 * 	# You have to set the system property [java.util.logging.SimpleFormatter.format]
+	 * 	# The current format is       [java.util.logging.SimpleFormatter.format]
 	 * 	#
-	 * 	# eg. -Djava.util.logging.SimpleFormatter.format="%1$tY/%1$tm/%1$td %1$tH-%1$tM-%1$tS.%1$tL|%3$30.30s|%4$8.8s| %5$s%6$s%n" 
+	 * 	# The user friendly format is [%1$tY/%1$tm/%1$td %1$tH-%1$tM-%1$tS.%1$tL|%3$30.30s|%4$8.8s| %5$s%6$s%n" 
 	 * 	#
 	 * 	############################################################################################################################################
 	 * </pre>
 	 */
 	public static void logBannerSimpleFormatter(final IActivityLogger aLogger, final Object aWho, final String aWhat) {
 
-		StringBuilder wText = new StringBuilder();
-		wText.append("THE SIMPLE FORMATTER ISN'T CONFIFGURED");
-		wText.append(String.format("\nYou have to set the system property [%s]", SIMPLE_FORMATTER_PROP_NAME));
-		wText.append(String.format("\neg. -D%s=\"%s\" ", SIMPLE_FORMATTER_PROP_NAME, SIMPLE_FORMATTER_CONFIG));
+		String wText = String
+				.format("The Jul Simpleformatter isn't configured.\nThe current format is       [%s].\nThe user friendly format is [%s].",
+				//
+						CXJulUtils.getSimpleFormatterCurrentFormat(),
+						//
+						CXJulUtils.SIMPLE_FORMATTER_FORMAT);
 
 		CXLoggerUtils.logBanner(aLogger, Level.SEVERE, aWho, aWhat, "%s", wText.toString());
 	}
