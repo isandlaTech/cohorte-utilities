@@ -1,3 +1,16 @@
+
+from 1.4.3 to 1.4.4
+---------------------
+MOD_OG_20210812
+	-  enhancement of CXQueryString
+	
+from 1.4.2 to 1.4.3
+---------------------
+MOD_OG_20210505
+	- Automatic SimpleFormat management when using a CActivityLoggerBasicConsole.
+	- Usage of SIMPLE_FORMATTER_FORMAT constant everywhere.
+	- Managment of the private and final String fields in CXClassUtils.
+	
 from 1.4.1 to 1.4.2
 ---------------------
 MOD_OG_20210505
