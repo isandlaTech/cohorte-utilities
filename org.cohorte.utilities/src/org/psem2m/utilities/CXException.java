@@ -686,7 +686,8 @@ public class CXException extends Exception implements IXDescriber {
 	}
 
 	/**
-	 * returns the full description of a throwable and its chain of causes using the same formatter used for the logging output.
+	 * returns the full description of a throwable and its chain of causes using
+	 * the same formatter used for the logging output.
 	 * 
 	 * @param e
 	 * @return the dump of the exception
@@ -695,20 +696,21 @@ public class CXException extends Exception implements IXDescriber {
 	public static String eFullInString(final Throwable e) {
 		return eFullInString(e, SEPARATOR_LINE);
 	}
-	
+
 	/**
-	 * MOD_OG_20210427 - 
+	 * MOD_OG_20210427 -
 	 * 
-	 * returns the full description of a throwable and its chain of causes using the same formatter used for the logging output.
+	 * returns the full description of a throwable and its chain of causes using
+	 * the same formatter used for the logging output.
 	 * 
 	 * @param e
 	 * @param aSeparator
 	 * @return the dump of the exception
 	 */
 	public static String eFullInString(Throwable e, char aSeparator) {
-		return CLogToolsException.getInstance().eInString(e,aSeparator);
+		return CLogToolsException.getInstance().eInString(e, aSeparator);
 	}
-	
+
 	/**
 	 * Retourne les composantes (classe,why ,mess,stack) d'une exception dans
 	 * une string
@@ -810,20 +812,19 @@ public class CXException extends Exception implements IXDescriber {
 
 	/**
 	 * @param aThrowable
-	 * @return
-	 * @throws Exception
+	 * @return a List of String
 	 */
-	public static List<String> getCauseMessages(Throwable aThrowable) throws Exception {
+	public static List<String> getCauseMessages(final Throwable aThrowable) {
 
 		List<String> wList = new ArrayList<>();
-		int wNbMess = 1;
+		int wIdx = 0;
 		String wMess;
 		while (aThrowable != null) {
 			wMess = aThrowable.getLocalizedMessage();
 			final boolean wHasMess = (wMess != null && !wMess.isEmpty());
 
 			if (wHasMess) {
-				if (wNbMess > 1) {
+				if (wIdx > 0) {
 					wMess = aThrowable.getClass().getSimpleName().concat(":").concat(wMess);
 				}
 				wList.add(wMess);
@@ -831,7 +832,7 @@ public class CXException extends Exception implements IXDescriber {
 				// s'il n'y a pas de message on met la classe
 				wList.add(aThrowable.getClass().getName());
 			}
-			wNbMess++;
+			wIdx++;
 		}
 		return wList;
 	}
