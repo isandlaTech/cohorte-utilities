@@ -2,7 +2,8 @@
 from 1.4.3 to 1.4.4
 ---------------------
 MOD_OG_20210812
-	-  enhancement of CXQueryString
+	- Enhancement of CXQueryString
+	- Removing throws Exception on method getCauseMessages()
 	
 from 1.4.2 to 1.4.3
 ---------------------
