@@ -331,7 +331,11 @@ public class CXException extends Exception implements IXDescriber {
 
 	private final static String MESS_NO_STACK = "No stack available";
 
-	private static final boolean MESS_WHITH_STACK = true;
+	public static final boolean MESS_WHITH_NUMBER = true;
+
+	public static final boolean MESS_WHITH_SIMPLE_CLASS_NAME = true;
+
+	public static final boolean MESS_WHITH_STACK = true;
 
 	private final static String MESSAGE_SEPARATOR = " , ";
 
@@ -815,24 +819,46 @@ public class CXException extends Exception implements IXDescriber {
 	 * @return a List of String
 	 */
 	public static List<String> getCauseMessages(final Throwable aThrowable) {
+		return getCauseMessages(aThrowable, !MESS_WHITH_NUMBER, !MESS_WHITH_SIMPLE_CLASS_NAME);
+	}
+
+	/**
+	 * @param aThrowable
+	 * @param aWithNumber
+	 * @param aWithClassName
+	 * @return
+	 */
+	public static List<String> getCauseMessages(final Throwable aThrowable, final boolean aWithNumber,
+			final boolean aWithClassName) {
 
 		List<String> wList = new ArrayList<>();
+		Throwable wThrowable = aThrowable;
 		int wIdx = 0;
-		String wMess;
-		while (aThrowable != null) {
-			wMess = aThrowable.getLocalizedMessage();
-			final boolean wHasMess = (wMess != null && !wMess.isEmpty());
+		StringBuilder wMess;
+		String wLocalizedMessage;
+		boolean wHaswLocalizedMessage;
+		while (wThrowable != null) {
+			wMess = new StringBuilder();
+			if (aWithNumber) {
+				wMess.append(String.format("(level %2d) ", wIdx));
+			}
+			wLocalizedMessage = wThrowable.getLocalizedMessage();
 
-			if (wHasMess) {
-				if (wIdx > 0) {
-					wMess = aThrowable.getClass().getSimpleName().concat(":").concat(wMess);
-				}
-				wList.add(wMess);
+			wHaswLocalizedMessage = (wLocalizedMessage != null && !wLocalizedMessage.isEmpty());
+
+			if (wHaswLocalizedMessage) {
+				wMess.append(wLocalizedMessage);
 			} else {
 				// s'il n'y a pas de message on met la classe
-				wList.add(aThrowable.getClass().getName());
+				wMess.append(wThrowable.getClass().getName());
 			}
+
+			if (aWithClassName) {
+				wMess.append(" : ").append(wThrowable.getClass().getName());
+			}
+			wList.add(wMess.toString());
 			wIdx++;
+			wThrowable = wThrowable.getCause();
 		}
 		return wList;
 	}

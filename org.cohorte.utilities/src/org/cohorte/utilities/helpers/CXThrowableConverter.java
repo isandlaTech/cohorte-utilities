@@ -8,35 +8,35 @@ import org.psem2m.utilities.logging.IActivityLogger;
 
 /**
  * <pre>
-	{
-    "class": "CManagerException",
-    "message": "Cannot authenticated user manageree!",
-    "details": [
-      "( 0) Unable to check the account using the login [manageree]",
-      "( 1) Unable to retreive the account from table [account] using [manageree]"
-    ],
-    "stacktrace": {
-      "class": "CManagerException",
-      "message": "Unable to check the account using the login [manageree]",
-      "stack": [
-        "  0: fr.quasar.dimensions.auth.managers.services.CLoginDimAuthManager(login:337)",
-        "  1: fr.quasar.dimensions.auth.restapi.endpoints.CLoginV3(loginV3:119)",
-	...
-        " 52: java.lang.Thread(run:748)"
-      ],
-      "cause": {
-        "class": "CNotFoundException",
-        "message": "Unable to retreive the account from table [account] using [manageree]",
-        "level": 1,
-        "stack": [
-          "  0: fr.quasar.dimensions.auth.managers.objects.CAccountManager(selectOneByCondition:302)",
-          "  1: fr.quasar.dimensions.auth.managers.objects.CAccountManager(selectOneByLogin:318)",
-	...
-          " 54: java.lang.Thread(run:748)"
-        ]
-      }
-    }
-  }
+ * 	{
+ *     "class": "CManagerException",
+ *     "message": "Cannot authenticated user manageree!",
+ *     "details": [
+ *       "( 0) Unable to check the account using the login [manageree]",
+ *       "( 1) Unable to retreive the account from table [account] using [manageree]"
+ *     ],
+ *     "stacktrace": {
+ *       "class": "CManagerException",
+ *       "message": "Unable to check the account using the login [manageree]",
+ *       "stack": [
+ *         "  0: fr.quasar.dimensions.auth.managers.services.CLoginDimAuthManager(login:337)",
+ *         "  1: fr.quasar.dimensions.auth.restapi.endpoints.CLoginV3(loginV3:119)",
+ * 	...
+ *         " 52: java.lang.Thread(run:748)"
+ *       ],
+ *       "cause": {
+ *         "class": "CNotFoundException",
+ *         "message": "Unable to retreive the account from table [account] using [manageree]",
+ *         "level": 1,
+ *         "stack": [
+ *           "  0: fr.quasar.dimensions.auth.managers.objects.CAccountManager(selectOneByCondition:302)",
+ *           "  1: fr.quasar.dimensions.auth.managers.objects.CAccountManager(selectOneByLogin:318)",
+ * 	...
+ *           " 54: java.lang.Thread(run:748)"
+ *         ]
+ *       }
+ *     }
+ *   }
  * </pre>
  * 
  * @author ogattaz
@@ -168,12 +168,10 @@ public class CXThrowableConverter {
 
 		wObj.put(MESSAGE, getThrowableMessage(aThrowable));
 
-		if (aLevel > 0) {
-			try {
-				wObj.put(LEVEL, aLevel);
-			} catch (JSONException e) {
-				wObj.put(LEVEL, "JSONException " + e.getMessage());
-			}
+		try {
+			wObj.put(LEVEL, aLevel);
+		} catch (JSONException e) {
+			wObj.put(LEVEL, "JSONException " + e.getMessage());
 		}
 
 		JSONArray wStack = new JSONArray();
