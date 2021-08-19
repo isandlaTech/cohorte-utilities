@@ -1,3 +1,7 @@
+from 1.4.4 to 1.4.5
+---------------------
+MOD_OG_20210819
+	- Correction if no stack available
 
 from 1.4.3 to 1.4.4
 ---------------------

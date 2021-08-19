@@ -88,7 +88,7 @@ public class CJunitCXEception extends CAbstractJunitTest {
 	@Test
 	public void test05() throws Exception {
 		String wMethodName = "test05";
-		String wAction = "Retreive Dimensions";
+		String wAction = "Dump exception Dimensions";
 		try {
 
 			logBegin(this, wMethodName, "%s Begin...", wAction);
@@ -118,6 +118,8 @@ public class CJunitCXEception extends CAbstractJunitTest {
 						"getCauseMessages():\n%s",
 						CXStringUtils.stringListToString(CXException.getCauseMessages(e, CXException.MESS_WHITH_NUMBER,
 								!CXException.MESS_WHITH_SIMPLE_CLASS_NAME), CXStringUtils.LINE_SEP));
+
+				getLogger().logInfo(this, wMethodName, "eInString :\n%s", e);
 
 			}
 
