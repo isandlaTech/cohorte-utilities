@@ -163,6 +163,9 @@ public class CLogToolsException {
 
 		int wMax = wStackElements.length;
 		if (wMax == 0) {
+			if (aShift != null) {
+				aSB.append(aShift);
+			}
 			aSB.append(NO_STACK);
 		}
 		//
