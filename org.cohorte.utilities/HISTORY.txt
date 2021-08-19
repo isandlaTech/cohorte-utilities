@@ -2,6 +2,7 @@ from 1.4.4 to 1.4.5
 ---------------------
 MOD_OG_20210819
 	- Correction if no stack available
+	- Enhancement of the formatting of the Exception in a string : method "eInString()".
 
 from 1.4.3 to 1.4.4
 ---------------------

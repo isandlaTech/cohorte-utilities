@@ -19,9 +19,13 @@ public class CLogToolsException {
 
 	private final static CLogToolsException sCLogToolsException = new CLogToolsException();
 
-	static final char SEPARATOR_COMA = ',';
+	public static final char SEPARATOR_COMA = ',';
 
-	static final char SEPARATOR_LINE = '\n';
+	public static final char SEPARATOR_LINE = '\n';
+
+	public static final char SEPARATOR_TAB = '\t';
+
+	public static final String SHIFT_TAB = "\t";
 
 	/**
 	 * @return
@@ -132,8 +136,9 @@ public class CLogToolsException {
 			}
 			aSB.append(String.format("(%2d) %s | %s | %s", wI, wCause.getClass().getSimpleName(),
 					wCause.getLocalizedMessage(), firstLineOfStackInString(wCause)));
-			aSB.append(PREFIX_CAUSES).append('=').append(aSeparator);
-			appendStack(aSB, "\t", wCause, aSeparator);
+			aSB.append(aSeparator);
+			aSB.append(SHIFT_TAB).append(PREFIX_STACK).append('=').append(aSeparator);
+			appendStack(aSB, SHIFT_TAB, wCause, aSeparator);
 
 			wCause = wCause.getCause();
 			wI++;
