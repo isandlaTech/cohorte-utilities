@@ -104,6 +104,7 @@ public class CXLoggerUtils {
 	 */
 	public static String logBanner(final IActivityLogger aLogger, final Level aLevel, final Object aWho,
 			final String aWhat, final String aFormat, final Object... aArgs) {
+
 		return logBanner(aLogger, aLevel, aWho, aWhat, '#', true, aFormat, aArgs);
 	}
 
@@ -124,6 +125,7 @@ public class CXLoggerUtils {
 	 */
 	public static String logBannerInfo(final IActivityLogger aLogger, final Object aWho, final String aWhat,
 			final char aChar, final boolean aInterline, final String aFormat, final Object... aArgs) {
+
 		return logBanner(aLogger, Level.INFO, aWho, aWhat, aChar, aInterline, aFormat, aArgs);
 	}
 
@@ -138,31 +140,30 @@ public class CXLoggerUtils {
 	 */
 	public static String logBannerInfo(final IActivityLogger aLogger, final Object aWho, final String aWhat,
 			final String aFormat, final Object... aArgs) {
+
 		return logBanner(aLogger, Level.INFO, aWho, aWhat, '#', true, aFormat, aArgs);
 	}
 
 	/**
+	 * MOD_OG_1.4.6
+	 * 
 	 * <pre>
 	 * 	############################################################################################################################################
 	 * 	#
 	 * 	# The Simpleformatter isn't configured
 	 * 	#
-	 * 	# The current format is       [java.util.logging.SimpleFormatter.format]
+	 * 	# The current format is       [%1$tb %1$td, %1$tY %1$tl:%1$tM:%1$tS %1$Tp %2$s%n%4$s: %5$s%6$s%n]
 	 * 	#
-	 * 	# The user friendly format is [%1$tY/%1$tm/%1$td %1$tH-%1$tM-%1$tS.%1$tL|%3$30.30s|%4$8.8s| %5$s%6$s%n" 
+	 * 	# The user friendly format is [%1$tY/%1$tm/%1$td; %1$tH:%1$tM:%1$tS:%1$tL; %4$7.7s; %3$16.016s; %2$54.54s; %5$s%6$s%n] 
 	 * 	#
 	 * 	############################################################################################################################################
 	 * </pre>
 	 */
 	public static void logBannerSimpleFormatter(final IActivityLogger aLogger, final Object aWho, final String aWhat) {
 
-		String wText = String
-				.format("The Jul Simpleformatter isn't configured.\nThe current format is       [%s].\nThe user friendly format is [%s].",
-				//
-						CXJulUtils.getSimpleFormatterCurrentFormat(),
-						//
-						CXJulUtils.SIMPLE_FORMATTER_FORMAT);
+		String wBannerLines = CXJulUtils.buildBannerLines();
 
-		CXLoggerUtils.logBanner(aLogger, Level.SEVERE, aWho, aWhat, "%s", wText.toString());
+		CXLoggerUtils.logBanner(aLogger, Level.SEVERE, aWho, aWhat, "%s", wBannerLines);
 	}
+
 }

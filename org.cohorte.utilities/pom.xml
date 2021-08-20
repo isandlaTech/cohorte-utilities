@@ -6,9 +6,9 @@
 	<groupId>org.cohorte.utilities</groupId>
 	<artifactId>org.cohorte.utilities</artifactId>
 
-	<!-- MOD_OG_20210819 -->
+	<!-- MOD_OG_20210820 -->
 	<!-- NOTICE : more details in the HISTORY.txt file  -->
-	<version>1.4.5</version>   <!-- ATTENTION : SAME VERSION AS IN THE OSGi MANIFEST -->
+	<version>1.4.6</version>   <!-- ATTENTION : SAME VERSION AS IN THE OSGi MANIFEST -->
 
 	<packaging>eclipse-plugin</packaging>
 	

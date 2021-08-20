@@ -7,10 +7,13 @@ import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.psem2m.utilities.CXJvmUtils;
 import org.psem2m.utilities.CXStringUtils;
 import org.psem2m.utilities.logging.CActivityLoggerBasicConsole;
 
@@ -246,44 +249,67 @@ public final class CXClassUtils extends SecurityManager {
 	 * @param aFieldName
 	 * @return
 	 * @throws Exception
+	 * 
 	 */
 	public static String getPrivateStaticFinalString(Class<?> aClass, final String aFieldName) throws Exception {
+
+		if (!CXJvmUtils.isJava8()) {
+			return String.format(
+					"Can't retrieve the value of the field [%s:%s], the jvm version [%s] is greater than [1.8]",
+					aClass.getSimpleName(), aFieldName, CXJvmUtils.getJavaVersion());
+		}
 
 		try {
 
 			Field wTargetField = aClass.getDeclaredField(aFieldName);
 
-			boolean wHasToRemovePrivate = !wTargetField.isAccessible();
-			// remove "private"
-			if (wHasToRemovePrivate) {
-				wTargetField.setAccessible(true);
-			}
+			final boolean wHasToRemovePrivate = !wTargetField.isAccessible();
 
-			// remove "final"
 			// @see
 			// https://stackoverflow.com/questions/3301635/change-private-static-final-field-using-java-reflection
 
 			int wOriginalModifiers = wTargetField.getModifiers();
-			boolean wHasToRemoveFinal = (wOriginalModifiers & ~Modifier.FINAL) != wOriginalModifiers;
-			Field wModifiersField = null;
+			final boolean wHasToRemoveFinal = (wOriginalModifiers & ~Modifier.FINAL) != wOriginalModifiers;
 
-			if (wHasToRemoveFinal) {
-				wModifiersField = Field.class.getDeclaredField("modifiers");
-				wModifiersField.setAccessible(true);
-				wModifiersField.setInt(wTargetField, wTargetField.getModifiers() & ~Modifier.FINAL);
+			if (wHasToRemoveFinal || wHasToRemovePrivate) {
+				// wrapping setAccessible
+				Exception wException = AccessController.doPrivileged(new PrivilegedAction<Exception>() {
+					@Override
+					public Exception run() {
+
+						try {
+							// remove "final"
+							if (wHasToRemoveFinal) {
+								Field wModifiersField = Field.class.getDeclaredField("modifiers");
+								wModifiersField.setAccessible(true);
+								int wNewModifier = wOriginalModifiers & ~Modifier.FINAL;
+								wModifiersField.setInt(wTargetField, wNewModifier);
+							}
+
+							// remove "private"
+							if (wHasToRemovePrivate) {
+								wTargetField.setAccessible(true);
+							}
+
+							return null;
+						}
+						//
+						catch (Exception e) {
+							return e;
+						}
+					}
+				});
+				if (wException != null) {
+					throw wException;
+				}
 			}
 
 			String wValue = String.valueOf(wTargetField.get(null));
 
-			// if (wHasToRemoveFinal) {
-			// wModifiersField.setInt(wTargetField, wOriginalModifiers);
-			// }
-			// if (wHasToRemovePrivate) {
-			// wTargetField.setAccessible(false);
-			// }
-
 			return wValue;
-		} catch (Exception e) {
+		}
+		//
+		catch (Exception e) {
 			throw new Exception(String.format("ERROR: Unable to get the value of the private field [%s.%s]",
 			//
 					aClass.getSimpleName(),
@@ -303,37 +329,69 @@ public final class CXClassUtils extends SecurityManager {
 	/**
 	 * MOD_OG 1.4.3
 	 * 
+	 * 
 	 * @param aClass
 	 * @param aFieldName
 	 * @param aValue
 	 * @return the report of the setting
 	 * @throws Exception
+	 * 
+	 * @see https 
+	 *      ://stackoverflow.com/questions/3301635/change-private-static-final
+	 *      -field-using-java-reflection
 	 */
 	public static String setPrivateStaticFinalString(Class<?> aClass, final String aFieldName, final String aValue)
 			throws Exception {
+
+		if (!CXJvmUtils.isJava8()) {
+			return String.format(
+					"Can't retrieve the value of the field [%s:%s], the jvm version [%s] is greater than [1.8]",
+					aClass.getSimpleName(), aFieldName, CXJvmUtils.getJavaVersion());
+		}
 
 		try {
 
 			Field wTargetField = aClass.getDeclaredField(aFieldName);
 
-			boolean wHasToRemovePrivate = !wTargetField.isAccessible();
-			// remove "private"
-			if (wHasToRemovePrivate) {
-				wTargetField.setAccessible(true);
-			}
+			final boolean wHasToRemovePrivate = !wTargetField.isAccessible();
 
-			// remove "final"
 			// @see
 			// https://stackoverflow.com/questions/3301635/change-private-static-final-field-using-java-reflection
 
 			int wOriginalModifiers = wTargetField.getModifiers();
-			boolean wHasToRemoveFinal = (wOriginalModifiers & ~Modifier.FINAL) != wOriginalModifiers;
-			Field wModifiersField = null;
+			final boolean wHasToRemoveFinal = (wOriginalModifiers & ~Modifier.FINAL) != wOriginalModifiers;
 
-			if (wHasToRemoveFinal) {
-				wModifiersField = Field.class.getDeclaredField("modifiers");
-				wModifiersField.setAccessible(true);
-				wModifiersField.setInt(wTargetField, wTargetField.getModifiers() & ~Modifier.FINAL);
+			if (wHasToRemoveFinal || wHasToRemovePrivate) {
+				// wrapping setAccessible
+				Exception wException = AccessController.doPrivileged(new PrivilegedAction<Exception>() {
+					@Override
+					public Exception run() {
+
+						try {
+							// remove "final"
+							if (wHasToRemoveFinal) {
+								Field wModifiersField = Field.class.getDeclaredField("modifiers");
+								wModifiersField.setAccessible(true);
+								int wNewModifier = wOriginalModifiers & ~Modifier.FINAL;
+								wModifiersField.setInt(wTargetField, wNewModifier);
+							}
+
+							// remove "private"
+							if (wHasToRemovePrivate) {
+								wTargetField.setAccessible(true);
+							}
+
+							return null;
+						}
+						//
+						catch (Exception e) {
+							return e;
+						}
+					}
+				});
+				if (wException != null) {
+					throw wException;
+				}
 			}
 
 			// verif

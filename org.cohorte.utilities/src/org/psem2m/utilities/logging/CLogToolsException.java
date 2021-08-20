@@ -25,7 +25,7 @@ public class CLogToolsException {
 
 	public static final char SEPARATOR_TAB = '\t';
 
-	public static final String SHIFT_TAB = "\t";
+	public static final String SHIFT_PREFIX = "    ";
 
 	/**
 	 * @return
@@ -137,8 +137,8 @@ public class CLogToolsException {
 			aSB.append(String.format("(%2d) %s | %s | %s", wI, wCause.getClass().getSimpleName(),
 					wCause.getLocalizedMessage(), firstLineOfStackInString(wCause)));
 			aSB.append(aSeparator);
-			aSB.append(SHIFT_TAB).append(PREFIX_STACK).append('=').append(aSeparator);
-			appendStack(aSB, SHIFT_TAB, wCause, aSeparator);
+			aSB.append(SHIFT_PREFIX).append(PREFIX_STACK).append('=').append(aSeparator);
+			appendStack(aSB, SHIFT_PREFIX, wCause, aSeparator);
 
 			wCause = wCause.getCause();
 			wI++;

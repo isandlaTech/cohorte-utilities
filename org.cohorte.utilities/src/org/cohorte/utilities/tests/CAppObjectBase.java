@@ -19,10 +19,10 @@ public abstract class CAppObjectBase {
 	public CAppObjectBase() {
 		super();
 
-		// MOD_OG 1.4.3
+		// MOD_OG 1.4.6
 		// if the simple formatter isn't configured with the
 		// SIMPLE_FORMATTER_FORMAT
-		if (!CXJulUtils.validSimpleFormaterConfig()) {
+		if (!CXJulUtils.isSimpleFormaterConfiguredWithCohorteFormat()) {
 			CXLoggerUtils.logBannerSimpleFormatter(pLogger, this, "<init>");
 		}
 	}

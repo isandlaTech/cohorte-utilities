@@ -116,19 +116,11 @@ public class CAbstractJunitTest {
 		wBannerLines.append(String.format("BEGIN OF TEST %s . NbTest=[%s]", aClassTest.getSimpleName(),
 				getNbtestsMap(aClassTest)));
 
-		// MOD_OG_1.4.3
-		boolean wIsSimpleFormatterConfigured = CXJulUtils.validSimpleFormaterConfig();
-
-		if (!wIsSimpleFormatterConfigured) {
-
-			wBannerLines
-					.append(String
-							.format("\nThe Simpleformatter isn't configured.\nThe current format is       [%s].\nThe user friendly format is [%s].",
-							//
-									CXJulUtils.getSimpleFormatterCurrentFormat(),
-									//
-									CXJulUtils.SIMPLE_FORMATTER_FORMAT));
+		// MOD_OG_1.4.6
+		if (!CXJulUtils.isSimpleFormaterConfiguredWithCohorteFormat()) {
+			wBannerLines.append('\n').append(CXJulUtils.buildBannerLines());
 		}
+
 		// notice, the lines of the banner contains '%' characters.
 		CXLoggerUtils.logBannerInfo(sLogger, aClassTest, "initialize", "%s", wBannerLines.toString());
 

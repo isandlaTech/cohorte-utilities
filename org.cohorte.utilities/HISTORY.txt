@@ -1,3 +1,8 @@
+from 1.4.5 to 1.4.6
+---------------------
+MOD_OG_20210820
+	- Correction of the managment of the format of the SimpleFormatter when Java > 8
+
 from 1.4.4 to 1.4.5
 ---------------------
 MOD_OG_20210819

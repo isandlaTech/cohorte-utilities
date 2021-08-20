@@ -178,6 +178,25 @@ public class CXJulUtils {
 	}
 
 	/**
+	 * MOD_OG_1.4.6
+	 * 
+	 * @return
+	 */
+	public static String buildBannerLines() {
+
+		StringBuilder wBannerLines = new StringBuilder();
+
+		wBannerLines.append("\nThe Jul SimpleFormatter isn't configured with cohorte format.");
+
+		wBannerLines.append(String.format("\nThe current format is       [%s].",
+				CXJulUtils.getSimpleFormatterCurrentFormat()));
+
+		wBannerLines.append(String.format("\nThe user friendly format is [%s].", CXJulUtils.SIMPLE_FORMATTER_FORMAT));
+
+		return wBannerLines.toString();
+	}
+
+	/**
 	 * @return
 	 */
 	public static String dumpCurrentLoggers() {
@@ -289,7 +308,7 @@ public class CXJulUtils {
 	 * 
 	 * @return
 	 */
-	public static String getSimpleFormatterCurrentFormat() {
+	public static String getSimpleFormatterClassCurrentFormat() {
 
 		// format string for printing the log record
 		// private static final String format
@@ -303,7 +322,29 @@ public class CXJulUtils {
 	}
 
 	/**
-	 * @return
+	 * 
+	 */
+	public static String getSimpleFormatterCurrentFormat() {
+
+		if (isSimpleFormatterJvmPropertyExist()) {
+			return getSimpleFormatterJvmProperty();
+		} else {
+			return getSimpleFormatterClassCurrentFormat();
+		}
+	}
+
+	/**
+	 * MOD_OG 1.4.6
+	 * 
+	 * @return the static instance of SimpleFormatter attached to this class
+	 */
+	public static SimpleFormatter getSimpleFormatterInstance() {
+		return sSimpleFormatter;
+	}
+
+	/**
+	 * @return the value of the system property
+	 *         "java.util.logging.SimpleFormatter.format"
 	 */
 	public static String getSimpleFormatterJvmProperty() {
 
@@ -367,6 +408,57 @@ public class CXJulUtils {
 				wHandlerIdx, wHandlers.length));
 
 		return wSB.toString();
+	}
+
+	/**
+	 * issue #29 MOD_OG 1.4.3 MOD_OG_1.4.6
+	 * 
+	 * @return true if the private static final String 'format' member of the
+	 *         SimpleFormatter.class is set with the format
+	 *         CXJulUtils.SIMPLE_FORMATTER_FORMAT
+	 */
+	public static boolean isSimpleFormaterClassContainsCohorteFormat() {
+
+		return SIMPLE_FORMATTER_FORMAT.equals(getSimpleFormatterClassCurrentFormat());
+	}
+
+	/**
+	 * issue #29 MOD_OG 1.4.3 MOD_OG_1.4.6
+	 * 
+	 * @return true if System property
+	 *         "java.util.logging.SimpleFormatter.format" is set OR if the
+	 *         private static final String 'format' member of the
+	 *         SimpleFormatter.class is set with the format
+	 *         CXJulUtils.SIMPLE_FORMATTER_FORMAT
+	 */
+
+	public static boolean isSimpleFormaterConfiguredWithCohorteFormat() {
+
+		return isSimpleFormatterFormatPropertyContainsCohorteFormat() || isSimpleFormaterClassContainsCohorteFormat();
+
+	}
+
+	/**
+	 * MOD_OG 1.4.3 MOD_OG_1.4.6
+	 * 
+	 * @return true if the system property
+	 *         "java.util.logging.SimpleFormatter.format" exists and set with
+	 *         the cohorte format ?
+	 */
+	public static boolean isSimpleFormatterFormatPropertyContainsCohorteFormat() {
+
+		return SIMPLE_FORMATTER_FORMAT.equals(getSimpleFormatterJvmProperty());
+	}
+
+	/**
+	 * MOD_OG_1.4.6
+	 * 
+	 * @return true if the the system property
+	 *         "java.util.logging.SimpleFormatter.format"exists
+	 */
+	public static boolean isSimpleFormatterJvmPropertyExist() {
+
+		return getSimpleFormatterJvmProperty() != null;
 	}
 
 	/**
@@ -437,15 +529,4 @@ public class CXJulUtils {
 		final String wLoggerName = (aLogger != null) ? aLogger.getName() : "logger null";
 		return addDescriptionInSB(new StringBuilder(), wLoggerName, aLogger).toString();
 	}
-
-	/**
-	 * issue #29 MOD_OG 1.4.3
-	 * 
-	 * @return true if the Simple formater is configured with the format
-	 *         CXJulUtils.SIMPLE_FORMATTER_FORMAT
-	 */
-	public static boolean validSimpleFormaterConfig() {
-		return SIMPLE_FORMATTER_FORMAT.equals(getSimpleFormatterCurrentFormat());
-	}
-
 }
