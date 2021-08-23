@@ -237,8 +237,8 @@ public class CAbstractJunitTest {
 
 		getTestsRegistry().setTestKO(aMethodName, aRunningId, aMessage, aException);
 
-		getLogger().logSevere(this, aMethodName, "--- END TEST ON ERROR : %s" + buildTestFooter(),
-				CXException.eCauseMessagesInString(aException));
+		getLogger().logSevere(this, aMethodName, "--- END TEST ON ERROR : %s\n%s" + buildTestFooter(),
+				CXException.eCauseMessagesInString(aException), CXException.eFullInString(aException));
 	}
 
 	/**

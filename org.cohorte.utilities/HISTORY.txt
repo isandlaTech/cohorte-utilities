@@ -1,5 +1,11 @@
 from 1.4.5 to 1.4.6
 ---------------------
+MOD_OG_20210823
+	- New tools CXAsciiArt, CXTextLineUtils, CXThrowableUtils and CXBannerUtils
+
+
+from 1.4.5 to 1.4.6
+---------------------
 MOD_OG_20210820
 	- Correction of the managment of the format of the SimpleFormatter when Java > 8
 

@@ -15,9 +15,11 @@ public class CXLoggerUtils {
 	private static final int BANNER_WIDTH = 140;
 
 	// MOD_OG 1.4.3
+	@Deprecated
 	public static final String SIMPLE_FORMATTER_CONFIG = CXJulUtils.SIMPLE_FORMATTER_FORMAT;// "%1$tY/%1$tm/%1$td %1$tH-%1$tM-%1$tS.%1$tL|%3$30.30s|%4$8.8s| %5$s%6$s%n";
 
 	// MOD_OG 1.4.3
+	@Deprecated
 	public static final String SIMPLE_FORMATTER_PROP_NAME = CXJulUtils.SIMPLE_FORMATTER_FORMAT_PROPERTY;// "java.util.logging.SimpleFormatter.format";
 
 	/**
@@ -60,10 +62,13 @@ public class CXLoggerUtils {
 
 	/**
 	 * @return
+	 * 
+	 * @see CXJulUtils.isSimpleFormatterJvmPropertyExist()
 	 */
+	@Deprecated
 	public static boolean isSimpleFormatterConfigured() {
-		String wConf = System.getProperty(CXLoggerUtils.SIMPLE_FORMATTER_PROP_NAME);
-		return wConf != null && !wConf.isEmpty();
+
+		return CXJulUtils.isSimpleFormatterJvmPropertyExist();
 	}
 
 	/**

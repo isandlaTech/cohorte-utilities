@@ -1,6 +1,5 @@
 package org.psem2m.utilities;
 
-
 /* Copyright (c) 2008 Sven Jacobs
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -36,7 +35,7 @@ public class CXLoremIpsum {
 
 	public static final String LOREM_IPSUM = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
 
-	private static final String[] loremIpsumWords = LOREM_IPSUM.split("\\s");
+	public static final String[] LOREM_IPSUM_WORDS = LOREM_IPSUM.split("\\s");
 
 	public final static char NO_SEPARATOR = (char) 0;
 
@@ -44,7 +43,7 @@ public class CXLoremIpsum {
 	 * @return
 	 */
 	public static int getNbWordInLoremIpsum() {
-		return loremIpsumWords.length;
+		return LOREM_IPSUM_WORDS.length;
 	}
 
 	/**
@@ -89,7 +88,7 @@ public class CXLoremIpsum {
 		int wNbChars = 0;
 		while (wNbChars < amount) {
 
-			for (String wWord : loremIpsumWords) {
+			for (String wWord : LOREM_IPSUM_WORDS) {
 
 				wWord = CXStringUtils.removeChars(",.", wWord);
 				lorem.append(wWord);
@@ -174,25 +173,24 @@ public class CXLoremIpsum {
 		final int wMax = getNbWordInLoremIpsum();
 
 		if (startIndex < 0 || startIndex > wMax - 1) {
-			throw new IndexOutOfBoundsException(String.format(
-					"startIndex must be >= 0 and < %d", wMax));
+			throw new IndexOutOfBoundsException(String.format("startIndex must be >= 0 and < %d", wMax));
 		}
 
-		int word = startIndex;
+		int wWordIdx = startIndex;
 		final StringBuilder lorem = new StringBuilder();
 
 		for (int i = 0; i < amount; i++) {
-			if (word == wMax) {
-				word = 0;
+			if (wWordIdx == wMax) {
+				wWordIdx = 0;
 			}
 
-			lorem.append(loremIpsumWords[word]);
+			lorem.append(LOREM_IPSUM_WORDS[wWordIdx]);
 
 			if (i < amount - 1) {
 				lorem.append(' ');
 			}
 
-			word++;
+			wWordIdx++;
 		}
 
 		return lorem.toString();
