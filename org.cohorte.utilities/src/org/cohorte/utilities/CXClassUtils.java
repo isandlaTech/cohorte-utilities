@@ -2,8 +2,6 @@ package org.cohorte.utilities;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URL;
@@ -77,16 +75,6 @@ public final class CXClassUtils extends SecurityManager {
 	public static String dumpCallersClasses(final char aSeparator) {
 
 		return addCallersClassesInSB(new StringBuilder(), aSeparator).toString();
-	}
-
-	/**
-	 * @param e
-	 * @return
-	 */
-	private static String dumpThrowable(final Throwable e) {
-		StringWriter wSW = new StringWriter();
-		e.printStackTrace(new PrintWriter(wSW));
-		return wSW.toString();
 	}
 
 	/**

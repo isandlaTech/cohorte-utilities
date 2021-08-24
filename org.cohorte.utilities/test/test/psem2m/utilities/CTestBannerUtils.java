@@ -136,8 +136,8 @@ public class CTestBannerUtils extends CAbstractJunitTest {
 	/**
 	 * @return a random int between 10 and 200
 	 */
-	private int randomNbWord() {
-		return 10 + new Double(Math.random() * 190).intValue();
+	private int randomNbWord(final int aMin, final int aMax) {
+		return aMin + new Double(Math.random() * (aMax - aMin)).intValue();
 	}
 
 	/**
@@ -156,7 +156,7 @@ public class CTestBannerUtils extends CAbstractJunitTest {
 
 		final StringBuilder wWords = new StringBuilder();
 
-		int wNbMax = randomNbWord();
+		int wNbMax = randomNbWord(10, 80);
 		String wWord;
 		int wWordIdx = 0;
 
@@ -221,9 +221,9 @@ public class CTestBannerUtils extends CAbstractJunitTest {
 
 			logBegin(this, wMethodName, "%s Begin...", wAction);
 
-			String[] wTestConfig = new String[] { "???", "@", "-", "???", "", "24", "#", ".", "-1", "0" };
+			String[] wTestConfig = new String[] { "???", "@", "-", "???", "", "20", "#", ".", "-1", "0" };
 
-			int wMax = CXBannerUtils.FONTS.length;
+			int wMax = CXAsciiArt.FONTS.length;
 
 			int wIdx = 0;
 			for (String wFont : CXAsciiArt.FONTS) {
@@ -255,26 +255,21 @@ public class CTestBannerUtils extends CAbstractJunitTest {
 
 			logBegin(this, wMethodName, "%s Begin...", wAction);
 
-			CXArtSetting wArtSetting = new CXArtSetting(new Font(CXAsciiArt.FONT_MONOSPACED, Font.PLAIN, 24), ' ', '@');
+			String wlabel = randomWord() + ' ' + randomWord();
 
-			CXAsciiArt wCXAsciiArt = new CXAsciiArt(wArtSetting);
+			CXArtSetting wSetting = new CXArtSetting(new Font(CXAsciiArt.FONT_MONOSPACED, Font.PLAIN, 20), '.', '@');
 
-			String wAsciiArtContent = wCXAsciiArt.drawString(randomWord() + ' ' + randomWord());
+			String wArtContent = new CXAsciiArt(wSetting).drawString(wlabel);
 
-			int wLenMaxOfLines = CXBannerUtils.lenMaxOfLines(wAsciiArtContent);
+			int wLenMaxOfLines = CXBannerUtils.lenMaxOfLines(wArtContent);
 
-			StringBuilder wText = new StringBuilder();
-			wText.append(wAsciiArtContent);
-			wText.append('\n');
-			wText.append(randomWords(wLenMaxOfLines));
-			wText.append('\n');
-			wText.append(randomWords(wLenMaxOfLines));
+			StringBuilder wText = new StringBuilder(wArtContent);
 			wText.append('\n');
 			wText.append(randomWords(wLenMaxOfLines));
 			wText.append('\n');
 			wText.append(randomWords(wLenMaxOfLines));
 
-			String wBanner = CXBannerUtils.build('#', ' ', -1, 0, CXBannerUtils.WITH_BLANK_LINES, wText.toString());
+			String wBanner = CXBannerUtils.build('#', '.', -1, 0, CXBannerUtils.WITH_BLANK_LINES, wText.toString());
 
 			getLogger().logInfo(this, wMethodName, "BANNER: \n%s", wBanner);
 
