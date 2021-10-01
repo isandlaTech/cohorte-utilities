@@ -14,14 +14,13 @@ public class CXLoggerUtils {
 
 	private static final int BANNER_WIDTH = 140;
 
-	/**
-	 * <pre>
-	 * 	-Djava.util.logging.SimpleFormatter.format=\"%1$tY/%1$tm/%1$td %1$tH-%1$tM-%1$tS.%1$tL|%3$30.30s|%4$8.8s| %5$s%6$s%n\"";
-	 * </pre>
-	 */
-	public static final String SIMPLE_FORMATTER_CONFIG = "%1$tY/%1$tm/%1$td %1$tH-%1$tM-%1$tS.%1$tL|%3$30.30s|%4$8.8s| %5$s%6$s%n";
+	// MOD_OG 1.4.3
+	@Deprecated
+	public static final String SIMPLE_FORMATTER_CONFIG = CXJulUtils.SIMPLE_FORMATTER_FORMAT;// "%1$tY/%1$tm/%1$td %1$tH-%1$tM-%1$tS.%1$tL|%3$30.30s|%4$8.8s| %5$s%6$s%n";
 
-	public static final String SIMPLE_FORMATTER_PROP_NAME = "java.util.logging.SimpleFormatter.format";
+	// MOD_OG 1.4.3
+	@Deprecated
+	public static final String SIMPLE_FORMATTER_PROP_NAME = CXJulUtils.SIMPLE_FORMATTER_FORMAT_PROPERTY;// "java.util.logging.SimpleFormatter.format";
 
 	/**
 	 * @param aChar
@@ -63,10 +62,13 @@ public class CXLoggerUtils {
 
 	/**
 	 * @return
+	 * 
+	 * @see CXJulUtils.isSimpleFormatterJvmPropertyExist()
 	 */
+	@Deprecated
 	public static boolean isSimpleFormatterConfigured() {
-		String wConf = System.getProperty(CXLoggerUtils.SIMPLE_FORMATTER_PROP_NAME);
-		return wConf != null && !wConf.isEmpty();
+
+		return CXJulUtils.isSimpleFormatterJvmPropertyExist();
 	}
 
 	/**
@@ -107,6 +109,7 @@ public class CXLoggerUtils {
 	 */
 	public static String logBanner(final IActivityLogger aLogger, final Level aLevel, final Object aWho,
 			final String aWhat, final String aFormat, final Object... aArgs) {
+
 		return logBanner(aLogger, aLevel, aWho, aWhat, '#', true, aFormat, aArgs);
 	}
 
@@ -127,6 +130,7 @@ public class CXLoggerUtils {
 	 */
 	public static String logBannerInfo(final IActivityLogger aLogger, final Object aWho, final String aWhat,
 			final char aChar, final boolean aInterline, final String aFormat, final Object... aArgs) {
+
 		return logBanner(aLogger, Level.INFO, aWho, aWhat, aChar, aInterline, aFormat, aArgs);
 	}
 
@@ -141,29 +145,30 @@ public class CXLoggerUtils {
 	 */
 	public static String logBannerInfo(final IActivityLogger aLogger, final Object aWho, final String aWhat,
 			final String aFormat, final Object... aArgs) {
+
 		return logBanner(aLogger, Level.INFO, aWho, aWhat, '#', true, aFormat, aArgs);
 	}
 
 	/**
+	 * MOD_OG_1.4.6
+	 * 
 	 * <pre>
 	 * 	############################################################################################################################################
 	 * 	#
-	 * 	# THE SIMPLE FORMATTER ISN'T CONFIFGURED
+	 * 	# The Simpleformatter isn't configured
 	 * 	#
-	 * 	# You have to set the system property [java.util.logging.SimpleFormatter.format]
+	 * 	# The current format is       [%1$tb %1$td, %1$tY %1$tl:%1$tM:%1$tS %1$Tp %2$s%n%4$s: %5$s%6$s%n]
 	 * 	#
-	 * 	# eg. -Djava.util.logging.SimpleFormatter.format="%1$tY/%1$tm/%1$td %1$tH-%1$tM-%1$tS.%1$tL|%3$30.30s|%4$8.8s| %5$s%6$s%n" 
+	 * 	# The user friendly format is [%1$tY/%1$tm/%1$td; %1$tH:%1$tM:%1$tS:%1$tL; %4$7.7s; %3$16.016s; %2$54.54s; %5$s%6$s%n] 
 	 * 	#
 	 * 	############################################################################################################################################
 	 * </pre>
 	 */
 	public static void logBannerSimpleFormatter(final IActivityLogger aLogger, final Object aWho, final String aWhat) {
 
-		StringBuilder wText = new StringBuilder();
-		wText.append("THE SIMPLE FORMATTER ISN'T CONFIFGURED");
-		wText.append(String.format("\nYou have to set the system property [%s]", SIMPLE_FORMATTER_PROP_NAME));
-		wText.append(String.format("\neg. -D%s=\"%s\" ", SIMPLE_FORMATTER_PROP_NAME, SIMPLE_FORMATTER_CONFIG));
+		String wBannerLines = CXJulUtils.buildBannerLines();
 
-		CXLoggerUtils.logBanner(aLogger, Level.SEVERE, aWho, aWhat, "%s", wText.toString());
+		CXLoggerUtils.logBanner(aLogger, Level.SEVERE, aWho, aWhat, "%s", wBannerLines);
 	}
+
 }

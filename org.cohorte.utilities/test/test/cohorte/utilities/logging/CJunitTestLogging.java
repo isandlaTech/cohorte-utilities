@@ -66,7 +66,7 @@ public class CJunitTestLogging extends CAbstractJunitTest {
 					"--------------- Test of the the configuration of the SimpleFormatter");
 
 			getLogger().logInfo(this, wMethodName, "SimpleFormatter current format=[%s]",
-					CXJulUtils.getSimpleFormatterCurrentFormat());
+					CXJulUtils.getSimpleFormatterClassCurrentFormat());
 
 			getLogger().logInfo(this, wMethodName, "SimpleFormatter jvm property  =[%s]",
 					CXJulUtils.getSimpleFormatterJvmProperty());
@@ -81,8 +81,7 @@ public class CJunitTestLogging extends CAbstractJunitTest {
 
 			getLogger().logInfo(this, wMethodName,
 					"IsSimpleFormatterFormatValid=[%b] / JulLogger: Name=[%s] Level=[%s] ",
-					wLoggerBasicConsole.IsSimpleFormatterFormatValid(), wJulLogger.getName(),
-					wJulLogger.getLevel().getName());
+					wLoggerBasicConsole.isCohorteFormatSet(), wJulLogger.getName(), wJulLogger.getLevel().getName());
 
 			getLogger().logInfo(this, wMethodName, "--------------- Test of the level");
 			getLogger().logInfo(this, wMethodName, "logInfo: log line with level INFO");

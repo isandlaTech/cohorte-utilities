@@ -3,8 +3,10 @@ package org.psem2m.utilities.logging;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import org.psem2m.utilities.CXJavaRunContext;
+import org.psem2m.utilities.CXJvmUtils;
 import org.psem2m.utilities.CXStringUtils;
 
 /**
@@ -13,7 +15,97 @@ import org.psem2m.utilities.CXStringUtils;
  */
 public class CActivityLoggerBasicConsole implements IActivityLoggerJul {
 
-	private final static CActivityLoggerBasicConsole sCActivityLoggerBasicConsole = new CActivityLoggerBasicConsole();
+	private final static CActivityLoggerBasicConsole sCActivityLoggerBasicConsole;
+
+	private static final boolean sIsCohorteFormatSet;
+
+	// MOD_OG_1.4.6
+
+	static {
+
+		boolean wIsCohorteFormatSet = false;
+
+		CTinyReport wReport = new CTinyReport();
+
+		// true if the system property
+		// "java.util.logging.SimpleFormatter.format" exists and set with
+		// the
+		// cohorte format
+		wIsCohorteFormatSet = CXJulUtils.isSimpleFormatterFormatPropertyContainsCohorteFormat();
+		if (!wIsCohorteFormatSet) {
+
+			wReport.appendLine("The system property [%s] isn't set with the cohorte format",
+					CXJulUtils.SIMPLE_FORMATTER_FORMAT_PROPERTY);
+
+			String wOtherFormat = CXJulUtils.getSimpleFormatterJvmProperty();
+			if (wOtherFormat != null) {
+
+				wReport.appendLine("The system property [%s] is set with the specific format : [%s]",
+						CXJulUtils.SIMPLE_FORMATTER_FORMAT_PROPERTY, wOtherFormat);
+			}
+		}
+
+		if (!wIsCohorteFormatSet) {
+
+			if (!CXJvmUtils.isJava8()) {
+				wReport.appendLine(
+						"Unable to automaticaly set the Simpleformatter format, the jvm version is not [%s]",
+						CXJvmUtils.JAVA_VERSION_8);
+			}
+			//
+			else {
+
+				// true if the SimpleFormatter.class static format memnber is
+				// set
+				// with the cohorte format
+				wIsCohorteFormatSet = CXJulUtils.isSimpleFormaterClassContainsCohorteFormat();
+				if (!wIsCohorteFormatSet) {
+					wReport.appendLine(
+							"The static String [format] member of the class [%s] isn't set with the cohorte format",
+							//
+							SimpleFormatter.class.getName());
+				}
+
+				if (!wIsCohorteFormatSet) {
+					try {
+						wReport.appendLine(CXJulUtils.setFormatOfSimpleFormatter(CXJulUtils.SIMPLE_FORMATTER_FORMAT));
+
+						wIsCohorteFormatSet = true;
+
+						// log ALL !
+						CXJulUtils.getRootLogger().setLevel(Level.ALL);
+
+						// force the usage of the cohorte in all the
+						// SimpleFormatters
+						// associated to the
+						int wNbHandlerSet = CXJulUtils.setSimpleFormatter(CXJulUtils.getRootLogger());
+
+						wReport.appendLine(
+								"The [%d] handler(s) of the RootLogger is(are) set with the instance of SimpleFormatter [%s]",
+								//
+								wNbHandlerSet,
+								//
+								CXJulUtils.getSimpleFormatterInstance().toString());
+
+					} catch (Exception e) {
+
+						wReport.appendLine("ERROR : Unable to init the SimpleFormatter :\n%s", CLogToolsException
+								.getInstance().eInString(e));
+					}
+				}
+			}
+		}
+
+		sIsCohorteFormatSet = wIsCohorteFormatSet;
+
+		sCActivityLoggerBasicConsole = new CActivityLoggerBasicConsole();
+
+		if (!wReport.isEmpty()) {
+			sCActivityLoggerBasicConsole.logInfo(CActivityLoggerBasicConsole.class, "static",
+					"initialisation of SimpleFormatter of the Java Util Logging package:\n%s", wReport);
+		}
+
+	}
 
 	/**
 	 * @return
@@ -23,8 +115,6 @@ public class CActivityLoggerBasicConsole implements IActivityLoggerJul {
 	}
 
 	protected IActivityFormater pActivityFormater;
-
-	protected final boolean pIsFormatValid = CXJulUtils.validSimpleFormaterConfig();
 
 	protected final Logger pJulLogger = CXJulUtils.getRootLogger();
 
@@ -39,12 +129,6 @@ public class CActivityLoggerBasicConsole implements IActivityLoggerJul {
 	 */
 	protected CActivityLoggerBasicConsole() {
 		super();
-
-		// log ALL !
-		pJulLogger.setLevel(Level.ALL);
-
-		// use the SimpleFormatter
-		CXJulUtils.setSimpleFormatter(pJulLogger);
 
 		pActivityFormater = CActivityFormaterBasic.getInstance(IActivityFormater.LINE_CONSOLE);
 		pActivityFormater.acceptMultiline(IActivityFormater.MULTILINES_TEXT);
@@ -110,6 +194,14 @@ public class CActivityLoggerBasicConsole implements IActivityLoggerJul {
 		return null;
 	}
 
+	/**
+	 * @return true if the Simple formater is configured with the
+	 *         SIMPLE_FORMATTER_FORMAT
+	 */
+	public boolean isCohorteFormatSet() {
+		return sIsCohorteFormatSet;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -167,13 +259,6 @@ public class CActivityLoggerBasicConsole implements IActivityLoggerJul {
 	 */
 	protected boolean isOpened() {
 		return true;
-	}
-
-	/**
-	 * @return
-	 */
-	public boolean IsSimpleFormatterFormatValid() {
-		return pIsFormatValid;
 	}
 
 	/**
@@ -355,4 +440,75 @@ public class CActivityLoggerBasicConsole implements IActivityLoggerJul {
 		return addDescriptionInBuffer(new StringBuilder(calcDescriptionLength())).toString();
 	}
 
+}
+
+/**
+ * @author ogattaz
+ *
+ */
+class CTinyReport {
+
+	private static final String PREFIX_FORMAT = "(%2d) - ";
+
+	private static final String REGEX_SPLIT_LINES = "\n";
+
+	private int pNbLine = 0;
+
+	StringBuilder pSB = new StringBuilder();
+
+	/**
+	 * 
+	 */
+	CTinyReport() {
+		super();
+	}
+
+	/**
+	 * @param aText
+	 */
+	void appendLine(final String aText) {
+
+		pNbLine++;
+
+		String wPrefix = String.format(PREFIX_FORMAT, pNbLine);
+
+		String wPrefixBlank = CXStringUtils.strFromChar(' ', wPrefix.length());
+
+		int wIdx = 0;
+		for (String wLine : aText.split(REGEX_SPLIT_LINES)) {
+			if (wIdx > 0 || !isEmpty()) {
+				pSB.append('\n');
+			}
+			pSB.append(wPrefix);
+			pSB.append(wLine);
+
+			wIdx++;
+			wPrefix = wPrefixBlank;
+		}
+	}
+
+	/**
+	 * @param aFormat
+	 * @param aArgs
+	 */
+	void appendLine(final String aFormat, final Object... aArgs) {
+		appendLine(String.format(aFormat, aArgs));
+	}
+
+	/**
+	 * @return true if the report is empty
+	 */
+	boolean isEmpty() {
+		return pSB.length() == 0;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return pSB.toString();
+	}
 }

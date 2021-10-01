@@ -331,7 +331,11 @@ public class CXException extends Exception implements IXDescriber {
 
 	private final static String MESS_NO_STACK = "No stack available";
 
-	private static final boolean MESS_WHITH_STACK = true;
+	public static final boolean MESS_WHITH_NUMBER = true;
+
+	public static final boolean MESS_WHITH_SIMPLE_CLASS_NAME = true;
+
+	public static final boolean MESS_WHITH_STACK = true;
 
 	private final static String MESSAGE_SEPARATOR = " , ";
 
@@ -686,7 +690,8 @@ public class CXException extends Exception implements IXDescriber {
 	}
 
 	/**
-	 * returns the full description of a throwable and its chain of causes using the same formatter used for the logging output.
+	 * returns the full description of a throwable and its chain of causes using
+	 * the same formatter used for the logging output.
 	 * 
 	 * @param e
 	 * @return the dump of the exception
@@ -695,20 +700,21 @@ public class CXException extends Exception implements IXDescriber {
 	public static String eFullInString(final Throwable e) {
 		return eFullInString(e, SEPARATOR_LINE);
 	}
-	
+
 	/**
-	 * MOD_OG_20210427 - 
+	 * MOD_OG_20210427 -
 	 * 
-	 * returns the full description of a throwable and its chain of causes using the same formatter used for the logging output.
+	 * returns the full description of a throwable and its chain of causes using
+	 * the same formatter used for the logging output.
 	 * 
 	 * @param e
 	 * @param aSeparator
 	 * @return the dump of the exception
 	 */
 	public static String eFullInString(Throwable e, char aSeparator) {
-		return CLogToolsException.getInstance().eInString(e,aSeparator);
+		return CLogToolsException.getInstance().eInString(e, aSeparator);
 	}
-	
+
 	/**
 	 * Retourne les composantes (classe,why ,mess,stack) d'une exception dans
 	 * une string
@@ -810,28 +816,49 @@ public class CXException extends Exception implements IXDescriber {
 
 	/**
 	 * @param aThrowable
-	 * @return
-	 * @throws Exception
+	 * @return a List of String
 	 */
-	public static List<String> getCauseMessages(Throwable aThrowable) throws Exception {
+	public static List<String> getCauseMessages(final Throwable aThrowable) {
+		return getCauseMessages(aThrowable, !MESS_WHITH_NUMBER, !MESS_WHITH_SIMPLE_CLASS_NAME);
+	}
+
+	/**
+	 * @param aThrowable
+	 * @param aWithNumber
+	 * @param aWithClassName
+	 * @return
+	 */
+	public static List<String> getCauseMessages(final Throwable aThrowable, final boolean aWithNumber,
+			final boolean aWithClassName) {
 
 		List<String> wList = new ArrayList<>();
-		int wNbMess = 1;
-		String wMess;
-		while (aThrowable != null) {
-			wMess = aThrowable.getLocalizedMessage();
-			final boolean wHasMess = (wMess != null && !wMess.isEmpty());
+		Throwable wThrowable = aThrowable;
+		int wIdx = 0;
+		StringBuilder wMess;
+		String wLocalizedMessage;
+		boolean wHaswLocalizedMessage;
+		while (wThrowable != null) {
+			wMess = new StringBuilder();
+			if (aWithNumber) {
+				wMess.append(String.format("(level %2d) ", wIdx));
+			}
+			wLocalizedMessage = wThrowable.getLocalizedMessage();
 
-			if (wHasMess) {
-				if (wNbMess > 1) {
-					wMess = aThrowable.getClass().getSimpleName().concat(":").concat(wMess);
-				}
-				wList.add(wMess);
+			wHaswLocalizedMessage = (wLocalizedMessage != null && !wLocalizedMessage.isEmpty());
+
+			if (wHaswLocalizedMessage) {
+				wMess.append(wLocalizedMessage);
 			} else {
 				// s'il n'y a pas de message on met la classe
-				wList.add(aThrowable.getClass().getName());
+				wMess.append(wThrowable.getClass().getName());
 			}
-			wNbMess++;
+
+			if (aWithClassName) {
+				wMess.append(" : ").append(wThrowable.getClass().getName());
+			}
+			wList.add(wMess.toString());
+			wIdx++;
+			wThrowable = wThrowable.getCause();
 		}
 		return wList;
 	}

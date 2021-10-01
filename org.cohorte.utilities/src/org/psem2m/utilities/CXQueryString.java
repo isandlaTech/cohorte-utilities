@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.TreeMap;
 
 public class CXQueryString {
 
@@ -20,8 +21,7 @@ public class CXQueryString {
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	public static Map<String, List<String>> splitQuery(final String aQueryString)
-			throws UnsupportedEncodingException {
+	public static Map<String, List<String>> splitQuery(final String aQueryString) throws UnsupportedEncodingException {
 		return splitQuery(aQueryString, "&", "=");
 
 	}
@@ -38,8 +38,7 @@ public class CXQueryString {
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	public static Map<String, List<String>> splitQuery(
-			final String aQueryString, final String aSepKey,
+	public static Map<String, List<String>> splitQuery(final String aQueryString, final String aSepKey,
 			final String aSepVal) throws UnsupportedEncodingException {
 		String wSepKey = aSepKey != null ? aSepKey : "&";
 		String wSepVal = aSepVal != null ? aSepVal : "=";
@@ -50,13 +49,12 @@ public class CXQueryString {
 
 		for (final String pair : pairs) {
 			final int idx = pair.indexOf(wSepVal);
-			final String key = idx > 0 ? URLDecoder.decode(
-					pair.substring(0, idx), "UTF-8") : pair;
+			final String key = idx > 0 ? URLDecoder.decode(pair.substring(0, idx), "UTF-8") : pair;
 			if (!wQueryPairs.containsKey(key)) {
 				wQueryPairs.put(key, new LinkedList<String>());
 			}
-			final String value = idx > 0 && pair.length() > idx + 1 ? URLDecoder
-					.decode(pair.substring(idx + 1), "UTF-8") : null;
+			final String value = idx > 0 && pair.length() > idx + 1 ? URLDecoder.decode(pair.substring(idx + 1),
+					"UTF-8") : null;
 			wQueryPairs.get(key).add(value);
 		}
 		return wQueryPairs;
@@ -71,14 +69,12 @@ public class CXQueryString {
 	 *      ://stackoverflow.com/questions/13592236/parse-a-uri-string-into-
 	 *      name-value-collection
 	 */
-	public static Map<String, List<String>> splitQuery(final URL aUrl)
-			throws UnsupportedEncodingException {
+	public static Map<String, List<String>> splitQuery(final URL aUrl) throws UnsupportedEncodingException {
 
 		return splitQuery(aUrl.getQuery());
 	}
 
-	public static Map<String, String> splitQueryFirst(final String aQueryString)
-			throws UnsupportedEncodingException {
+	public static Map<String, String> splitQueryFirst(final String aQueryString) throws UnsupportedEncodingException {
 		return splitQueryFirst(aQueryString, null, null);
 	}
 
@@ -89,12 +85,10 @@ public class CXQueryString {
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	public static Map<String, String> splitQueryFirst(
-			final String aQueryString, final String aSepKey,
+	public static Map<String, String> splitQueryFirst(final String aQueryString, final String aSepKey,
 			final String aSepVal) throws UnsupportedEncodingException {
 
-		Map<String, List<String>> wSplit = splitQuery(aQueryString, aSepKey,
-				aSepVal);
+		Map<String, List<String>> wSplit = splitQuery(aQueryString, aSepKey, aSepVal);
 		Map<String, String> wResult = new HashMap<>();
 		for (String wKey : wSplit.keySet()) {
 			List<String> wVals = wSplit.get(wKey);
@@ -111,8 +105,7 @@ public class CXQueryString {
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	public static String urlEncodeUTF8(final Map<?, ?> aMap)
-			throws UnsupportedEncodingException {
+	public static String urlEncodeUTF8(final Map<?, ?> aMap) throws UnsupportedEncodingException {
 
 		final StringBuilder wSB = new StringBuilder();
 
@@ -128,8 +121,7 @@ public class CXQueryString {
 					if (wSubValue == null) {
 						wSubValue = "null";
 					}
-					wSB.append(String.format("%s=%s", wKey,
-							urlEncodeUTF8(wSubValue.toString())));
+					wSB.append(String.format("%s=%s", wKey, urlEncodeUTF8(wSubValue.toString())));
 				}
 			}
 			//
@@ -137,8 +129,7 @@ public class CXQueryString {
 				if (wValue == null) {
 					wValue = "null";
 				}
-				wSB.append(String.format("%s=%s", wKey,
-						urlEncodeUTF8(wValue.toString())));
+				wSB.append(String.format("%s=%s", wKey, urlEncodeUTF8(wValue.toString())));
 			}
 		}
 		return wSB.toString();
@@ -149,13 +140,13 @@ public class CXQueryString {
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	private static String urlEncodeUTF8(final String s)
-			throws UnsupportedEncodingException {
+	private static String urlEncodeUTF8(final String s) throws UnsupportedEncodingException {
 		return URLEncoder.encode(s, "UTF-8");
 
 	}
 
-	private final Map<String, List<String>> pQueryPairs = new HashMap<>();
+	// MOD_OG_20210812
+	private final Map<String, List<String>> pQueryPairs = new LinkedHashMap<>();
 
 	/**
 	 *
@@ -168,8 +159,7 @@ public class CXQueryString {
 	 * @param aQueryString
 	 * @throws UnsupportedEncodingException
 	 */
-	public CXQueryString(final String aQueryString)
-			throws UnsupportedEncodingException {
+	public CXQueryString(final String aQueryString) throws UnsupportedEncodingException {
 		this();
 		pQueryPairs.putAll(splitQuery(aQueryString));
 	}
@@ -180,8 +170,8 @@ public class CXQueryString {
 	 * @param aSepVal
 	 * @throws UnsupportedEncodingException
 	 */
-	public CXQueryString(final String aQueryString, final String aSepKey,
-			final String aSepVal) throws UnsupportedEncodingException {
+	public CXQueryString(final String aQueryString, final String aSepKey, final String aSepVal)
+			throws UnsupportedEncodingException {
 		this();
 		pQueryPairs.putAll(splitQuery(aQueryString, aSepKey, aSepVal));
 	}
@@ -235,8 +225,7 @@ public class CXQueryString {
 	 */
 	public boolean getValueBool(final String aKey, final boolean aDefault) {
 		final String wValue = getValue(aKey);
-		return wValue == null ? aDefault : "true".equalsIgnoreCase(wValue)
-				|| "on".equalsIgnoreCase(wValue);
+		return wValue == null ? aDefault : "true".equalsIgnoreCase(wValue) || "on".equalsIgnoreCase(wValue);
 	}
 
 	/**
@@ -291,23 +280,35 @@ public class CXQueryString {
 	}
 
 	/**
-	 * @return an instance of properties containing only the first value of each
-	 *         QueryPair
+	 * MOD_OG_20210812
+	 * 
+	 * @param aTargetMap
+	 * @return the given Map containing only the first value of each QueryPair
 	 */
-	public Map<String, String> toMapOfString() {
+	private Map<String, String> toMap(final Map<String, String> aTargetMap) {
 
-		final Map<String, String> wMapOfString = new HashMap<>();
-
-		for (final Entry<String, List<String>> wEntry : getInternalMap()
-				.entrySet()) {
+		for (final Entry<String, List<String>> wEntry : getInternalMap().entrySet()) {
 
 			final List<String> wValues = wEntry.getValue();
 			final String wValue = (wValues.size() > 0) ? wValues.get(0) : null;
 
-			wMapOfString.put(wEntry.getKey(), wValue);
+			aTargetMap.put(wEntry.getKey(), wValue);
 		}
 
-		return wMapOfString;
+		return aTargetMap;
+	}
+
+	/**
+	 * MOD_OG_20210812
+	 * 
+	 * @return an instance of a Map<String, String> containing only the first
+	 *         value of each QueryPair
+	 */
+	public Map<String, String> toMapOfString() {
+
+		final Map<String, String> wLinkedMappOfString = new LinkedHashMap<>();
+
+		return toMap(wLinkedMappOfString);
 	}
 
 	/**
@@ -318,8 +319,7 @@ public class CXQueryString {
 
 		final Properties wProperties = new Properties();
 
-		for (final Entry<String, List<String>> wEntry : getInternalMap()
-				.entrySet()) {
+		for (final Entry<String, List<String>> wEntry : getInternalMap().entrySet()) {
 
 			final List<String> wValues = wEntry.getValue();
 			final String wValue = (wValues.size() > 0) ? wValues.get(0) : null;
@@ -338,6 +338,19 @@ public class CXQueryString {
 	 */
 	public String toQueryString() throws UnsupportedEncodingException {
 		return urlEncodeUTF8(pQueryPairs);
+	}
+
+	/**
+	 * MOD_OG_20210812
+	 * 
+	 * @return an instance of a sorted Map<String, String> containing only the
+	 *         first value of each QueryPair
+	 */
+	public Map<String, String> toSortedMapOfString() {
+
+		final Map<String, String> wTreeMappOfString = new TreeMap<>();
+
+		return toMap(wTreeMappOfString);
 	}
 
 	/*
