@@ -25,6 +25,8 @@ public enum ExpressionOperator implements IExpressionConstants {
 	//
 	IN("$in", HAS_FIELD, ON_ARRAY),
 	//
+	LIKE_IGNORE_CASE("$likeIgnoreCase", HAS_FIELD, !ON_ARRAY),
+	//
 	LIKE("$like", HAS_FIELD, !ON_ARRAY),
 	//
 	LT("$lt", HAS_FIELD, !ON_ARRAY),
@@ -50,7 +52,7 @@ public enum ExpressionOperator implements IExpressionConstants {
 	 * @return
 	 */
 	public static ExpressionOperator getEnum(final String value) {
-		for (ExpressionOperator v : values()) {
+		for (final ExpressionOperator v : values()) {
 			if (v.getValues().contains(value)) {
 				return v;
 			}
@@ -59,8 +61,8 @@ public enum ExpressionOperator implements IExpressionConstants {
 	}
 
 	public static String listAll() {
-		List<String> wListOpStr = new ArrayList<>();
-		for (ExpressionOperator wOp : values()) {
+		final List<String> wListOpStr = new ArrayList<>();
+		for (final ExpressionOperator wOp : values()) {
 			wListOpStr.addAll(wOp.getValues());
 		}
 		return wListOpStr.toString();
@@ -73,7 +75,7 @@ public enum ExpressionOperator implements IExpressionConstants {
 	private final List<String> pValues;
 
 	/**
-	 * 
+	 *
 	 */
 	ExpressionOperator() {
 		pValues = new ArrayList<>();
@@ -99,7 +101,7 @@ public enum ExpressionOperator implements IExpressionConstants {
 	ExpressionOperator(final String[] aValues, final boolean aIsHasField, final boolean isOperandArray) {
 		this();
 		if (aValues != null) {
-			for (String wVal : aValues) {
+			for (final String wVal : aValues) {
 				pValues.add(wVal);
 			}
 		}
