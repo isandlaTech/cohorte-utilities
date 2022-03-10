@@ -7,14 +7,14 @@
 		<relativePath>../../Build/maven/build-bundles/pom.xml</relativePath>
 	</parent>
     <artifactId>org.cohorte.utilities.picosoc</artifactId>
-	<version>1.1.0</version><!-- MOD_OG_20201223 -->
+	<version>1.1.1</version><!-- MOD_OG_20220118 -->
     <packaging>jar</packaging>
 	
 	<dependencies>
 		<dependency>
 			<groupId>org.cohorte.utilities</groupId>
 			<artifactId>org.cohorte.utilities</artifactId>
-			<version>[1.0.0,)</version>
+			<version>[1.4.7,)</version>
 		</dependency>
 	</dependencies>
 	

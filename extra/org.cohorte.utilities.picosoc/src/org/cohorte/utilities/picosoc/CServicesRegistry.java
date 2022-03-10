@@ -1,10 +1,14 @@
 package org.cohorte.utilities.picosoc;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+
+import org.cohorte.utilities.CXMethodUtils;
+import org.psem2m.utilities.CXDateTime;
 
 /**
  * @author ogattaz
@@ -15,12 +19,25 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 
 
 	private static CServicesRegistry sServicesRegistry;
+	
+	private static final Object sRegistryLocker = new Object();
 
 	/**
 	 * @return
 	 */
 	public static CServicesRegistry getRegistry() {
-		return sServicesRegistry;
+
+		CServicesRegistry wRegistry = null;
+		
+		synchronized (sRegistryLocker) {
+			if (sServicesRegistry != null) {
+				wRegistry = sServicesRegistry;
+			} else {
+				wRegistry = new CServicesRegistry();
+			}
+		}
+		
+		return wRegistry;
 	}
 
 	/**
@@ -29,20 +46,33 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	 */
 	public static CServicesRegistry newRegistry() throws Exception {
 
-		if (getRegistry() != null) {
-			throw new Exception(String.format(
-					"sServicesRegistry already exists. registry=[%s]",
-					getRegistry()));
-		}
 
-		return new CServicesRegistry();
+		synchronized (sRegistryLocker) {
+			
+			// protection against double creation
+			if (sServicesRegistry != null) {
+				
+				throw new Exception(String.format(
+						"sServicesRegistry already exists. registry=[%s]",
+						sServicesRegistry));
+			}
+
+			return new CServicesRegistry();
+			
+			
+		}
+		
 	}
+
+
 
 	private final Map<CServiceKey<?>, CServicReference<?>> pServicesRegistry = new HashMap<CServiceKey<?>, CServicReference<?>>();
 	// #48
 	private final Map<Object, CServicReference<?>> pServicesMap = new HashMap<Object, CServicReference<?>>();
 
+	private final long pCreatingTS = System.currentTimeMillis();
 	
+	private final  String pRegistryCreator;
 	/**
 	 * @param aService
 	 * @return
@@ -57,11 +87,51 @@ public class CServicesRegistry extends CAbstractComponentBase implements
 	/**
 	 * 
 	 */
-	private CServicesRegistry() throws Exception {
+	private CServicesRegistry()   {
 		super();
-
+		
+		// set the singleton reference
 		sServicesRegistry = this;
+		
+		// register the Registry as a "ISvcServiceRegistry" service
 		registerMeAsService(ISvcServiceRegistry.class);
+		
+		// memorize who create the registy;
+		pRegistryCreator = getRegistryCreator();
+	}
+	
+	/**
+	 *
+	 */
+	public String toString() {
+		
+		return  String.format("[%s@%s] created by [%s] at [%s]",
+				//
+				getClass().getSimpleName(),Integer.toHexString(hashCode()),
+				//
+				pRegistryCreator,
+				//
+				CXDateTime.getIso8601TimeStamp(pCreatingTS));
+	}
+	
+	/**
+	 * @param depth
+	 * @return
+	 */
+	private  String getRegistryCreator() {
+		try {
+			String wClassName = getClass().getName();
+			Throwable wThrowable = new Throwable();
+			for (StackTraceElement wElement : wThrowable.getStackTrace() ) {
+				if (!wElement.getClassName().equals(wClassName)) {
+					return String.format("method=%s:%s(),line=%d",wElement.getClassName(),wElement.getMethodName(),wElement.getLineNumber());
+				}
+			}
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	/**

@@ -3,6 +3,7 @@ package test.org.cohorte.utilities.picosoc.servicerefs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.List;
 import java.util.Map;
@@ -66,8 +67,6 @@ public class CTestServiceReferences extends CAbstractJunitTest {
 
 		// log the initialization banner
 		logBannerInitialization();
-
-		CServicesRegistry.newRegistry();
 	}
 
 	/**
@@ -275,7 +274,50 @@ public class CTestServiceReferences extends CAbstractJunitTest {
 				"  ServicRef  modified=[%s]", wCServicReference);
 
 	}
+	/**
+	 * @throws Exception
+	 */
+	@Test
+	public void test05NewRefistry() throws Exception {
+		String wMethodName = CXMethodUtils.getMethodName(0);
+		String wAction = "New Registries";
+		try {
+			logBegin(this, wMethodName, "%s Begin... ", wAction);
 
+			CServicesRegistry wReg1 = CServicesRegistry.getRegistry();
+			
+			getLogger().logInfo(this, wMethodName, "Registry 1: %s",wReg1);
+
+			doDumpRegistry();
+
+			CServicesRegistry wReg2 = CServicesRegistry.getRegistry();
+			
+			getLogger().logInfo(this, wMethodName, "Registry 2: %s",wReg2);
+			
+			assertEquals(wReg2,wReg1);
+			
+			doDumpRegistry();
+			
+			try {
+				CServicesRegistry.newRegistry();
+				
+				// not OK if here !
+				assertFalse(true);
+				
+			} catch (Exception e) {
+				getLogger().logSevere(this, wMethodName, "Registry 3: %s",e.getMessage());
+				assertTrue(e.getMessage().contains("already exists"));
+			}
+
+
+
+			logEndOK(this, wMethodName, "%s End OK.", wAction);
+		} catch (Throwable e) {
+			logEndKO(this, wMethodName, e);
+			throw e;
+		}	
+		
+	}
 	/**
 	 * @throws Exception
 	 */
