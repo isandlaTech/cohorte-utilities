@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="lib" path="libs/json-generator-1.1.0-alpha1-fix.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/json-schema-1.1.0-alpha1-fix.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/json-wrapper-1.1.0-alpha1-fix.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/json-core-1.1.0-alpha1-fix.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jackson-annotations-2.12.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jackson-core-2.12.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/json-schema-validator-1.0.67.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/commons-lang3-3.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/itu-1.5.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jackson-databind-2.12.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/joni-2.1.41.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/slf4j-api-1.7.30.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
