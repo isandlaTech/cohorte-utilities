@@ -13,7 +13,7 @@ public class CSchemasValidator {
 		pLogger = aLogger;
 	}
 
-	public void addSchema(final String aId, final CJsonSchema aSchema) throws Exception {
+	public void addSchema(final String aId, final CJsonSchema aSchema) {
 		pMapIdSchema.put(aId, aSchema);
 	}
 	public void addSchema(final String aId, final JSONObject aSchema) throws Exception {
