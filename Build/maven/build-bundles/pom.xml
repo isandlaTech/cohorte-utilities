@@ -16,6 +16,8 @@
 	<packaging>pom</packaging>
 
 	<modules>
+		<module>../../../ThirdPartiesLibs/org.cohorte.libs.com.networknt.schema</module>
+
 		<module>../../../ThirdPartiesLibs/org.cohorte.libs.com.github.fge.jsonschema</module>
 		<!-- MOD_250 OG Have to correct the shape of the organizations of the feature "meteo neige" -->
 		<module>../../../ThirdPartiesLibs/org.cohorte.libs.jts-all</module>
