@@ -13,11 +13,13 @@ public class CSchemasValidator {
 		pLogger = aLogger;
 	}
 
+	public void addSchema(final String aId, final CJsonSchema aSchema) throws Exception {
+		pMapIdSchema.put(aId, aSchema);
+	}
 	public void addSchema(final String aId, final JSONObject aSchema) throws Exception {
 		final CJsonSchema wSchema = CJsonValidatorFactory.getSingleton().getSchema(pLogger, aSchema);
-		pMapIdSchema.put(aId, wSchema);
+		addSchema(aId, wSchema);
 	}
-
 	public CJsonSchema deleteSchema(final String aId) throws Exception {
 		return pMapIdSchema.remove(aId);
 	}
