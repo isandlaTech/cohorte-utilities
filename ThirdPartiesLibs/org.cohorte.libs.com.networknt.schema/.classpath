@@ -6,7 +6,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/json-core-1.1.0-alpha1-fix.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jackson-annotations-2.12.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jackson-core-2.12.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/json-schema-validator-1.0.67.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/json-schema-validator-1.0.67.jar" sourcepath="libs/json-schema-validator-1.0.67-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-lang3-3.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/itu-1.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jackson-databind-2.12.1.jar"/>
