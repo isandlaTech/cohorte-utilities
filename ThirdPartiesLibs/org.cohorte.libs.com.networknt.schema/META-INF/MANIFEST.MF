@@ -26,5 +26,6 @@ Import-Package: org.cohorte.iot.json.validator.api,
  org.psem2m.utilities.files,
  org.psem2m.utilities.json,
  org.psem2m.utilities.logging
-Export-Package: org.cohorte.iot.json.validator,
+Export-Package: com.networknt.schema,
+ org.cohorte.iot.json.validator,
  org.cohorte.iot.json.validator.api

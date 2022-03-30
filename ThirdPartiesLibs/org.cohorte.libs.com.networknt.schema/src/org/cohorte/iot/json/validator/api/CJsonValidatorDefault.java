@@ -7,6 +7,7 @@ import org.psem2m.utilities.logging.IActivityLogger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.networknt.schema.JsonSchema;
+import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
 
 /**
@@ -27,7 +28,7 @@ public class CJsonValidatorDefault implements IValidator {
 			final JSONObject aSchema) throws SchemaException {
 		// create schema
 		try {
-			final CJsonValidatorFactory wFactory = CJsonValidatorFactory.getFactory();
+			final CJsonValidatorFactory wFactory = CJsonValidatorFactory.getFactory(SpecVersion.VersionFlag.V4);
 			return new CJsonSchema(wFactory.getJsonSchemaFromStringContent(aSchema.toString()), aSchema);
 		} catch (final Exception e) {
 			throw new SchemaException(e, e.getMessage());
@@ -37,7 +38,7 @@ public class CJsonValidatorDefault implements IValidator {
 	@Override
 	public boolean valdate(final IActivityLogger aLogger,
 			final CJsonSchema aSchema, final JSONObject aData) throws Exception {
-		final CJsonValidatorFactory wFactory = CJsonValidatorFactory.getFactory();
+		final CJsonValidatorFactory wFactory = CJsonValidatorFactory.getFactory(SpecVersion.VersionFlag.V4);
 		final JsonNode node = wFactory.getJsonNodeFromStringContent(aData.toString());
 		final JsonSchema wSchema = aSchema.getSchema();
 		final Set<ValidationMessage> errors = wSchema.validate(node);

@@ -21,9 +21,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-
-import org.cohorte.iot.json.validator.api.CJsonValidatorDefault;
-import org.cohorte.iot.json.validator.api.IValidator;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,18 +37,16 @@ import com.networknt.schema.SpecVersionDetector;
 public class CJsonValidatorFactory {
 
 	private static final Object lock = new Object();
-	private static CJsonValidatorFactory pFactory;
+	private static Map<String,CJsonValidatorFactory> pFactorys = new HashMap<String,CJsonValidatorFactory>();
 	private static IValidator pSingleton;
-
-	public static CJsonValidatorFactory getFactory() {
+	public static CJsonValidatorFactory getFactory(final SpecVersion.VersionFlag aVersionFlag) {
 		synchronized (lock) {
-			if (pFactory == null) {
-				pFactory = new CJsonValidatorFactory();
+			if (!pFactorys.containsKey(aVersionFlag.toString()) ) {
+				pFactorys.put(aVersionFlag.toString(),new CJsonValidatorFactory(aVersionFlag));
 			}
 		}
-		return pFactory;
+		return pFactorys.get(aVersionFlag.toString());
 	}
-
 	public static IValidator getSingleton() {
 		synchronized (lock) {
 			if (pSingleton == null) {
@@ -59,9 +56,10 @@ public class CJsonValidatorFactory {
 		return pSingleton;
 	}
 
+	SpecVersion.VersionFlag pVersionFlag;
 	private final ObjectMapper mapper = new ObjectMapper();
-	private CJsonValidatorFactory() {
-
+	private CJsonValidatorFactory(final SpecVersion.VersionFlag aVersionFlag) {
+		pVersionFlag = aVersionFlag;
 	}
 	public JsonNode getJsonNodeFromClasspath(final String name) throws IOException {
 		final InputStream is1 = Thread.currentThread().getContextClassLoader()
@@ -78,14 +76,14 @@ public class CJsonValidatorFactory {
 	}
 
 	public JsonSchema getJsonSchemaFromClasspath(final String name) {
-		final JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V4);
+		final JsonSchemaFactory factory = JsonSchemaFactory.getInstance(pVersionFlag);
 		final InputStream is = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream(name);
 		return factory.getSchema(is);
 	}
 
 	public JsonSchema getJsonSchemaFromJsonNode(final JsonNode jsonNode) {
-		final JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V4);
+		final JsonSchemaFactory factory = JsonSchemaFactory.getInstance(pVersionFlag);
 		return factory.getSchema(jsonNode);
 	}
 
@@ -96,12 +94,12 @@ public class CJsonValidatorFactory {
 	}
 
 	public JsonSchema getJsonSchemaFromStringContent(final String schemaContent) {
-		final JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V4);
+		final JsonSchemaFactory factory = JsonSchemaFactory.getInstance(pVersionFlag);
 		return factory.getSchema(schemaContent);
 	}
 
 	public JsonSchema getJsonSchemaFromUrl(final String uri) throws URISyntaxException {
-		final JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V4);
+		final JsonSchemaFactory factory = JsonSchemaFactory.getInstance(pVersionFlag);
 		return factory.getSchema(new URI(uri));
 	}
 
