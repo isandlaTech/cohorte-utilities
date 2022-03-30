@@ -25,11 +25,11 @@ public class CJsonValidatorDefault implements IValidator {
 
 	@Override
 	public CJsonSchema getSchema(final IActivityLogger aLogger,
-			final JSONObject aSchema) throws SchemaException {
+			final JSONObject aSchema, final SpecVersion.VersionFlag aFlagVersion) throws SchemaException {
 		// create schema
 		try {
-			final CJsonValidatorFactory wFactory = CJsonValidatorFactory.getFactory(SpecVersion.VersionFlag.V4);
-			return new CJsonSchema(wFactory.getJsonSchemaFromStringContent(aSchema.toString()), aSchema);
+			final CJsonValidatorFactory wFactory = CJsonValidatorFactory.getFactory(aFlagVersion);
+			return new CJsonSchema(wFactory.getJsonSchemaFromStringContent(aSchema.toString()), aSchema, aFlagVersion);
 		} catch (final Exception e) {
 			throw new SchemaException(e, e.getMessage());
 		}
@@ -38,7 +38,7 @@ public class CJsonValidatorDefault implements IValidator {
 	@Override
 	public boolean valdate(final IActivityLogger aLogger,
 			final CJsonSchema aSchema, final JSONObject aData) throws Exception {
-		final CJsonValidatorFactory wFactory = CJsonValidatorFactory.getFactory(SpecVersion.VersionFlag.V4);
+		final CJsonValidatorFactory wFactory = CJsonValidatorFactory.getFactory(aSchema.getVersionFlag());
 		final JsonNode node = wFactory.getJsonNodeFromStringContent(aData.toString());
 		final JsonSchema wSchema = aSchema.getSchema();
 		final Set<ValidationMessage> errors = wSchema.validate(node);
@@ -48,10 +48,10 @@ public class CJsonValidatorDefault implements IValidator {
 
 	@Override
 	public boolean validateJson(final IActivityLogger aLogger,
-			final JSONObject aSchema, final JSONObject aJson)
+			final JSONObject aSchema, final JSONObject aJson, final SpecVersion.VersionFlag aFlagVersion)
 					throws SchemaException {
 		try {
-			final CJsonSchema wJsSchema = getSchema(aLogger, aSchema);
+			final CJsonSchema wJsSchema = getSchema(aLogger, aSchema,aFlagVersion);
 			return valdate(aLogger, wJsSchema, aJson);
 		} catch (final Exception e) {
 			throw new SchemaException(e, e.getMessage());

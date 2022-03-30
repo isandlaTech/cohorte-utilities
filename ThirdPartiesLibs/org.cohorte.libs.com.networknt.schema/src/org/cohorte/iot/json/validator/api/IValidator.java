@@ -3,6 +3,8 @@ package org.cohorte.iot.json.validator.api;
 import org.psem2m.utilities.json.JSONObject;
 import org.psem2m.utilities.logging.IActivityLogger;
 
+import com.networknt.schema.SpecVersion;
+
 /**
  * provide method in order to validate JSON regarding a json schema that follow
  * te specification IEFT draft 6
@@ -20,7 +22,7 @@ public interface IValidator {
 	 * @param aSchema
 	 * @return
 	 */
-	public CJsonSchema getSchema(IActivityLogger aLogger, JSONObject aSchema)
+	public CJsonSchema getSchema(IActivityLogger aLogger, JSONObject aSchema, SpecVersion.VersionFlag aFlagVersion)
 			throws Exception;
 
 	/**
@@ -43,5 +45,5 @@ public interface IValidator {
 	 * @return
 	 */
 	public boolean validateJson(IActivityLogger aLogger, JSONObject aSchema,
-			JSONObject aJson) throws Exception;
+			JSONObject aJson, SpecVersion.VersionFlag aFlagVersion) throws Exception;
 }

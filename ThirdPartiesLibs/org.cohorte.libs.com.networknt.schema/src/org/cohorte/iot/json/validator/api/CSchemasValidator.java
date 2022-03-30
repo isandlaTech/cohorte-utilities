@@ -5,6 +5,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.psem2m.utilities.json.JSONObject;
 import org.psem2m.utilities.logging.IActivityLogger;
 
+import com.networknt.schema.SpecVersion;
+
 public class CSchemasValidator {
 
 	private final ConcurrentHashMap<String, CJsonSchema> pMapIdSchema = new ConcurrentHashMap<String,CJsonSchema>();
@@ -16,8 +18,8 @@ public class CSchemasValidator {
 	public void addSchema(final String aId, final CJsonSchema aSchema) {
 		pMapIdSchema.put(aId, aSchema);
 	}
-	public void addSchema(final String aId, final JSONObject aSchema) throws Exception {
-		final CJsonSchema wSchema = CJsonValidatorFactory.getSingleton().getSchema(pLogger, aSchema);
+	public void addSchema(final String aId, final JSONObject aSchema,final SpecVersion.VersionFlag aFlag) throws Exception {
+		final CJsonSchema wSchema = CJsonValidatorFactory.getSingleton().getSchema(pLogger, aSchema,aFlag);
 		addSchema(aId, wSchema);
 	}
 	public CJsonSchema deleteSchema(final String aId) throws Exception {
