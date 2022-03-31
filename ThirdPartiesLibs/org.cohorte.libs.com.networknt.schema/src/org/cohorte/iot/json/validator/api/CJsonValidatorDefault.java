@@ -22,7 +22,17 @@ public class CJsonValidatorDefault implements IValidator {
 	public CJsonValidatorDefault() {
 		// set private contructor
 	}
-
+	@Override
+	public CJsonSchema getSchema(final IActivityLogger aLogger,
+			final JSONObject aSchema) throws SchemaException {
+		// create schema
+		try {
+			final CJsonValidatorFactory wFactory = CJsonValidatorFactory.getFactory(SpecVersion.VersionFlag.V4);
+			return new CJsonSchema(wFactory.getJsonSchemaFromStringContent(aSchema.toString()), aSchema, SpecVersion.VersionFlag.V4);
+		} catch (final Exception e) {
+			throw new SchemaException(e, e.getMessage());
+		}
+	}
 	@Override
 	public CJsonSchema getSchema(final IActivityLogger aLogger,
 			final JSONObject aSchema, final SpecVersion.VersionFlag aFlagVersion) throws SchemaException {
@@ -43,7 +53,20 @@ public class CJsonValidatorDefault implements IValidator {
 		final JsonSchema wSchema = aSchema.getSchema();
 		final Set<ValidationMessage> errors = wSchema.validate(node);
 
-		return errors.size()==0;
+		return errors.size() == 0;
+	}
+
+
+	@Override
+	public boolean validateJson(final IActivityLogger aLogger,
+			final JSONObject aSchema, final JSONObject aJson)
+					throws SchemaException {
+		try {
+			final CJsonSchema wJsSchema = getSchema(aLogger, aSchema,SpecVersion.VersionFlag.V4);
+			return valdate(aLogger, wJsSchema, aJson);
+		} catch (final Exception e) {
+			throw new SchemaException(e, e.getMessage());
+		}
 	}
 
 	@Override
@@ -57,4 +80,5 @@ public class CJsonValidatorDefault implements IValidator {
 			throw new SchemaException(e, e.getMessage());
 		}
 	}
+}
 }

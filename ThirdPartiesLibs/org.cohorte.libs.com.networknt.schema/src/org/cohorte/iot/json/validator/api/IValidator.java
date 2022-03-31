@@ -14,6 +14,8 @@ import com.networknt.schema.SpecVersion;
  */
 public interface IValidator {
 
+	public CJsonSchema getSchema(final IActivityLogger aLogger,
+			final JSONObject aSchema) throws Exception;
 	/**
 	 * validate if the schema provide as a JSONObject is a valide and follow the
 	 * specification
@@ -36,6 +38,16 @@ public interface IValidator {
 	public boolean valdate(IActivityLogger aLogger, CJsonSchema aSchema,
 			JSONObject aData) throws Exception;
 
+	/**
+	 * validate the JSON data using the schema in parameter
+	 *
+	 * @param aLogger
+	 * @param aSchema
+	 * @param aJson
+	 * @return
+	 */
+	public boolean validateJson(IActivityLogger aLogger, JSONObject aSchema,
+			JSONObject aJson) throws Exception;
 	/**
 	 * validate the JSON data using the schema in parameter
 	 *
