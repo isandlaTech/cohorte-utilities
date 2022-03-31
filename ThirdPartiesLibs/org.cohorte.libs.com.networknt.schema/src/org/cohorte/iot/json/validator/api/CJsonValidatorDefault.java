@@ -80,5 +80,5 @@ public class CJsonValidatorDefault implements IValidator {
 			throw new SchemaException(e, e.getMessage());
 		}
 	}
-}
+
 }
