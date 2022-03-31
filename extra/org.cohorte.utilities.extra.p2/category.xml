@@ -24,7 +24,9 @@
    <bundle id="org.cohorte.libs.com.sun.jna" version="3.3.0">
       <category name="libs"/>
    </bundle>
-   
+   <bundle id="org.cohorte.libs.com.networknt.schema" version="1.0.2">
+      <category name="libs"/>
+   </bundle>
    <bundle id="org.cohorte.libs.com.github.json2flat" version="1.0.4">
       <category name="libs"/>
    </bundle>
