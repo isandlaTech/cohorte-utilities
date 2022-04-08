@@ -638,11 +638,11 @@ public class CJsonProvider implements IJsonProvider {
 				// replace file by empty json.
 				final String wResolvContentStr = wResolvContent.toString();
 				if (wSubNoCommentContent.size() == 1) {
-					wResolvContent = checkIsJson(wResolvContentStr.replace(
-							wMatch.toString(), wSubNoCommentContent.get(0)));
+					wResolvContent = wResolvContentStr.replace(
+							wMatch.toString(), wSubNoCommentContent.get(0));
 				} else if (wSubNoCommentContent.size() == 0) {
-					wResolvContent = checkIsJson(wResolvContentStr.replace(
-							wMatch.toString(), EMPTYJSON));
+					wResolvContent = wResolvContentStr.replace(
+							wMatch.toString(), EMPTYJSON);
 				} else {
 					String wMerge = "";
 					for (final String wSubContent : wSubNoCommentContent) {
@@ -651,8 +651,8 @@ public class CJsonProvider implements IJsonProvider {
 						}
 						wMerge = wMerge + wSubContent;
 					}
-					wResolvContent = checkIsJson(wResolvContentStr.replace(
-							wMatch.toString(), "[" + wMerge + "]"));
+					wResolvContent = wResolvContentStr.replace(
+							wMatch.toString(), "[" + wMerge + "]");
 				}
 
 			}
