@@ -39,6 +39,8 @@ import org.psem2m.utilities.files.CXFileDir;
 public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger implements ISvcWebAppProperties {
 
 	public static final String PROPERTIES_BASE_XML = ".base.properties.xml";
+	// MOD_OG_20220426 
+	public static final String PROPERTIES_CUSTOMER_XML = ".customer.properties.xml";
 	public static final String PROPERTIES_XML = ".properties.xml";
 
 	private final CXFileDir pConfigDir;
@@ -186,6 +188,28 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 		return pConfigName + PROPERTIES_BASE_XML;
 	}
 
+	/*
+	 * MOD_OG_20220426 
+	 * 
+	 * @see org.cohorte.utilities.picosoc.webapp.ISvcWebAppProperties#
+	 * getConfigBaseFile ()
+	 */
+	@Override
+	public File getConfigCustomerFile() {
+		return new File(getConfigDir(), getConfigCustomerFileName());
+	}
+
+	/*
+	 * MOD_OG_20220426 
+	 * 
+	 * @see org.cohorte.utilities.picosoc.webapp.ISvcWebAppProperties#
+	 * getConfigBaseFileName()
+	 */
+	@Override
+	public String getConfigCustomerFileName() {
+		return pConfigName + PROPERTIES_CUSTOMER_XML;
+	}
+	
 	/**
 	 * @return
 	 */
@@ -491,7 +515,18 @@ public abstract class CWebAppPropertiesBase extends CAbstractComponentWithLogger
 
 			pProperties.putAll(wProperties);
 		}
-
+		
+		// MOD_OG_20220426 - Load CUSTOMER config file if it exists
+		if (getConfigCustomerFile().exists()) {
+			final Properties wCustomerProperties = readPropertiesXmlFile(getConfigCustomerFile());
+			if (wCustomerProperties != null) {
+				getLogger().logInfo(this, "init", "Read [%2d] properties from CUSTOMER config file [%s]",
+						wCustomerProperties.size(), getConfigCustomerFile());
+				pProperties.putAll(wCustomerProperties);
+			}
+		}else {
+			getLogger().logInfo(this, "init","No [%s] file found to overwrite the properties of the webapp ",getConfigCustomerFileName());
+		}
 	}
 
 	/**
