@@ -25,7 +25,22 @@ public interface ISvcWebAppProperties {
 	 *         "myconfig.base.propoerties.xml"
 	 */
 	String getConfigBaseFileName();
-
+	
+	/**
+	 * MOD_OG_20220426 
+	 * 
+	 * @return the File representig the config base file
+	 *         "catalina.base/conf/myconfig.customer.propoerties.xml"
+	 */
+	File getConfigCustomerFile();
+	
+	/**
+	 * MOD_OG_20220426 
+	 * 
+	 * @return the name of the config base file eg. "myconfig.customer.properties.xml"
+	 */	
+	String getConfigCustomerFileName();
+	
 	/**
 	 * @return the the File representig the config dir. eg. "catalina.base/conf"
 	 */
@@ -38,9 +53,10 @@ public interface ISvcWebAppProperties {
 	File getConfigFile();
 
 	/**
-	 * @return the name of the config base file eg. "myconfig.propoerties.xml"
+	 * @return the name of the config base file eg. "myconfig.properties.xml"
 	 */
 	String getConfigFileName();
+
 
 	/**
 	 * @return the properties instance containing the properties defined in the

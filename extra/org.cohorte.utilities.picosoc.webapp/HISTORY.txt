@@ -1,4 +1,12 @@
 
+
+1.1.5
+=====
+
+ - MOD_OG_20200325
+    - Accept new configuration file "xxx.customer.properties.xml" to override the "base" and the "current" one.
+ 
+ 
 1.1.4
 =====
 
