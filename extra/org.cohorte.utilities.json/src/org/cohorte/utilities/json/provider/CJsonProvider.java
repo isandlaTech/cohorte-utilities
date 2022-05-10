@@ -160,18 +160,18 @@ public class CJsonProvider implements IJsonProvider {
 	 * @param aCondition
 	 * @return
 	 */
-	private boolean evaluateCondition(final String aCondition)
+	private boolean evaluateCondition(final String aCondition, final String aPath)
 			throws JSONException {
 		try {
 			if (aCondition == null || aCondition.isEmpty()) {
 				return true;
 			}
-			pLogger.logInfo(this, "evaluateCondition", "eval condition %s ",
-					aCondition);
+			pLogger.logInfo(this, "evaluateCondition", "path=[%s] eval condition [%s] ",
+					aPath, aCondition);
 
 			final Object wReply = pRhinoScriptEngine.eval(aCondition);
 			pLogger.logInfo(this, "evaluateCondition",
-					"eval condition %s , result=%s", aCondition, wReply);
+					"path=[%s] eval condition %s , result=%s",aPath, aCondition, wReply);
 
 			if (wReply instanceof Boolean) {
 				return ((Boolean) wReply).booleanValue();
@@ -561,7 +561,7 @@ public class CJsonProvider implements IJsonProvider {
 						final JSONObject wlTagJson = new JSONObject(wlTag.toString());
 						wlPath = wlTagJson.optString(PATH);
 						wMustBeInclude = evaluateCondition(wlTagJson
-								.optString(COND));
+								.optString(COND),wlPath);
 
 						wlTagJson.remove(COND);
 					} else {
