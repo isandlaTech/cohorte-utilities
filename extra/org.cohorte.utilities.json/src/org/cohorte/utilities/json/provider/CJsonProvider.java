@@ -571,7 +571,7 @@ public class CJsonProvider implements IJsonProvider {
 						try {
 							final JSONObject wOtherTag = new JSONObject(wlTag);
 							wMustBeInclude = evaluateCondition(wOtherTag
-									.optString(COND));
+									.optString(COND),wlPath);
 						} catch (final Exception e) {
 							// do nothing
 
