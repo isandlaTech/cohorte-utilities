@@ -371,8 +371,6 @@ public class CJsonProvider implements IJsonProvider {
 					return getJSONObject(aFatherPath, (JSONObject) wNotCommentJson, wVars);
 				}
 				return (JSONObject) wNotCommentJson;
-			} else {
-				System.out.println("test");
 			}
 		}
 		return null;
