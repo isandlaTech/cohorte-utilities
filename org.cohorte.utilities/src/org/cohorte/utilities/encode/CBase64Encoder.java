@@ -2,6 +2,10 @@ package org.cohorte.utilities.encode;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Base64;
+
+import org.psem2m.utilities.files.CXFile;
 
 /**
  * @author ogattaz
@@ -16,15 +20,26 @@ public class CBase64Encoder {
 	 */
 	public CBase64Encoder(final byte[] aByteArray) {
 
-		pBase64Str = aByteArray == null ? "" : CBase64.encodeBytes(aByteArray);
+		pBase64Str = aByteArray == null ? "" : Base64.getEncoder().encodeToString(aByteArray);
 	}
 
 	/**
 	 * @param aFile
 	 */
 	public CBase64Encoder(final File aFile) {
+		pBase64Str = "";
+		if (aFile != null) {
+			CXFile wFile = new CXFile(aFile);
+			byte[] wByteArray;
+			try {
+				wByteArray = wFile.readAllBytes();
+				pBase64Str = Base64.getEncoder().encodeToString(wByteArray);
+			} catch (IOException e) {
+				System.err.println("Error encoding from file " + aFile);
 
-		pBase64Str = aFile == null ? "" : CBase64.encodeFromFile(aFile);
+			}
+
+		}
 	}
 
 	/**
@@ -32,7 +47,7 @@ public class CBase64Encoder {
 	 */
 	public CBase64Encoder(final String aSource) {
 
-		pBase64Str = aSource == null ? "" : CBase64.encodeString(aSource);
+		pBase64Str = aSource == null ? "" : Base64.getEncoder().encodeToString(aSource.getBytes());
 	}
 
 	/**

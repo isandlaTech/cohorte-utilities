@@ -2,6 +2,7 @@ package org.cohorte.utilities.encode;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Base64;
 
 /**
  *
@@ -13,15 +14,14 @@ public class CBase64Decoder {
 
 	/**
 	 * @param aAscii7bits
-	 *            a Ascii 7 bits string
+	 *                        a Ascii 7 bits string
 	 */
 	public CBase64Decoder(String aAscii7bits) {
 
 		if (aAscii7bits != null && aAscii7bits.startsWith(IBase64.BASIC_PREFIX)) {
 			aAscii7bits = aAscii7bits.substring(IBase64.BASIC_PREFIX.length());
 		}
-		pByteArray = aAscii7bits == null ? new byte[0] : CBase64
-				.decode(aAscii7bits);
+		pByteArray = aAscii7bits == null ? new byte[0] : Base64.getDecoder().decode(aAscii7bits);
 	}
 
 	/**
